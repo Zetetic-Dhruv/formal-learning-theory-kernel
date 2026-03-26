@@ -1,42 +1,8 @@
 # Formal Learning Theory Kernel
 
-```mermaid
-flowchart TB
-    classDef proved fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef sorry fill:#dc2626,stroke:#991b1b,color:#fff
-    classDef sep fill:#374151,stroke:#6b7280,color:#d1d5db
-
-    PAC["PACLearnable(C)"]:::proved
-    VC["VCDim(C) &lt; ∞"]:::proved
-    CS["Compression\nscheme ◊"]:::sorry
-    RAD["Rademacher → 0\nuniformly"]:::proved
-    SB["Sample complexity\nbounds"]:::proved
-    GF["Growth ≤\nSauer-Shelah"]:::proved
-
-    PAC <--> VC
-    VC <--> CS
-    VC <--> RAD
-    VC --> SB
-    VC <--> GF
-
-    GT["Gold's Theorem\n(proved)"]:::proved
-    LC["Littlestone char.\n(proved)"]:::proved
-    OIP["Online → PAC\n(always)"]:::proved
-    PNO["PAC ⇏ Online"]:::sep
-    ENP["Gold ⇏ PAC"]:::sep
-    
-    GT ~~~ LC
-    OIP --- PAC
-    PNO -.- PAC
-    ENP -.- GT
-```
-
-```
-◊ = forward direction blocked (Moran-Yehudayoff 2016)
-⇏ = strict separation (constructive witness)
-```
-
-**31 files | 14,945 lines | 2 sorry | Lean 4 + Mathlib4**
+<p align="center">
+  <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
+</p>
 
 A Lean4 formalization of the **Fundamental Theorem of Statistical Learning** (5-way equivalence, 4/5 conjuncts proved), the **Littlestone characterization** of online learnability, **Gold's theorem** on identification in the limit, all **paradigm separations** with constructive witnesses, and the **universal learning trichotomy** (2/3 branches proved). Built on Mathlib4.
 
