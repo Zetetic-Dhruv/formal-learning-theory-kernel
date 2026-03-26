@@ -24,8 +24,7 @@ flowchart TB
     OIP["Online → PAC\n(always)"]:::proved
     PNO["PAC ⇏ Online"]:::sep
     ENP["Gold ⇏ PAC"]:::sep
-    UT["Universal Trichotomy\n(2/3 proved)"]:::sorry
-
+    
     GT ~~~ LC
     OIP --- PAC
     PNO -.- PAC
