@@ -1,4 +1,4 @@
-# Formal Learning Theory Kernel
+# Formal(ized) Learning Theory 
 
 <p align="center">
   <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
