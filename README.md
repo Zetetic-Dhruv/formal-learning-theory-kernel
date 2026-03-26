@@ -1,7 +1,7 @@
 # Formal(ized) Learning Theory 
 
 <p align="center">
-  <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
+  <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
 </p>
 
 A Lean4 formalization of the **Fundamental Theorem of Statistical Learning** (5-way equivalence, 4/5 conjuncts proved), the **Littlestone characterization** of online learnability, **Gold's theorem** on identification in the limit, all **paradigm separations** with constructive witnesses, and the **universal learning trichotomy** (2/3 branches proved). Built on Mathlib4.
