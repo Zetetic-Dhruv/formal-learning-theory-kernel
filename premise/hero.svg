@@ -7,7 +7,6 @@
 
   <!-- Title -->
   <text x="270" y="36" font-size="22" font-weight="bold" fill="#000">The Fundamental Theorem of Statistical Learning</text>
-  <text x="270" y="56" font-size="13" fill="#000" font-style="italic">Five equivalent characterizations of learnability, four proved in Lean 4</text>
 
   <!-- Pentagon: center (270,210), radius 120 -->
   <!-- v0=top(270,90) v1=UR(384,145) v2=LR(340,290) v3=LL(200,290) v4=UL(156,145) -->
@@ -19,15 +18,8 @@
   <line x1="200" y1="290" x2="156" y2="145" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
   <line x1="156" y1="145" x2="270" y2="90" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
 
-  <!-- Spokes from center to vertices -->
-  <line x1="270" y1="185" x2="270" y2="98" stroke="#000" stroke-width="0.8"/>
-  <line x1="293" y1="198" x2="376" y2="150" stroke="#000" stroke-width="0.8"/>
-  <line x1="290" y1="225" x2="334" y2="283" stroke="#000" stroke-width="0.8"/>
-  <line x1="250" y1="225" x2="206" y2="283" stroke="#000" stroke-width="0.8"/>
-  <line x1="247" y1="198" x2="164" y2="150" stroke="#000" stroke-width="0.8" stroke-dasharray="5 3"/>
-
-  <!-- Hub label (no circle, just text) -->
-  <text x="270" y="206" font-size="15" font-weight="bold" fill="#000" text-anchor="middle">VCDim(C) &lt; &#x221E;</text>
+  <!-- Hub label (no spokes, just text at center) -->
+  <text x="270" y="200" font-size="15" font-weight="bold" fill="#000" text-anchor="middle">VCDim(C) &lt; &#x221E;</text>
 
   <!-- Vertex dots -->
   <circle cx="270" cy="90" r="3.5" fill="#000"/>
