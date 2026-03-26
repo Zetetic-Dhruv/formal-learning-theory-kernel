@@ -95,5 +95,5 @@
   <text x="410" y="435" font-size="12" fill="#000" font-style="italic" text-anchor="middle">31 files  |  14,945 lines  |  2 sorry  |  Lean 4 + Mathlib4</text>
 
   <!-- Footnote -->
-  <text x="20" y="435" font-size="10" fill="#000" font-style="italic">&#x25CA; = forward direction blocked (Moran-Yehudayoff 2016)</text>
+  <text x="20" y="435" font-size="11.5" fill="#000" font-style="italic">&#x25CA; = forward direction blocked (Moran-Yehudayoff 2016)</text>
 </svg>
