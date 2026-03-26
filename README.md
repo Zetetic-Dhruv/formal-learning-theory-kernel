@@ -512,200 +512,128 @@ The following diagram renders the full theorem dependency structure of this libr
 
 The counterfactual branches are the most informative part of this diagram. They show where the proof *could not* go, and why. Proving that a route is dead is a discovery of the same order as proving a theorem.
 
-<div style="overflow-x: auto; overflow-y: auto; max-height: 800px; border: 1px solid #1e293b; border-radius: 6px; padding: 8px; background: #0f172a;">
-  <img src="premise/discovery_dag.svg" alt="Discovery DAG: theorem dependencies with counterfactual branches" width="580" />
-</div>
-
-<!-- Original Mermaid source preserved below for reference
 ```mermaid
 flowchart TB
-    classDef core fill:#1a365d,stroke:#2c5282,color:#fff
-    classDef measure fill:#2b6cb0,stroke:#3182ce,color:#fff
-    classDef infra fill:#4299e1,stroke:#63b3ed,color:#fff
-    classDef foundation fill:#2d3748,stroke:#4a5568,color:#e2e8f0
-    classDef sorry fill:#c53030,stroke:#e53e3e,color:#fff
-    classDef dead fill:#a0aec0,stroke:#718096,color:#2d3748,stroke-dasharray:5 5
+    classDef typ fill:#1e293b,stroke:#475569,color:#e2e8f0
+    classDef meas fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    classDef infra fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    classDef bridge fill:#2563eb,stroke:#60a5fa,color:#fff
+    classDef thm fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
+    classDef summit fill:#2563eb,stroke:#60a5fa,color:#fff
+    classDef sorry fill:#7f1d1d,stroke:#dc2626,color:#fca5a5
+    classDef dead fill:#374151,stroke:#6b7280,color:#9ca3af,stroke-dasharray:5 5
 
-    %% ════════════════════════════════════
-    %% LAYER 0: FOUNDATIONS
-    %% ════════════════════════════════════
-    subgraph L0[" "]
-        direction LR
-        CC["ConceptClass X Bool"]:::foundation
-        BL["BatchLearner"]:::foundation
-        OL["OnlineLearner"]:::foundation
-        GL["GoldLearner"]:::foundation
-        Mpi["Measure.pi"]:::foundation
-        BRIDGE["Bridge: Bool bijection"]:::foundation
-    end
+    %% L0: TYPES
+    CC["ConceptClass · 22 edges"]:::typ
+    BL[BatchLearner]:::typ
+    OL[OnlineLearner]:::typ
+    GL[GoldLearner]:::typ
+    Mpi[Measure.pi]:::bridge
+    BR[Bridge: Bool bij.]:::bridge
 
-    %% ════════════════════════════════════
-    %% LAYER 1: COMPLEXITY MEASURES
-    %% ════════════════════════════════════
-    subgraph L1[" "]
-        direction LR
-        VCD["VCDim C < ∞"]:::core
-        LD["LittlestoneDim C < ∞"]:::core
-        MCO["MindChangeOrdinal"]:::core
-    end
+    %% L1: MEASURES
+    VCD["VCDim < ∞"]:::meas
+    LD["LittlestoneDim < ∞"]:::meas
+    MCO[MindChangeOrd.]:::meas
+    GF[GrowthFunction]:::meas
+    RAD["Rademacher → 0"]:::meas
 
-    %% ════════════════════════════════════
-    %% LAYER 2: PROOF INFRASTRUCTURE
-    %% ════════════════════════════════════
-    subgraph L2[" "]
-        direction LR
-        SS["Sauer-Shelah · Mathlib"]:::infra
-        GF["GrowthFunction"]:::measure
-        RAD["Rademacher → 0"]:::measure
-        CS["CompressionScheme"]:::measure
-        NFL["NFL counting · 200 LOC"]:::measure
-    end
+    %% L2: INFRASTRUCTURE
+    SS[Sauer-Shelah]:::bridge
+    UC["Uniform Conv."]:::infra
+    WB[WellBehavedVC]:::bridge
+    SYM["Symmetrization · 3027 LOC"]:::infra
+    HOE[Hoeffding]:::infra
+    NFL[NFL core]:::infra
+    CS[CompressionScheme]:::infra
+    BST[boost_2/3]:::infra
 
-    subgraph L2b[" "]
-        direction LR
-        WB["WellBehavedVC"]:::core
-        UC["Uniform Convergence · ∃ m₀, ∀ D"]:::measure
-    end
+    %% L3: CHARACTERIZATIONS
+    VCC["vc_characterization"]:::thm
+    LC["littlestone_charact."]:::thm
+    GT[gold_theorem]:::thm
 
-    subgraph L2c[" "]
-        direction LR
-        SYM["Symmetrization · 3,027 LOC"]:::measure
-        HOE["Hoeffding · 300 LOC"]:::infra
-        BOOST["Boosting · Chebyshev"]:::measure
-    end
+    %% L4: SEPARATIONS + APPLICATIONS
+    OIP[online_imp_pac]:::thm
+    PNO["pac ⇏ online"]:::thm
+    ENP["ex ⇏ pac"]:::thm
+    NFLI[nfl_theorem_inf.]:::thm
 
-    %% ════════════════════════════════════
-    %% LAYER 3: CHARACTERIZATIONS
-    %% ════════════════════════════════════
-    subgraph L3[" "]
-        direction LR
-        VCC["vc_characterization · PAC ↔ VCDim < ∞"]:::core
-        LC["littlestone_char · Online ↔ LDim < ∞"]:::core
-        GT["gold_theorem · locking"]:::core
-    end
+    %% L5: SUMMIT
+    FT["FUNDAMENTAL THM · 5-way equiv."]:::summit
+    UT["universal_trichotomy · 2/3"]:::sorry
 
-    %% ════════════════════════════════════
-    %% LAYER 4: SEPARATIONS
-    %% ════════════════════════════════════
-    subgraph L4[" "]
-        direction LR
-        OIP["online_imp_pac"]:::core
-        PNO["pac ⇏ online · thresholds"]:::core
-        ENP["ex ⇏ pac · finite subsets"]:::core
-        NFLI["nfl_theorem_infinite"]:::core
-    end
+    %% L6: SORRY / FRONTIER
+    COMP["SORRY: compression · Moran-Yehudayoff 2016"]:::sorry
+    BHMZ["SORRY: bhmz_middle · BHMZ STOC 2021"]:::sorry
 
-    %% ════════════════════════════════════
-    %% LAYER 5: SUMMIT THEOREMS
-    %% ════════════════════════════════════
-    subgraph L5[" "]
-        direction LR
-        FT["FUNDAMENTAL THEOREM · 5-way equivalence"]:::core
-        UT["universal_trichotomy · 2/3 proved"]:::sorry
-    end
+    %% DEAD BRANCHES
+    CF1["✗ NFL finite X"]:::dead
+    CF2["✗ BranchWise LDim"]:::dead
+    CF3["✗ Direct union bound"]:::dead
+    CF4["✗ UC w/o regularity"]:::dead
+    CF5["✗ PAC ∃ Dm"]:::dead
+    CF6["✗ D-dep. m₀"]:::dead
+    CF7["✗ Bridge |Y|>2"]:::dead
 
-    %% ════════════════════════════════════
-    %% SORRY NODES
-    %% ════════════════════════════════════
-    subgraph SBLOCK[" "]
-        direction LR
-        COMP_FWD["SORRY: vcdim_finite_imp_compression
-        Moran-Yehudayoff 2016"]:::sorry
-        BHMZ["SORRY: bhmz_middle_branch
-        BHMZ STOC 2021"]:::sorry
-    end
-
-    %% ════════════════════════════════════
-    %% EDGES: LAYER 0 → 1
-    %% ════════════════════════════════════
+    %% ── L0 → L1 ──
     CC --> VCD
     CC --> LD
     CC --> MCO
+    CC --> GF
 
-    %% ════════════════════════════════════
-    %% EDGES: LAYER 1 → 2
-    %% ════════════════════════════════════
+    %% ── L0/L1 → L2 ──
     VCD --> SS
+    VCD --> UC
     VCD --> RAD
     VCD --> CS
-    VCD --> UC
-    BRIDGE --> SS
+    BR --> SS
     SS --> GF
     Mpi --> NFL
     Mpi --> UC
-
-    %% ════════════════════════════════════
-    %% EDGES: LAYER 2 → 2 (internal)
-    %% ════════════════════════════════════
     WB --> SYM
     UC --> SYM
     SYM --> HOE
     SYM --> GF
 
-    %% ════════════════════════════════════
-    %% EDGES: LAYERS 1-2 → 3
-    %% ════════════════════════════════════
-    VCD --> VCC
-    LD --> LC
-    MCO --> GT
+    %% ── L0/L1 → L3 ──
     BL --> VCC
+    VCD --> VCC
     OL --> LC
+    LD --> LC
     GL --> GT
+    MCO --> GT
 
-    %% ════════════════════════════════════
-    %% EDGES: LAYER 3 → 4
-    %% ════════════════════════════════════
+    %% ── L3 → L4 ──
     LC --> OIP
     VCD --> PNO
     LD --> PNO
     NFL --> NFLI
     VCC --> NFLI
 
-    %% ════════════════════════════════════
-    %% EDGES: LAYERS 2-4 → 5
-    %% ════════════════════════════════════
+    %% ── L2-L4 → L5 ──
     VCC --> FT
     CS --> FT
     RAD --> FT
     GF --> FT
-    COMP_FWD --> CS
     VCC --> UT
     LC --> UT
-    BOOST --> UT
+    BST --> UT
     BHMZ --> UT
 
-    %% ════════════════════════════════════
-    %% COUNTERFACTUAL BRANCHES
-    %% ════════════════════════════════════
-    CF1["✗ NFL for finite X
-    provably false"]:::dead
+    %% ── L6: SORRY deps ──
+    COMP --> CS
+    BHMZ --> UT
+
+    %% ── DEAD → targets ──
     CF1 -.-> NFLI
-
-    CF2["✗ BranchWise LDim
-    no path consistency"]:::dead
     CF2 -.-> LC
-
-    CF3["✗ Direct union bound
-    gives 2^2m, not GF"]:::dead
     CF3 -.-> UC
-
-    CF4["✗ UC without regularity
-    bad event not measurable"]:::dead
     CF4 -.-> SYM
-
-    CF5["✗ PAC with ∃ Dm
-    trivially true"]:::dead
     CF5 -.-> VCC
-
-    CF6["✗ D-dependent m₀
-    not distribution-free"]:::dead
     CF6 -.-> UC
-
-    CF7["✗ Bridge for |Y| > 2
-    Bool-specific bijection"]:::dead
-    CF7 -.-> BRIDGE
+    CF7 -.-> BR
 ```
--->
 
 ### Reading the counterfactual branches
 
