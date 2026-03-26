@@ -44,7 +44,7 @@ def EXUnderDrift (X : Type u) (C : ConceptClass X Bool)
     The rate function converges to 0, and for every m, with probability ≥ 2/3
     over D^m, the learner's error is at most rate(m).
 
-    Γ₄₈ fix: changed from existential Dm to Measure.pi (CNA₁₁ definition repair). -/
+    Uses the concrete product measure Measure.pi rather than an existential Dm. -/
 def UniversalLearnable (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) : Prop :=
   ∃ (L : BatchLearner X Bool) (rate : ℕ → ℝ),

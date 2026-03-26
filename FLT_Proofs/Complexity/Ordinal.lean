@@ -18,15 +18,13 @@ can take values beyond ω.
 
 universe u v
 
-/-! ## Γ₂₇ Resolution: BddAbove infrastructure for nat-to-ordinal iSup
+/-! ## BddAbove infrastructure for nat-to-ordinal iSup
 
-Ordinal has `ConditionallyCompleteLinearOrderBot`, not `CompleteLattice`.
-Every `ciSup`/`le_ciSup_of_le` call needs an explicit `BddAbove` witness.
+Ordinal has `ConditionallyCompleteLinearOrderBot`, not `CompleteLattice`,
+so every `ciSup`/`le_ciSup_of_le` call needs an explicit `BddAbove` witness.
 
 Key invariant: `(n : ℕ) : Ordinal` is always `< ω`, so ω bounds every
-nat-cast-to-ordinal range uniformly. This infrastructure is paradigm-invariant:
-it works for OrdinalVCDim, OrdinalLittlestoneDim, and any future nat-valued
-complexity measure lifted to Ordinal. -/
+nat-cast-to-ordinal range uniformly. -/
 
 /-- Inner BddAbove: for a fixed S, the range over shattering witnesses is trivially bounded. -/
 theorem ordinalVCDim_inner_bddAbove (X : Type u) (C : ConceptClass X Bool)
@@ -35,8 +33,7 @@ theorem ordinalVCDim_inner_bddAbove (X : Type u) (C : ConceptClass X Bool)
   ⟨S.card, fun _ ⟨_, h⟩ => h ▸ le_refl _⟩
 
 /-- Outer BddAbove: the range of the full OrdinalVCDim iSup is bounded by ω.
-    This is the uniform bound that resolves Γ₂₇ — it holds for ALL concept classes
-    regardless of whether VCDim is finite or infinite. -/
+    Holds for all concept classes regardless of whether VCDim is finite or infinite. -/
 theorem ordinalVCDim_outer_bddAbove (X : Type u) (C : ConceptClass X Bool) :
     BddAbove (Set.range (fun S : Finset X =>
       ⨆ (_ : Shatters X C S), ((S.card : ℕ) : Ordinal))) := by
@@ -75,8 +72,7 @@ private theorem vcdim_card_le {X : Type u} {C : ConceptClass X Bool} {n : ℕ}
       _ = ↑n := h
   exact WithTop.coe_le_coe.mp this
 
-/-- Embedding: finite VCDim embeds into OrdinalVCDim.
-    Γ₂₇ RESOLVED via uniform ω-bound BddAbove infrastructure. -/
+/-- Embedding: finite VCDim embeds into OrdinalVCDim. -/
 theorem VCDim_embed_ordinal (X : Type u) (C : ConceptClass X Bool)
     (n : ℕ) (h : VCDim X C = n) : OrdinalVCDim X C = (n : Ordinal) := by
   unfold OrdinalVCDim

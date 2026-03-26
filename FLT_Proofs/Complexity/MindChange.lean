@@ -37,9 +37,9 @@ open Classical in
     to correct convergence with finite mind changes — the key property for the mind change
     characterization theorem.
 
-    Design rationale (M-DefinitionRepair, CNA₁₁): encoding correctness at the definition
-    level dissolves the backward-direction obstruction in mind_change_characterization,
-    analogous to how WithBot dissolved Γ₂₁ for LittlestoneDim. -/
+    Design rationale: encoding correctness at the definition level makes the backward
+    direction of mind_change_characterization provable — `MindChangeOrdinal < ω` directly
+    entails both convergence and correctness without needing to extract them separately. -/
 noncomputable def MindChangeOrdinal (X : Type u) (L : GoldLearner X Bool)
     (c : Concept X Bool) (T : DataStream X Bool) : Ordinal :=
   let changes := { t : ℕ | L.conjecture (T.prefix t) ≠ L.conjecture (T.prefix (t + 1)) }

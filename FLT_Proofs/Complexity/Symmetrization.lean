@@ -37,9 +37,9 @@ then bounds the double-sample event via exchangeability + growth function.
 
 ## Design notes
 
-All theorems use the STANDARD Approach A (exchangeability + permutation) for T3,
-NOT the relaxed iid Rademacher approach. This is the structurally correct argument
-that avoids introducing unnecessary independence assumptions.
+All theorems use the exchangeability + permutation approach for the double sample
+pattern bound, rather than the relaxed iid Rademacher approach. This avoids
+introducing unnecessary independence assumptions.
 -/
 
 universe u v
@@ -110,7 +110,7 @@ noncomputable instance (m : ℕ) : Fintype (ValidSplit m) :=
 instance (m : ℕ) : MeasurableSpace (ValidSplit m) := ⊤
 
 /-- The uniform measure over all valid splits of 2m elements into two groups of m.
-    This is the key construction for the exchangeability argument (Approach A).
+    This is the key construction for the exchangeability argument.
 
     Under D^{2m}, conditioning on the merged sample z and averaging over all
     valid splits gives the same distribution as D^m ⊗ D^m. This is because
@@ -137,7 +137,7 @@ def splitSecond {X : Type u} {m : ℕ} (z : MergedSample X m) (_vs : ValidSplit 
     Fin m → X := by
   exact fun i => z (Fin.natAdd m i |>.cast (two_mul m).symm)
 
-/-! ## T1: One-sided Hoeffding Inequality -/
+/-! ## One-sided Hoeffding Inequality -/
 
 /-- One-sided Hoeffding: for iid Bernoulli(p) draws, the empirical average
     undershoots the mean by ≥ t with probability ≤ exp(-2mt²).
@@ -514,7 +514,7 @@ theorem hoeffding_one_sided {X : Type u} [MeasurableSpace X]
         push_cast
         field_simp
 
-/-! ## T2: Symmetrization Step -/
+/-! ## Symmetrization Step -/
 
 /-- Symmetrization: the probability of a large gap TrueErr-EmpErr
     is at most twice the probability of a large gap EmpErr'-EmpErr
@@ -785,7 +785,7 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
     _ = (μ.prod μ) B' := h_prod.symm
     _ = (μ.prod μ) B := MeasureTheory.measure_toMeasurable B
 
-/-! ## T3: Double Sample Pattern Bound (Approach A — Standard Exchangeability) -/
+/-! ## Double Sample Pattern Bound (Exchangeability Argument) -/
 
 /-- Per-hypothesis Hoeffding on the double sample: for a FIXED hypothesis h,
     the probability that EmpErr(h,S') - EmpErr(h,S) ≥ ε/2 under D^m ⊗ D^m
@@ -796,7 +796,7 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
     independent, bounded in [-1,1], and centered (E[Wᵢ] = 0).
     By Hoeffding's inequality: P[(1/m)∑Wᵢ ≥ ε/2] ≤ exp(-mε²/8).
 
-    This uses the sub-Gaussian machinery from T1, extended to the product space.
+    This uses the sub-Gaussian machinery from hoeffding_one_sided, extended to the product space.
 
     **Proof sketch:**
     1. Pair D^m ⊗ D^m ≅ (D⊗D)^m via the natural isomorphism
@@ -1102,19 +1102,9 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
        (MeasureTheory.Measure.pi (fun _ : Fin m => D)))
 
 /- The exchangeability + union bound + Hoeffding chain.
-   ORPHANED — contains 2 sorrys (swap→signed avg + Tonelli).
-   The critical path now uses `uc_bad_event_le_delta_proved` (below) which
-   composes `symmetrization_uc_bound` + `growth_exp_le_delta` via the
-   `finite_exchangeability_bound` + NullMeasurableSet architecture.
-   This version remains because `double_sample_pattern_bound` and
-   `symmetrization_uc_bound` (unprimed) call it, and those are called by
-   the unprimed `vcdim_finite_imp_uc` in Generalization.lean.
-
-   γ₁₈ (Session 7 discovery): The 2 sorrys here represent the original
-   attempt to close the exchangeability chain via direct Tonelli interchange.
-   Sorry A (swap→signed avg) needed connecting swap_fun to a Rademacher sum.
-   Sorry B (Tonelli) was blocked by MeasurableSet requirements for uncountable C.
-   Resolution: NullMeasurableSet + finite_exchangeability_bound (above). -/
+   The fully proved path uses `uc_bad_event_le_delta_proved` (below), which
+   composes `symmetrization_uc_bound` + `growth_exp_le_delta` via
+   `finite_exchangeability_bound` + NullMeasurableSet. -/
 
 theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -1491,7 +1481,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
               congr 1; rw [Real.exp_sub]
           _ = (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
               congr 1; rw [ht₀_def]; field_simp; ring
-      -- Step A4: Connect swap_fun σ z ∈ S to the signed average condition
+      -- Step 4: Connect swap_fun σ z ∈ S to the signed average condition
       -- For each σ, swap_fun σ z ∈ S iff ∃h ∈ C with gap under swap ≥ ε/2.
       -- The gap under swap = (1/m)∑ sign(σ_i) · a_i(h,z).
       -- Two h's with the same pattern on merged have the same gap.
@@ -1664,7 +1654,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
 /-- On the double sample, the probability that any hypothesis has
     EmpErr' - EmpErr ≥ ε/2 is bounded by GF(C,2m) · exp(-mε²/8).
 
-    **Proof strategy (Approach A — standard exchangeability, 5 steps):**
+    **Proof strategy (exchangeability argument, 5 steps):**
 
     1. **EXCHANGEABILITY:** Under D^m ⊗ D^m, the 2m draws z₁,...,z_{2m} are iid from D.
        The joint distribution is invariant under permutations of {1,...,2m}.
@@ -2210,7 +2200,7 @@ theorem symmetrization_step_lower {X : Type u} [MeasurableSpace X]
     _ = (μ.prod μ) B' := h_prod.symm
     _ = (μ.prod μ) B := MeasureTheory.measure_toMeasurable B
 
-/-! ## T4: Symmetrization Uniform Convergence Bound (two-sided) -/
+/-! ## Symmetrization Uniform Convergence Bound (two-sided) -/
 
 /-- The symmetrization uniform convergence bound: two-sided version.
     P[∃h∈C: |TrueErr-EmpErr| ≥ ε] ≤ 4·GF(C,2m)·exp(-mε²/8).
@@ -2373,7 +2363,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     _ = ENNReal.ofReal (4 * ↑(GrowthFunction X C (2 * m)) *
           Real.exp (-(↑m * ε ^ 2 / 8))) := by rw [hgf_exp_def]; ring_nf
 
-/-! ## T5: Arithmetic — Growth Function × Exponential ≤ δ -/
+/-! ## Arithmetic — Growth Function x Exponential le delta -/
 
 -- Arithmetic: 4*GF(C,2m)*exp(-m*eps^2/8) <= delta and 2*ln2 <= m*eps^2.
 -- Uses: Sauer-Shelah + pow_mul_exp_neg_le_factorial_div + hm_bound.
@@ -2705,15 +2695,15 @@ theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
       have hm_ge_1 : (1 : ℝ) ≤ ↑m := Nat.one_le_cast.mpr hm
       nlinarith
 
-/-! ## Sorry-free UC proof: composing symmetrization + arithmetic
+/-! ## UC proof: composing symmetrization + arithmetic
 
-These theorems close the sorry in `uc_bad_event_le_delta` (Generalization.lean)
+These theorems close the gap in `uc_bad_event_le_delta` (Generalization.lean)
 by composing `symmetrization_uc_bound` with `growth_exp_le_delta`.
 They live here because Symmetrization.lean has access to both components,
 whereas Generalization.lean cannot import Symmetrization.lean (circular). -/
 
-/-- UC bad-event bound (sorry-free): for m ≥ m₀(v,ε,δ), the probability
-    of the bad event (∃ h with |TrueErr-EmpErr| ≥ ε) is at most δ.
+/-- UC bad-event bound: for m ≥ m₀(v,ε,δ), the probability of the bad event
+    (∃ h with |TrueErr-EmpErr| ≥ ε) is at most δ.
     Composes `symmetrization_uc_bound` with `growth_exp_le_delta`. -/
 private lemma uc_bad_event_le_delta_proved {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -2748,7 +2738,7 @@ private lemma uc_bad_event_le_delta_proved {X : Type u} [MeasurableSpace X] [Inf
           Real.exp (-(↑m * ε ^ 2 / 8))) := h_sym
     _ ≤ ENNReal.ofReal δ := ENNReal.ofReal_le_ofReal h_bound
 
-/-- Finite VCDim implies uniform convergence (sorry-free).
+/-- Finite VCDim implies uniform convergence.
     Proof: VCDim < ∞ → UC.
     - Finite X: direct Hoeffding per-hypothesis + finite union bound.
     - Infinite X: Sauer-Shelah → symmetrization + growth function → UC. -/
@@ -3024,7 +3014,7 @@ theorem vcdim_finite_imp_uc' (X : Type u) [MeasurableSpace X]
                   rw [ENNReal.add_sub_cancel_left (ne_top_of_le_ne_top ENNReal.one_ne_top
                     MeasureTheory.prob_le_one)]
 
-/-- VCDim < ⊤ → PACLearnable via UC route (sorry-free). -/
+/-- VCDim < ⊤ → PACLearnable via the uniform convergence route. -/
 theorem vcdim_finite_imp_pac_via_uc' (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (hC : VCDim X C < ⊤)
     (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : ∀ c : Concept X Bool, Measurable c)

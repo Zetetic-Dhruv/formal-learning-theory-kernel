@@ -28,19 +28,18 @@ def MistakeTree.depth {X : Type u} : MistakeTree X → ℕ
 /-- A mistake tree is shattered by C if every root-to-leaf path is
     realized by some concept in C.
 
-    **BUG (Γ₁₉):** This branch-wise definition does NOT restrict the concept class at
+    **Note:** This branch-wise definition does NOT restrict the concept class at
     recursive calls. It allows different witness concepts at each tree level without
     requiring path consistency. Counterexample: C = {const_true, const_false} gives
     LittlestoneDim = ⊤ under this definition, but C is online-learnable with M = 1.
-    The characterization theorem is FALSE with this definition.
 
-    Correct definition restricts C at each branch:
+    The correct definition (used in `Theorem/Online.lean`) restricts C at each branch:
       | .branch x l r =>
           (∃ c ∈ C, c x = true) ∧ (∃ c ∈ C, c x = false) ∧
           isShattered X {c ∈ C | c x = true} l ∧
           isShattered X {c ∈ C | c x = false} r
 
-    See KernelSnapshot/Theorem/Online.lean for corrected version and proofs. -/
+    The characterization theorem uses the corrected version. -/
 def MistakeTree.isShattered (X : Type u) (C : ConceptClass X Bool) :
     MistakeTree X → Prop
   | .leaf => True
@@ -48,8 +47,8 @@ def MistakeTree.isShattered (X : Type u) (C : ConceptClass X Bool) :
       (∃ c ∈ C, c x = true ∧ MistakeTree.isShattered X C l) ∧
       (∃ c ∈ C, c x = false ∧ MistakeTree.isShattered X C r)
 
-/-- Littlestone dimension (BRANCH-WISE, Γ₁₉ BUG): see Theorem/Online.lean for corrected version.
-    Renamed to avoid collision with the corrected `LittlestoneDim` in Theorem.Online. -/
+/-- Littlestone dimension (branch-wise variant): see `Theorem/Online.lean` for the
+    corrected path-consistent version used in the characterization theorem. -/
 noncomputable def BranchWiseLittlestoneDim (X : Type u) (C : ConceptClass X Bool) : WithTop ℕ :=
   ⨆ (T : MistakeTree X) (_ : T.isShattered X C), (T.depth : WithTop ℕ)
 

@@ -1,0 +1,205 @@
+{
+  "project": "Formal Learning Theory Kernel — Lean4 Formalization",
+  "description": "Type architecture premise derived before proof discovery. This document defined the typed hypothesis space within which AI-guided proof search operated.",
+  "initialized": "2026-03-16",
+  "status": "pre-proof-discovery",
+  "date": "2026-03-18",
+  "paradigm_joints": [
+    {
+      "partition": "PAC/Online",
+      "shared": ["concept_class", "hypothesis_space", "vc_dimension", "learner"],
+      "P1_private": ["iid_sample", "pac_learning", "generalization_error", "sample_complexity", "rademacher_complexity"],
+      "P2_private": ["mistake_bounded", "regret_bounded", "online_learning", "littlestone_dimension", "mistake_bound", "regret"],
+      "heterogeneity_coefficient": 1.0,
+      "cross_edges": ["pac_learning does_not_imply mistake_bounded", "online_learning strictly_stronger pac_learning"],
+      "type_consequences": ["separate learner types (BP1)", "separate success criteria", "separate complexity measures"]
+    },
+    {
+      "partition": "PAC/Gold",
+      "shared": ["concept_class", "hypothesis_space", "learner"],
+      "P1_private": ["iid_sample", "pac_learning", "generalization_error", "vc_dimension", "sample_complexity"],
+      "P2_private": ["data_stream", "text_presentation", "informant_presentation", "ex_learning", "bc_learning", "mind_change_count", "mind_change_ordinal"],
+      "heterogeneity_coefficient": 1.0,
+      "cross_edges": ["ex_learning does_not_imply pac_learning"],
+      "type_consequences": ["separate data interfaces (BP3)", "separate convergence notions"]
+    },
+    {
+      "partition": "Online/Gold",
+      "shared": ["concept_class", "hypothesis_space", "learner"],
+      "P1_private": ["mistake_bounded", "online_learning", "littlestone_dimension"],
+      "P2_private": ["data_stream", "ex_learning", "mind_change_count"],
+      "heterogeneity_coefficient": 0.0,
+      "cross_edges": [],
+      "type_consequences": []
+    },
+    {
+      "partition": "FiniteDim/OrdinalDim",
+      "shared": ["concept_class"],
+      "P1_private": ["vc_dimension", "littlestone_dimension", "sample_complexity", "mistake_bound"],
+      "P2_private": ["ordinal_vc_dim", "ordinal_littlestone_dim", "mind_change_ordinal", "universal_learning"],
+      "heterogeneity_coefficient": 1.0,
+      "cross_edges": ["ordinal_vc_dim extends vc_dimension", "ordinal_littlestone_dim extends littlestone_dimension", "mind_change_ordinal extends mind_change_count", "pseudodimension extends vc_dimension", "natarajan_dimension extends vc_dimension", "universal_learning strictly_stronger pac_learning"],
+      "type_consequences": ["WithTop N vs Ordinal (BP2)", "separate finite/ordinal hierarchies"]
+    },
+    {
+      "partition": "Frequentist/Bayesian",
+      "shared": ["concept_class", "hypothesis_space", "learner", "iid_sample"],
+      "P1_private": ["pac_learning", "vc_dimension", "generalization_error", "rademacher_complexity"],
+      "P2_private": ["bayesian_learner", "bayesian_inference", "posterior_consistency", "pac_bayes_bound", "kl_complexity", "gibbs_posterior"],
+      "heterogeneity_coefficient": 0.7,
+      "cross_edges": ["pac_learning analogy posterior_consistency", "pac_bayes_bound extends pac_learning", "algorithmic_stability analogy pac_bayes_bound", "pac_bayes_bound upper_bounds generalization_error", "posterior_consistency requires bayesian_inference"],
+      "type_consequences": ["prior-dependent vs prior-free (BP7)", "KL vs VC capacity"]
+    }
+  ],
+  "concepts_typed_summary": {
+    "L0_computation": {
+      "count": 19,
+      "profiles": {"T-Abbrev": 7, "T-Structure": 7, "T-Bridge": 4, "T-Prop": 1},
+      "file": "FLT_Proofs/Computation.lean"
+    },
+    "L1_base_types": {
+      "count": 11,
+      "profiles": {"T-Abbrev": 7, "T-Structure": 2, "T-Prop": 2},
+      "file": "FLT_Proofs/Basic.lean"
+    },
+    "L2_data": {
+      "count": 10,
+      "profiles": {"T-Abbrev": 3, "T-Structure": 6, "T-Prop": 1},
+      "file": "FLT_Proofs/Data.lean"
+    },
+    "L3_learners": {
+      "count": 21,
+      "profiles": {"T-Structure": 12, "T-Prop": 7, "T-Abbrev": 2},
+      "files": ["FLT_Proofs/Learner/Core.lean", "FLT_Proofs/Learner/Properties.lean", "FLT_Proofs/Learner/Active.lean", "FLT_Proofs/Learner/Bayesian.lean"]
+    },
+    "L4_criteria": {
+      "count": 20,
+      "profiles": {"T-Prop": 20},
+      "files": ["FLT_Proofs/Criterion/Gold.lean", "FLT_Proofs/Criterion/PAC.lean", "FLT_Proofs/Criterion/Online.lean", "FLT_Proofs/Criterion/Extended.lean"]
+    },
+    "L5_complexity": {
+      "count": 33,
+      "profiles": {"T-Abbrev": 16, "T-Parametric": 3, "T-Structure": 5, "T-Prop": 9},
+      "files": ["FLT_Proofs/Complexity/VCDimension.lean", "FLT_Proofs/Complexity/Littlestone.lean", "FLT_Proofs/Complexity/MindChange.lean", "FLT_Proofs/Complexity/Ordinal.lean", "FLT_Proofs/Complexity/Structures.lean", "FLT_Proofs/Complexity/Generalization.lean", "FLT_Proofs/Complexity/Symmetrization.lean", "FLT_Proofs/Complexity/Rademacher.lean", "FLT_Proofs/Complexity/GeneralizationResults.lean"]
+    },
+    "L6_theorems": {
+      "count": 16,
+      "profiles": {"T-Prop": 16},
+      "files": ["FLT_Proofs/Theorem/Gold.lean", "FLT_Proofs/Theorem/PAC.lean", "FLT_Proofs/Theorem/Online.lean", "FLT_Proofs/Theorem/Separation.lean", "FLT_Proofs/Theorem/Extended.lean"]
+    },
+    "L7_processes": {
+      "count": 12,
+      "profiles": {"T-Structure": 7, "T-Abbrev": 2, "T-Prop": 1, "T-Break": 2},
+      "file": "FLT_Proofs/Process.lean"
+    }
+  },
+  "break_points": [
+    {
+      "id": "BP1",
+      "name": "No common learner parent",
+      "description": "BatchLearner, OnlineLearner, GoldLearner have incompatible signatures. No common parent without erasing paradigm-specific structure.",
+      "location": "FLT_Proofs/Learner/Core.lean",
+      "severity": "critical"
+    },
+    {
+      "id": "BP2",
+      "name": "VCDim = WithTop N vs OrdinalVCDim = Ordinal",
+      "description": "Finite complexity measures use WithTop N; ordinal extensions use Ordinal. The embedding is lossy (top maps to omega, but ordinals beyond omega exist).",
+      "location": "FLT_Proofs/Complexity/Ordinal.lean, FLT_Proofs/Bridge.lean",
+      "severity": "high"
+    },
+    {
+      "id": "BP3",
+      "name": "PAC measures vs Online adversaries (data interface)",
+      "description": "PAC receives i.i.d. samples from distributions; Online receives adversary-chosen sequences. No common data interface.",
+      "location": "FLT_Proofs/Data.lean",
+      "severity": "critical"
+    },
+    {
+      "id": "BP4",
+      "name": "Function-class to set-family bridge lossy",
+      "description": "ConceptClass X Bool (functions) vs Set (Set X) (Mathlib's combinatorial type). Conversion loses the function structure.",
+      "location": "FLT_Proofs/Bridge.lean",
+      "severity": "medium"
+    },
+    {
+      "id": "BP5",
+      "name": "Five generalization bounds with different signatures",
+      "description": "The five equivalent characterizations (PAC, VC, compression, Rademacher, growth) each require different type signatures in their proof.",
+      "location": "FLT_Proofs/Theorem/PAC.lean",
+      "severity": "high"
+    },
+    {
+      "id": "BP6",
+      "name": "ConceptClass over-connected (22 edges, 4 counterdefinitions)",
+      "description": "ConceptClass is used by every paradigm, requiring 4 alternative type definitions (decidable, RE, measurable, multiclass).",
+      "location": "FLT_Proofs/Basic.lean",
+      "severity": "high",
+      "discovered_during_typing": true
+    },
+    {
+      "id": "BP7",
+      "name": "Bayesian prior has no canonical type",
+      "description": "Prior can be R-valued (unnormalized), NNReal-valued, or measure-valued. No single type serves both computational and measure-theoretic Bayesian proofs.",
+      "location": "FLT_Proofs/Learner/Bayesian.lean",
+      "severity": "medium",
+      "discovered_during_typing": true
+    }
+  ],
+  "counterdefinitions": [
+    {"concept": "ConceptClass", "count": 4, "paradigms_served": ["Online", "Gold", "Bayesian", "Multiclass"]},
+    {"concept": "IIDSample", "count": 2, "paradigms_served": ["PAC-agnostic", "Bayesian"]},
+    {"concept": "InductiveBias", "count": 1, "paradigms_served": ["Bayesian"]},
+    {"concept": "BayesianLearner", "count": 1, "paradigms_served": ["Measure-theoretic Bayes"]}
+  ],
+  "type_health_checks": {
+    "profile_distribution": {
+      "T-Abbrev": "32.9%",
+      "T-Prop": "31.4%",
+      "T-Structure": "27.9%",
+      "T-Bridge": "3.6%",
+      "T-Parametric": "2.1%",
+      "T-Break": "2.1%",
+      "T-Class": "0.0%"
+    },
+    "break_point_count": 7,
+    "mathlib_bridges": 5,
+    "coverage": "139/139 kernel concept nodes typed",
+    "homogeneity_warnings": "none"
+  },
+  "compilation_constraints": [
+    {
+      "id": "C1",
+      "description": "Sigma is a Lean4 keyword (sigma type) — renamed to Sym in automata types",
+      "files_affected": ["FLT_Proofs/Computation.lean", "FLT_Proofs/Process.lean"]
+    },
+    {
+      "id": "C2",
+      "description": "NNReal notation requires explicit Mathlib import — fell back to R in BayesianInference",
+      "files_affected": ["FLT_Proofs/Learner/Bayesian.lean", "FLT_Proofs/Criterion/Extended.lean"]
+    },
+    {
+      "id": "C3",
+      "description": "def blocks typeclass synthesis — changed ConceptClass, HypothesisSpace to abbrev",
+      "files_affected": ["FLT_Proofs/Basic.lean"]
+    },
+    {
+      "id": "C4",
+      "description": "TextPresentation(DataStream X Unit) incompatible with GoldLearner(List (X * Bool)) — changed to extend DataStream X Bool",
+      "files_affected": ["FLT_Proofs/Data.lean"]
+    },
+    {
+      "id": "C5",
+      "description": "Ordinal requires universe annotation — used Ordinal.{0} in VCLTree.value field",
+      "files_affected": ["FLT_Proofs/Complexity/Ordinal.lean"]
+    }
+  ],
+  "initial_state": {
+    "total_lean_lines": 2912,
+    "sorry_count": 69,
+    "sorry_in_prop": 0,
+    "trivially_true_conclusions": 0,
+    "compilation_status": "0 errors, 69 sorry warnings",
+    "lean_toolchain": "leanprover/lean4:v4.29.0-rc6"
+  }
+}

@@ -8,26 +8,22 @@ import FLT_Proofs.Data
 import FLT_Proofs.Computation
 
 /-!
-# Core Learner Types (BP₁: No Common Parent)
+# Core Learner Types
 
 The three paradigm-specific learner types with incompatible signatures.
-This is Break Point BP₁ — the type system cannot express "learner"
-without choosing a paradigm.
-
-## Break Point BP₁: No Common Learner Parent
+There is no common parent type — the type system cannot express "learner"
+without choosing a paradigm, because the three signatures are fundamentally
+different:
 
 - **PAC learner**: `{m : ℕ} → (Fin m → X × Y) → Concept X Y` (batch)
 - **Online learner**: `State → X → Y` (sequential with internal state)
 - **Gold learner**: `List (X × Y) → Concept X Y` (sequential, extensible)
 
-No common parent captures all three without erasing the structure
-that makes their theorems non-trivial.
+This is intentional: a common parent would erase the structural properties
+that make each paradigm's theorems non-trivial.
 -/
 
 universe u v
-
--- BREAK POINT BP₁: No common learner parent type.
--- The three structures below share nothing in their Lean4 types.
 
 /-- A batch learner (PAC paradigm): takes a finite sample, returns a hypothesis. -/
 structure BatchLearner (X : Type u) (Y : Type v) where

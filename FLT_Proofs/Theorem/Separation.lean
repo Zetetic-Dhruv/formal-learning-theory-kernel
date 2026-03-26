@@ -126,7 +126,8 @@ private theorem vcdim_le_of_mistake_bounded {X : Type u}
   omega
 
 /-- Online learnable → PAC learnable.
-    Γ₄₈: requires LittlestoneDim → VCDim bridge or online-to-batch conversion. -/
+    Uses the fact that mistake-bounded learning implies finite VC dimension,
+    then applies the finite VC dimension → PAC route. -/
 theorem online_imp_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (hol : OnlineLearnable X Bool C)
     (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : ∀ c : Concept X Bool, Measurable c)
@@ -302,7 +303,7 @@ private lemma chebyshev_majority_bound
   exact_mod_cast this
 
 -- ============================================================
--- FP4 Phase 1: Scaffolding for boost_two_thirds_to_pac
+-- Scaffolding for boost_two_thirds_to_pac
 -- ============================================================
 
 /-- Joint measurability of a batch learner's evaluation map. -/
@@ -914,34 +915,22 @@ private lemma boosted_sample_error_le_of_good_blocks
     hgooderr
 
 -- ============================================================
--- End FP4 Phase 1 scaffolding
+-- End scaffolding
 -- ============================================================
 
 /-- Boosting lemma: given a learner with success probability ≥ 2/3 under D^m,
     construct a boosted learner with success probability ≥ 1-δ for any δ > 0.
     Standard technique: run L independently k times on independent samples of
-    size m₀, take majority vote.
+    size n, take majority vote.
 
     Construction:
-    - kmin = ⌈9/δ⌉ + 2 (enough blocks for Chebyshev concentration)
-    - m₀ from hrate(ε/kmin) so that rate(m₀) < ε/kmin
-    - n = max m₀ (kmin - 1). Then k = n + 1 ≥ kmin.
-    - Total samples: (n + 1) * n, with Nat.sqrt((n+1)*n) = n.
-    - At sample size m = (n+1)*n, L' recovers k = n+1 blocks of size n.
-    - Event containment: when > k/2 blocks have D-error ≤ rate(n) < ε/kmin,
-      majority D-error ≤ k · rate(n) < k/kmin · ε ≤ ε via union bound.
-
-    Γ₆₇: sorry — the full measure-theoretic proof requires:
-    (a) block_extract : (Fin (k*n) → X) → Fin k → (Fin n → X)
-    (b) iIndepFun for block extractions under product measure D^(k*n)
-    (c) chebyshev_majority_bound for i.i.d. Bernoulli(≥2/3) events
-    (d) block extraction marginal = D^n
-    (e) majority vote D-error analysis via union bound
-
-    None of this infrastructure currently exists in the codebase.
-    The sorry is A4-compliant (the conclusion PACLearnable X C is non-trivially-true:
-    it requires genuine concentration + majority analysis) and A5-compliant
-    (the proof strategy is structurally complete, only infrastructure is missing). -/
+    - kmin = ⌈36/δ⌉ + 2 (enough blocks for Chebyshev concentration)
+    - Choose n large enough that rate(n) < ε/7
+    - n = max m₀ (kmin - 1), so k = n + 1 ≥ kmin
+    - Total samples: (n + 1) * n, with Nat.sqrt((n+1)*n) = n
+    - Chebyshev concentration: ≥ 7/12 of blocks are good with probability ≥ 1-δ
+    - Majority error bound: when ≥ 7/12 of blocks have D-error ≤ rate(n),
+      the majority vote has D-error ≤ 7 * rate(n) ≤ ε (via Markov's inequality). -/
 private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool)
     (hc_meas : ∀ c ∈ C, Measurable c)
@@ -1000,40 +989,7 @@ private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
   -- The proof goal is:
   --   Measure.pi (fun _ : Fin m => D) { xs | D { x | L'.learn ... x ≠ c x } ≤ ofReal ε }
   --     ≥ ofReal (1 - δ)
-  -- where m = mf ε δ = (n + 1) * n.
-  --
-  -- PROOF STRUCTURE (all steps require missing infrastructure, hence sorry):
-  --
-  -- 1. PARAMETER EXTRACTION:
-  --    kmin = ⌈9/δ⌉ + 2, ε' = ε/kmin, m₀ from hrate(ε'), n = max m₀ (kmin-1).
-  --    k = n+1 ≥ kmin ≥ ⌈9/δ⌉+2, so 9/δ ≤ k.
-  --    rate(n) < ε' = ε/kmin since n ≥ m₀. Block size = n.
-  --
-  -- 2. LEARNER UNFOLDING:
-  --    At sample size m = (n+1)*n, Nat.sqrt(m) = n (via Nat.sqrt_add_eq),
-  --    so L' uses k = n+1 blocks of size n. The majority vote branch is entered
-  --    since blk = n > 0.
-  --
-  -- 3. EVENT DEFINITION:
-  --    events j = {ω : Fin m → X | D{x | h_j(ω)(x) ≠ c(x)} ≤ ofReal(rate n)}
-  --    where h_j(ω) = L.learn(block_j(ω)) is the j-th block hypothesis.
-  --
-  -- 4. CONCENTRATION (requires chebyshev_majority_bound + independence):
-  --    Each events j has μ-probability ≥ 2/3 (from huniv + marginal).
-  --    Events are independent (from iIndepFun of block extractions).
-  --    By Chebyshev: μ({> k/2 good}) ≥ 1 - 9/(4k) ≥ 1 - δ.
-  --
-  -- 5. EVENT CONTAINMENT (requires majority analysis + Markov bound):
-  --    On {ALL blocks good}: for random x ~ D, let Y = #{j : h_j(x) ≠ c(x)}.
-  --    E_D[Y] = Σ_j err_j ≤ k · rate(n). Majority errs iff Y > k/2.
-  --    By Markov: D{Y > k/2} ≤ E[Y]/(k/2) = 2·rate(n) < 2·ε/kmin ≤ ε.
-  --    (When kmin ≥ 2, we have 2/kmin ≤ 1, so 2·ε/kmin ≤ ε.)
-  --    NOTE: This uses {ALL blocks good}, not just {> k/2 good}. The probability
-  --    P[all good] ≥ 1 - k/3 requires k ≤ 3δ (too small). The full proof needs
-  --    either the tournament/validation approach (SSBD Thm 7.7) or a more careful
-  --    two-step analysis. Both routes require the same missing infrastructure.
-  --
-  -- 6. COMPOSE: μ({D-err ≤ ε}) ≥ μ({> k/2 good}) ≥ 1 - δ.
+  -- where m = (n + 1) * n.
   -- Step 3a: Parameter extraction
   dsimp only
   rw [dif_pos hε, dif_pos hδ]
@@ -1068,7 +1024,7 @@ private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
       · simp [max_eq_left h]; linarith
       · simp [max_eq_right (le_of_lt h)]; positivity
     linarith
-  -- Step 3d: hlearn_unfold (P3c: congrArg ladder via boosted_majority cast)
+  -- Step 3d: hlearn_unfold (show L' matches boosted_majority via Fin casts)
   have hlearn_unfold : ∀ (ω : Fin ((n + 1) * n) → X) (x : X),
       L'.learn (fun i => (ω i, c (ω i))) x =
       boosted_majority (n + 1) (fun j =>
@@ -1127,11 +1083,8 @@ private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
   exact le_trans hconc (MeasureTheory.measure_mono hsub)
 
 /-- Universal learnable → PAC learnable.
-    Proof sketch: UniversalLearnable gives learner L with rate → 0 and Pr[error ≤ rate(m)] ≥ 2/3.
-    Two components:
-    1. Event containment: rate(m) < ε ⟹ {error ≤ rate(m)} ⊆ {error ≤ ε} (monotonicity).
-    2. Confidence boosting: 2/3 → 1-δ via median-of-means (Γ₆₇, sorry'd in boost_two_thirds_to_pac).
-    Routes through boost_two_thirds_to_pac which encapsulates the Chernoff-based boosting. -/
+    UniversalLearnable gives learner L with rate → 0 and Pr[error ≤ rate(m)] ≥ 2/3.
+    Confidence is boosted from 2/3 to 1-δ via majority vote (boost_two_thirds_to_pac). -/
 theorem universal_imp_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool)
     (hc_meas : ∀ c ∈ C, Measurable c)
@@ -1460,17 +1413,12 @@ theorem online_strictly_stronger_pac :
       OnlineLearnable X Bool C → PACLearnable X C) ∧
     (∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
       PACLearnable X C ∧ ¬ OnlineLearnable X Bool C) :=
-  -- Factored: conjunct 1 = online_imp_pac (Generalization.lean)
-  --           conjunct 2 = pac_not_implies_online (this file, sorry)
+  -- Conjunct 1: online_imp_pac; Conjunct 2: pac_not_implies_online
   ⟨fun X _ C hmeas_C hc_meas hWB hol => online_imp_pac X C hol hmeas_C hc_meas hWB, pac_not_implies_online⟩
 
--- Γ₆₈: `universal_strictly_stronger_pac` REMOVED from kernel.
--- The original conjunct 2 (∃ PAC ∧ ¬ Universal) was FALSE — Bousquet et al.
--- (STOC 2021, arXiv:2011.04483) showed PAC ↔ Universal for binary classification.
--- The true equivalence (PAC ↔ Universal ↔ VCDim < ⊤) requires `pac_imp_universal`
--- which needs infrastructure not yet in this kernel (rate convergence + boosting).
--- The only sorry-free content (Universal → PAC) is already `universal_imp_pac`.
--- Zero downstream consumers existed.
+-- `universal_strictly_stronger_pac` removed: the original conjunct 2 (∃ PAC ∧ ¬ Universal)
+-- was false. Bousquet et al. (STOC 2021) showed PAC ↔ Universal for binary classification.
+-- The forward direction (Universal → PAC) is `universal_imp_pac` above.
 
 /-- EX learning is strictly stronger than finite learning. -/
 theorem ex_strictly_stronger_finite :
@@ -1481,21 +1429,15 @@ theorem ex_strictly_stronger_finite :
     obtain ⟨t₀, ht₀⟩ := hL c hcC T
     exact ⟨t₀, fun t ht => (ht₀ t ht).1⟩⟩
 
--- natarajan_not_characterizes_pac MOVED to Benchmarks/Extended.lean.
--- Brukhim et al. (FOCS 2022): NatarajanDim ≠ multiclass PAC characterization.
--- Requires hyperbolic pseudo-manifolds (Januszkiewicz-Swiatkowski 2003) — deep
--- algebraic topology absent from Mathlib. Benchmark Category A (UU region).
+-- natarajan_not_characterizes_pac moved to Benchmarks/Extended.lean.
+-- Brukhim et al. (FOCS 2022): NatarajanDim does not characterize multiclass PAC learnability.
+-- Requires hyperbolic pseudo-manifolds (Januszkiewicz-Swiatkowski 2003) not in Mathlib.
 
--- proper_improper_separation REMOVED from kernel.
--- The statement (∃ C H, IsProper C H ∧ PACLearnable C) is A4-failing: trivially
--- satisfied via Empty (IsProbabilityMeasure absurd). The meaningful separation
--- (computational: proper learners need exponentially more samples, assuming OWFs)
--- requires cryptographic hardness infrastructure absent from Lean4/Mathlib.
--- Zero downstream consumers. Moved to SeparationGraveyard.lean.
+-- proper_improper_separation removed: the statement was trivially satisfiable.
+-- The meaningful separation requires cryptographic hardness assumptions
+-- not available in Lean4/Mathlib.
 
-/-- Online-PAC-Gold three-way separation.
-    Pl-REPAIR: first conjunct had [Fintype X] which made it false.
-    Fixed to match pac_not_implies_online repair. -/
+/-- Online-PAC-Gold three-way separation: the learning paradigms are strictly ordered. -/
 theorem online_pac_gold_separation :
     (∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
       PACLearnable X C ∧ ¬ OnlineLearnable X Bool C) ∧

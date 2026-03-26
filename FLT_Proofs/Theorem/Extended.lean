@@ -48,7 +48,7 @@ private theorem bhmz_middle_branch (X : Type) [MeasurableSpace X]
     Branch 2 requires the deep BHMZ construction (sorry'd in bhmz_middle_branch).
     Branch 3 chains universal_imp_pac + vcdim_infinite_not_pac (both proved).
 
-    Note: X : Type (not Type u) due to OnlineLearner.State : Type forcing universe 0 (NA₉).
+    Note: X : Type (not Type u) due to OnlineLearner.State : Type forcing universe 0.
     MeasurableSingletonClass required by vcdim_infinite_not_pac in Branch 3. -/
 theorem universal_trichotomy (X : Type) [MeasurableSpace X]
     [MeasurableSingletonClass X]
@@ -75,8 +75,8 @@ theorem universal_trichotomy (X : Type) [MeasurableSpace X]
         vcdim_infinite_not_pac X C hvcdim (universal_imp_pac X C hc_meas hL_meas huniv)⟩)
 
 -- computational_hardness_pac MOVED to Benchmarks/CryptoHardness.lean.
--- Category A benchmark (UU): requires cryptographic assumptions (one-way functions,
--- pseudorandom generators) absent from Lean4/Mathlib.
+-- Requires cryptographic assumptions (one-way functions, pseudorandom generators)
+-- absent from Lean4/Mathlib.
 
 /-! ## Advice Elimination Infrastructure -/
 
@@ -582,7 +582,7 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
              |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
                EmpiricalError X Bool (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i))))
                  (fun j => (p.2 j, c (p.2 j))) (zeroOneLoss Bool)| < ε / 4}
-    -- === KU_2: GoodPair ⊆ SuccessProd (deterministic core) ===
+    -- === GoodPair ⊆ SuccessProd (deterministic core) ===
     have hGP_sub_SP : GoodPair ⊆ SuccessProd := by
       intro p ⟨hgt, hbv⟩
       -- Convert < to ≤ for hbv
@@ -626,7 +626,7 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
       rw [TrueErrorReal, TrueError] at hsel_real
       rw [← this]
       exact ENNReal.ofReal_le_ofReal hsel_real
-    -- === KU_3 + transport + final bound ===
+    -- === Transport + final bound ===
     have hgt_ge : μ₁ GoodTrain ≥ ENNReal.ofReal (1 - δ / 2) := haStar
     have hm₂_pos : 0 < m₂ := by simp only [m₂]; omega
     -- === GoodPair transport architecture (Steps 2a-2k) ===
@@ -668,7 +668,7 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
       -- Step 6: GoodTrain is the preimage of Iic under a measurable function
       exact h_meas_fun (measurableSet_Iic)
     have hBadVal_meas : MeasurableSet BadVal := by
-      -- UK_6: BadVal = ⋃ a, {p | |f_a(p)| ≥ ε/4}, finite union of measurable sets
+      -- BadVal = ⋃ a, {p | |f_a(p)| ≥ ε/4}, finite union of measurable sets
       -- Step 1: Rewrite BadVal as iUnion
       suffices h : ∀ a : A, MeasurableSet {p : (Fin m₁ → X) × (Fin m₂ → X) |
           |TrueErrorReal X (LA.learnWithAdvice a (fun i => (p.1 i, c (p.1 i)))) c D -
@@ -886,7 +886,7 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
             Real.exp (-2 * ↑m₂ * (min (ε / 4) 1) ^ 2)) := hfvb
         _ ≤ ENNReal.ofReal (δ / 2) := by
             apply ENNReal.ofReal_le_ofReal
-            -- UK_2: Hoeffding arithmetic — |A|·2·exp(-2m₂η²) ≤ δ/2
+            -- Hoeffding arithmetic: |A|·2·exp(-2m₂η²) ≤ δ/2
             set η := min (ε / 4) 1 with hη_def
             have hη_pos : (0 : ℝ) < η := lt_min (by linarith) one_pos
             have h2η2_pos : (0 : ℝ) < 2 * η ^ 2 := by positivity
@@ -1000,7 +1000,7 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
     -- Step 2k: Final bound (monotonicity)
     -- The goal has Nat.unpair(Nat.pair m₁ m₂) in Fin binder types.
     -- Use Decidable.decide + native computation to force evaluation:
-    -- Actually, try omega-like approach or just sorry this pure-Lean gap.
+    -- Pure definitional cast gap (Nat.unpair doesn't reduce).
     -- The mathematical proof is fully verified:
     -- π(D)(goal_set) ≥ π(D)(GoodFull) = (μ₁×μ₂)(GoodPair) ≥ 1-δ
     -- via h_transport, hGoodPair_bound, hGoodFull_sub_goal.
@@ -1055,15 +1055,14 @@ theorem meta_pac_bound (X : Type u) [MeasurableSpace X]
           ∃ (mf : ℝ → ℝ → ℕ),
             ∀ (ε' δ' : ℝ), 0 < ε' → 0 < δ' →
               mf ε' δ' ≤ SampleComplexity X C_new ε' δ' := by
-  -- A4 ALARM: this is trivially true via mf = 0. The statement says mf ≤ SampleComplexity
-  -- which is satisfied by mf = fun _ _ => 0 since SampleComplexity : ℕ and 0 ≤ n for all n.
-  -- ABD-R: the statement should assert mf ACHIEVES PAC AND mf ≤ SampleComplexity - εₘₑₜₐ
-  -- (the meta-learning IMPROVES over the generic bound by a task-environment-dependent amount).
+  -- WARNING: this is trivially true via mf = 0, since the statement only asserts mf ≤ SampleComplexity
+  -- and 0 ≤ n for all n : ℕ. A meaningful version should assert that mf ACHIEVES PAC learning
+  -- AND improves over the generic bound by a task-environment-dependent amount.
   exact ⟨0, fun _ _ _ => ⟨fun _ _ => 0, fun _ _ _ _ => Nat.zero_le _⟩⟩
 
 -- unlabeled_not_implies_labeled MOVED to Benchmarks/CompressionConjecture.lean.
--- Category A benchmark (UU): labeled/unlabeled compression separation requires
--- distribution-dependent complexity construction.
+-- Labeled/unlabeled compression separation requires distribution-dependent
+-- complexity construction.
 
 /-- VC dimension does not determine SQ hardness:
     there exists a concept class with finite VC dimension but infinite SQ dimension
@@ -1072,7 +1071,7 @@ theorem meta_pac_bound (X : Type u) [MeasurableSpace X]
     For any probability D on ℕ, the correlation between distinct indicators 1_i, 1_j
     is |1 - 2(D({i}) + D({j}))| ≤ 1, so every finite subset of C qualifies at τ = 1.
     Since C is infinite, SQDimension = ⊤.
-    M-DefinitionRepair (Γ₈₄): added MeasurableSpace, existential over D and τ.
+    Corrected from earlier version: added MeasurableSpace, existential over D and τ.
     Previous statement had `True` placeholder due to missing SQDimension parameters. -/
 theorem vcdim_not_implies_hardness :
     ∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),

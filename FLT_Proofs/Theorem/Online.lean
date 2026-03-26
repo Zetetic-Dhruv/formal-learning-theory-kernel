@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Criterion.Online
--- Removed: import FLT_Proofs.Complexity.Littlestone
--- Γ₁₉: branch-wise isShattered wrong + trees must be complete (balanced).
--- Corrected: depth-indexed complete trees + path-wise shattering.
+-- Replaced FLT_Proofs.Complexity.Littlestone with corrected definitions below:
+-- depth-indexed complete trees + path-wise shattering.
 import FLT_Proofs.Complexity.Generalization
--- Path B (Γ₂₁): WithBot (WithTop ℕ) for LittlestoneDim
 -- Required for CompleteLattice instance and ConditionallyCompleteLinearOrderBot ℕ
 import Mathlib.Data.Nat.Lattice
 
@@ -20,13 +18,13 @@ import Mathlib.Data.Nat.Lattice
 2. MistakeTree is depth-indexed: `LTree X n` is a complete binary tree of depth n
    (the standard Littlestone tree definition). This ensures the adversary argument works.
 
-**Path B (Γ₂₁ fix — NA₁₀-NA₁₃):**
+**Leaf shattering and dimension type corrections:**
 3. isShattered .leaf requires C.Nonempty (not True), so Ldim(∅) = ⊥ ≠ 0
 4. LittlestoneDim returns WithBot (WithTop ℕ) = {⊥} ∪ ℕ ∪ {⊤}
    - ⊥ = empty class (Ldim = -1 in standard convention)
    - ↑(↑n) = finite dimension n
    - ↑⊤ = infinite dimension
-   This dissolves the SOA tie-breaking bug at d=0 without touching the SOA definition.
+   This resolves the SOA tie-breaking issue at d=0 without touching the SOA definition.
 
 **Universe constraint:** `OnlineLearner.State : Type` forces `Type 0`.
 The SOA needs `State = Set (X → Bool)`, requiring `X : Type`.
@@ -42,9 +40,9 @@ inductive LTree (X : Type) : ℕ → Type where
   | branch : {n : ℕ} → X → LTree X n → LTree X n → LTree X (n + 1)
 
 /-- Path-wise shattering for complete trees.
-    Path B: leaf case requires C.Nonempty (NA₁₀). -/
+    Leaf case requires C.Nonempty so that Ldim(∅) = ⊥. -/
 def LTree.isShattered {X : Type} {n : ℕ} (C : ConceptClass X Bool) : LTree X n → Prop
-  | .leaf => C.Nonempty  -- Path B: was True, now C.Nonempty (Γ₂₁ fix)
+  | .leaf => C.Nonempty  -- was True, now C.Nonempty so Ldim(∅) = ⊥
   | .branch x l r =>
       (∃ c ∈ C, c x = true) ∧ (∃ c ∈ C, c x = false) ∧
       l.isShattered {c ∈ C | c x = true} ∧
@@ -74,7 +72,7 @@ theorem LTree.isShattered_mono {X : Type} {n : ℕ} (T : LTree X n)
     · exact ihr (fun _ hm => ⟨h hm.1, hm.2⟩) hsr
 
 /-- Littlestone dimension: the maximum depth of a complete shattered tree.
-    Path B: returns WithBot (WithTop ℕ) so Ldim(∅) = ⊥ (NA₁₀). -/
+    Returns WithBot (WithTop ℕ) so Ldim(∅) = ⊥. -/
 noncomputable def LittlestoneDim (X : Type) (C : ConceptClass X Bool) :
     WithBot (WithTop ℕ) :=
   ⨆ (n : ℕ) (_ : ∃ T : LTree X n, T.isShattered C),
@@ -188,11 +186,11 @@ noncomputable def SOA (X : Type) (C : ConceptClass X Bool) : OnlineLearner X Boo
   update := fun history x y => history ++ [(x, y)]
 
 -- ============================================================
--- SOA INTERFACE LEMMAS (abstraction barrier for Inv-stability)
+-- SOA INTERFACE LEMMAS (abstraction barrier for proof stability)
 -- ============================================================
 
 /-- SOA prediction: picks the label whose version space side has higher Ldim.
-    NOT @[simp]: proofs should explicitly opt-in to see SOA internals (Inv-stability). -/
+    NOT @[simp]: proofs should explicitly opt-in to see SOA internals. -/
 theorem SOA_predict_eq (X : Type) (C : ConceptClass X Bool)
     (history : List (X × Bool)) (x : X) :
     (SOA X C).predict history x =
@@ -354,7 +352,7 @@ private theorem exists_shattered_of_ldim_ge {X : Type} {C : ConceptClass X Bool}
 -- ============================================================
 
 /-- When Ldim(V) = 0 (↑↑0), all concepts in V agree on every point.
-    Key lemma for M-VersionSpaceCollapse. -/
+    Key lemma: at dimension 0, all surviving concepts agree. -/
 private theorem ldim_zero_all_agree {X : Type} {V : ConceptClass X Bool}
     (hd : LittlestoneDim X V = ↑(↑0 : WithTop ℕ)) (hne : V.Nonempty)
     (x : X) (c₁ c₂ : X → Bool) (hc₁ : c₁ ∈ V) (hc₂ : c₂ ∈ V) :
@@ -422,8 +420,7 @@ private theorem ldim_strict_decrease_on_mistake {X : Type}
   have hcx_eq_notb : c x = !b := by
     show c x = !(SOA X C).predict history x
     cases hcx : c x <;> cases hbv : (SOA X C).predict history x <;> simp_all
-  -- Handle d = 0: Path B dissolves Γ₂₁ (M-CaseElimination)
-  -- When Ldim(V)=0, all concepts agree → SOA predicts correctly → no mistake possible
+  -- Handle d = 0: when Ldim(V)=0, all concepts agree → SOA predicts correctly → no mistake possible
   cases hd0 : d with
   | zero =>
     rw [hd0] at hd
@@ -506,11 +503,11 @@ private theorem ldim_strict_decrease_on_mistake {X : Type}
   exact absurd hge_dp (by norm_cast; omega)
 
 -- ============================================================
--- BACKWARD DIRECTION (M-Potential)
+-- BACKWARD DIRECTION (potential function argument)
 -- ============================================================
 
 /-- SOA mistakes from a given state are bounded by the Ldim of the version space.
-    This is the core M-Potential argument. -/
+    This is the core potential function argument: Ldim serves as the potential. -/
 private theorem soa_mistakes_bounded {X : Type} {C : ConceptClass X Bool}
     (c : X → Bool) (hcC : c ∈ C)
     (history : List (X × Bool))
@@ -522,10 +519,10 @@ private theorem soa_mistakes_bounded {X : Type} {C : ConceptClass X Bool}
   induction seq generalizing history d with
   | nil => simp [OnlineLearner.mistakesFrom]
   | cons x xs ih =>
-    -- Use interface lemma to unfold one step (Inv-stable: doesn't expose SOA internals)
+    -- Use interface lemma to unfold one step (doesn't expose SOA internals)
     rw [SOA_mistakesFrom_cons]
     by_cases hmistake : (SOA X C).predict history x ≠ c x
-    · -- SOA makes a mistake: Ldim strictly decreases (M-Potential: φ decreases)
+    · -- SOA makes a mistake: Ldim strictly decreases (potential decreases)
       rw [if_pos hmistake]
       have hc_vs : c ∈ versionSpace C history := target_in_versionSpace hcC hcons
       have hdecrease := ldim_strict_decrease_on_mistake hc_vs hmistake hfin
@@ -590,7 +587,7 @@ theorem backward_direction (X : Type) (C : ConceptClass X Bool) :
       | top => simp [hc] at h
       | coe n => exact ⟨n, le_rfl⟩
   refine ⟨d, SOA X C, fun c hcC seq => ?_⟩
-  -- SOA makes at most d mistakes (M-Potential)
+  -- SOA makes at most d mistakes (potential function argument)
   have hle : LittlestoneDim X (versionSpace C []) ≤ ↑(↑d : WithTop ℕ) := by
     have : versionSpace C [] = C := by
       ext c'; simp [versionSpace]
@@ -613,9 +610,8 @@ theorem littlestone_characterization (X : Type)
     OnlineLearnable X Bool C ↔ LittlestoneDim X C < ⊤ :=
   ⟨forward_direction X C, backward_direction X C⟩
 
-/-- Adversary lower bound (M-InfSup reusable primitive):
-    If a tree of depth n is shattered by C, then any mistake-bounded learner
-    must allow at least n mistakes. This is the "inf ≥ sup" half of minimax. -/
+/-- Adversary lower bound: if a tree of depth n is shattered by C, then any
+    mistake-bounded learner must allow at least n mistakes (the inf-sup half of minimax). -/
 private theorem adversary_lower_bound {X : Type} {C : ConceptClass X Bool}
     {n : ℕ} (T : LTree X n) (hT : T.isShattered C)
     {M : ℕ} (hM : MistakeBounded X Bool C M) : n ≤ M := by
@@ -627,7 +623,7 @@ private theorem adversary_lower_bound {X : Type} {C : ConceptClass X Bool}
   omega
 
 /-- The optimal mistake bound equals the Littlestone dimension (for nonempty C).
-    Path B: OptimalMistakeBound : WithTop ℕ, LittlestoneDim : WithBot (WithTop ℕ).
+    OptimalMistakeBound : WithTop ℕ, LittlestoneDim : WithBot (WithTop ℕ).
     For nonempty C, LittlestoneDim ≥ 0, so the coercion ↑(OptimalMistakeBound) works. -/
 theorem optimal_mistake_bound_eq_ldim (X : Type)
     (C : ConceptClass X Bool) (hne : C.Nonempty) :
@@ -689,6 +685,6 @@ theorem optimal_mistake_bound_eq_ldim (X : Type)
     -- Need: ↑n ≤ OptimalMistakeBound X C, i.e., ↑n ≤ ⨅ M (_ : MistakeBounded), ↑M
     -- Equivalently: ∀ M, MistakeBounded M → n ≤ M
     apply le_iInf₂; intro M hM
-    -- Use the reusable adversary lower bound (M-InfSup primitive)
+    -- Use the adversary lower bound
     exact WithTop.coe_le_coe.mpr (adversary_lower_bound T hT hM)
 

@@ -41,19 +41,5 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Process,
     `FLT_Proofs.Bridge
   ]
-
-lean_lib MetaKernel where
-  roots := #[
-    `MetaKernel.Core,
-    `MetaKernel.Tactics,
-    `MetaKernel.Measure,
-    `MetaKernel.Phi,
-    `MetaKernel.Discovery,
-    `MetaKernel.WorldModel.PriorArt,
-    `MetaKernel.WorldModel.MeasuredTactic,
-    `MetaKernel.WorldModel.Feedback,
-    `MetaKernel.Test
-  ]
-
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4" @ "master"

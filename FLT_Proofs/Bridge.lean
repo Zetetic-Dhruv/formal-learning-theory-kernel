@@ -20,25 +20,25 @@ paradigm-specific types:
 
 | Bridge | Source | Target | Status |
 |--------|--------|--------|--------|
-| B₁ | ConceptClass X Bool | Set (Set X) | Lossless for Bool (proved) |
-| B₂ | ConceptClass X Bool (Fintype) | Finset (Finset X) | NEW: connects to Mathlib |
-| B₃ | Shatters (ours) | Finset.Shatters (Mathlib) | NEW: key bridge |
-| B₄ | VCDim (ours) | Finset.vcDim (Mathlib K₁) | NEW: unlocks Sauer-Shelah |
-| B₅ | IIDSample | MeasureTheory.ProbabilityMeasure | Direct |
-| B₆ | WithTop ℕ | Ordinal | Embedding (ℕ∞ ↪ Ordinal) |
-| B₇ | BatchLearner ↔ GoldLearner | Cross-paradigm | No common parent (BP₁) |
+| ConceptClass → Set Family | ConceptClass X Bool | Set (Set X) | Lossless for Bool (proved) |
+| ConceptClass → Finset Family | ConceptClass X Bool (Fintype) | Finset (Finset X) | Connects to Mathlib |
+| Shatters | Shatters (ours) | Finset.Shatters (Mathlib) | Key bridge |
+| VCDim | VCDim (ours) | Finset.vcDim (Mathlib) | Unlocks Sauer-Shelah |
+| IIDSample → Measure | IIDSample | MeasureTheory.ProbabilityMeasure | Direct |
+| WithTop ℕ → Ordinal | WithTop ℕ | Ordinal | Embedding (ℕ∞ ↪ Ordinal) |
+| Cross-Paradigm Learners | BatchLearner ↔ GoldLearner | Cross-paradigm | No common parent |
 -/
 
 universe u v
 
 /-!
-## B₁: Function-Class ↔ Set-Family Bridge (Set-level)
+## Function-Class ↔ Set-Family Bridge (Set-level)
 
 For Y = Bool, the map c ↦ {x | c x = true} is a bijection between
 (X → Bool) and Set X. This is lossless because Bool-valued functions
 are determined by their level sets.
 
-For Y with |Y| > 2, this bridge doesn't apply directly (BP₄ boundary).
+For Y with |Y| > 2, this bridge doesn't apply directly.
 -/
 
 /-- Convert a concept class (set of functions) to a set family (set of subsets). -/
@@ -51,7 +51,7 @@ noncomputable def setFamilyToConceptClass (X : Type u) (F : Set (Set X)) : Conce
 
 /-- The round-trip is the identity for Bool-valued functions:
     distinct functions with the same level set get identified, but for Bool
-    the level set determines the function. This is B₁'s losslessness proof. -/
+    the level set determines the function. This proves the bridge is lossless. -/
 theorem bridge_round_trip (X : Type u) (C : ConceptClass X Bool) :
     setFamilyToConceptClass X (conceptClassToSetFamily X C) = C := by
   apply Set.ext
@@ -69,7 +69,7 @@ theorem bridge_round_trip (X : Type u) (C : ConceptClass X Bool) :
     exact ⟨c, hc, rfl⟩
 
 /-!
-## B₂: Function-Class → Finset Family Bridge (Fintype-level)
+## Function-Class → Finset Family Bridge (Fintype-level)
 
 This is the critical bridge to Mathlib's combinatorial shattering API.
 Requires [Fintype X] and [DecidableEq X] to produce Finsets.
@@ -103,7 +103,7 @@ theorem conceptToFinset_injective {X : Type u} [Fintype X] [DecidableEq X] :
   cases hc₁ : c₁ x <;> cases hc₂ : c₂ x <;> simp_all
 
 /-!
-## B₃: Shatters Bridge (ours ↔ Mathlib's Finset.Shatters)
+## Shatters Bridge (ours ↔ Mathlib's Finset.Shatters)
 
 Our Shatters: ∀ f : S → Bool, ∃ c ∈ C, ∀ x : S, c x = f x
    "every labeling of S is realized by some c ∈ C"
@@ -191,7 +191,7 @@ theorem shatters_iff_finset_shatters {X : Type u} [Fintype X] [DecidableEq X]
     cases hfx : f ⟨x, hxS⟩ <;> cases hcx : c x <;> simp_all
 
 /-!
-## B₄: VCDim Bridge (ours ↔ Mathlib's Finset.vcDim)
+## VCDim Bridge (ours ↔ Mathlib's Finset.vcDim)
 
 Our VCDim: ⨆ (S : Finset X) (_ : Shatters X C S), S.card : WithTop ℕ
 Mathlib's Finset.vcDim: 𝒜.shatterer.sup card : ℕ
@@ -256,7 +256,7 @@ theorem vcdim_finite_of_fintype {X : Type u} [Fintype X] [DecidableEq X]
   exact WithTop.coe_lt_top _
 
 /-!
-## B₃': Restriction Bridge (concept class restricted to a subset)
+## Restriction Bridge (concept class restricted to a subset)
 
 For Sauer-Shelah quantitative: we need to restrict a concept class C to an
 m-element set S, producing a FINITE family of subsets of S. Then apply
@@ -483,7 +483,7 @@ theorem growth_function_le_sauer_shelah {X : Type u} [Fintype X] [DecidableEq X]
     _ = B := by rw [hSm]
 
 /-!
-## B₅: IIDSample ↔ ProbabilityMeasure Bridge (K₃: MeasureTheory)
+## IIDSample ↔ ProbabilityMeasure Bridge
 -/
 
 /-- Extract the probability measure from an IID sample.
@@ -500,7 +500,7 @@ instance iidSampleIsProbability (X : Type u) (Y : Type v)
   S.isProbability
 
 /-!
-## B₆: WithTop ℕ ↪ Ordinal Bridge (BP₂)
+## WithTop ℕ ↪ Ordinal Bridge
 -/
 
 /-- Embedding of WithTop ℕ into Ordinal.
@@ -527,8 +527,8 @@ theorem withTopNatToOrdinal_mono :
     exact absurd hab (WithTop.not_top_le_coe m)
 
 /-- VCDim embeds into OrdinalVCDim via this bridge.
-    Γ₂₇ RESOLVED: uniform ω-bound BddAbove (from Ordinal.lean) makes le_ciSup_of_le
-    work for all ordinal-valued nat-cast iSup. The bridge is paradigm-invariant. -/
+    The uniform omega-bound BddAbove (from Ordinal.lean) makes le_ciSup_of_le
+    work for all ordinal-valued nat-cast iSup. -/
 theorem vcdim_to_ordinal_vcdim (X : Type u)
     (C : ConceptClass X Bool) :
     withTopNatToOrdinal (VCDim X C) ≤ OrdinalVCDim X C := by
@@ -586,13 +586,13 @@ theorem vcdim_to_ordinal_vcdim (X : Type u)
             le_ciSup_of_le (ordinalVCDim_outer_bddAbove X C) S₀ le_rfl
 
 /-!
-## B₇: Cross-Paradigm Learner Bridges (BP₁ boundary)
+## Cross-Paradigm Learner Bridges
 
-These bridges are LIMITED by BP₁: there is no lossless conversion between
-paradigm-specific learner types. But there are LOSSY conversions in one direction:
-Online → PAC is possible (every online learner induces a PAC learner).
-PAC → Online is NOT possible in general.
-Gold → PAC is NOT possible in general.
+There is no lossless conversion between paradigm-specific learner types.
+But there are lossy conversions in one direction:
+- Online → PAC is possible (every online learner induces a PAC learner).
+- PAC → Online is NOT possible in general.
+- Gold → PAC is NOT possible in general.
 -/
 
 /-- An online learner induces a batch learner: run the online algorithm on the
@@ -617,55 +617,13 @@ def bayesianToBatch (X : Type u) (Y : Type v) [MeasurableSpace X]
 ## Complexity Measure Bridges
 -/
 
--- A4 REPAIR (Γ₆₅): Quantitative upper bound on sample complexity via VCDim.
-theorem sample_complexity_upper_bound (X : Type u) [MeasurableSpace X]
-    (C : ConceptClass X Bool) (d : ℕ) (hd : VCDim X C = ↑d)
-    (ε δ : ℝ) (hε : 0 < ε) (hδ : 0 < δ)
-    (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : ∀ c : Concept X Bool, Measurable c)
-    (hWB : WellBehavedVC X C) :
-    SampleComplexity X C ε δ ≤
-      Nat.ceil ((8 / ε) * (↑d * Real.log (2 / ε) + Real.log (2 / δ))) := by
-  -- Proof: sInf ≤ n whenever n is in the set.
-  -- We show bound ∈ { m | ∃ L, ∀ D prob, ∀ c ∈ C, PAC at sample size m }.
-  -- Step 1: VCDim X C = ↑d implies VCDim X C < ⊤
-  have hfin : VCDim X C < ⊤ := hd ▸ WithTop.coe_lt_top d
-  -- Step 2: From vcdim_finite_imp_pac_via_uc (UC route), get PACLearnable X C = ⟨L, mf, hpac⟩
-  obtain ⟨L, mf, hpac⟩ := vcdim_finite_imp_pac_via_uc' X C hfin hmeas_C hc_meas hWB
-  -- Step 3: mf ε δ ∈ SampleComplexity's defining set (witnessed by L and hpac)
-  have hmf_mem : mf ε δ ∈ { m : ℕ | ∃ (L' : BatchLearner X Bool),
-      ∀ (D : MeasureTheory.Measure X), MeasureTheory.IsProbabilityMeasure D →
-        ∀ c ∈ C,
-          MeasureTheory.Measure.pi (fun _ : Fin m => D)
-            { xs : Fin m → X |
-              D { x | L'.learn (fun i => (xs i, c (xs i))) x ≠ c x }
-                ≤ ENNReal.ofReal ε }
-            ≥ ENNReal.ofReal (1 - δ) } :=
-    ⟨L, hpac ε δ hε hδ⟩
-  -- Step 4: SampleComplexity ≤ mf ε δ (by Nat.sInf_le)
-  have hsc_le_mf : SampleComplexity X C ε δ ≤ mf ε δ := Nat.sInf_le hmf_mem
-  -- Step 5: mf ε δ ≤ bound
-  -- The mf from vcdim_finite_imp_pac_direct computes
-  -- ⌈(8/ε)(d'·log(2/ε)+log(2/δ))⌉ where d' is extracted from VCDim X C < ⊤.
-  -- Since VCDim X C = ↑d, d' = d, so mf ε δ = bound. But mf is behind
-  -- Exists.choose, making this opaque. We close with omega/sorry bridge.
-  -- Step 5 (alternative): directly show bound is in the set, bypassing mf.
-  apply Nat.sInf_le
-  -- Show: bound ∈ { m | ∃ L, ∀ D prob, ∀ c ∈ C, PAC at sample size m }
-  -- The learner L (consistent ERM from vcdim_finite_imp_pac_direct) achieves
-  -- PAC at sample size = bound. The measure-theoretic bound:
-  --   Pr[bad] ≤ GF(C,m)·(1-ε)^m ≤ δ for m = bound
-  -- requires Sauer-Shelah + exponential concentration (same sorry depth as
-  -- vcdim_finite_imp_pac_direct's internal sorry on the PAC analysis).
-  exact ⟨L, fun D hD c hcC => by sorry⟩
-
 -- Quantitative VCDim bound from compression scheme size.
--- Γ₇₃ RESOLVED: CompressionScheme parameterized by C with realizability guard.
--- Proof: pigeonhole counting — compress is injective on labelings of any
+-- Proof: pigeonhole counting -- compress is injective on labelings of any
 -- shattered set (by compress_injective_on_labelings), but the number of
--- compressed subsets of size ≤ k from a 2n-element ground set is at most
--- (k+1)·(2n)^k.  At n = 2(k+1)² the exponential 2^n exceeds this polynomial,
--- giving a contradiction.  Hence no set of size ≥ 2(k+1)² is shattered.
--- Statement weakened from 2^k − 1 to 2(k+1)² − 1 per SESSION_TRANSFER_URS.
+-- compressed subsets of size <= k from a 2n-element ground set is at most
+-- (k+1) * (2n)^k. At n = 2(k+1)^2 the exponential 2^n exceeds this polynomial,
+-- giving a contradiction. Hence no set of size >= 2(k+1)^2 is shattered.
+-- Statement uses the weaker bound 2(k+1)^2 - 1 rather than 2^k - 1.
 theorem compression_bounds_vcdim (X : Type u)
     (C : ConceptClass X Bool) (cs : CompressionScheme X Bool C)
     (hcs : 0 < cs.size) :

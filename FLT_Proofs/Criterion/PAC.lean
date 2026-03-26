@@ -23,17 +23,17 @@ PAC (Probably Approximately Correct), Agnostic PAC, and Exact (Angluin) learning
 where D^m = Measure.pi (fun _ : Fin m => D) is the i.i.d. product measure
 and the labeled sample is constructed as fun i => (xs i, c (xs i)).
 
-## Key design decision (ABD-R from prior session)
+## Key design decision
 
 The sample distribution is the CONCRETE product measure D^m, NOT an existentially
-quantified Dm. The existential ∃Dm formulation (used in the prior version) is strictly
-weaker than standard PAC: it allows Dm to depend on the target concept c, making
-PACLearnable trivially true for all C when X is finite (via memorizer + point mass).
+quantified Dm. The existential ∃Dm formulation is strictly weaker than standard PAC:
+it allows Dm to depend on the target concept c, making PACLearnable trivially true
+for all C when X is finite (via memorizer + point mass).
 
-The fix: Dm = Measure.pi (fun _ : Fin m => D). This is the i.i.d. product of D, which:
+Instead, Dm = Measure.pi (fun _ : Fin m => D), which:
 - Does NOT depend on c (D is quantified before c)
 - Correctly captures independent sampling
-- Uses Mathlib's Measure.pi (K₃ bridge), which provides IsProbabilityMeasure instance
+- Uses Mathlib's Measure.pi, which provides IsProbabilityMeasure instance
   when each factor is a probability measure
 
 ## Measurability note
@@ -46,9 +46,8 @@ condition that specific proofs (Hoeffding, Sauer-Shelah) will establish.
 
 universe u v
 
-/-- PAC (Probably Approximately Correct) learning:
-    18 incoming edges — the most connected L4 node.
-    THE central definition of computational learning theory.
+/-- PAC (Probably Approximately Correct) learning.
+    The central definition of computational learning theory.
 
     Sample space: Fin m → X with i.i.d. product measure D^m.
     Labels: derived deterministically from target concept c (realizable case).
@@ -94,7 +93,8 @@ def AgnosticPACLearnable (X : Type u) [MeasurableSpace X]
 
 /-- Exact learning (Angluin model): learn using membership + equivalence queries.
     This is a deterministic, query-based paradigm — no distributional assumptions.
-    NOT a T-Prop variant of PAC; it's a genuinely different paradigm (BP₁ boundary). -/
+    This is a genuinely different paradigm from PAC — deterministic, query-based,
+    with no distributional assumptions. -/
 def ExactLearnable (X : Type u) [DecidableEq X] [Fintype X]
     (C : ConceptClass X Bool) : Prop :=
   ∃ (L : ActiveLearner X Bool),

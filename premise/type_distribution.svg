@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="'Georgia', serif" font-size="13">
+  <defs>
+    <linearGradient id="abbrev" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a90d9"/>
+      <stop offset="100%" stop-color="#3a70b0"/>
+    </linearGradient>
+    <linearGradient id="prop" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d94a4a"/>
+      <stop offset="100%" stop-color="#b03a3a"/>
+    </linearGradient>
+    <linearGradient id="struct" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4ad94a"/>
+      <stop offset="100%" stop-color="#3ab03a"/>
+    </linearGradient>
+    <linearGradient id="other" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#999"/>
+      <stop offset="100%" stop-color="#777"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Title -->
+  <text x="360" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#222">
+    Type Architecture Stability: 2,912 LOC to 16,495 LOC
+  </text>
+  <text x="360" y="50" text-anchor="middle" font-size="12" fill="#666">
+    Distribution of type categories before and after 13,583 lines of proof addition
+  </text>
+
+  <!-- Origin bar (left) -->
+  <text x="200" y="80" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Origin (pre-proof)</text>
+  <text x="200" y="96" text-anchor="middle" font-size="11" fill="#888">2,912 LOC | 10 files | 69 sorry</text>
+
+  <!-- Origin stacked bar: total height 250px, width 120px -->
+  <!-- T-Abbrev: 32.9% = 82.25px -->
+  <rect x="140" y="110" width="120" height="82" rx="2" fill="url(#abbrev)"/>
+  <text x="200" y="156" text-anchor="middle" fill="white" font-size="11" font-weight="bold">T-Abbrev</text>
+  <text x="200" y="170" text-anchor="middle" fill="white" font-size="10">32.9%</text>
+
+  <!-- T-Prop: 31.4% = 78.5px -->
+  <rect x="140" y="192" width="120" height="79" rx="2" fill="url(#prop)"/>
+  <text x="200" y="236" text-anchor="middle" fill="white" font-size="11" font-weight="bold">T-Prop</text>
+  <text x="200" y="250" text-anchor="middle" fill="white" font-size="10">31.4%</text>
+
+  <!-- T-Structure: 27.9% = 69.75px -->
+  <rect x="140" y="271" width="120" height="70" rx="2" fill="url(#struct)"/>
+  <text x="200" y="310" text-anchor="middle" fill="white" font-size="11" font-weight="bold">T-Structure</text>
+  <text x="200" y="324" text-anchor="middle" fill="white" font-size="10">27.9%</text>
+
+  <!-- T-Other: 7.8% = 19.5px -->
+  <rect x="140" y="341" width="120" height="19" rx="2" fill="url(#other)"/>
+  <text x="200" y="354" text-anchor="middle" fill="white" font-size="9">7.8%</text>
+
+  <!-- Equals sign -->
+  <text x="360" y="235" text-anchor="middle" font-size="36" fill="#333">=</text>
+
+  <!-- Final bar (right) -->
+  <text x="520" y="80" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">Final (post-proof)</text>
+  <text x="520" y="96" text-anchor="middle" font-size="11" fill="#888">16,495 LOC | 31 files | 2 sorry</text>
+
+  <!-- Final stacked bar: same percentages -->
+  <rect x="460" y="110" width="120" height="82" rx="2" fill="url(#abbrev)"/>
+  <text x="520" y="156" text-anchor="middle" fill="white" font-size="11" font-weight="bold">T-Abbrev</text>
+  <text x="520" y="170" text-anchor="middle" fill="white" font-size="10">32.9%</text>
+
+  <rect x="460" y="192" width="120" height="79" rx="2" fill="url(#prop)"/>
+  <text x="520" y="236" text-anchor="middle" fill="white" font-size="11" font-weight="bold">T-Prop</text>
+  <text x="520" y="250" text-anchor="middle" fill="white" font-size="10">31.4%</text>
+
+  <rect x="460" y="271" width="120" height="70" rx="2" fill="url(#struct)"/>
+  <text x="520" y="310" text-anchor="middle" fill="white" font-size="11" font-weight="bold">T-Structure</text>
+  <text x="520" y="324" text-anchor="middle" fill="white" font-size="10">27.9%</text>
+
+  <rect x="460" y="341" width="120" height="19" rx="2" fill="url(#other)"/>
+  <text x="520" y="354" text-anchor="middle" fill="white" font-size="9">7.8%</text>
+
+  <!-- Annotation -->
+  <text x="360" y="390" text-anchor="middle" font-size="12" fill="#444" font-style="italic">
+    The grammar was correct before the proofs were written.
+  </text>
+</svg>

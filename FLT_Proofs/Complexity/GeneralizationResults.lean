@@ -8,16 +8,13 @@ import FLT_Proofs.Complexity.Symmetrization
 import FLT_Proofs.Complexity.Rademacher
 
 /-!
-# Generalization Results (redirected to sorry-free primed versions)
+# Generalization Results
 
-Theorems moved from Generalization.lean and Rademacher.lean.
-Each call has been redirected from the orphaned sorry'd version
-(e.g. `vcdim_finite_imp_uc`) to the sorry-free primed version
-(e.g. `vcdim_finite_imp_uc'`) in Symmetrization.lean.
+Proved theorems assembled from Generalization.lean, Symmetrization.lean, and Rademacher.lean.
 
 ## Main results
 
-- `uc_does_not_imply_online` : UC ⊬ online learnability (paradigm separation)
+- `uc_does_not_imply_online` : UC does not imply online learnability (paradigm separation)
 - `consistent_learner_pac` : consistency + finite VCDim → PAC
 - `sample_complexity_lower_bound` : PAC lower bound via VCDim
 - `rademacher_vanishing_imp_pac` : uniform Rademacher vanishing → PAC

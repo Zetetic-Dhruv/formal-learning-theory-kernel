@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Card
 # VC Dimension and Shattering
 
 The foundational complexity measure for PAC learning.
-Bridges to Mathlib's `Finset.vcDim` (K₁).
+Bridges to Mathlib's `Finset.vcDim` via `Bridge.lean`.
 -/
 
 universe u v
@@ -23,7 +23,7 @@ def Shatters (X : Type u) (C : ConceptClass X Bool) (S : Finset X) : Prop :=
   ∀ f : S → Bool, ∃ c ∈ C, ∀ x : S, c (x : X) = f x
 
 /-- VC dimension of a concept class: the size of the largest shattered set.
-    Returns ℕ∞ = WithTop ℕ. 16 incoming edges — the most connected L5 node. -/
+    Returns ℕ∞ = WithTop ℕ. -/
 noncomputable def VCDim (X : Type u) (C : ConceptClass X Bool) : WithTop ℕ :=
   ⨆ (S : Finset X) (_ : Shatters X C S), (S.card : WithTop ℕ)
 

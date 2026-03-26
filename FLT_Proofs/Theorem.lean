@@ -7,4 +7,4 @@ import FLT_Proofs.Theorem.Gold
 import FLT_Proofs.Theorem.PAC
 import FLT_Proofs.Theorem.Online
 import FLT_Proofs.Theorem.Separation
--- import FLT_Proofs.Theorem.Extended  -- Excluded: contains deep/open sorrys (universal_trichotomy, compression_conjecture)
+-- import FLT_Proofs.Theorem.Extended  -- Contains sorry for BHMZ (STOC 2021) — not imported by default

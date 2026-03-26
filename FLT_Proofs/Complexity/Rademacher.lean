@@ -15,7 +15,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 # Rademacher Complexity
 
 Measure-theoretic complexity measure. Upper bounds generalization error.
-Upper bounded by VC dimension. Bridges to lean-rademacher library (K₂).
+Upper bounded by VC dimension.
 
 ## Main results
 
@@ -1898,4 +1898,4 @@ theorem vcdim_finite_imp_rademacher_vanishing (X : Type u) [MeasurableSpace X]
             · exact h_anal
         _ = ε := by rw [Real.sqrt_sq (le_of_lt hε)]
 
--- fundamental_rademacher_equiv assembled in Theorem/PAC.lean (DAG constraint).
+-- fundamental_rademacher_equiv assembled in Theorem/PAC.lean.
