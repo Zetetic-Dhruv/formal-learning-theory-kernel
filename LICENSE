@@ -1,0 +1,84 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Dhruv Gupta
+
+This work is licensed under the Creative Commons Attribution 4.0
+International License. To view a copy of this license, visit
+https://creativecommons.org/licenses/by/4.0/
+
+You are free to:
+
+  Share - copy and redistribute the material in any medium or format
+  Adapt - remix, transform, and build upon the material for any purpose,
+          including commercial use
+
+Under the following terms:
+
+  Attribution - You must give appropriate credit, provide a link to the
+  license, and indicate if changes were made. You must cite this work
+  using the citation information below in any publication, software,
+  dataset, or derivative work that incorporates, adapts, or builds upon
+  the material.
+
+REQUIRED CITATION:
+
+  Gupta, D. (2026). Formal Learning Theory Kernel: Lean4 Formalization
+  of the Fundamental Theorem of Statistical Learning.
+  https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel
+
+  BibTeX:
+  @software{gupta2026flt_kernel,
+    author = {Gupta, Dhruv},
+    title  = {Formal Learning Theory Kernel: {Lean4} Formalization
+              of the Fundamental Theorem of Statistical Learning},
+    year   = {2026},
+    url    = {https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel}
+  }
+
+PRIOR ART NOTICE:
+
+  This repository constitutes prior art in the following domains and
+  applications as of the dates recorded in the git history (earliest
+  commit: March 18, 2026):
+
+  1. FORMAL VERIFICATION OF LEARNING THEORY
+     Machine-checked proofs of the Fundamental Theorem of Statistical
+     Learning (5-way equivalence), the Littlestone characterization of
+     online learnability, Gold's theorem on identification in the limit,
+     and all paradigm separation theorems with constructive witnesses.
+
+  2. TYPE-THEORETIC STRUCTURE OF COMPUTATIONAL LEARNING
+     Discovery and formal documentation of 3 irreducible type-theoretic
+     fractures in learning theory (no common learner parent, no common
+     data interface, five characterizations requiring five proof
+     technologies) and 4 design tradeoffs.
+
+  3. MEASURE-THEORETIC CORRECTIONS TO TEXTBOOK LEARNING THEORY
+     Formal proofs that: (a) the No-Free-Lunch theorem is provably false
+     for finite domains; (b) the standard branch-wise Littlestone tree
+     definition admits a counterexample; (c) uniform convergence for
+     uncountable concept classes requires NullMeasurableSet, not
+     MeasurableSet; (d) quantifier ordering in uniform convergence is
+     load-bearing for distribution-free guarantees.
+
+  4. AI-ASSISTED FORMAL MATHEMATICS METHODOLOGY
+     The methodology of type-architecture-first proof discovery using
+     frontier language models (premise creation followed by supervised
+     proof search within a pre-validated type structure), as documented
+     in this repository and its companion repositories.
+
+  5. FORMALIZATION TECHNIQUES FOR UNCOUNTABLE STRUCTURES
+     The measurable inner event pattern, NullMeasurableSet integration
+     lemmas, 7/12-fraction Chebyshev boosting, doubled-count arithmetic
+     normalization, and three-step pullback chains for product-space
+     measure transport, as implemented in this codebase.
+
+  Any patent application, trade secret claim, or proprietary assertion
+  covering techniques, results, or methods documented in this repository
+  is subject to this prior art disclosure.
+
+NO WARRANTY:
+
+  This work is provided "as is", without warranty of any kind, express
+  or implied. The author is not liable for any claim, damages, or other
+  liability arising from the use of this work.
