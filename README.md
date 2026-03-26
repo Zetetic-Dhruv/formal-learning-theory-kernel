@@ -43,7 +43,7 @@ A Lean4 formalization of the **Fundamental Theorem of Statistical Learning** (5-
 
 The two remaining sorry tactics are blocked by Moran-Yehudayoff 2016 (compression conjecture) and Bousquet-Hanneke-Moran-Zhivotovskiy STOC 2021 (one-inclusion graph (a combinatorial construction on labeled samples)). Both require combinatorial infrastructure absent from Mathlib. They are the frontier, not engineering gaps.
 
-This document presents the **structure of learning theory as revealed by formalization**: the type-theoretic break points, the proof asymmetries textbooks suppress, and the world model of theorem dependencies that emerges when one forces an entire field through a proof assistant.
+This document presents the **structure of learning theory as revealed by formalization**: the type-theoretic fractures, the proof asymmetries textbooks suppress, and the world model of theorem dependencies that emerges when one forces an entire field through a proof assistant.
 
 ---
 
@@ -91,25 +91,30 @@ Each paradigm pair carries a binary **obstruction tag**: *obstructed* (the parad
 | PAC / Gold | obstructed | `ex_not_implies_pac` proves Gold learnability does not entail PAC learnability |
 | Online / Gold | independent | No theorem in this library connects them. No shared proof technique. |
 
-This is **Break Point BP1**: no common learner parent type exists. A `BatchLearner` takes `{m : Nat} -> (Fin m -> X x Y) -> Concept X Y`. An `OnlineLearner` carries mutable `State` and processes instances one at a time. A `GoldLearner` takes `List (X x Y) -> Concept X Y`. No common parent captures all three without erasing the structural properties their theorems depend on.
+No common learner parent type exists. A `BatchLearner` takes `{m : Nat} -> (Fin m -> X x Y) -> Concept X Y`. An `OnlineLearner` carries mutable `State` and processes instances one at a time. A `GoldLearner` takes `List (X x Y) -> Concept X Y`. No common parent captures all three without erasing the structural properties their theorems depend on.
 
 The type system does not permit conflation. This is not a limitation. It is the mathematics.
 
-### Seven Break Points
+### Three structural fractures
 
-Formalization discovered 7 type-theoretic break points, locations where the mathematical structure forces incompatible Lean4 types. Five were predicted from paradigm analysis; two emerged during compilation.
+Formalization revealed three points where the type system of learning theory *cannot* be unified. These are not design choices. Any formalization that proves theorems from all three paradigms will encounter them.
 
-| BP | Name | What breaks | Severity |
-|----|------|-------------|----------|
-| **BP1** | No common learner parent | `BatchLearner` / `OnlineLearner` / `GoldLearner` have incompatible signatures | Critical |
-| **BP2** | `WithTop Nat` vs `Ordinal` | VC dimension lives in `WithTop Nat`; universal learning requires ordinals beyond omega | High |
-| **BP3** | Data interface incompatibility | PAC uses i.i.d. measures, Online uses adversarial sequences, Gold uses enumerating streams | Critical |
-| **BP4** | Function-class to set-family bridge | `ConceptClass X Bool` (functions) vs `Set (Set X)` (Mathlib). Lossless for `Bool`. Lossy for `|Y| > 2`. | Medium |
-| **BP5** | Five bounds, five signatures | The 5-way fundamental theorem requires five different proof technologies to state | High |
-| **BP6** | `ConceptClass` over-connected | 22 incoming edges, 4 counterdefinitions needed (decidable, RE, measurable, multiclass) | High* |
-| **BP7** | Bayesian prior has no canonical type | `R`-valued vs `NNReal`-valued vs measure-valued. No single type serves all proof contexts. | Medium* |
+**No common learner.** `BatchLearner`, `OnlineLearner`, and `GoldLearner` have incompatible signatures. A batch learner receives a sample and returns a hypothesis. An online learner commits to a prediction before seeing the label, round by round. A Gold learner conjectures from a growing prefix of an enumeration. The Littlestone characterization requires the sequential commitment; the fundamental theorem requires the batch structure; Gold's theorem requires the enumeration interface. No parent type captures all three without destroying the property each theorem quantifies over.
 
-*Discovered during typing, not predicted.
+**No common data interface.** PAC learning quantifies over probability distributions (measure-theoretic). Online learning quantifies over adversary strategies (game-theoretic). Gold-style learning quantifies over enumerations of the target concept (topological/computability). These are three different universal quantifiers with three different mathematical frameworks. A sum type would push the case split into every theorem statement without resolving the incompatibility.
+
+**Five characterizations, five signatures.** The fundamental theorem asserts the equivalence of five differently-typed mathematical statements: PAC learnability (algorithmic), finite VC dimension (combinatorial), finite compression (information-theoretic), vanishing Rademacher complexity (measure-theoretic), and bounded growth function (enumerative). The theorem's significance is precisely that these five objects from five branches of mathematics are equivalent. The type diversity is the content, not an obstacle.
+
+### Four design decisions
+
+The type architecture also encountered four points where alternative designs were possible. These were resolved during premise construction (the first two predicted before compilation, the latter two discovered during it). Each records a tradeoff, not an impossibility.
+
+| Decision | Chosen type | Alternative | Why this choice |
+|----------|------------|-------------|-----------------|
+| VC dimension type | `WithTop Nat` | `Ordinal` (uniform) | `WithTop Nat` gives `CompleteLattice` for free; `Ordinal` requires explicit `BddAbove` witnesses at every `iSup`. The embedding `VCDim_embed_ordinal` bridges the two when needed. |
+| Concept representation | `Set (X -> Bool)` (functions) | `Set (Set X)` (Mathlib set families) | Function application `c x` is natural for learner definitions and error computation. The bridge to Mathlib's `Finset.vcDim` is proved lossless for `Bool` via `conceptToFinset_injective`. |
+| ConceptClass variants | Bare `Set` + explicit hypotheses | Typeclass hierarchy (`DecidableConceptClass`, `MeasurableConceptClass`, ...) | Different theorems need decidable, RE, measurable, or multiclass variants. The bare `Set` with explicit hypothesis parameters (e.g., `hmeas_C`) keeps the primary definition simple. Four commented alternatives in `Basic.lean` document the spectrum. |
+| Bayesian prior type | `R`-valued (unnormalized density) | `ProbabilityMeasure (Concept X Y)` | The measure-theoretic type is mathematically canonical but requires `MeasurableSpace` on the function space. `R`-valued avoids this. No Bayesian theorem is on the critical path; the alternative is preserved as a commented structure in `Learner/Bayesian.lean`. |
 
 ### The Dependency DAG
 
@@ -741,7 +746,7 @@ Built in **7 days** (March 18-25, 2026) using **Claude Code (Opus 4.6)** guided 
 
 ### The premise
 
-Before proof discovery began, a **type architecture premise** was derived: 42 concept nodes across 8 layers (L0-L7), with explicit paradigm joints, obstruction tags, break points, and compilation constraints. This premise, recorded in `premise/origin.json`, defined the typed hypothesis space within which proof search operated.
+Before proof discovery began, a **type architecture premise** was derived: 42 concept nodes across 8 layers (L0-L7), with explicit paradigm joints, obstruction tags, structural hypotheses, and compilation constraints. This premise, recorded in `premise/origin.json`, defined the typed hypothesis space within which proof search operated.
 
 The premise served as a **grammar** for the AI: instead of jointly discovering types and proofs (which produces trivially-true theorems, sorry-in-Prop, and type homogeneity), the AI searched for proofs within a well-scoped, pre-validated type structure.
 
@@ -752,8 +757,7 @@ The premise served as a **grammar** for the AI: instead of jointly discovering t
 | Lines | 2,912 | 14,945 |
 | Files | 10 monolithic | 31 modular |
 | Sorry count | 69 | 2 |
-| Break points resolved | 0 | 3 (BP2, BP4, BP5) |
-| Break points confirmed | 0 | 2 (BP1, BP3) |
+| Structural hypotheses tested | 0 of 7 | 7 of 7 (3 confirmed as fractures, 4 resolved as design decisions) |
 
 **Without the framework**, Claude closed 8 of 67 open proofs correctly (and 12 more trivially/vacuously). The dominant failure mode was **adding new sorrys faster than closing existing ones** and **attacking only the easiest proofs** (trivial computation lemmas).
 
