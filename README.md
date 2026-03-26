@@ -512,8 +512,8 @@ The following diagram renders the full theorem dependency structure of this libr
 
 The counterfactual branches are the most informative part of this diagram. They show where the proof *could not* go, and why. Proving that a route is dead is a discovery of the same order as proving a theorem.
 
-<div style="overflow-x: auto; overflow-y: auto; max-height: 900px; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
-  <img src="premise/discovery_dag.svg" alt="Discovery DAG: theorem dependencies with counterfactual branches" />
+<div style="overflow-x: auto; overflow-y: auto; max-height: 800px; border: 1px solid #1e293b; border-radius: 6px; padding: 8px; background: #0f172a;">
+  <img src="premise/discovery_dag.svg" alt="Discovery DAG: theorem dependencies with counterfactual branches" width="580" />
 </div>
 
 <!-- Original Mermaid source preserved below for reference
