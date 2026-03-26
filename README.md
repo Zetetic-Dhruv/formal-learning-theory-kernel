@@ -721,62 +721,79 @@ The counterfactual branches collectively explain why the library has the shape i
 
 The type architecture began as a derivation from informal learning theory (the author's textbook). Formalization forced modifications. Some were mathematical discoveries (the textbook was wrong). Others were forced by Mathlib's current state. The premise-evolution DAG shows which.
 
+<div style="overflow-x: auto; max-height: 900px; overflow-y: auto;">
+
 ```mermaid
-flowchart TD
-    classDef unchanged fill:#1a5c1a,stroke:#2d8a2d,color:#fff
-    classDef math_forced fill:#8b6914,stroke:#b8960c,color:#fff
-    classDef mathlib_forced fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef removed fill:#555,stroke:#888,color:#aaa,stroke-dasharray:5 5
+flowchart TB
+    classDef origin fill:#374151,stroke:#6b7280,color:#d1d5db
+    classDef discovery fill:#dc2626,stroke:#991b1b,color:#fff
+    classDef mathlib fill:#2563eb,stroke:#1d4ed8,color:#fff
+    classDef stable fill:#1a3a5c,stroke:#4a8abf,color:#fff
+    classDef intervention fill:#111827,stroke:#374151,color:#9ca3af,stroke-dasharray:5 5
 
-    subgraph origin["Origin Premise (2026-03-18)"]
-        direction TB
-        O_CC["ConceptClass: Set (X -> Y)"]:::unchanged
-        O_PAC["PACLearnable: exists Dm, ..."]:::math_forced
-        O_NFL["NFL: forall X (finite or infinite)"]:::math_forced
-        O_VC["VCDim: Nat"]:::mathlib_forced
-        O_LD["LittlestoneDim: branch-wise tree"]:::math_forced
-        O_UC["HasUC: forall D, exists m0, ..."]:::math_forced
-        O_MC["MindChangeCount: Nat"]:::math_forced
-        O_BR["Bridge: ConceptClass -> Set"]:::unchanged
-        O_BY["BayesianLearner: R-valued prior"]:::unchanged
-        O_COMP["CompressionScheme"]:::unchanged
-    end
+    %% ══════════════════════════════════════════
+    %% MATHEMATICAL DISCOVERIES (5 types changed)
+    %% ══════════════════════════════════════════
 
-    subgraph final["Final Kernel (2026-03-25)"]
-        direction TB
-        F_CC["ConceptClass: Set (X -> Bool)
-        (Bool restriction discovered)"]:::math_forced
-        F_PAC["PACLearnable: Measure.pi
-        (distribution-free)"]:::math_forced
-        F_NFL["NFL: [Infinite X] required"]:::math_forced
-        F_VC["VCDim: WithTop Nat
-        (Mathlib ordinal bridge)"]:::mathlib_forced
-        F_LD["LittlestoneDim: path-wise tree
-        (corrected definition)"]:::math_forced
-        F_UC["HasUC: exists m0, forall D
-        (quantifier order fixed)"]:::math_forced
-        F_MC["MindChangeOrdinal: Ordinal
-        (encodes correctness)"]:::math_forced
-        F_BR["Bridge: Bool-lossless bijection"]:::unchanged
-        F_BY["BayesianLearner: R-valued
-        (alternatives commented)"]:::unchanged
-        F_COMP["CompressionScheme
-        (sorry: Moran-Yehudayoff)"]:::mathlib_forced
-    end
+    O_PAC["ORIGIN: PACLearnable\nexists Dm, forall c, ..."]:::origin
+    I_PAC(["existential Dm allows\nDm to depend on target c\nvia memorizer + point mass"]):::intervention
+    F_PAC["FINAL: PACLearnable\nMeasure.pi (distribution-free)"]:::discovery
+    O_PAC --> I_PAC --> F_PAC
 
-    O_CC -->|"Bool boundary discovered"| F_CC
-    O_PAC -->|"existential Dm killed"| F_PAC
-    O_NFL -->|"finite X disproved"| F_NFL
-    O_VC -->|"WithTop for Mathlib bridge"| F_VC
-    O_LD -->|"path consistency required"| F_LD
-    O_UC -->|"quantifier order load-bearing"| F_UC
-    O_MC -->|"correctness encoding"| F_MC
+    O_NFL["ORIGIN: NFL\nforall X (finite or infinite)"]:::origin
+    I_NFL(["finite X: memorizer learns\nSet.univ; VCDim = |X| < inf"]):::intervention
+    F_NFL["FINAL: NFL\n[Infinite X] required"]:::discovery
+    O_NFL --> I_NFL --> F_NFL
+
+    O_LD["ORIGIN: LittlestoneDim\nbranch-wise tree shattering"]:::origin
+    I_LD(["const_true, const_false gives\nLDim = inf under branch-wise;\nC is trivially learnable"]):::intervention
+    F_LD["FINAL: LittlestoneDim\npath-wise tree (C restricted\nat each recursive call)"]:::discovery
+    O_LD --> I_LD --> F_LD
+
+    O_UC["ORIGIN: HasUC\nforall D, exists m0, ..."]:::origin
+    I_UC(["D-dependent m0 makes\nmf(eps,delta) distribution-\ndependent; PACLearnable violated"]):::intervention
+    F_UC["FINAL: HasUC\nexists m0, forall D\n(quantifier order reversed)"]:::discovery
+    O_UC --> I_UC --> F_UC
+
+    O_MC["ORIGIN: MindChangeCount\nNat (counts changes only)"]:::origin
+    I_MC(["count says nothing about\ncorrectness; backward direction\nof characterization unprovable"]):::intervention
+    F_MC["FINAL: MindChangeOrdinal\nOrdinal (returns omega for\nnon-convergent or wrong-limit)"]:::discovery
+    O_MC --> I_MC --> F_MC
+
+    %% ══════════════════════════════════════════
+    %% MATHLIB-FORCED (2 types changed)
+    %% ══════════════════════════════════════════
+
+    O_VC["ORIGIN: VCDim\nNat"]:::origin
+    I_VC(["Mathlib Finset.vcDim uses\nWithTop Nat; ordinal extension\nneeds BddAbove bridge"]):::intervention
+    F_VC["FINAL: VCDim\nWithTop Nat\n(Mathlib ordinal bridge)"]:::mathlib
+    O_VC --> I_VC --> F_VC
+
+    O_COMP["ORIGIN: CompressionScheme\n(placeholder)"]:::origin
+    I_COMP(["Moran-Yehudayoff 2016:\napproximate minimax on\nbounded-VC binary matrices\nnot in Mathlib"]):::intervention
+    F_COMP["FINAL: CompressionScheme\nsorry (blocked by\nexternal result)"]:::mathlib
+    O_COMP --> I_COMP --> F_COMP
+
+    %% ══════════════════════════════════════════
+    %% UNCHANGED (3 types stable)
+    %% ══════════════════════════════════════════
+
+    O_CC["ORIGIN: ConceptClass\nSet (X -> Bool)"]:::origin
+    F_CC["FINAL: ConceptClass\nSet (X -> Bool)\n(Bool boundary confirmed)"]:::stable
+    O_CC --> F_CC
+
+    O_BR["ORIGIN: Bridge\nConceptClass -> Set"]:::origin
+    F_BR["FINAL: Bridge\nBool-lossless bijection\n(proved injective)"]:::stable
     O_BR --> F_BR
+
+    O_BY["ORIGIN: BayesianLearner\nR-valued prior"]:::origin
+    F_BY["FINAL: BayesianLearner\nR-valued\n(alternatives commented)"]:::stable
     O_BY --> F_BY
-    O_COMP -->|"blocked by external result"| F_COMP
 ```
 
-**Legend:** Green = unchanged through formalization. Gold = changed by mathematical discovery (the textbook was wrong or incomplete). Blue = changed by Mathlib's current state (not wrong, but the available API forced a specific representation). Gray dashed = removed.
+</div>
+
+**Legend:** <span style="color:#dc2626">Red</span> = changed by mathematical discovery (the original definition was provably inadequate). <span style="color:#2563eb">Blue</span> = changed by Mathlib's current state (the available API forced a specific representation). <span style="color:#4a8abf">Dark blue</span> = unchanged through formalization. Gray dashed = intervention that forced the change.
 
 Six of ten core types were modified during formalization. Of these, five were mathematical discoveries (the original definitions were provably inadequate) and one was forced by Mathlib's ordinal/VC dimension API. No type was added that was not in the original premise. The grammar was complete; it was the definitions that needed correction.
 
