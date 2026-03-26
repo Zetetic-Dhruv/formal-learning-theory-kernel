@@ -1,23 +1,40 @@
 # Formal Learning Theory Kernel
 
-```
-            PACLearnable(C)
-               ⇕                          ┌──────────────┐
-           VCDim(C) < ∞                   │  Gold's Thm  │
-          ╱   |    |    ╲                 │  (proved)    │
-        ⇕     ⇕    ↓     ⇕               └──────────────┘
-   Compress  Rad→0  Sample  Growth              │
-   scheme    unif.  bounds  ≤ S-S          Online ⇏ Gold
-     (◊)                                        │
-                                          ┌─────▼────────┐
-       Online ────→ PAC ←──── Universal   │  Littlestone │
-         │    (always)          │          │  char. (⇔)   │
-         ✗                     ✗          │  (proved)    │
-    PAC ⇏ Online          ¬Univ if        └──────────────┘
-                          VCDim = ∞
+```mermaid
+flowchart TB
+    classDef proved fill:#1a3a5c,stroke:#4a8abf,color:#fff
+    classDef sorry fill:#dc2626,stroke:#991b1b,color:#fff
+    classDef sep fill:#374151,stroke:#6b7280,color:#d1d5db
 
-     ◊ = forward direction blocked (Moran-Yehudayoff 2016)
-     ✗ = strict separation (constructive witness)
+    PAC["PACLearnable(C)"]:::proved
+    VC["VCDim(C) &lt; ∞"]:::proved
+    CS["Compression\nscheme ◊"]:::sorry
+    RAD["Rademacher → 0\nuniformly"]:::proved
+    SB["Sample complexity\nbounds"]:::proved
+    GF["Growth ≤\nSauer-Shelah"]:::proved
+
+    PAC <--> VC
+    VC <--> CS
+    VC <--> RAD
+    VC --> SB
+    VC <--> GF
+
+    GT["Gold's Theorem\n(proved)"]:::proved
+    LC["Littlestone char.\n(proved)"]:::proved
+    OIP["Online → PAC\n(always)"]:::proved
+    PNO["PAC ⇏ Online"]:::sep
+    ENP["Gold ⇏ PAC"]:::sep
+    UT["Universal Trichotomy\n(2/3 proved)"]:::sorry
+
+    GT ~~~ LC
+    OIP --- PAC
+    PNO -.- PAC
+    ENP -.- GT
+```
+
+```
+◊ = forward direction blocked (Moran-Yehudayoff 2016)
+⇏ = strict separation (constructive witness)
 ```
 
 **31 files | 16,500 lines | 2 sorry | Lean 4 + Mathlib4**
@@ -36,26 +53,43 @@ This document presents the **structure of learning theory as revealed by formali
 
 Six decades of learning theory produced three paradigms that textbooks treat as chapters of one story. Formalization reveals they are three theories sharing vocabulary but not structure.
 
-```
-                        ┌─────────────────────┐
-                        │    ConceptClass      │
-                        │   (shared grammar)   │
-                        └───┬───────┬───────┬──┘
-                            │       │       │
-                  ┌─────────▼──┐ ┌──▼─────┐ ┌▼──────────┐
-                  │    PAC     │ │ Online │ │   Gold    │
-                  │  paradigm  │ │paradigm│ │ paradigm  │
-                  └──┬─────┬──┘ └──┬──┬──┘ └──┬─────┬──┘
-                     │     │       │  │       │     │
-               ┌─────▼┐ ┌─▼────┐ ┌▼──▼─┐ ┌──▼──┐ ┌▼──────┐
-               │Batch │ │IID   │ │State│ │Data │ │List   │
-               │Learner│ │Sample│ │+ pred│ │Stream│ │→ conj.│
-               └──────┘ └──────┘ └─────┘ └─────┘ └───────┘
+```mermaid
+flowchart TB
+    classDef shared fill:#1a3a5c,stroke:#4a8abf,color:#fff
+    classDef pac fill:#2563eb,stroke:#1d4ed8,color:#fff
+    classDef online fill:#374151,stroke:#6b7280,color:#fff
+    classDef gold fill:#111827,stroke:#374151,color:#d1d5db
 
-     Coupling: PAC/Online = 1.0   PAC/Gold = 1.0   Online/Gold = 0.0
+    CC["ConceptClass\n(shared grammar)"]:::shared
+
+    PAC["PAC paradigm"]:::pac
+    ONL["Online paradigm"]:::online
+    GLD["Gold paradigm"]:::gold
+
+    CC --> PAC
+    CC --> ONL
+    CC --> GLD
+
+    BL["BatchLearner"]:::pac
+    IID["IIDSample"]:::pac
+    STP["State + predict"]:::online
+    DS["DataStream"]:::gold
+    LST["List → conjecture"]:::gold
+
+    PAC --> BL
+    PAC --> IID
+    ONL --> STP
+    GLD --> DS
+    GLD --> LST
 ```
 
-The **coupling coefficient** measures proof-infrastructure entanglement between paradigms. A value of 1.0 means the paradigms share vocabulary but not proof methods; cross-paradigm theorems require explicit bridges. A value of 0.0 means the paradigms share vocabulary but never interact in theorems.
+Each paradigm pair carries a binary **obstruction tag**: *obstructed* (the paradigms share vocabulary but no proof infrastructure transfers between them; cross-paradigm theorems require explicit bridges) or *independent* (the paradigms share vocabulary but never interact in any theorem).
+
+| Pair | Tag | Evidence |
+|------|-----|----------|
+| PAC / Online | obstructed | `online_imp_pac` exists, but `pac_not_implies_online` proves the reverse fails |
+| PAC / Gold | obstructed | `ex_not_implies_pac` proves Gold learnability does not entail PAC learnability |
+| Online / Gold | independent | No theorem in this library connects them. No shared proof technique. |
 
 This is **Break Point BP1**: no common learner parent type exists. A `BatchLearner` takes `{m : Nat} -> (Fin m -> X x Y) -> Concept X Y`. An `OnlineLearner` carries mutable `State` and processes instances one at a time. A `GoldLearner` takes `List (X x Y) -> Concept X Y`. No common parent captures all three without erasing the structural properties their theorems depend on.
 
@@ -79,34 +113,60 @@ Formalization discovered 7 type-theoretic break points, locations where the math
 
 ### The Dependency DAG
 
-```
-L0  Computation ─────────────────────────────────────────────────────────┐
-L1  Basic ──────────┬───────────────────────────────────────────────────┐│
-L2  Data ───────────┤                                                   ││
-L3  Learner/ ───────┤                                                   ││
-L4  Criterion/ ─────┤                                                   ││
-                    ▼                                                   ▼▼
-L5  Complexity/ ──────────────────────┬──────────────────────────────────┘
-    VCDimension ──┐                   │
-    Littlestone ──┤  Structures ──┐   │
-    MindChange ───┤               │   │
-    Ordinal ──────┤               │   │
-                  ▼               ▼   ▼
-    Generalization (2997 lines) ──────┤
-    Symmetrization (2959 lines) ──────┤
-    Rademacher (1899 lines) ──────────┤
-    GeneralizationResults ────────────┤
-                                      ▼
-    Bridge (769 lines) ───────────────┤
-                                      ▼
-L6  Theorem/ ─────────────────────────┘
-    Gold ────── fully proved
-    PAC ─────── fully proved (5-way fundamental theorem)
-    Online ──── fully proved (Littlestone characterization)
-    Separation ─ fully proved (all paradigm separations + boosting)
-    Extended ─── 2/3 branches proved (BHMZ sorry)
+```mermaid
+flowchart TB
+    classDef types fill:#d1d5db,stroke:#6b7280,color:#111827
+    classDef infra fill:#1a3a5c,stroke:#4a8abf,color:#fff
+    classDef thm fill:#2563eb,stroke:#1d4ed8,color:#fff
+    classDef vocab fill:#9ca3af,stroke:#6b7280,color:#111827
 
-L7  Process ──── vocabulary for future extensions
+    L0["L0: Computation\n241 lines"]:::vocab
+    L1["L1: Basic\n163 lines"]:::types
+    L2["L2: Data\n155 lines"]:::types
+    L3["L3: Learner/\n294 lines"]:::types
+    L4["L4: Criterion/\n400 lines"]:::types
+
+    subgraph L5["L5: Complexity/ (8,726 lines)"]
+        VCD["VCDimension"]:::infra
+        LIT["Littlestone"]:::infra
+        MC["MindChange"]:::infra
+        ORD["Ordinal"]:::infra
+        STR["Structures"]:::infra
+        GEN["Generalization\n2,997 lines"]:::infra
+        SYM["Symmetrization\n2,959 lines"]:::infra
+        RAD2["Rademacher\n1,899 lines"]:::infra
+        GR["GeneralizationResults"]:::infra
+    end
+
+    BR["Bridge\n769 lines"]:::infra
+
+    subgraph L6["L6: Theorem/ (3,975 lines)"]
+        GOLD["Gold ✓"]:::thm
+        TPAC["PAC ✓"]:::thm
+        TONL["Online ✓"]:::thm
+        SEP["Separation ✓"]:::thm
+        EXT["Extended ⊘"]:::thm
+    end
+
+    L7["L7: Process\n180 lines"]:::vocab
+
+    L0 --> L1
+    L1 --> L2
+    L2 --> L3
+    L3 --> L4
+    L4 --> L5
+    L5 --> BR
+    BR --> L6
+    L0 --> L7
+
+    VCD --> GEN
+    LIT --> GEN
+    MC --> GEN
+    ORD --> GEN
+    STR --> GEN
+    GEN --> SYM
+    SYM --> RAD2
+    GEN --> GR
 ```
 
 The infrastructure layers (L5) account for **73%** of the codebase. The theorems (L6) account for 24%. Definitions (L1-L4) account for 3%. This ratio is itself a datum about learning theory: the conceptual vocabulary is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
@@ -137,15 +197,24 @@ The central result, stated as `fundamental_theorem` in `Theorem/PAC.lean`:
 >
 > *and all five are equivalent to* VCDim(C) < infinity.
 
-```
-            PACLearnable(C)
-              ⇕  (1)
-          VCDim(C) < ∞
-         ╱    |    |    ╲
-       (2)   (3)  (4)   (5)
-       ⇕      ⇕    ↓     ⇕
-  Compression  Rad→0  Sample   Growth ≤
-  scheme       unif.  bounds   Sauer-Shelah
+```mermaid
+flowchart TB
+    classDef center fill:#2563eb,stroke:#1d4ed8,color:#fff
+    classDef equiv fill:#1a3a5c,stroke:#4a8abf,color:#fff
+    classDef sorry fill:#dc2626,stroke:#991b1b,color:#fff
+
+    VC2["VCDim(C) &lt; ∞"]:::center
+    C1["(1) PACLearnable"]:::equiv
+    C2["(2) Compression\nscheme"]:::sorry
+    C3["(3) Rademacher → 0"]:::equiv
+    C4["(4) Sample bounds"]:::equiv
+    C5["(5) Growth ≤ S-S"]:::equiv
+
+    VC2 <--> C1
+    VC2 <--> C2
+    VC2 <--> C3
+    VC2 --> C4
+    VC2 <--> C5
 ```
 
 **Status**: 4 of 5 conjuncts fully proved. The forward direction of conjunct 2 (VCDim finite implies compression scheme exists) requires Moran-Yehudayoff's 2016 construction, an approximate minimax argument on bounded-VC binary matrices that has no Mathlib infrastructure.
@@ -302,21 +371,22 @@ The principle has no pen-and-paper analogue. Measurability is invisible in infor
 
 Separation theorems prove that paradigm implications are strict. The constructions are explicit.
 
-```
-        Gold (EX)
-          │
-          ✗ (EX ↛ PAC: finite-subset indicators)
-          │
-        PAC ←───── Online (always: online_imp_pac)
-          │              │
-          ✗              │
-   (PAC ↛ Online:        │
-    thresholds on ℕ)     │
-                         │
-        Universal ───────┘
-          │         (Branch 2: BHMZ sorry)
-          ✗
-   (¬Universal if VCDim = ∞)
+```mermaid
+flowchart TB
+    classDef proved fill:#1a3a5c,stroke:#4a8abf,color:#fff
+    classDef sep fill:#dc2626,stroke:#991b1b,color:#fff
+    classDef sorry fill:#374151,stroke:#6b7280,color:#d1d5db,stroke-dasharray:5 5
+
+    GLD["Gold (EX)"]:::proved
+    PAC2["PAC"]:::proved
+    ONL2["Online"]:::proved
+    UNI["Universal"]:::proved
+
+    GLD -->|"✗ EX ↛ PAC\nfinite-subset indicators"| PAC2
+    ONL2 -->|"✓ online_imp_pac\n(always)"| PAC2
+    PAC2 -->|"✗ PAC ↛ Online\nthresholds on ℕ"| ONL2
+    UNI -->|"✗ ¬Univ if VCDim = ∞"| PAC2
+    UNI -.->|"Branch 2: BHMZ sorry"| ONL2
 ```
 
 **PAC does not imply Online** (`pac_not_implies_online`): The witness is the threshold class on natural numbers, `C = {(· ≤ n) | n : Nat}`. VC dimension is 1, since only singletons are shattered (thresholds are monotone). Littlestone dimension is infinite: an adversary binary-searches the threshold by querying midpoints, forcing one mistake per query at every depth. The proof constructs the adversary strategy explicitly via induction on tree depth.
@@ -434,7 +504,7 @@ These are not engineering gaps. They are the frontier.
 
 ## VII. The Discovery DAG: Proof Structure with Counterfactual Branches
 
-The following diagram renders the full theorem dependency structure of this library. Solid arrows are proved dependencies. Dashed arrows with **X** marks are **counterfactual branches**: dead-end proof routes that were explored and killed by specific discoveries during formalization. Each counterfactual branch records the intervention that killed it and what ignorance measurement changed.
+The following diagram renders the full theorem dependency structure of this library. Solid arrows are proved dependencies. Dashed arrows with **X** marks are **counterfactual branches**: dead-end proof routes that were explored and killed by specific discoveries during formalization. Each counterfactual branch records the intervention that killed it and what was discovered.
 
 The counterfactual branches are the most informative part of this diagram. They show where the proof *could not* go, and why. Proving that a route is dead is a discovery of the same order as proving a theorem.
 
@@ -629,7 +699,7 @@ flowchart TB
 
 ### Reading the counterfactual branches
 
-Each dashed node represents a proof route that was explored and killed. The annotation describes the ignorance measurement that changed:
+Each dashed node represents a proof route that was explored and killed. The annotation describes what was discovered:
 
 | # | Intervention | What was discovered | Effect on DAG |
 |---|-------------|---------------------|---------------|
