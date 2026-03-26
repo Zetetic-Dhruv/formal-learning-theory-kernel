@@ -37,11 +37,11 @@ flowchart TB
 ⇏ = strict separation (constructive witness)
 ```
 
-**31 files | 16,500 lines | 2 sorry | Lean 4 + Mathlib4**
+**31 files | 14,945 lines | 2 sorry | Lean 4 + Mathlib4**
 
 A Lean4 formalization of the **Fundamental Theorem of Statistical Learning** (5-way equivalence, 4/5 conjuncts proved), the **Littlestone characterization** of online learnability, **Gold's theorem** on identification in the limit, all **paradigm separations** with constructive witnesses, and the **universal learning trichotomy** (2/3 branches proved). Built on Mathlib4.
 
-The two remaining sorry tactics are blocked by Moran-Yehudayoff 2016 (compression conjecture) and Bousquet-Hanneke-Moran-Zhivotovskiy STOC 2021 (one-inclusion graph construction). Both require combinatorial infrastructure absent from Mathlib. They are the frontier, not engineering gaps.
+The two remaining sorry tactics are blocked by Moran-Yehudayoff 2016 (compression conjecture) and Bousquet-Hanneke-Moran-Zhivotovskiy STOC 2021 (one-inclusion graph (a combinatorial construction on labeled samples)). Both require combinatorial infrastructure absent from Mathlib. They are the frontier, not engineering gaps.
 
 This document presents the **structure of learning theory as revealed by formalization**: the type-theoretic break points, the proof asymmetries textbooks suppress, and the world model of theorem dependencies that emerges when one forces an entire field through a proof assistant.
 
@@ -123,24 +123,24 @@ flowchart TB
     L0["L0: Computation\n241 lines"]:::vocab
     L1["L1: Basic\n163 lines"]:::types
     L2["L2: Data\n155 lines"]:::types
-    L3["L3: Learner/\n294 lines"]:::types
-    L4["L4: Criterion/\n400 lines"]:::types
+    L3["L3: Learner/\n303 lines"]:::types
+    L4["L4: Criterion/\n409 lines"]:::types
 
-    subgraph L5["L5: Complexity/ (8,726 lines)"]
+    subgraph L5["L5: Complexity/ (8,740 lines)"]
         VCD["VCDimension"]:::infra
         LIT["Littlestone"]:::infra
         MC["MindChange"]:::infra
         ORD["Ordinal"]:::infra
         STR["Structures"]:::infra
         GEN["Generalization\n2,997 lines"]:::infra
-        SYM["Symmetrization\n2,959 lines"]:::infra
-        RAD2["Rademacher\n1,899 lines"]:::infra
+        SYM["Symmetrization\n3,027 lines"]:::infra
+        RAD2["Rademacher\n1,901 lines"]:::infra
         GR["GeneralizationResults"]:::infra
     end
 
     BR["Bridge\n769 lines"]:::infra
 
-    subgraph L6["L6: Theorem/ (3,975 lines)"]
+    subgraph L6["L6: Theorem/ (3,985 lines)"]
         GOLD["Gold ✓"]:::thm
         TPAC["PAC ✓"]:::thm
         TONL["Online ✓"]:::thm
@@ -169,7 +169,7 @@ flowchart TB
     GEN --> GR
 ```
 
-The infrastructure layers (L5) account for **73%** of the codebase. The theorems (L6) account for 24%. Definitions (L1-L4) account for 3%. This ratio is itself a datum about learning theory: the conceptual vocabulary is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
+The infrastructure layers (L5) account for **58%** of the codebase. The theorems (L6) account for 27%. Definitions (L1-L4) account for 7%. This ratio is itself a datum about learning theory: the conceptual vocabulary is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
 
 ### The shared axis
 
@@ -177,7 +177,7 @@ Every proof in this library answers one question: *How does finite combinatorial
 
 The VC dimension is a finite combinatorial quantity (largest shattered set). PAC learnability is a measure-theoretic property (probability over i.i.d. samples). The fundamental theorem says they are equivalent. The entire proof infrastructure exists to cross this bridge: Sauer-Shelah translates VCDim into growth function bounds (combinatorics to combinatorics), symmetrization translates growth bounds into uniform convergence (combinatorics to measure theory), and concentration inequalities translate uniform convergence into PAC guarantees (measure theory to measure theory).
 
-The two sorry theorems sit on this same axis. Moran-Yehudayoff's compression theorem shows that finite VCDim implies a finite compression scheme (combinatorics to combinatorics, but the construction requires approximate minimax on binary matrices). BHMZ's universal learning theorem shows that finite VCDim with infinite Littlestone dimension still permits learning (combinatorics to measure theory, but the construction requires one-inclusion graph aggregation).
+The two sorry theorems sit on this same axis. Moran-Yehudayoff's compression theorem shows that finite VCDim implies a finite compression scheme (combinatorics to combinatorics, but the construction requires approximate minimax on binary matrices). BHMZ's (Bousquet-Hanneke-Moran-Zhivotovskiy) universal learning theorem shows that finite VCDim with infinite Littlestone dimension still permits learning (combinatorics to measure theory, but the construction requires one-inclusion graph aggregation).
 
 There is no proof in this library that does not participate in this axis.
 
@@ -223,7 +223,7 @@ flowchart TB
 
 The biconditional `PACLearnable ↔ VCDim < infinity` conceals a deep asymmetry:
 
-- **Forward** (finite VCDim → PAC): **Constructive.** Produces an explicit ERM learner. Routes through 3,000 lines of symmetrization infrastructure to establish uniform convergence.
+- **Forward** (finite VCDim → PAC): **Constructive.** Produces an explicit ERM (Empirical Risk Minimization) learner. Routes through 3,000 lines of symmetrization infrastructure to establish uniform convergence.
 - **Backward** (PAC → finite VCDim): **Non-constructive.** Constructs an adversarial hard distribution via contrapositive. The witness is a probability measure that cannot be computed from the learner.
 
 This asymmetry is *unavoidable*. It is not an artifact of the proof strategy but a genuine structural feature of the characterization. The forward direction builds a learner; the backward direction proves one cannot exist.
@@ -238,7 +238,7 @@ Every standard textbook states a version of: "No learner can learn `Set.univ`." 
 
 For finite X: `VCDim(Set.univ) = |X| < infinity`. By the fundamental theorem (forward direction), `Set.univ` *is* PAC-learnable. The learner is trivial: take m >= |X| samples and memorize.
 
-The correct NFL theorem requires **infinite X**, where `VCDim(Set.univ) = infinity`. The proof in `Theorem/PAC.lean` constructs this via `Function.extend` on `Subtype.val_injective`. For every finite S, every labeling of S is realized by some function in `Set.univ`, giving VCDim = infinity by `WithTop.eq_top_iff_forall_ge`.
+The correct NFL (No-Free-Lunch) theorem requires **infinite X**, where `VCDim(Set.univ) = infinity`. The proof in `Theorem/PAC.lean` constructs this via `Function.extend` on `Subtype.val_injective`. For every finite S, every labeling of S is realized by some function in `Set.univ`, giving VCDim = infinity by `WithTop.eq_top_iff_forall_ge`.
 
 This is not a pedantic point. It reflects a genuine structural divide: the boundary between learnable and unlearnable is not "all functions" vs "some functions" but "finite VC dimension" vs "infinite VC dimension." Cardinality of the hypothesis space is irrelevant.
 
@@ -250,7 +250,7 @@ For **finite X**, the PAC learnability proof is direct:
 - ~100 lines of Lean4
 
 For **infinite X**, the same mathematical statement requires:
-- **Ghost sample construction** (the double-sample trick)
+- **Ghost sample (independent copy of the training set) construction** (the double-sample trick)
 - **Symmetrization** (exchanging order of expectation and supremum over uncountable C)
 - **Exchangeability bounds** via `NullMeasurableSet` + Tonelli interchange
 - **Growth function restriction** to reduce uncountable union to polynomial bound
@@ -280,7 +280,7 @@ Layer 2: Ghost-sample symmetrization               ~1,200 lines
          │
          ▼
 Layer 1: Concentration (Hoeffding)                  ~300 lines
-  Per-hypothesis tail bound via sub-Gaussian MGF.
+  Per-hypothesis tail bound via sub-Gaussian MGF (moment generating function).
   Pr[emp_err - true_err ≥ t] ≤ exp(-2mt^2)
   Uses: hoeffding_one_sided, cosh_le_exp_sq_half,
         rademacher_mgf_bound
@@ -391,7 +391,7 @@ flowchart TB
 
 **PAC does not imply Online** (`pac_not_implies_online`): The witness is the threshold class on natural numbers, `C = {(· ≤ n) | n : Nat}`. VC dimension is 1, since only singletons are shattered (thresholds are monotone). Littlestone dimension is infinite: an adversary binary-searches the threshold by querying midpoints, forcing one mistake per query at every depth. The proof constructs the adversary strategy explicitly via induction on tree depth.
 
-**EX does not imply PAC** (`ex_not_implies_pac`): The witness is finite-subset indicators on natural numbers. The Gold learner outputs "true on everything seen so far" and converges because every finite concept eventually stabilizes. But every finite subset of natural numbers is shattered, giving VCDim = infinity.
+**EX (identification in the limit) does not imply PAC** (`ex_not_implies_pac`): The witness is finite-subset indicators on natural numbers. The Gold learner outputs "true on everything seen so far" and converges because every finite concept eventually stabilizes. But every finite subset of natural numbers is shattered, giving VCDim = infinity.
 
 **Online implies PAC** (`online_imp_pac`): The only non-strict separation. Any online learner with mistake bound M gives a PAC learner with sample complexity polynomial in M, 1/epsilon, and 1/delta. The proof routes through the generalization bound from finite Littlestone dimension.
 
@@ -403,10 +403,10 @@ flowchart TB
 
 | Component | LOC | Load-bearing? | Why |
 |-----------|-----|---------------|-----|
-| Symmetrization infrastructure | 2,959 | **Yes** | Irreducible for infinite-X uniform convergence. Three layers: Hoeffding, ghost-sample symmetrization, growth function restriction. |
-| Rademacher infrastructure | 1,899 | **Yes** | Massart's lemma, MGF bounds, VCDim-Rademacher connection. Self-contained chain (does not need symmetrization). |
+| Symmetrization infrastructure | 3,027 | **Yes** | Irreducible for infinite-X uniform convergence. Three layers: Hoeffding, ghost-sample symmetrization, growth function restriction. |
+| Rademacher infrastructure | 1,901 | **Yes** | Massart's lemma, MGF bounds, VCDim-Rademacher connection. Self-contained chain (does not need symmetrization). |
 | NFL core counting | ~200 | **Yes** | Per-sample adversarial construction + product measure positivity. Cannot be simplified. |
-| Littlestone characterization | 694 | **Yes** | Corrected tree definition + version space potential argument. Non-constructive at each decision step. |
+| Littlestone characterization | 690 | **Yes** | Corrected tree definition + version space potential argument. Non-constructive at each decision step. |
 | Sauer-Shelah bridge | ~100 | Routine | Connects to Mathlib's `Finset.vcDim`. |
 | Hoeffding bounds | ~300 | Routine | Concentration inequality infrastructure from Mathlib. |
 | Occam's algorithm | ~50 | Routine | Follows immediately from the VCDim gate. |
@@ -416,7 +416,7 @@ flowchart TB
 ```
 fundamental_theorem
 ├── vc_characterization ←──── vcdim_finite_imp_pac
-│                                  └── vcdim_finite_imp_uc'  [2959 lines, sorry-free]
+│                                  └── vcdim_finite_imp_uc'  [3027 lines, sorry-free]
 │                                        ├── symmetrization_uc_bound
 │                                        │     ├── hoeffding_one_sided
 │                                        │     ├── symmetrization_step
@@ -429,7 +429,7 @@ fundamental_theorem
 │   ├── compression_imp_vcdim_finite ← [pigeonhole, proved]
 │   └── vcdim_finite_imp_compression ← [SORRY: Moran-Yehudayoff 2016]
 ├── fundamental_rademacher ←── vcdim_finite_imp_rademacher_vanishing
-│                                  └── [self-contained chain, 1899 lines]
+│                                  └── [self-contained chain, 1901 lines]
 └── growth_bounded_imp_vcdim_finite / vcdim_finite_imp_growth_bounded
 ```
 
@@ -437,14 +437,14 @@ fundamental_theorem
 
 | Metric | Count |
 |--------|-------|
-| Theorem/lemma statements | 180 |
+| Theorem/lemma statements | 210 |
 | Definitions | 157 |
 | Structures | 46 |
-| Total lines | 16,495 |
+| Total lines | 14,945 |
 | Sorry tactics | 2 |
 | Files | 31 |
 | Mathlib bridges | 5 (ConceptClass ↔ Set, Shatters ↔ Finset.Shatters, VCDim ↔ Finset.vcDim, IIDSample ↔ Measure.pi, WithTop Nat ↔ Ordinal) |
-| Paradigms formalized | 6 (PAC, Online, Gold, Universal, Bayesian, Query) |
+| Paradigms formalized | 5 with proved theorems (PAC, Online, Gold, Universal, Bayesian); 1 with definitions only (Query) |
 | Break points | 7 |
 | Maximum dependency chain depth | 7 (Concept → VCDim → fundamental_theorem) |
 | Maximum fan-in node | ConceptClass (22 incoming edges) |
@@ -458,11 +458,11 @@ The library uses 8 distinct proof methods. Their distribution across the codebas
 | **Contrapositive** | PAC | `pac_imp_vcdim_finite`, `nfl_theorem_infinite`, `rademacher_vanishing_imp_pac` | 12 theorems |
 | **Symmetrization** (ghost sample) | PAC | `symmetrization_step`, `symmetrization_uc_bound`, `vcdim_finite_imp_uc'` | 5 theorems, ~3000 LOC |
 | **Adversary construction** | PAC, Online | `pac_not_implies_online`, `adversary_threshold`, `nfl_core` | 6 theorems |
-| **Potential function** | Online | `backward_direction` (SOA), `ldim_versionSpace_le` | 3 theorems |
+| **Potential function** | Online | `backward_direction` (SOA, Standard Optimal Algorithm), `ldim_versionSpace_le` | 3 theorems |
 | **Pigeonhole** | PAC | `compression_imp_vcdim_finite`, `compress_injective_on_labelings` | 4 theorems |
 | **Concentration inequality** | PAC | `hoeffding_one_sided`, `chebyshev_seven_twelfths_bound`, `rademacher_mgf_bound` | 8 theorems |
 | **Induction on tree depth** | Online | `forward_direction`, `backward_direction`, `adversary_threshold` | 5 theorems |
-| **Locking sequence** | Gold | `gold_theorem` | 1 theorem |
+| **Locking sequence (an enumeration strategy that forces convergence)** | Gold | `gold_theorem` | 1 theorem |
 
 No proof method is shared across all three paradigms. PAC theorems use concentration inequalities and symmetrization. Online theorems use potential functions and tree induction. Gold's theorem uses a locking sequence that appears nowhere else in the library. The shared mathematical axis (Section I) is answered by completely disjoint proof technologies. This is not an artifact of the formalization: the data presentations are incompatible (i.i.d. samples vs. adversarial sequences vs. enumerating streams), and incompatible data presentations force incompatible proof methods.
 
@@ -493,8 +493,8 @@ No proof method is shared across all three paradigms. PAC theorems use concentra
 
 | File | Theorem | Blocked by | Citation | Role |
 |------|---------|-----------|----------|------|
-| `Generalization.lean` | `vcdim_finite_imp_compression` | Approximate minimax on bounded-VC binary matrices | Moran-Yehudayoff 2016 (arXiv:1503.06960) | Forward direction of conjunct 2 |
-| `Extended.lean` | `bhmz_middle_branch` | One-inclusion graph learners + doubling aggregation | Bousquet-Hanneke-Moran-Zhivotovskiy, STOC 2021 | Branch 2 of universal trichotomy |
+| `Complexity/Generalization.lean` | `vcdim_finite_imp_compression` | Approximate minimax on bounded-VC binary matrices | Moran-Yehudayoff 2016 (arXiv:1503.06960) | Forward direction of conjunct 2 |
+| `Theorem/Extended.lean` | `bhmz_middle_branch` | One-inclusion graph learners + doubling aggregation | Bousquet-Hanneke-Moran-Zhivotovskiy, STOC 2021 | Branch 2 of universal trichotomy |
 
 Both are blocked by deep combinatorial constructions with no Mathlib infrastructure. The Moran-Yehudayoff compression theorem has been open in some form since Littlestone and Warmuth's 1986 conjecture; the best known bound is 2^{O(d)}. The BHMZ universal learning construction requires ordinal analysis and tree-based aggregation schemes.
 
@@ -565,7 +565,7 @@ flowchart TB
 
     subgraph L2c[" "]
         direction LR
-        SYM["Symmetrization · 2,959 LOC"]:::measure
+        SYM["Symmetrization · 3,027 LOC"]:::measure
         HOE["Hoeffding · 300 LOC"]:::infra
         BOOST["Boosting · Chebyshev"]:::measure
     end
@@ -719,7 +719,7 @@ Each dashed node represents a proof route that was explored and killed. The anno
 
 Interventions 1, 3, and 5 killed provably false statements. Interventions 2, 4, and 6 repaired definitions or added hypotheses to rescue viable routes. Intervention 7 established a setting-specific boundary: the library's results hold for binary classification, and the restriction is mathematically necessary.
 
-The counterfactual branches collectively explain why the library has the shape it does. The NFL correction (1) explains why all NFL theorems require `[Infinite X]`. The Littlestone fix (2) explains why `Theorem/Online.lean` defines its own `LTree.isShattered` rather than using `Complexity/Littlestone.lean`. The symmetrization necessity (3) explains why 73% of the codebase is infrastructure. The WellBehavedVC introduction (4) explains the regularity hypothesis that appears in every measure-theoretic theorem. The PAC repair (5) explains why `Measure.pi` appears in the definition rather than an existential. The quantifier fix (6) explains the specific quantifier ordering in `HasUniformConvergence`. The Bool boundary (7) explains why the entire library operates over `Bool`.
+The counterfactual branches collectively explain why the library has the shape it does. The NFL correction (1) explains why all NFL theorems require `[Infinite X]`. The Littlestone fix (2) explains why `Theorem/Online.lean` defines its own `LTree.isShattered` rather than using `Complexity/Littlestone.lean`. The symmetrization necessity (3) explains why 58% of the codebase is infrastructure. The WellBehavedVC introduction (4) explains the regularity hypothesis that appears in every measure-theoretic theorem. The PAC repair (5) explains why `Measure.pi` appears in the definition rather than an existential. The quantifier fix (6) explains the specific quantifier ordering in `HasUniformConvergence`. The Bool boundary (7) explains why the entire library operates over `Bool`.
 
 ---
 
@@ -741,7 +741,7 @@ Built in **7 days** (March 18-25, 2026) using **Claude Code (Opus 4.6)** guided 
 
 ### The premise
 
-Before proof discovery began, a **type architecture premise** was derived: 139 concept nodes across 8 layers (L0-L7), with explicit paradigm joints, heterogeneity coefficients, break points, and compilation constraints. This premise, recorded in `premise/origin.json`, defined the typed hypothesis space within which proof search operated.
+Before proof discovery began, a **type architecture premise** was derived: 42 concept nodes across 8 layers (L0-L7), with explicit paradigm joints, obstruction tags, break points, and compilation constraints. This premise, recorded in `premise/origin.json`, defined the typed hypothesis space within which proof search operated.
 
 The premise served as a **grammar** for the AI: instead of jointly discovering types and proofs (which produces trivially-true theorems, sorry-in-Prop, and type homogeneity), the AI searched for proofs within a well-scoped, pre-validated type structure.
 
@@ -749,7 +749,7 @@ The premise served as a **grammar** for the AI: instead of jointly discovering t
 
 | | Before (origin) | After (final) |
 |-|-----------------|---------------|
-| Lines | 2,912 | 16,495 |
+| Lines | 2,912 | 14,945 |
 | Files | 10 monolithic | 31 modular |
 | Sorry count | 69 | 2 |
 | Break points resolved | 0 | 3 (BP2, BP4, BP5) |
@@ -761,13 +761,13 @@ The premise served as a **grammar** for the AI: instead of jointly discovering t
 
 ### Type architecture stability
 
-The type distribution across the kernel remained constant through 13,583 lines of proof addition:
+The type distribution across the kernel remained constant through 12,033 lines of proof addition:
 
 <p align="center">
   <img src="premise/type_distribution.svg" width="600" alt="Type distribution: origin vs final"/>
 </p>
 
-Abbreviations, propositions, and structures held at 32.9%, 31.4%, and 27.9% respectively in both the origin premise (2,912 LOC) and the final kernel (16,495 LOC). The proof infrastructure redistributed across layers (L5 Complexity grew from a stub to 8,726 lines), but the balance of type categories did not change. The pre-designed grammar absorbed the proofs without architectural modification.
+Abbreviations, propositions, and structures held at 32.9%, 31.4%, and 27.9% respectively in both the origin premise (2,912 LOC) and the final kernel (14,945 LOC). The proof infrastructure redistributed across layers (L5 Complexity grew from a stub to 8,740 lines), but the balance of type categories did not change. The pre-designed grammar absorbed the proofs without architectural modification.
 
 Both the origin and final type architectures are recorded in `premise/origin.json` and `premise/final.json`.
 
@@ -809,7 +809,7 @@ This kernel is one component of a larger programme. The four public companion re
                   of the Fundamental Theorem of Statistical Learning},
   year         = {2026},
   url          = {https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
-  note         = {31 files, 16{,}500 LOC, 2 sorry.
+  note         = {31 files, 14{,}945 LOC, 2 sorry.
                   Proof discovery via Claude Opus 4.6.}
 }
 
