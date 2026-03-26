@@ -6,12 +6,13 @@
     .nodeb{font-size:12.5px;fill:#111;text-anchor:middle;font-weight:bold}
     .hub{font-size:14px;fill:#111;text-anchor:middle;font-weight:bold}
     .edge{stroke:#111;stroke-width:1.2;fill:none}
-    .sorry-edge{stroke:#111;stroke-width:1.2;fill:none;stroke-dasharray:6 4}
+    .spoke{stroke:#111;stroke-width:0.9;fill:none}
+    .spoke-sorry{stroke:#111;stroke-width:0.9;fill:none;stroke-dasharray:5 3}
     .side-title{font-size:13px;fill:#111;font-weight:bold}
     .side-item{font-size:11.5px;fill:#333}
-    .side-sep{font-size:11.5px;fill:#999}
-    .check{font-size:11px;fill:#111}
-    .sorry-mark{font-size:11px;fill:#888;font-style:italic}
+    .side-detail{font-size:10.5px;fill:#888;font-style:italic}
+    .check{font-size:12px;fill:#111}
+    .sorry-mark{font-size:12px;fill:#999}
     .stat{font-size:12px;fill:#555;font-style:italic;text-anchor:middle}
     .footnote{font-size:10px;fill:#888;font-style:italic}
   </style>
@@ -20,110 +21,103 @@
   <rect width="820" height="440" fill="#fff"/>
 
   <!-- Title -->
-  <text x="280" y="36" class="title">The Fundamental Theorem of Statistical Learning</text>
-  <text x="280" y="56" class="sub">Five equivalent characterizations of learnability, four proved in Lean 4</text>
+  <text x="270" y="36" class="title">The Fundamental Theorem of Statistical Learning</text>
+  <text x="270" y="56" class="sub">Five equivalent characterizations of learnability, four proved in Lean 4</text>
 
-  <!-- Pentagram geometry: center at (280, 240), radius 140 -->
-  <!-- Pentagon vertices (top, then clockwise):
-       v0 (top):        280, 100
-       v1 (upper-right): 413, 158
-       v2 (lower-right): 362, 313
-       v3 (lower-left):  198, 313
-       v4 (upper-left):  147, 158
+  <!-- Pentagon geometry: center at (270, 230), radius 130 -->
+  <!-- Vertices (top, then clockwise):
+       v0 (top):         270, 100
+       v1 (upper-right): 394, 152
+       v2 (lower-right): 347, 298
+       v3 (lower-left):  193, 298
+       v4 (upper-left):  146, 152
   -->
 
-  <!-- Pentagon edges (outer ring) -->
-  <line x1="280" y1="100" x2="413" y2="158" class="edge"/>
-  <line x1="413" y1="158" x2="362" y2="313" class="edge"/>
-  <line x1="362" y1="313" x2="198" y2="313" class="edge"/>
-  <line x1="198" y1="313" x2="147" y2="158" class="edge"/>
-  <line x1="147" y1="158" x2="280" y2="100" class="edge"/>
-
-  <!-- Pentagram diagonals (star interior) -->
-  <line x1="280" y1="100" x2="362" y2="313" class="edge" stroke-width="0.6" stroke="#bbb"/>
-  <line x1="280" y1="100" x2="198" y2="313" class="edge" stroke-width="0.6" stroke="#bbb"/>
-  <line x1="413" y1="158" x2="198" y2="313" class="edge" stroke-width="0.6" stroke="#bbb"/>
-  <line x1="413" y1="158" x2="147" y2="158" class="sorry-edge" stroke-width="0.6" stroke="#bbb"/>
-  <line x1="362" y1="313" x2="147" y2="158" class="edge" stroke-width="0.6" stroke="#bbb"/>
+  <!-- Pentagon edges (outer ring only, no star diagonals) -->
+  <line x1="270" y1="100" x2="394" y2="152" class="edge"/>
+  <line x1="394" y1="152" x2="347" y2="298" class="edge"/>
+  <line x1="347" y1="298" x2="193" y2="298" class="edge"/>
+  <line x1="193" y1="298" x2="146" y2="152" class="edge" stroke-dasharray="5 3"/>
+  <line x1="146" y1="152" x2="270" y2="100" class="edge" stroke-dasharray="5 3"/>
 
   <!-- Hub: VCDim at center -->
-  <circle cx="280" cy="210" r="32" fill="none" stroke="#111" stroke-width="1.5"/>
-  <text x="280" y="207" class="hub">VCDim(C)</text>
-  <text x="280" y="221" class="hub" font-size="12">&lt; ∞</text>
+  <circle cx="270" cy="205" r="30" fill="none" stroke="#111" stroke-width="1.5"/>
+  <text x="270" y="201" class="hub">VCDim(C)</text>
+  <text x="270" y="216" class="hub" font-size="11">&lt; &#x221E;</text>
 
-  <!-- Spokes from center to vertices -->
-  <line x1="280" y1="178" x2="280" y2="110" class="edge"/>
-  <line x1="308" y1="196" x2="403" y2="163" class="edge"/>
-  <line x1="305" y1="228" x2="355" y2="305" class="edge"/>
-  <line x1="255" y1="228" x2="205" y2="305" class="edge"/>
-  <line x1="252" y1="196" x2="157" y2="163" class="edge"/>
+  <!-- Spokes from hub to vertices -->
+  <line x1="270" y1="175" x2="270" y2="112" class="spoke"/>
+  <line x1="296" y1="192" x2="384" y2="157" class="spoke"/>
+  <line x1="293" y1="224" x2="340" y2="290" class="spoke"/>
+  <line x1="247" y1="224" x2="200" y2="290" class="spoke"/>
+  <line x1="244" y1="192" x2="156" y2="157" class="spoke-sorry"/>
 
-  <!-- Vertex labels -->
-  <!-- v0: PAC Learnable (top) -->
-  <text x="280" y="90" class="nodeb">PAC Learnable</text>
-  <text x="280" y="78" class="check">&#x2713;</text>
+  <!-- Small vertex circles -->
+  <circle cx="270" cy="100" r="4" fill="#111"/>
+  <circle cx="394" cy="152" r="4" fill="#111"/>
+  <circle cx="347" cy="298" r="4" fill="#111"/>
+  <circle cx="193" cy="298" r="4" fill="#111"/>
+  <circle cx="146" cy="152" r="3.5" fill="none" stroke="#111" stroke-width="1"/>
 
-  <!-- v1: Rademacher (upper-right) -->
-  <text x="435" y="148" class="node" text-anchor="start">Rademacher</text>
-  <text x="435" y="163" class="node" text-anchor="start">vanishes</text>
-  <text x="423" y="148" class="check">&#x2713;</text>
+  <!-- Vertex labels (positioned outside the pentagon) -->
 
-  <!-- v2: Growth function (lower-right) -->
-  <text x="372" y="320" class="node" text-anchor="start">Growth &#x2264;</text>
-  <text x="372" y="335" class="node" text-anchor="start">Sauer-Shelah</text>
-  <text x="362" y="320" class="check">&#x2713;</text>
+  <!-- v0: PAC Learnable (top, centered above) -->
+  <text x="270" y="82" class="nodeb">PAC Learnable</text>
+  <text x="316" y="82" class="check">  &#x2713;</text>
 
-  <!-- v3: Sample bounds (lower-left) -->
-  <text x="188" y="320" class="node" text-anchor="end">Sample</text>
-  <text x="188" y="335" class="node" text-anchor="end">complexity</text>
-  <text x="198" y="320" class="check" text-anchor="end">&#x2713;</text>
+  <!-- v1: Rademacher (upper-right, offset right) -->
+  <text x="410" y="142" class="node" text-anchor="start">Rademacher vanishes  &#x2713;</text>
 
-  <!-- v4: Compression (upper-left) -->
-  <text x="125" y="148" class="node" text-anchor="end">Compression</text>
-  <text x="125" y="163" class="node" text-anchor="end">scheme</text>
-  <text x="135" y="148" class="sorry-mark" text-anchor="end">&#x25CA;</text>
+  <!-- v2: Growth function (lower-right, offset right-below) -->
+  <text x="358" y="312" class="node" text-anchor="start">Growth &#x2264; Sauer-Shelah  &#x2713;</text>
 
-  <!-- Dashed line from hub to Compression to mark sorry -->
-  <!-- already drawn as spoke above; the sorry-edge on the diagonal marks it -->
+  <!-- v3: Sample bounds (lower-left, offset left-below) -->
+  <text x="182" y="312" class="node" text-anchor="end">Sample complexity  &#x2713;</text>
+
+  <!-- v4: Compression (upper-left, offset left) -->
+  <text x="134" y="142" class="node" text-anchor="end">Compression scheme  &#x25CA;</text>
+
+  <!-- Equivalence annotation on the pentagon -->
+  <text x="270" y="350" style="font-size:10px;fill:#888;text-anchor:middle;font-style:italic">all five &#x21D4; VCDim(C) &lt; &#x221E;</text>
 
   <!-- Vertical rule separating pentagram from side list -->
-  <line x1="545" y1="75" x2="545" y2="410" stroke="#ccc" stroke-width="0.8"/>
+  <line x1="535" y1="75" x2="535" y2="410" stroke="#ccc" stroke-width="0.8"/>
 
   <!-- Side: Other proved results -->
-  <text x="570" y="95" class="side-title">Also proved</text>
+  <text x="560" y="96" class="side-title">Also proved</text>
 
-  <text x="570" y="125" class="side-item">Littlestone characterization</text>
-  <text x="570" y="140" class="side-sep">Online &#x21D4; LittlestoneDim &lt; &#x221E;</text>
+  <text x="560" y="124" class="side-item">Littlestone characterization</text>
+  <text x="560" y="139" class="side-detail">Online learnable &#x21D4; LittlestoneDim &lt; &#x221E;</text>
 
-  <line x1="570" y1="152" x2="790" y2="152" stroke="#ddd" stroke-width="0.5"/>
+  <line x1="560" y1="153" x2="795" y2="153" stroke="#e5e5e5" stroke-width="0.5"/>
 
-  <text x="570" y="170" class="side-item">Gold's theorem</text>
-  <text x="570" y="185" class="side-sep">Locking sequence on infinite languages</text>
+  <text x="560" y="171" class="side-item">Gold's theorem</text>
+  <text x="560" y="186" class="side-detail">Locking sequence on infinite languages</text>
 
-  <line x1="570" y1="197" x2="790" y2="197" stroke="#ddd" stroke-width="0.5"/>
+  <line x1="560" y1="200" x2="795" y2="200" stroke="#e5e5e5" stroke-width="0.5"/>
 
-  <text x="570" y="215" class="side-item">Paradigm separations (all constructive)</text>
-  <text x="570" y="230" class="side-sep">PAC &#x21CF; Online (thresholds on &#x2115;)</text>
-  <text x="570" y="245" class="side-sep">Gold &#x21CF; PAC (finite-subset indicators)</text>
-  <text x="570" y="260" class="side-sep">Online &#x2192; PAC (always)</text>
+  <text x="560" y="218" class="side-item">Paradigm separations</text>
+  <text x="560" y="233" class="side-detail">PAC &#x21CF; Online  (thresholds on &#x2115;)</text>
+  <text x="560" y="248" class="side-detail">Gold &#x21CF; PAC  (finite-subset indicators)</text>
+  <text x="560" y="263" class="side-detail">Online &#x2192; PAC  (always)</text>
 
-  <line x1="570" y1="272" x2="790" y2="272" stroke="#ddd" stroke-width="0.5"/>
+  <line x1="560" y1="277" x2="795" y2="277" stroke="#e5e5e5" stroke-width="0.5"/>
 
-  <text x="570" y="290" class="side-item">Universal trichotomy (2/3 branches)</text>
-  <text x="570" y="305" class="side-sep">BHMZ middle branch: sorry</text>
+  <text x="560" y="295" class="side-item">Universal trichotomy  (2/3 branches)</text>
+  <text x="560" y="310" class="side-detail">BHMZ middle branch: sorry</text>
 
-  <line x1="570" y1="317" x2="790" y2="317" stroke="#ddd" stroke-width="0.5"/>
+  <line x1="560" y1="324" x2="795" y2="324" stroke="#e5e5e5" stroke-width="0.5"/>
 
-  <text x="570" y="335" class="side-item">Symmetrization + uniform convergence</text>
-  <text x="570" y="350" class="side-sep">3,027 lines, sorry-free</text>
+  <text x="560" y="342" class="side-item">Symmetrization + uniform convergence</text>
+  <text x="560" y="357" class="side-detail">3,027 lines, sorry-free</text>
 
-  <line x1="570" y1="362" x2="790" y2="362" stroke="#ddd" stroke-width="0.5"/>
+  <line x1="560" y1="371" x2="795" y2="371" stroke="#e5e5e5" stroke-width="0.5"/>
 
-  <text x="570" y="380" class="side-item">No-Free-Lunch (infinite domains)</text>
-  <text x="570" y="395" class="side-sep">False for finite X (textbook correction)</text>
+  <text x="560" y="389" class="side-item">No-Free-Lunch  (infinite domains only)</text>
+  <text x="560" y="404" class="side-detail">Provably false for finite X (textbook correction)</text>
 
   <!-- Bottom: stats line -->
-  <line x1="20" y1="418" x2="800" y2="418" stroke="#ccc" stroke-width="0.8"/>
+  <line x1="20" y1="420" x2="800" y2="420" stroke="#ccc" stroke-width="0.8"/>
   <text x="410" y="436" class="stat">31 files  &#x2502;  14,945 lines  &#x2502;  2 sorry  &#x2502;  Lean 4 + Mathlib4</text>
 
   <!-- Footnote -->
