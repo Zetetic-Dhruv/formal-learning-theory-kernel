@@ -439,157 +439,192 @@ The following diagram renders the full theorem dependency structure of this libr
 The counterfactual branches are the most informative part of this diagram. They show where the proof *could not* go, and why. Proving that a route is dead is a discovery of the same order as proving a theorem.
 
 ```mermaid
-flowchart TD
-    classDef proved fill:#1a5c1a,stroke:#2d8a2d,color:#fff
-    classDef sorry fill:#8b1a1a,stroke:#b33,color:#fff
-    classDef dead fill:#555,stroke:#888,color:#aaa,stroke-dasharray:5 5
-    classDef infra fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef intervention fill:#8b6914,stroke:#b8960c,color:#fff
+flowchart TB
+    classDef core fill:#1a365d,stroke:#2c5282,color:#fff
+    classDef measure fill:#2b6cb0,stroke:#3182ce,color:#fff
+    classDef infra fill:#4299e1,stroke:#63b3ed,color:#fff
+    classDef foundation fill:#2d3748,stroke:#4a5568,color:#e2e8f0
+    classDef sorry fill:#c53030,stroke:#e53e3e,color:#fff
+    classDef dead fill:#a0aec0,stroke:#718096,color:#2d3748,stroke-dasharray:5 5
 
-    %% ═══════════════════════════════════════
-    %% LAYER 0-1: TYPES AND DATA
-    %% ═══════════════════════════════════════
-    CC["ConceptClass X Bool
-    (22 incoming edges)"]:::proved
-    BL[BatchLearner]:::proved
-    OL[OnlineLearner]:::proved
-    GL[GoldLearner]:::proved
-    Mpi["Measure.pi (iid product)"]:::infra
+    %% ════════════════════════════════════
+    %% LAYER 0: FOUNDATIONS
+    %% ════════════════════════════════════
+    subgraph L0[" "]
+        direction LR
+        CC["ConceptClass X Bool"]:::foundation
+        BL["BatchLearner"]:::foundation
+        OL["OnlineLearner"]:::foundation
+        GL["GoldLearner"]:::foundation
+        Mpi["Measure.pi"]:::foundation
+        BRIDGE["Bridge: Bool bijection"]:::foundation
+    end
 
-    %% ═══════════════════════════════════════
-    %% LAYER 2: COMPLEXITY MEASURES
-    %% ═══════════════════════════════════════
-    VCD["VCDim(C) < inf"]:::proved
-    LD["LittlestoneDim(C) < inf"]:::proved
-    GF[GrowthFunction]:::proved
-    RAD["Rademacher -> 0"]:::proved
-    MCO[MindChangeOrdinal]:::proved
+    %% ════════════════════════════════════
+    %% LAYER 1: COMPLEXITY MEASURES
+    %% ════════════════════════════════════
+    subgraph L1[" "]
+        direction LR
+        VCD["VCDim C < ∞"]:::core
+        LD["LittlestoneDim C < ∞"]:::core
+        MCO["MindChangeOrdinal"]:::core
+    end
 
-    %% ═══════════════════════════════════════
-    %% LAYER 3: INFRASTRUCTURE (where LOC lives)
-    %% ═══════════════════════════════════════
-    SS["Sauer-Shelah
-    (via Mathlib Finset.vcDim)"]:::infra
-    UC["Uniform Convergence
-    (quantifier: exists m0, forall D)"]:::proved
-    SYM["Symmetrization
-    2,959 lines"]:::proved
-    HOE["Hoeffding concentration
-    300 lines"]:::proved
-    NFL["NFL core counting
-    200 lines"]:::proved
-    WB["WellBehavedVC
-    (regularity assumption)"]:::intervention
-    BRIDGE["Bridge: Bool bijection
-    CC <-> Set(Set X)"]:::infra
-    CS["CompressionScheme"]:::proved
-    BOOST["boost_two_thirds_to_pac
-    180 lines, Chebyshev"]:::proved
+    %% ════════════════════════════════════
+    %% LAYER 2: PROOF INFRASTRUCTURE
+    %% ════════════════════════════════════
+    subgraph L2[" "]
+        direction LR
+        SS["Sauer-Shelah · Mathlib"]:::infra
+        GF["GrowthFunction"]:::measure
+        RAD["Rademacher → 0"]:::measure
+        CS["CompressionScheme"]:::measure
+        NFL["NFL counting · 200 LOC"]:::measure
+    end
 
-    %% ═══════════════════════════════════════
-    %% LAYER 4: THEOREMS
-    %% ═══════════════════════════════════════
-    FT["FUNDAMENTAL THEOREM
-    (5-way equivalence)"]:::proved
-    VCC["vc_characterization
-    PAC <-> VCDim < inf"]:::proved
-    LC["littlestone_characterization
-    Online <-> LDim < inf"]:::proved
-    GT["gold_theorem
-    (locking sequence)"]:::proved
-    OIP["online_imp_pac"]:::proved
-    PNO["pac_not_implies_online
-    (threshold witness)"]:::proved
-    ENP["ex_not_implies_pac
-    (finite-subset witness)"]:::proved
-    NFLI["nfl_theorem_infinite"]:::proved
-    UT["universal_trichotomy
-    (2/3 proved)"]:::sorry
+    subgraph L2b[" "]
+        direction LR
+        WB["WellBehavedVC"]:::core
+        UC["Uniform Convergence · ∃ m₀, ∀ D"]:::measure
+    end
 
-    %% Sorry nodes
-    COMP_FWD["vcdim_finite_imp_compression
-    SORRY: Moran-Yehudayoff 2016"]:::sorry
-    BHMZ["bhmz_middle_branch
-    SORRY: BHMZ STOC 2021"]:::sorry
+    subgraph L2c[" "]
+        direction LR
+        SYM["Symmetrization · 2,959 LOC"]:::measure
+        HOE["Hoeffding · 300 LOC"]:::infra
+        BOOST["Boosting · Chebyshev"]:::measure
+    end
 
-    %% ═══════════════════════════════════════
-    %% FACTUAL EDGES (proved dependencies)
-    %% ═══════════════════════════════════════
-    CC --> VCD & LD & GF & MCO
-    BL --> VCC
-    OL --> LC
-    GL --> GT
-    Mpi --> NFL & UC
+    %% ════════════════════════════════════
+    %% LAYER 3: CHARACTERIZATIONS
+    %% ════════════════════════════════════
+    subgraph L3[" "]
+        direction LR
+        VCC["vc_characterization · PAC ↔ VCDim < ∞"]:::core
+        LC["littlestone_char · Online ↔ LDim < ∞"]:::core
+        GT["gold_theorem · locking"]:::core
+    end
 
-    VCD --> SS --> GF
-    VCD --> UC
+    %% ════════════════════════════════════
+    %% LAYER 4: SEPARATIONS
+    %% ════════════════════════════════════
+    subgraph L4[" "]
+        direction LR
+        OIP["online_imp_pac"]:::core
+        PNO["pac ⇏ online · thresholds"]:::core
+        ENP["ex ⇏ pac · finite subsets"]:::core
+        NFLI["nfl_theorem_infinite"]:::core
+    end
+
+    %% ════════════════════════════════════
+    %% LAYER 5: SUMMIT THEOREMS
+    %% ════════════════════════════════════
+    subgraph L5[" "]
+        direction LR
+        FT["FUNDAMENTAL THEOREM · 5-way equivalence"]:::core
+        UT["universal_trichotomy · 2/3 proved"]:::sorry
+    end
+
+    %% ════════════════════════════════════
+    %% SORRY NODES
+    %% ════════════════════════════════════
+    subgraph SBLOCK[" "]
+        direction LR
+        COMP_FWD["SORRY: vcdim_finite_imp_compression
+        Moran-Yehudayoff 2016"]:::sorry
+        BHMZ["SORRY: bhmz_middle_branch
+        BHMZ STOC 2021"]:::sorry
+    end
+
+    %% ════════════════════════════════════
+    %% EDGES: LAYER 0 → 1
+    %% ════════════════════════════════════
+    CC --> VCD
+    CC --> LD
+    CC --> MCO
+
+    %% ════════════════════════════════════
+    %% EDGES: LAYER 1 → 2
+    %% ════════════════════════════════════
+    VCD --> SS
     VCD --> RAD
     VCD --> CS
-    LD --> LC
-    MCO --> GT
+    VCD --> UC
+    BRIDGE --> SS
+    SS --> GF
+    Mpi --> NFL
+    Mpi --> UC
 
+    %% ════════════════════════════════════
+    %% EDGES: LAYER 2 → 2 (internal)
+    %% ════════════════════════════════════
     WB --> SYM
     UC --> SYM
     SYM --> HOE
     SYM --> GF
 
+    %% ════════════════════════════════════
+    %% EDGES: LAYERS 1-2 → 3
+    %% ════════════════════════════════════
+    VCD --> VCC
+    LD --> LC
+    MCO --> GT
+    BL --> VCC
+    OL --> LC
+    GL --> GT
+
+    %% ════════════════════════════════════
+    %% EDGES: LAYER 3 → 4
+    %% ════════════════════════════════════
+    LC --> OIP
+    VCD --> PNO
+    LD --> PNO
+    NFL --> NFLI
+    VCC --> NFLI
+
+    %% ════════════════════════════════════
+    %% EDGES: LAYERS 2-4 → 5
+    %% ════════════════════════════════════
     VCC --> FT
     CS --> FT
     RAD --> FT
     GF --> FT
-
-    BRIDGE --> SS
-    NFL --> NFLI
-    VCC --> NFLI
-    LC --> OIP
-    VCD --> PNO
-    LD --> PNO
-
-    BOOST --> UT
-    LC --> UT
-    BHMZ --> UT
-    VCC --> UT
     COMP_FWD --> CS
+    VCC --> UT
+    LC --> UT
+    BOOST --> UT
+    BHMZ --> UT
 
-    %% ═══════════════════════════════════════
-    %% COUNTERFACTUAL BRANCHES (dead ends)
-    %% Dashed lines = explored and killed
-    %% ═══════════════════════════════════════
+    %% ════════════════════════════════════
+    %% COUNTERFACTUAL BRANCHES
+    %% ════════════════════════════════════
+    CF1["✗ NFL for finite X
+    provably false"]:::dead
+    CF1 -.-> NFLI
 
-    CF1["DEAD: NFL for finite X
-    Provably false:
-    memorizer learns Set.univ"]:::dead
-    CF1 -."intervention 1".-> NFLI
+    CF2["✗ BranchWise LDim
+    no path consistency"]:::dead
+    CF2 -.-> LC
 
-    CF2["DEAD: BranchWise LDim
-    Definition inconsistency:
-    const_true/false gives LDim=inf"]:::dead
-    CF2 -."intervention 2".-> LC
+    CF3["✗ Direct union bound
+    gives 2^2m, not GF"]:::dead
+    CF3 -.-> UC
 
-    CF3["DEAD: Direct union bound
-    ROUTE KILLED: gives 2^2m not GF
-    (3 agent attempts failed)"]:::dead
-    CF3 -."intervention 3".-> UC
+    CF4["✗ UC without regularity
+    bad event not measurable"]:::dead
+    CF4 -.-> SYM
 
-    CF4["DEAD: UC without regularity
-    Bad event not measurable
-    for uncountable C"]:::dead
-    CF4 -."intervention 4".-> SYM
+    CF5["✗ PAC with ∃ Dm
+    trivially true"]:::dead
+    CF5 -.-> VCC
 
-    CF5["DEAD: PAC with existential Dm
-    Trivially true:
-    Dm depends on c via memorizer"]:::dead
-    CF5 -."intervention 5".-> VCC
+    CF6["✗ D-dependent m₀
+    not distribution-free"]:::dead
+    CF6 -.-> UC
 
-    CF6["DEAD: UC with D-dependent m0
-    mf(eps,delta) must be
-    distribution-free"]:::dead
-    CF6 -."intervention 6".-> UC
-
-    CF7["DEAD: Bridge for |Y| > 2
-    Bijection is Bool-specific;
-    level sets lose function structure"]:::dead
-    CF7 -."intervention 7".-> BRIDGE
+    CF7["✗ Bridge for |Y| > 2
+    Bool-specific bijection"]:::dead
+    CF7 -.-> BRIDGE
 ```
 
 ### Reading the counterfactual branches
