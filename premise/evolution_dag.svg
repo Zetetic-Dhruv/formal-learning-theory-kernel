@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="980" viewBox="0 0 960 980">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#6b7280"/>
+    </marker>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      .header { font-size: 13px; font-weight: bold; fill: #111827; }
+      .node-label { font-size: 11px; }
+      .intervention-label { font-size: 10px; fill: #111827; }
+      .section-label { font-size: 11px; font-weight: bold; fill: #6b7280; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="980" fill="#ffffff"/>
+
+  <!-- Column headers (Row 0) -->
+  <text x="80" y="35" class="header" text-anchor="start">ORIGIN (2026-03-18)</text>
+  <text x="400" y="35" class="header" text-anchor="start">INTERVENTION</text>
+  <text x="720" y="35" class="header" text-anchor="start">FINAL (2026-03-25)</text>
+
+  <!-- Thin header underline -->
+  <line x1="20" y1="50" x2="940" y2="50" stroke="#d1d5db" stroke-width="1"/>
+
+  <!-- Row 1: PACLearnable (y=90) -->
+  <rect x="30" y="70" width="240" height="50" rx="6" fill="#374151"/>
+  <text x="150" y="92" class="node-label" fill="white" text-anchor="middle">PACLearnable:</text>
+  <text x="150" y="106" class="node-label" fill="white" text-anchor="middle" font-size="10">exists Dm, forall c, ...</text>
+
+  <rect x="310" y="70" width="260" height="50" rx="6" fill="#f3f4f6" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="440" y="88" class="intervention-label" text-anchor="middle">existential Dm allows Dm to</text>
+  <text x="440" y="102" class="intervention-label" text-anchor="middle">depend on target c via memorizer</text>
+
+  <rect x="610" y="70" width="240" height="50" rx="6" fill="#dc2626"/>
+  <text x="730" y="92" class="node-label" fill="white" text-anchor="middle">PACLearnable:</text>
+  <text x="730" y="106" class="node-label" fill="white" text-anchor="middle" font-size="10">Measure.pi (distribution-free)</text>
+
+  <line x1="270" y1="95" x2="310" y2="95" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="95" x2="610" y2="95" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Row 2: NFL (y=185) -->
+  <rect x="30" y="165" width="240" height="50" rx="6" fill="#374151"/>
+  <text x="150" y="187" class="node-label" fill="white" text-anchor="middle">NFL:</text>
+  <text x="150" y="201" class="node-label" fill="white" text-anchor="middle" font-size="10">forall X (finite or infinite)</text>
+
+  <rect x="310" y="165" width="260" height="50" rx="6" fill="#f3f4f6" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="440" y="183" class="intervention-label" text-anchor="middle">finite X: memorizer learns Set.univ;</text>
+  <text x="440" y="197" class="intervention-label" text-anchor="middle">VCDim = |X| &lt; inf</text>
+
+  <rect x="610" y="165" width="240" height="50" rx="6" fill="#dc2626"/>
+  <text x="730" y="187" class="node-label" fill="white" text-anchor="middle">NFL:</text>
+  <text x="730" y="201" class="node-label" fill="white" text-anchor="middle" font-size="10">[Infinite X] required</text>
+
+  <line x1="270" y1="190" x2="310" y2="190" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="190" x2="610" y2="190" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Row 3: LittlestoneDim (y=280) -->
+  <rect x="30" y="260" width="240" height="50" rx="6" fill="#374151"/>
+  <text x="150" y="282" class="node-label" fill="white" text-anchor="middle">LittlestoneDim:</text>
+  <text x="150" y="296" class="node-label" fill="white" text-anchor="middle" font-size="10">branch-wise tree</text>
+
+  <rect x="310" y="260" width="260" height="50" rx="6" fill="#f3f4f6" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="440" y="278" class="intervention-label" text-anchor="middle">const_true/false gives LDim = inf;</text>
+  <text x="440" y="292" class="intervention-label" text-anchor="middle">C trivially learnable</text>
+
+  <rect x="610" y="260" width="240" height="50" rx="6" fill="#dc2626"/>
+  <text x="730" y="278" class="node-label" fill="white" text-anchor="middle">LittlestoneDim: path-wise</text>
+  <text x="730" y="294" class="node-label" fill="white" text-anchor="middle" font-size="10">tree (C restricted at each call)</text>
+
+  <line x1="270" y1="285" x2="310" y2="285" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="285" x2="610" y2="285" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Row 4: HasUC (y=375) -->
+  <rect x="30" y="355" width="240" height="50" rx="6" fill="#374151"/>
+  <text x="150" y="377" class="node-label" fill="white" text-anchor="middle">HasUC:</text>
+  <text x="150" y="391" class="node-label" fill="white" text-anchor="middle" font-size="10">forall D, exists m0, ...</text>
+
+  <rect x="310" y="355" width="260" height="50" rx="6" fill="#f3f4f6" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="440" y="373" class="intervention-label" text-anchor="middle">D-dependent m0 makes</text>
+  <text x="440" y="387" class="intervention-label" text-anchor="middle">mf(e,d) distribution-dependent</text>
+
+  <rect x="610" y="355" width="240" height="50" rx="6" fill="#dc2626"/>
+  <text x="730" y="373" class="node-label" fill="white" text-anchor="middle">HasUC: exists m0, forall D</text>
+  <text x="730" y="389" class="node-label" fill="white" text-anchor="middle" font-size="10">(quantifier reversed)</text>
+
+  <line x1="270" y1="380" x2="310" y2="380" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="380" x2="610" y2="380" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Row 5: MindChangeOrdinal (y=470) -->
+  <rect x="30" y="450" width="240" height="50" rx="6" fill="#374151"/>
+  <text x="150" y="472" class="node-label" fill="white" text-anchor="middle">MindChangeCount:</text>
+  <text x="150" y="486" class="node-label" fill="white" text-anchor="middle" font-size="10">Nat</text>
+
+  <rect x="310" y="450" width="260" height="50" rx="6" fill="#f3f4f6" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="440" y="468" class="intervention-label" text-anchor="middle">count says nothing about correctness;</text>
+  <text x="440" y="482" class="intervention-label" text-anchor="middle">backward direction unprovable</text>
+
+  <rect x="610" y="450" width="240" height="50" rx="6" fill="#dc2626"/>
+  <text x="730" y="472" class="node-label" fill="white" text-anchor="middle">MindChangeOrdinal:</text>
+  <text x="730" y="486" class="node-label" fill="white" text-anchor="middle" font-size="10">Ordinal (encodes correctness)</text>
+
+  <line x1="270" y1="475" x2="310" y2="475" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="475" x2="610" y2="475" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Separator: Mathlib-forced -->
+  <line x1="20" y1="535" x2="940" y2="535" stroke="#d1d5db" stroke-width="1"/>
+  <text x="480" y="555" class="section-label" text-anchor="middle">MATHLIB-FORCED</text>
+
+  <!-- Row 6: VCDim (y=580) -->
+  <rect x="30" y="570" width="240" height="50" rx="6" fill="#374151"/>
+  <text x="150" y="592" class="node-label" fill="white" text-anchor="middle">VCDim:</text>
+  <text x="150" y="606" class="node-label" fill="white" text-anchor="middle" font-size="10">Nat</text>
+
+  <rect x="310" y="570" width="260" height="50" rx="6" fill="#f3f4f6" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="440" y="585" class="intervention-label" text-anchor="middle">Mathlib Finset.vcDim uses</text>
+  <text x="440" y="599" class="intervention-label" text-anchor="middle">WithTop Nat; ordinal bridge</text>
+  <text x="440" y="613" class="intervention-label" text-anchor="middle">needs BddAbove</text>
+
+  <rect x="610" y="570" width="240" height="50" rx="6" fill="#2563eb"/>
+  <text x="730" y="592" class="node-label" fill="white" text-anchor="middle">VCDim:</text>
+  <text x="730" y="606" class="node-label" fill="white" text-anchor="middle" font-size="10">WithTop Nat</text>
+
+  <line x1="270" y1="595" x2="310" y2="595" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="595" x2="610" y2="595" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Row 7: CompressionScheme (y=675) -->
+  <rect x="30" y="655" width="240" height="50" rx="6" fill="#374151"/>
+  <text x="150" y="677" class="node-label" fill="white" text-anchor="middle">CompressionScheme</text>
+  <text x="150" y="691" class="node-label" fill="white" text-anchor="middle" font-size="10">(placeholder)</text>
+
+  <rect x="310" y="655" width="260" height="50" rx="6" fill="#f3f4f6" stroke="#111827" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="440" y="673" class="intervention-label" text-anchor="middle">Moran-Yehudayoff 2016:</text>
+  <text x="440" y="687" class="intervention-label" text-anchor="middle">approximate minimax not in Mathlib</text>
+
+  <rect x="610" y="655" width="240" height="50" rx="6" fill="#2563eb"/>
+  <text x="730" y="677" class="node-label" fill="white" text-anchor="middle">CompressionScheme:</text>
+  <text x="730" y="691" class="node-label" fill="white" text-anchor="middle" font-size="10">sorry</text>
+
+  <line x1="270" y1="680" x2="310" y2="680" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="680" x2="610" y2="680" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Separator: Unchanged -->
+  <line x1="20" y1="740" x2="940" y2="740" stroke="#d1d5db" stroke-width="1"/>
+  <text x="480" y="760" class="section-label" text-anchor="middle">UNCHANGED</text>
+
+  <!-- Row 9: Three unchanged items (y=790) -->
+  <!-- ConceptClass -->
+  <rect x="30" y="780" width="160" height="44" rx="6" fill="#374151"/>
+  <text x="110" y="806" class="node-label" fill="white" text-anchor="middle">ConceptClass</text>
+  <rect x="610" y="780" width="160" height="44" rx="6" fill="#1a3a5c"/>
+  <text x="690" y="806" class="node-label" fill="white" text-anchor="middle">ConceptClass</text>
+  <line x1="190" y1="802" x2="610" y2="802" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Bridge -->
+  <rect x="30" y="840" width="160" height="44" rx="6" fill="#374151"/>
+  <text x="110" y="866" class="node-label" fill="white" text-anchor="middle">Bridge</text>
+  <rect x="610" y="840" width="160" height="44" rx="6" fill="#1a3a5c"/>
+  <text x="690" y="866" class="node-label" fill="white" text-anchor="middle">Bridge</text>
+  <line x1="190" y1="862" x2="610" y2="862" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- BayesianLearner -->
+  <rect x="30" y="900" width="160" height="44" rx="6" fill="#374151"/>
+  <text x="110" y="926" class="node-label" fill="white" text-anchor="middle">BayesianLearner</text>
+  <rect x="610" y="900" width="160" height="44" rx="6" fill="#1a3a5c"/>
+  <text x="690" y="926" class="node-label" fill="white" text-anchor="middle">BayesianLearner</text>
+  <line x1="190" y1="922" x2="610" y2="922" stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Legend -->
+  <rect x="30" y="955" width="12" height="12" rx="2" fill="#dc2626"/>
+  <text x="48" y="966" font-size="10" fill="#374151" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Mathematical discovery</text>
+  <rect x="220" y="955" width="12" height="12" rx="2" fill="#2563eb"/>
+  <text x="238" y="966" font-size="10" fill="#374151" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Mathlib-forced</text>
+  <rect x="370" y="955" width="12" height="12" rx="2" fill="#1a3a5c"/>
+  <text x="388" y="966" font-size="10" fill="#374151" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Unchanged</text>
+  <rect x="500" y="955" width="12" height="12" rx="2" fill="#374151"/>
+  <text x="518" y="966" font-size="10" fill="#374151" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif">Origin type</text>
+</svg>

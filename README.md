@@ -508,6 +508,11 @@ The following diagram renders the full theorem dependency structure of this libr
 
 The counterfactual branches are the most informative part of this diagram. They show where the proof *could not* go, and why. Proving that a route is dead is a discovery of the same order as proving a theorem.
 
+<div style="overflow-x: auto; overflow-y: auto; max-height: 900px; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
+  <img src="premise/discovery_dag.svg" alt="Discovery DAG: theorem dependencies with counterfactual branches" />
+</div>
+
+<!-- Original Mermaid source preserved below for reference
 ```mermaid
 flowchart TB
     classDef core fill:#1a365d,stroke:#2c5282,color:#fff
@@ -696,6 +701,7 @@ flowchart TB
     Bool-specific bijection"]:::dead
     CF7 -.-> BRIDGE
 ```
+-->
 
 ### Reading the counterfactual branches
 
@@ -721,79 +727,9 @@ The counterfactual branches collectively explain why the library has the shape i
 
 The type architecture began as a derivation from informal learning theory (the author's textbook). Formalization forced modifications. Some were mathematical discoveries (the textbook was wrong). Others were forced by Mathlib's current state. The premise-evolution DAG shows which.
 
-<div style="overflow-x: auto; max-height: 900px; overflow-y: auto;">
-
-```mermaid
-flowchart TB
-    classDef origin fill:#374151,stroke:#6b7280,color:#d1d5db
-    classDef discovery fill:#dc2626,stroke:#991b1b,color:#fff
-    classDef mathlib fill:#2563eb,stroke:#1d4ed8,color:#fff
-    classDef stable fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef intervention fill:#111827,stroke:#374151,color:#9ca3af,stroke-dasharray:5 5
-
-    %% ══════════════════════════════════════════
-    %% MATHEMATICAL DISCOVERIES (5 types changed)
-    %% ══════════════════════════════════════════
-
-    O_PAC["ORIGIN: PACLearnable\nexists Dm, forall c, ..."]:::origin
-    I_PAC(["existential Dm allows\nDm to depend on target c\nvia memorizer + point mass"]):::intervention
-    F_PAC["FINAL: PACLearnable\nMeasure.pi (distribution-free)"]:::discovery
-    O_PAC --> I_PAC --> F_PAC
-
-    O_NFL["ORIGIN: NFL\nforall X (finite or infinite)"]:::origin
-    I_NFL(["finite X: memorizer learns\nSet.univ; VCDim = |X| < inf"]):::intervention
-    F_NFL["FINAL: NFL\n[Infinite X] required"]:::discovery
-    O_NFL --> I_NFL --> F_NFL
-
-    O_LD["ORIGIN: LittlestoneDim\nbranch-wise tree shattering"]:::origin
-    I_LD(["const_true, const_false gives\nLDim = inf under branch-wise;\nC is trivially learnable"]):::intervention
-    F_LD["FINAL: LittlestoneDim\npath-wise tree (C restricted\nat each recursive call)"]:::discovery
-    O_LD --> I_LD --> F_LD
-
-    O_UC["ORIGIN: HasUC\nforall D, exists m0, ..."]:::origin
-    I_UC(["D-dependent m0 makes\nmf(eps,delta) distribution-\ndependent; PACLearnable violated"]):::intervention
-    F_UC["FINAL: HasUC\nexists m0, forall D\n(quantifier order reversed)"]:::discovery
-    O_UC --> I_UC --> F_UC
-
-    O_MC["ORIGIN: MindChangeCount\nNat (counts changes only)"]:::origin
-    I_MC(["count says nothing about\ncorrectness; backward direction\nof characterization unprovable"]):::intervention
-    F_MC["FINAL: MindChangeOrdinal\nOrdinal (returns omega for\nnon-convergent or wrong-limit)"]:::discovery
-    O_MC --> I_MC --> F_MC
-
-    %% ══════════════════════════════════════════
-    %% MATHLIB-FORCED (2 types changed)
-    %% ══════════════════════════════════════════
-
-    O_VC["ORIGIN: VCDim\nNat"]:::origin
-    I_VC(["Mathlib Finset.vcDim uses\nWithTop Nat; ordinal extension\nneeds BddAbove bridge"]):::intervention
-    F_VC["FINAL: VCDim\nWithTop Nat\n(Mathlib ordinal bridge)"]:::mathlib
-    O_VC --> I_VC --> F_VC
-
-    O_COMP["ORIGIN: CompressionScheme\n(placeholder)"]:::origin
-    I_COMP(["Moran-Yehudayoff 2016:\napproximate minimax on\nbounded-VC binary matrices\nnot in Mathlib"]):::intervention
-    F_COMP["FINAL: CompressionScheme\nsorry (blocked by\nexternal result)"]:::mathlib
-    O_COMP --> I_COMP --> F_COMP
-
-    %% ══════════════════════════════════════════
-    %% UNCHANGED (3 types stable)
-    %% ══════════════════════════════════════════
-
-    O_CC["ORIGIN: ConceptClass\nSet (X -> Bool)"]:::origin
-    F_CC["FINAL: ConceptClass\nSet (X -> Bool)\n(Bool boundary confirmed)"]:::stable
-    O_CC --> F_CC
-
-    O_BR["ORIGIN: Bridge\nConceptClass -> Set"]:::origin
-    F_BR["FINAL: Bridge\nBool-lossless bijection\n(proved injective)"]:::stable
-    O_BR --> F_BR
-
-    O_BY["ORIGIN: BayesianLearner\nR-valued prior"]:::origin
-    F_BY["FINAL: BayesianLearner\nR-valued\n(alternatives commented)"]:::stable
-    O_BY --> F_BY
-```
-
+<div style="overflow-x: auto; overflow-y: auto; max-height: 1000px; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
+  <img src="premise/evolution_dag.svg" alt="Premise Evolution DAG: origin types, interventions, and final types" />
 </div>
-
-**Legend:** <span style="color:#dc2626">Red</span> = changed by mathematical discovery (the original definition was provably inadequate). <span style="color:#2563eb">Blue</span> = changed by Mathlib's current state (the available API forced a specific representation). <span style="color:#4a8abf">Dark blue</span> = unchanged through formalization. Gray dashed = intervention that forced the change.
 
 Six of ten core types were modified during formalization. Of these, five were mathematical discoveries (the original definitions were provably inadequate) and one was forced by Mathlib's ordinal/VC dimension API. No type was added that was not in the original premise. The grammar was complete; it was the definitions that needed correction.
 
