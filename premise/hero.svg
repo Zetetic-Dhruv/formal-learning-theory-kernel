@@ -59,23 +59,26 @@
   <circle cx="193" cy="298" r="4" fill="#111"/>
   <circle cx="146" cy="152" r="3.5" fill="none" stroke="#111" stroke-width="1"/>
 
-  <!-- Vertex labels (positioned outside the pentagon) -->
+  <!-- Vertex labels (pushed radially outward from pentagon center) -->
 
-  <!-- v0: PAC Learnable (top, centered above) -->
-  <text x="270" y="82" class="nodeb">PAC Learnable</text>
-  <text x="316" y="82" class="check">  &#x2713;</text>
+  <!-- v0: PAC Learnable (top, well above vertex) -->
+  <text x="270" y="74" class="nodeb">PAC Learnable  &#x2713;</text>
 
-  <!-- v1: Rademacher (upper-right, offset right) -->
-  <text x="410" y="142" class="node" text-anchor="start">Rademacher vanishes  &#x2713;</text>
+  <!-- v1: Rademacher (upper-right, pushed right and up) -->
+  <text x="425" y="130" class="node" text-anchor="start">Rademacher</text>
+  <text x="425" y="145" class="node" text-anchor="start">vanishes  &#x2713;</text>
 
-  <!-- v2: Growth function (lower-right, offset right-below) -->
-  <text x="358" y="312" class="node" text-anchor="start">Growth &#x2264; Sauer-Shelah  &#x2713;</text>
+  <!-- v2: Growth function (lower-right, pushed right and down) -->
+  <text x="375" y="325" class="node" text-anchor="start">Growth &#x2264;</text>
+  <text x="375" y="340" class="node" text-anchor="start">Sauer-Shelah  &#x2713;</text>
 
-  <!-- v3: Sample bounds (lower-left, offset left-below) -->
-  <text x="182" y="312" class="node" text-anchor="end">Sample complexity  &#x2713;</text>
+  <!-- v3: Sample bounds (lower-left, pushed left and down) -->
+  <text x="165" y="325" class="node" text-anchor="end">Sample</text>
+  <text x="165" y="340" class="node" text-anchor="end">complexity  &#x2713;</text>
 
-  <!-- v4: Compression (upper-left, offset left) -->
-  <text x="134" y="142" class="node" text-anchor="end">Compression scheme  &#x25CA;</text>
+  <!-- v4: Compression (upper-left, pushed left and up) -->
+  <text x="115" y="130" class="node" text-anchor="end">Compression</text>
+  <text x="115" y="145" class="node" text-anchor="end">scheme  &#x25CA;</text>
 
   <!-- Equivalence annotation on the pentagon -->
   <text x="270" y="350" style="font-size:10px;fill:#888;text-anchor:middle;font-style:italic">all five &#x21D4; VCDim(C) &lt; &#x221E;</text>
