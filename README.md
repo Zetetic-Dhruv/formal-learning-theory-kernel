@@ -663,7 +663,7 @@ The type architecture began as a derivation from informal learning theory (the a
   <img src="premise/evolution_dag.svg" alt="Premise Evolution DAG: origin types, interventions, and final types" />
 </div>
 
-Six of ten core types were modified during formalization. Of these, five were mathematical discoveries (the original definitions were provably inadequate) and one was forced by Mathlib's ordinal/VC dimension API. No type was added that was not in the original premise. The grammar was complete; it was the definitions that needed correction.
+Seven of ten core types required attention during formalization. Five were mathematical discoveries: the original definitions were provably inadequate (PACLearnable, NFL, LittlestoneDim, HasUniformConvergence, MindChangeOrdinal). One was forced by Mathlib's ordinal/VC dimension API (VCDim: Nat to WithTop Nat). One remains at the frontier: CompressionScheme is blocked by Moran-Yehudayoff 2016, a mathematical result absent from Mathlib, not an API constraint. The remaining three types (ConceptClass, Bridge, BayesianLearner) survived formalization unchanged, though ConceptClass required 4 alternative definitions to be evaluated and rejected during premise creation. One type was added that was not in the original premise: `WellBehavedVC`, a regularity assumption for uncountable concept classes that textbooks suppress.
 
 ---
 
