@@ -1,4 +1,10 @@
-# Formal(ized) Learning Theory 
+# Formal(ized) Learning Theory
+
+[![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml)
+
+| Lean | Mathlib | LOC | Theorems | Sorry | Release |
+|------|---------|-----|----------|-------|---------|
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 14,945 | 210 | **2** | [`v1.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0) |
 
 <p align="center">
   <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
@@ -6,9 +12,16 @@
 
 A Lean4 formalization of the **Fundamental Theorem of Statistical Learning** (5-way equivalence, 4/5 conjuncts proved), the **Littlestone characterization** of online learnability, **Gold's theorem** on identification in the limit, all **paradigm separations** with constructive witnesses, and the **universal learning trichotomy** (2/3 branches proved). Built on Mathlib4.
 
-The two remaining sorry tactics are blocked by Moran-Yehudayoff 2016 (compression conjecture) and Bousquet-Hanneke-Moran-Zhivotovskiy STOC 2021 (one-inclusion graph (a combinatorial construction on labeled samples)). Both require combinatorial infrastructure absent from Mathlib. They are the frontier, not engineering gaps.
+The two remaining sorry tactics are blocked by Moran-Yehudayoff 2016 (compression conjecture) and Bousquet-Hanneke-Moran-Zhivotovskiy STOC 2021 (one-inclusion graph construction). Both require combinatorial infrastructure absent from Mathlib. They are the frontier, not engineering gaps.
 
 This document presents the **structure of learning theory as revealed by formalization**: the type-theoretic fractures, the proof asymmetries textbooks suppress, and the world model of theorem dependencies that emerges when one forces an entire field through a proof assistant.
+
+### Core and extended modules
+
+The kernel separates into a **fully checked core** and an **extended frontier**:
+
+- **Core** (31 files, 14,945 LOC, 0 sorry): All files in `FLT_Proofs/` except the two theorems below compile without sorry. This includes the full VC characterization, Littlestone characterization, Gold's theorem, all separations, NFL theorems, symmetrization infrastructure, and Rademacher bounds.
+- **Extended frontier** (2 sorry): `Complexity/Generalization.lean:1903` (`vcdim_finite_imp_compression`, blocked by Moran-Yehudayoff 2016) and `Theorem/Extended.lean:39` (`bhmz_middle_branch`, blocked by BHMZ STOC 2021). Both are on the critical path of the fundamental theorem's compression conjunct and the universal trichotomy's middle branch respectively.
 
 ---
 
@@ -674,17 +687,84 @@ The full discovery process (10,000+ recorded tactics, 74 reasoning traces, error
 
 ---
 
-## X. Building
+## X. Theorem Index
+
+Machine-generated from the codebase. Grouped by role.
+
+### Characterization theorems (dependency roots)
+
+| Theorem | File | Status |
+|---------|------|--------|
+| `fundamental_theorem` | Theorem/PAC.lean:272 | Proved (4/5 conjuncts) |
+| `vc_characterization` | Theorem/PAC.lean:113 | Proved |
+| `littlestone_characterization` | Theorem/Online.lean:608 | Proved |
+| `gold_theorem` | Theorem/Gold.lean:19 | Proved |
+| `mind_change_characterization` | Theorem/Gold.lean:206 | Proved |
+| `universal_trichotomy` | Theorem/Extended.lean:53 | 2/3 proved |
+
+### Separation theorems
+
+| Theorem | File | Witness |
+|---------|------|---------|
+| `pac_not_implies_online` | Theorem/Separation.lean:1268 | Threshold class on N |
+| `ex_not_implies_pac` | Theorem/Separation.lean:1330 | Finite-subset indicators |
+| `online_imp_pac` | Theorem/Separation.lean:131 | (always: not a separation) |
+| `uc_does_not_imply_online` | Complexity/GeneralizationResults.lean:160 | (constructive) |
+| `online_pac_gold_separation` | Theorem/Separation.lean:1441 | (all three strict) |
+
+### NFL and lower bounds
+
+| Theorem | File | Status |
+|---------|------|--------|
+| `nfl_theorem_infinite` | Theorem/PAC.lean:342 | Proved (requires `[Infinite X]`) |
+| `nfl_fixed_sample` | Theorem/PAC.lean:368 | Proved |
+| `vcdim_univ_infinite` | Theorem/PAC.lean:321 | Proved (NFL false for finite X) |
+| `pac_lower_bound` | Theorem/PAC.lean:160 | Proved |
+| `sample_complexity_lower_bound` | Complexity/GeneralizationResults.lean:204 | Proved |
+
+### Proof infrastructure (load-bearing)
+
+| Theorem | File | LOC context |
+|---------|------|-------------|
+| `vcdim_finite_imp_uc'` | Complexity/Symmetrization.lean:2745 | 3,027 LOC chain |
+| `symmetrization_uc_bound` | Complexity/Symmetrization.lean:2250 | Ghost-sample core |
+| `hoeffding_one_sided` | Complexity/Symmetrization.lean:188 | Concentration |
+| `finite_exchangeability_bound` | Complexity/Symmetrization.lean:1047 | NullMeasurableSet Tonelli |
+| `sauer_shelah_exp_bound` | Complexity/Rademacher.lean:905 | Growth function bound |
+| `vcdim_finite_imp_rademacher_vanishing` | Complexity/Rademacher.lean:1818 | Rademacher chain |
+| `finite_massart_lemma` | Complexity/Rademacher.lean:507 | Massart's lemma |
+| `advice_elimination` | Theorem/Extended.lean:514 | Advice-to-PAC reduction |
+
+### Bridge theorems (Mathlib interface)
+
+| Theorem | File | Bridges |
+|---------|------|---------|
+| `conceptToFinset_injective` | Bridge.lean:97 | ConceptClass to Finset |
+| `shatters_iff_finset_shatters` | Bridge.lean:130 | Shatters equivalence |
+| `vcdim_eq_finset_vcdim` | Bridge.lean:217 | VCDim to Mathlib VCDim |
+| `growth_function_le_sauer_shelah` | Bridge.lean:465 | Sauer-Shelah via Mathlib |
+| `VCDim_embed_ordinal` | Complexity/Ordinal.lean:76 | WithTop Nat to Ordinal |
+
+### Remaining gaps (2 sorry)
+
+| Theorem | File | Blocked by | Required for |
+|---------|------|-----------|-------------|
+| `vcdim_finite_imp_compression` | Complexity/Generalization.lean:1903 | Moran-Yehudayoff 2016 | Fundamental theorem conjunct 2 (forward) |
+| `bhmz_middle_branch` | Theorem/Extended.lean:39 | BHMZ STOC 2021 | Universal trichotomy branch 2 |
+
+---
+
+## XI. Building
 
 ```bash
 lake build   # Requires elan. First build fetches Mathlib (~20 min).
 ```
 
-Lean `v4.29.0-rc6` | Mathlib4 from `master`
+Lean `v4.29.0-rc6` | Mathlib4 pinned to [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | See [`test/ARTIFACT_CHECKLIST.md`](test/ARTIFACT_CHECKLIST.md) for full reproducibility details.
 
 ---
 
-## XI. Companion Repositories
+## XII. Companion Repositories
 
 This kernel is one component of a larger programme. The four public companion repositories:
 
@@ -697,7 +777,7 @@ This kernel is one component of a larger programme. The four public companion re
 
 ---
 
-## XII. Citation
+## XIII. Citation
 
 ```bibtex
 @software{gupta2026flt_kernel,
@@ -730,7 +810,7 @@ This kernel is one component of a larger programme. The four public companion re
 
 ---
 
-## XIII. Attribution
+## XIV. Attribution
 
 Copyright (c) 2026 Dhruv Gupta. Apache 2.0.
 
