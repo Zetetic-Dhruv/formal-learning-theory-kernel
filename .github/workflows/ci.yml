@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      - name: Cache Mathlib
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan
+            .lake
+          key: lean-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+          restore-keys: |
+            lean-
+
+      - name: Build
+        run: lake build
+
+      - name: Count sorrys
+        run: |
+          echo "=== Sorry check ==="
+          SORRY_COUNT=$(grep -r "sorry" --include="*.lean" FLT_Proofs/ | grep -v "^.*--.*sorry" | grep -v "^.*/-" | grep -c "sorry" || true)
+          echo "Found $SORRY_COUNT sorry occurrences in .lean files"
+          if [ "$SORRY_COUNT" -gt 2 ]; then
+            echo "::error::Sorry count ($SORRY_COUNT) exceeds the 2 known sorrys. New sorrys introduced."
+            exit 1
+          fi
+          echo "Sorry count within expected range (2 known: vcdim_finite_imp_compression, bhmz_middle_branch)"
