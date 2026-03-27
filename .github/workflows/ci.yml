@@ -42,3 +42,15 @@ jobs:
             exit 1
           fi
           echo "Sorry count within expected range (2 known: vcdim_finite_imp_compression, bhmz_middle_branch)"
+
+      - name: Verify metrics
+        run: |
+          echo "=== Metrics check ==="
+          LINES=$(find FLT_Proofs -name "*.lean" | xargs wc -l | tail -1 | awk '{print $1}')
+          PUB_THM=$(grep -rn --include="*.lean" -E '^(theorem|lemma) ' FLT_Proofs/ | wc -l | tr -d ' ')
+          PRIV_THM=$(grep -rn --include="*.lean" -E '^private (theorem|lemma) ' FLT_Proofs/ | wc -l | tr -d ' ')
+          TOTAL_THM=$((PUB_THM + PRIV_THM))
+          DEFS=$(grep -rn --include="*.lean" -E '^(def |noncomputable def |private def |abbrev )' FLT_Proofs/ | wc -l | tr -d ' ')
+          STRUCTS=$(grep -rn --include="*.lean" -E '^structure ' FLT_Proofs/ | wc -l | tr -d ' ')
+          FILES=$(find FLT_Proofs -name "*.lean" | wc -l | tr -d ' ')
+          echo "Lines: $LINES | Theorems: $TOTAL_THM ($PUB_THM pub + $PRIV_THM priv) | Defs: $DEFS | Structs: $STRUCTS | Files: $FILES"

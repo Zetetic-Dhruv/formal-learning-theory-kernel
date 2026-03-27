@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package LimitsOfLearning where
+package FLTKernel where
   leanOptions := #[
     ⟨`autoImplicit, false⟩
   ]

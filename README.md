@@ -4,7 +4,7 @@
 
 | Lean | Mathlib | LOC | Core theorems | Core sorry | Extended theorems | Extended sorry | Release |
 |------|---------|-----|---------------|------------|-------------------|----------------|---------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 14,945 | 204 | **0** | 6 | **2** | [`v1.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0) |
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 14,945 | 204 (132 public + 78 private, minus 6 sorry-tainted) | **0** | 6 | **2** | [`v1.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0) |
 
 <p align="center">
   <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
@@ -427,8 +427,8 @@ fundamental_theorem
 
 | Metric | Count |
 |--------|-------|
-| Theorem/lemma statements | 210 |
-| Definitions | 157 |
+| Theorem/lemma statements | 210 (132 public, 78 private) |
+| Definitions | 158 |
 | Structures | 46 |
 | Total lines | 14,945 |
 | Sorry tactics | 2 |
