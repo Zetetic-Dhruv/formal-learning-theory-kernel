@@ -6,15 +6,19 @@ Authors: Dhruv Gupta
 import FLT_Proofs.Complexity.Generalization
 import FLT_Proofs.Complexity.Symmetrization
 import FLT_Proofs.Complexity.Rademacher
+import FLT_Proofs.Complexity.Measurability
 
 /-!
-# Generalization Results
+# Generalization Results (redirected to sorry-free primed versions)
 
-Proved theorems assembled from Generalization.lean, Symmetrization.lean, and Rademacher.lean.
+Theorems moved from Generalization.lean and Rademacher.lean.
+Each call has been redirected from the orphaned sorry'd version
+(e.g. `vcdim_finite_imp_uc`) to the sorry-free primed version
+(e.g. `vcdim_finite_imp_uc'`) in Symmetrization.lean.
 
 ## Main results
 
-- `uc_does_not_imply_online` : UC does not imply online learnability (paradigm separation)
+- `uc_does_not_imply_online` : UC ⊬ online learnability (paradigm separation)
 - `consistent_learner_pac` : consistency + finite VCDim → PAC
 - `sample_complexity_lower_bound` : PAC lower bound via VCDim
 - `rademacher_vanishing_imp_pac` : uniform Rademacher vanishing → PAC
@@ -178,6 +182,18 @@ theorem uc_does_not_imply_online (X : Type u) [MeasurableSpace X] [Infinite X]
 
 end UCNotOnline
 
+/-- Typeclass version of uc_does_not_imply_online.
+    Uses UniversallyMeasurableSpace to avoid threading ∀-quantified measurability. -/
+theorem uc_does_not_imply_online' (X : Type u) [MeasurableSpace X] [Infinite X]
+    [UniversallyMeasurableSpace X] :
+    ¬ (∀ (C : ConceptClass X Bool),
+      HasUniformConvergence X C →
+        ∃ (M : ℕ), MistakeBounded X Bool C M) :=
+  uc_does_not_imply_online X
+    (fun C => MeasurableConceptClass.hmeas_C C)
+    (UniversallyMeasurableSpace.concept_measurable)
+    (UniversallyMeasurableSpace.class_wellBehaved)
+
 -- ============================================================
 -- Block 2: consistent_learner_pac (moved from Generalization.lean)
 -- ============================================================
@@ -195,6 +211,16 @@ theorem consistent_learner_pac (X : Type u) [MeasurableSpace X]
   · rw [Set.not_nonempty_iff_eq_empty] at hne
     exact ⟨⟨Set.univ, fun _ => fun _ => false, fun _ => Set.mem_univ _⟩,
            fun _ _ => 0, fun _ _ _ _ _ _ c hcC => by simp [hne] at hcC⟩
+
+/-- Typeclass version of consistent_learner_pac. -/
+theorem consistent_learner_pac' (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) [MeasurableConceptClass X C] (hvcdim : VCDim X C < ⊤)
+    (L : BatchLearner X Bool)
+    (hcons : ∀ {m : ℕ} (S : Fin m → X × Bool), ∀ i, L.learn S (S i).1 = (S i).2) :
+    PACLearnable X C :=
+  consistent_learner_pac X C hvcdim
+    (MeasurableConceptClass.hmeas_C C) (MeasurableConceptClass.hc_meas C)
+    (MeasurableConceptClass.hWB C) L hcons
 
 -- ============================================================
 -- Block 3: sample_complexity_lower_bound (moved from Generalization.lean)
@@ -230,6 +256,16 @@ theorem sample_complexity_lower_bound (X : Type u) [MeasurableSpace X] [Measurab
   exact le_csInf ⟨mf ε δ, hmem⟩ fun m hm =>
     pac_lower_bound_member X C d hd ε δ hε hε1 hδ hδ1 hδ2 hd_pos m hm
 
+/-- Typeclass version of sample_complexity_lower_bound. -/
+theorem sample_complexity_lower_bound' (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
+    (C : ConceptClass X Bool) [MeasurableConceptClass X C] (d : ℕ)
+    (hd : VCDim X C = d) (ε δ : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1/4)
+    (hδ : 0 < δ) (hδ1 : δ ≤ 1) (hδ2 : δ ≤ 1/7) (hd_pos : 1 ≤ d) :
+    Nat.ceil ((d - 1 : ℝ) / 2) ≤ SampleComplexity X C ε δ :=
+  sample_complexity_lower_bound X C d hd ε δ hε hε1 hδ hδ1 hδ2 hd_pos
+    (MeasurableConceptClass.hmeas_C C) (MeasurableConceptClass.hc_meas C)
+    (MeasurableConceptClass.hWB C)
+
 -- ============================================================
 -- Block 4: rademacher_vanishing_imp_pac (moved from Rademacher.lean)
 -- ============================================================
@@ -259,3 +295,14 @@ theorem rademacher_vanishing_imp_pac (X : Type u) [MeasurableSpace X]
   obtain ⟨T, hT_shat, hT_card⟩ := h_large_shatter (4 * m ^ 2 + 1)
   obtain ⟨D, hD, hRad_ge⟩ := rademacher_lower_bound_on_shattered X C T hT_shat m (by omega) hT_card
   linarith [hm₀ D hD m (le_max_left m₀ 1)]
+
+/-- Typeclass version of rademacher_vanishing_imp_pac. -/
+theorem rademacher_vanishing_imp_pac' (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
+    (C : ConceptClass X Bool) [MeasurableConceptClass X C]
+    (hrad : ∀ ε > 0, ∃ m₀, ∀ (D : MeasureTheory.Measure X),
+      MeasureTheory.IsProbabilityMeasure D →
+      ∀ m ≥ m₀, RademacherComplexity X C D m < ε) :
+    PACLearnable X C :=
+  rademacher_vanishing_imp_pac X C
+    (MeasurableConceptClass.hmeas_C C) (MeasurableConceptClass.hc_meas C)
+    (MeasurableConceptClass.hWB C) hrad

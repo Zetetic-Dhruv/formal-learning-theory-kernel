@@ -98,3 +98,52 @@ TODO: Add automatic instances for common cases:
 - Concept classes over MeasurableSingletonClass spaces
 - Countable concept classes (existential preserves measurability)
 -/
+
+/-! ## UniversallyMeasurableSpace: domain-level measurability
+
+When the domain X is "nice enough" (e.g., MeasurableSingletonClass, countable,
+or standard Borel), EVERY concept class over X automatically satisfies
+MeasurableConceptClass. This is a property of the space, not the class.
+
+This typeclass captures: "X is regular enough that measurability of learning
+events is never an issue." It resolves theorems like `uc_does_not_imply_online`
+which quantify over ALL concept classes, not a specific one. -/
+
+/-- A measurable space where all Bool-valued functions are measurable and
+    all concept classes are well-behaved (WellBehavedVC).
+
+    This is a domain-level property: it says the σ-algebra on X is rich enough
+    that learning-theoretic measurability is automatic.
+
+    Examples:
+    - Any MeasurableSingletonClass space (discrete σ-algebra)
+    - Any countable space
+    - Standard Borel spaces (ℝⁿ with Borel σ-algebra)
+
+    The key consequence: for any C over X, the UC bad event
+    {∃ h ∈ C, |TrueErr - EmpErr| ≥ ε} is NullMeasurableSet automatically. -/
+class UniversallyMeasurableSpace (X : Type u) [MeasurableSpace X] : Prop where
+  /-- All Bool-valued functions on X are measurable -/
+  all_concepts_measurable : ∀ c : Concept X Bool, Measurable c
+  /-- All concept classes over X have well-behaved uniform convergence events -/
+  all_classes_wellBehaved : ∀ C : ConceptClass X Bool, WellBehavedVC X C
+
+/-- UniversallyMeasurableSpace implies MeasurableConceptClass for every C. -/
+instance (priority := 50) MeasurableConceptClass.ofUniversallyMeasurable
+    {X : Type u} [MeasurableSpace X] [h : UniversallyMeasurableSpace X]
+    (C : ConceptClass X Bool) : MeasurableConceptClass X C where
+  mem_measurable := fun c _ => h.all_concepts_measurable c
+  all_measurable := h.all_concepts_measurable
+  wellBehaved := h.all_classes_wellBehaved C
+
+/-! ## UniversallyMeasurableSpace bridge API -/
+
+theorem UniversallyMeasurableSpace.concept_measurable
+    {X : Type u} [MeasurableSpace X] [h : UniversallyMeasurableSpace X]
+    (c : Concept X Bool) : Measurable c :=
+  h.all_concepts_measurable c
+
+theorem UniversallyMeasurableSpace.class_wellBehaved
+    {X : Type u} [MeasurableSpace X] [h : UniversallyMeasurableSpace X]
+    (C : ConceptClass X Bool) : WellBehavedVC X C :=
+  h.all_classes_wellBehaved C
