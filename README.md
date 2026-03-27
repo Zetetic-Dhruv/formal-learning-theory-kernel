@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml)
 
-| Lean | Mathlib | LOC | Theorems | Sorry | Release |
-|------|---------|-----|----------|-------|---------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 14,945 | 210 | **2** | [`v1.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0) |
+| Lean | Mathlib | LOC | Core theorems | Core sorry | Extended theorems | Extended sorry | Release |
+|------|---------|-----|---------------|------------|-------------------|----------------|---------|
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 14,945 | 204 | **0** | 6 | **2** | [`v1.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0) |
 
 <p align="center">
   <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
@@ -18,10 +18,15 @@ This document presents the **structure of learning theory as revealed by formali
 
 ### Core and extended modules
 
-The kernel separates into a **fully checked core** and an **extended frontier**:
+The kernel separates into a **fully checked core** (204 theorems, 0 sorry) and an **extended frontier** (6 theorems, 2 sorry):
 
-- **Core** (31 files, 14,945 LOC, 0 sorry): All files in `FLT_Proofs/` except the two theorems below compile without sorry. This includes the full VC characterization, Littlestone characterization, Gold's theorem, all separations, NFL theorems, symmetrization infrastructure, and Rademacher bounds.
-- **Extended frontier** (2 sorry): `Complexity/Generalization.lean:1903` (`vcdim_finite_imp_compression`, blocked by Moran-Yehudayoff 2016) and `Theorem/Extended.lean:39` (`bhmz_middle_branch`, blocked by BHMZ STOC 2021). Both are on the critical path of the fundamental theorem's compression conjunct and the universal trichotomy's middle branch respectively.
+- **Core** (0 sorry): Every theorem whose proof tree contains no sorry. This includes `vc_characterization` (PAC ↔ VCDim < ∞), `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL theorems, the full symmetrization chain (3,027 LOC), and all Rademacher bounds. A reviewer can audit the core and know it is complete.
+- **Extended frontier** (2 sorry): Six theorems whose proof trees pass through one of two sorry tactics. The sorry-tainted results are `fundamental_theorem` (the 5-way bundle, because conjunct 2 flows through `vcdim_finite_imp_compression`), `fundamental_vc_compression`, `universal_trichotomy` (because branch 2 flows through `bhmz_middle_branch`), and their direct dependencies. The individually proved conjuncts and branches are sorry-free; only the bundles that include all conjuncts/branches are tainted.
+
+| Sorry | File | Blocks | Citation |
+|-------|------|--------|----------|
+| `vcdim_finite_imp_compression` | Generalization.lean:1903 | `fundamental_theorem` conjunct 2 (forward) | Moran-Yehudayoff 2016 |
+| `bhmz_middle_branch` | Extended.lean:39 | `universal_trichotomy` branch 2 | BHMZ STOC 2021 |
 
 ---
 
