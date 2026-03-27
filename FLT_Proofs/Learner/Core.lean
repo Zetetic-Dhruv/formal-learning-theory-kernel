@@ -50,3 +50,36 @@ structure OnlineLearner (X : Type u) (Y : Type v) where
 structure GoldLearner (X : Type u) (Y : Type v) where
   /-- The learner's conjecture given data seen so far -/
   conjecture : List (X × Y) → Concept X Y
+
+/-! ## Measurability Typeclasses
+
+Regularity conditions for measure-theoretic PAC arguments. These replace
+ad hoc predicates (`LearnEvalMeasurable`, `AdviceEvalMeasurable`) and
+explicit hypothesis threading (`hmeas_C`, `hc_meas`, `hWB`).
+
+The conditions identified here are the minimal requirements for:
+- PAC success events to be MeasurableSet
+- Section measure arguments (measurable_measure_prod_mk_left)
+- PAC-Bayes bounds to be well-defined
+- Information-theoretic generalization bounds (mutual information) to be statable
+
+Reference: Krapp & Wirth, "Measurability in the Fundamental Theorem of
+Statistical Learning", arXiv:2410.10243, 2024. -/
+
+/-- A batch learner whose evaluation map is jointly measurable.
+
+    The condition: for each sample size m, the map
+      (S, x) ↦ L.learn S x
+    from (Fin m → X × Bool) × X to Bool is Measurable.
+
+    This is the minimal regularity that makes the PAC success event
+      {S | D{x | L.learn(S)(x) ≠ c(x)} ≤ ε}
+    a MeasurableSet (via measurable_measure_prod_mk_left).
+
+    Equivalent to `LearnEvalMeasurable` (Separation.lean) and
+    `AdviceEvalMeasurable` (Extended.lean) for the non-advice case. -/
+class MeasurableBatchLearner (X : Type u) [MeasurableSpace X]
+    (L : BatchLearner X Bool) : Prop where
+  /-- Joint measurability of the evaluation map -/
+  eval_measurable : ∀ (m : ℕ),
+    Measurable (fun p : (Fin m → X × Bool) × X => L.learn p.1 p.2)

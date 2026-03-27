@@ -32,11 +32,13 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.Symmetrization,
     `FLT_Proofs.Complexity.GeneralizationResults,
     `FLT_Proofs.Complexity.Structures,
+    `FLT_Proofs.Complexity.Measurability,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,
     `FLT_Proofs.Theorem.Online,
     `FLT_Proofs.Theorem.Separation,
+    `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Theorem.Extended,
     `FLT_Proofs.Process,
     `FLT_Proofs.Bridge

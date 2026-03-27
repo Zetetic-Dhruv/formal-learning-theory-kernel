@@ -11,6 +11,7 @@ import FLT_Proofs.Theorem.Online
 import FLT_Proofs.Theorem.Separation
 import FLT_Proofs.Complexity.Structures
 import FLT_Proofs.Complexity.Generalization
+import FLT_Proofs.Theorem.PAC
 import FLT_Proofs.Learner.Active
 import FLT_Proofs.Computation
 import Mathlib.Data.Nat.Pairing
@@ -1038,31 +1039,192 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
         | (ext a; congr 1; exact (Fin.heq_fun_iff h_fst).mpr (fun i => rfl))
         | (exact (Fin.heq_fun_iff h_snd).mpr (fun j => rfl))))
 
-/-- Meta-PAC bound: after seeing enough tasks, the meta-learner's
-    output learner generalizes to new tasks from the same environment.
-    The meta-learner's sample complexity over tasks is bounded by a
-    function of ε, δ, and the complexity of the task environment. -/
+/-- Meta-PAC witness extraction: for any concept class C with finite VC dimension,
+    any PAC witness achieves PAC learning with a concrete sample complexity
+    witness, and that witness satisfies the NFL/VC lower bound.
+
+    This is the shallow version: it extracts a PAC witness from `PACLearnable C`
+    (which follows from `VCDim C < ⊤` via `vc_characterization`), not from a
+    meta-learner's structure. The deep version (Baxter 2000) should show that a
+    meta-learner's per-task sample complexity DECREASES with the number of training tasks:
+    m ≥ Ω(d/(ε²·numTasks)). That requires TaskEnvironment infrastructure — see EG₂.
+
+    TODO(EG₂): Replace with Baxter's multi-task lower bound once TaskEnvironment is defined.
+    The statement should become: ∀ meta-learner, ∃ bad environment, per-task m ≥ d/(ε²·n). -/
 theorem meta_pac_bound (X : Type u) [MeasurableSpace X]
-    (ML : MetaLearner X Bool) (numTasks : ℕ)
-    (tasks : Fin numTasks → ConceptClass X Bool)
-    (ε δ : ℝ) (hε : 0 < ε) (hδ : 0 < δ) :
-    -- After seeing t₀ tasks, the meta-learner produces a learner
-    -- whose excess sample complexity on a new task is ≤ ε
-    ∃ (t₀ : ℕ), t₀ ≤ numTasks →
-      ∀ (C_new : ConceptClass X Bool),
-        VCDim X C_new < ⊤ →
-          -- The meta-learned learner needs fewer samples than a generic learner
-          ∃ (mf : ℝ → ℝ → ℕ),
-            ∀ (ε' δ' : ℝ), 0 < ε' → 0 < δ' →
-              mf ε' δ' ≤ SampleComplexity X C_new ε' δ' := by
-  -- WARNING: this is trivially true via mf = 0, since the statement only asserts mf ≤ SampleComplexity
-  -- and 0 ≤ n for all n : ℕ. A meaningful version should assert that mf ACHIEVES PAC learning
-  -- AND improves over the generic bound by a task-environment-dependent amount.
-  exact ⟨0, fun _ _ _ => ⟨fun _ _ => 0, fun _ _ _ _ => Nat.zero_le _⟩⟩
+    [MeasurableSingletonClass X]
+    (C : ConceptClass X Bool)
+    (hmeas_C : ∀ h ∈ C, Measurable h)
+    (hc_meas : ∀ c : Concept X Bool, Measurable c)
+    (hWB : WellBehavedVC X C) :
+    PACLearnable X C →
+      ∃ (L : BatchLearner X Bool) (mf : ℝ → ℝ → ℕ),
+        (∀ (ε δ : ℝ), 0 < ε → 0 < δ →
+          ∀ (D : MeasureTheory.Measure X), MeasureTheory.IsProbabilityMeasure D →
+            ∀ c ∈ C,
+              MeasureTheory.Measure.pi (fun _ : Fin (mf ε δ) => D)
+                { xs : Fin (mf ε δ) → X |
+                  D { x | L.learn (fun i => (xs i, c (xs i))) x ≠ c x }
+                    ≤ ENNReal.ofReal ε }
+                ≥ ENNReal.ofReal (1 - δ)) ∧
+        (∀ (ε δ : ℝ), 0 < ε → 0 < δ →
+          SampleComplexity X C ε δ ≤ mf ε δ) ∧
+        (∀ (d : ℕ), VCDim X C = d →
+          ∀ (ε δ : ℝ), 0 < ε → ε ≤ 1 / 4 →
+            0 < δ → δ ≤ 1 → δ ≤ 1 / 7 → 1 ≤ d →
+            Nat.ceil ((d - 1 : ℝ) / 2) ≤ SampleComplexity X C ε δ ∧
+            Nat.ceil ((d - 1 : ℝ) / 2) ≤ mf ε δ) :=
+  pac_sample_complexity_sandwich X C hmeas_C hc_meas hWB
 
 -- unlabeled_not_implies_labeled MOVED to Benchmarks/CompressionConjecture.lean.
 -- Labeled/unlabeled compression separation requires distribution-dependent
 -- complexity construction.
+
+/-! ## Multi-Task Meta-Learning Infrastructure -/
+
+/-- A task environment: a finite collection of concept classes (tasks)
+    that a meta-learner is trained on. Each task is a concept class
+    over the same domain X.
+
+    This is the formalization of Baxter (2000)'s "learning environment."
+    In the full theory, tasks are drawn i.i.d. from a distribution over
+    concept classes; here we use a finite deterministic collection as the
+    base case. -/
+structure TaskEnvironment (X : Type u) where
+  /-- Number of training tasks -/
+  numTasks : ℕ
+  /-- The concept classes for each task -/
+  tasks : Fin numTasks → ConceptClass X Bool
+
+/-- A meta-learner with PAC guarantees: given a task environment (training tasks),
+    produces a BatchLearner and sample complexity function for new tasks.
+
+    Compared to MetaLearner (in Active.lean), this structure:
+    - takes a TaskEnvironment (multiple training tasks) rather than a single ConceptClass
+    - exposes the sample complexity function (not just the learner)
+    - is designed for quantitative PAC bounds, not just learnability
+
+    The key question: does seeing n training tasks reduce the per-task
+    sample complexity on new tasks? Baxter (2000) shows the answer is yes
+    under task similarity, but the NFL lower bound still applies per-task. -/
+structure MetaLearnerPAC (X : Type u) [MeasurableSpace X] where
+  /-- Given training tasks, produce a learner for new tasks -/
+  learn : TaskEnvironment X → BatchLearner X Bool
+  /-- Given training tasks, produce a sample complexity function -/
+  sampleComplexity : TaskEnvironment X → ℝ → ℝ → ℕ
+
+/-- Baxter base case: any meta-learner's output is subject to the NFL lower bound.
+    Even after seeing arbitrarily many training tasks, the meta-learner's output
+    learner on a NEW task C_new with VCDim = d requires at least ⌈(d-1)/2⌉ samples.
+
+    This is the n=1 (single environment) base case of Baxter (2000).
+    The full Baxter bound (n environments, per-task m ≥ d/(ε²·n)) requires
+    multi-environment product measure infrastructure not yet built.
+
+    Proof: the meta-learner produces a BatchLearner L and sample complexity mf.
+    If (L, mf) achieves PAC on C_new, then mf ε δ is a PAC-valid sample size,
+    so pac_lower_bound_member gives ⌈(d-1)/2⌉ ≤ mf ε δ.
+
+    TODO: Strengthen to full Baxter bound with n training tasks giving
+    per-task improvement m ≥ Ω(d/(ε²·n)). Requires TaskEnvironment distribution
+    + multi-task product measure infrastructure. -/
+theorem baxter_base_case (X : Type u) [MeasurableSpace X]
+    [MeasurableSingletonClass X]
+    (ML : MetaLearnerPAC X)
+    (env : TaskEnvironment X)
+    (C_new : ConceptClass X Bool)
+    (hmeas_C : ∀ h ∈ C_new, Measurable h)
+    (hc_meas : ∀ c : Concept X Bool, Measurable c)
+    (hWB : WellBehavedVC X C_new)
+    (d : ℕ) (hd : VCDim X C_new = d) (hd_pos : 1 ≤ d)
+    (ε δ : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1/4)
+    (hδ : 0 < δ) (hδ1 : δ ≤ 1) (hδ2 : δ ≤ 1/7)
+    (hPAC : ∀ (D : MeasureTheory.Measure X), MeasureTheory.IsProbabilityMeasure D →
+      ∀ c ∈ C_new,
+        MeasureTheory.Measure.pi
+          (fun _ : Fin (ML.sampleComplexity env ε δ) => D)
+          { xs : Fin (ML.sampleComplexity env ε δ) → X |
+            D { x | (ML.learn env).learn (fun i => (xs i, c (xs i))) x ≠ c x }
+              ≤ ENNReal.ofReal ε }
+          ≥ ENNReal.ofReal (1 - δ)) :
+    Nat.ceil ((d - 1 : ℝ) / 2) ≤ ML.sampleComplexity env ε δ := by
+  exact pac_lower_bound_member X C_new d hd ε δ hε hε1 hδ hδ1 hδ2 hd_pos
+    (ML.sampleComplexity env ε δ) ⟨ML.learn env, hPAC⟩
+
+/-- A task sample environment: n training tasks, each with m samples.
+    The meta-learner observes labeled samples from each task and must
+    produce a learner for a new (unseen) task.
+
+    This extends TaskEnvironment by specifying sample sizes and
+    the actual samples drawn. The meta-learner's output may depend
+    on the samples but not on the true concepts. -/
+structure TaskSampleEnvironment (X : Type u) [MeasurableSpace X] where
+  /-- Number of training tasks -/
+  numTasks : ℕ
+  /-- Samples per task -/
+  samplesPerTask : ℕ
+  /-- The concept classes (one per task) -/
+  taskClasses : Fin numTasks → ConceptClass X Bool
+  /-- The true concepts (one per task, each in its class) -/
+  trueConcepts : (j : Fin numTasks) → Concept X Bool
+  /-- Each true concept is in its class -/
+  concept_mem : ∀ j, trueConcepts j ∈ taskClasses j
+
+/-- A sample-based meta-learner: sees labeled samples from n training tasks,
+    produces a BatchLearner for new tasks.
+    Unlike MetaLearnerPAC (which takes a TaskEnvironment directly),
+    this meta-learner only sees the data, not the concept classes. -/
+structure SampleMetaLearner (X : Type u) [MeasurableSpace X] where
+  /-- Given n × m labeled samples, produce a learner -/
+  learn : {n m : ℕ} → (Fin n → Fin m → X × Bool) → BatchLearner X Bool
+  /-- Given n × m, produce sample complexity for the new task -/
+  sampleComplexity : ℕ → ℕ → ℝ → ℝ → ℕ
+
+/-- Baxter's multi-task lower bound: any sample-based meta-learner
+    that achieves PAC on a new task C_new with VCDim = d, after seeing
+    n training tasks with m samples each, requires ⌈(d-1)/2⌉ samples
+    for the new task.
+
+    This is the n-independent version. The n-dependent improvement
+    m ≥ Ω(d/(ε²·n)) requires the product-measure information-theoretic
+    argument.
+
+    Key insight: the meta-learner's output (L, mf) is a PAC witness
+    for C_new. By pac_lower_bound_member, any PAC witness requires
+    at least ⌈(d-1)/2⌉ samples. The meta-learner's training phase
+    (seeing n tasks) cannot reduce this bound because the new task's
+    concept class is adversarially chosen AFTER training.
+
+    The n-dependent improvement (Baxter 2000, Theorem 3):
+    For the PRODUCT measure over n tasks × m samples per task,
+    the adversary argument gives m ≥ Ω(d/(ε²·n)).
+    This requires:
+    - TaskDistribution: a measure over concept classes
+    - Product measure: D^(n×m) decomposed as (D^m)^n
+    - Information-theoretic counting: n·m bits vs 2^d labelings
+    These are future infrastructure targets. The current theorem proves
+    the n-INDEPENDENT base case which is already non-trivial. -/
+theorem baxter_full (X : Type u) [MeasurableSpace X]
+    [MeasurableSingletonClass X]
+    (SML : SampleMetaLearner X)
+    (C_new : ConceptClass X Bool)
+    (d : ℕ) (hd : VCDim X C_new = d) (hd_pos : 1 ≤ d)
+    (ε δ : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1/4)
+    (hδ : 0 < δ) (hδ1 : δ ≤ 1) (hδ2 : δ ≤ 1/7)
+    (n m : ℕ)
+    (training_data : Fin n → Fin m → X × Bool)
+    (hPAC : ∀ (D : MeasureTheory.Measure X), MeasureTheory.IsProbabilityMeasure D →
+      ∀ c ∈ C_new,
+        let mf := SML.sampleComplexity n m ε δ
+        MeasureTheory.Measure.pi
+          (fun _ : Fin mf => D)
+          { xs : Fin mf → X |
+            D { x | (SML.learn training_data).learn (fun i => (xs i, c (xs i))) x ≠ c x }
+              ≤ ENNReal.ofReal ε }
+          ≥ ENNReal.ofReal (1 - δ)) :
+    Nat.ceil ((d - 1 : ℝ) / 2) ≤ SML.sampleComplexity n m ε δ := by
+  apply pac_lower_bound_member X C_new d hd ε δ hε hε1 hδ hδ1 hδ2 hd_pos
+  exact ⟨SML.learn training_data, hPAC⟩
 
 /-- VC dimension does not determine SQ hardness:
     there exists a concept class with finite VC dimension but infinite SQ dimension

@@ -53,3 +53,15 @@ structure ProbabilisticLearner (X : Type u) (Y : Type v) where
 structure TeamLearner (X : Type u) (Y : Type v) (n : ℕ) where
   /-- The team members -/
   team : Fin n → GoldLearner X Y
+
+/-! ## MeasurableBatchLearner API -/
+
+/-- Fixed-sample measurability: for fixed training data S,
+    L.learn S is a measurable function X → Bool.
+    This is the most commonly used consequence of MeasurableBatchLearner. -/
+theorem MeasurableBatchLearner.learn_measurable
+    {X : Type u} [MeasurableSpace X]
+    (L : BatchLearner X Bool) [h : MeasurableBatchLearner X L]
+    {m : ℕ} (S : Fin m → X × Bool) :
+    Measurable (L.learn S) :=
+  (h.eval_measurable m).comp (Measurable.prodMk measurable_const measurable_id)
