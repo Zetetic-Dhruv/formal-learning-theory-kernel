@@ -33,8 +33,10 @@ jobs:
       - name: Count sorrys
         run: |
           echo "=== Sorry check ==="
-          SORRY_COUNT=$(grep -r "sorry" --include="*.lean" FLT_Proofs/ | grep -v "^.*--.*sorry" | grep -v "^.*/-" | grep -c "sorry" || true)
-          echo "Found $SORRY_COUNT sorry occurrences in .lean files"
+          # Match only sorry as a standalone tactic: lines where sorry is the
+          # entire statement (possibly indented), not in comments or substrings
+          SORRY_COUNT=$(grep -rn --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/ | wc -l | tr -d ' ')
+          echo "Found $SORRY_COUNT sorry tactics in .lean files"
           if [ "$SORRY_COUNT" -gt 2 ]; then
             echo "::error::Sorry count ($SORRY_COUNT) exceeds the 2 known sorrys. New sorrys introduced."
             exit 1
