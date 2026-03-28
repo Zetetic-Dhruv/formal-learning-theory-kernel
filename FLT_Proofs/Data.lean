@@ -108,6 +108,18 @@ structure IIDSample (X : Type u) (Y : Type v) [MeasurableSpace X] [MeasurableSpa
 --   sampleSize : ℕ
 --   sample : Fin sampleSize → X × Y -/
 
+/-- All Bool-valued functions on X are measurable.
+    Domain-level property: the σ-algebra is fine enough that
+    concept measurability is never an issue. -/
+class MeasurableBoolSpace (X : Type u) [MeasurableSpace X] : Prop where
+  all_bool_measurable : ∀ f : X → Bool, Measurable f
+
+/-- MeasurableBoolSpace implies MeasurableHypotheses for every C. -/
+instance (priority := 50) MeasurableHypotheses.ofMeasurableBoolSpace
+    {X : Type u} [MeasurableSpace X] [h : MeasurableBoolSpace X]
+    (C : ConceptClass X Bool) : MeasurableHypotheses X C where
+  mem_measurable := fun c _ => h.all_bool_measurable c
+
 /-- The marginal distribution over X (ignoring labels).
     Extracted from an IIDSample. Needed for generalization error definitions. -/
 noncomputable def IIDSample.marginalX {X : Type u} {Y : Type v}

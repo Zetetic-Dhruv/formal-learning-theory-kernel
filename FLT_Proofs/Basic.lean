@@ -61,6 +61,12 @@ abbrev ConceptClass (X : Type u) (Y : Type v) := Set (Concept X Y)
 -- def ConceptClassMulti (X : Type u) (Y : Type v) [Fintype Y] :=
 --   { H : Set (X → Y) // Fintype.card Y ≥ 2 } -/
 
+/-- Every concept in C is a measurable function.
+    Krapp-Wirth precondition: Γ(h) ∈ Σ_Z for all h ∈ H. -/
+class MeasurableHypotheses (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop where
+  mem_measurable : ∀ h ∈ C, Measurable h
+
 /-- A hypothesis space is a set of candidate concepts that the learner searches over.
     When H = C (the realizable case), every concept in the target class is available.
     When H ⊂ C or H ⊃ C, we're in the improper/agnostic regime.
