@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Basic
+import FLT_Proofs.Data
 import FLT_Proofs.Complexity.Symmetrization
 
 /-!
@@ -147,3 +148,229 @@ theorem UniversallyMeasurableSpace.class_wellBehaved
     {X : Type u} [MeasurableSpace X] [h : UniversallyMeasurableSpace X]
     (C : ConceptClass X Bool) : WellBehavedVC X C :=
   h.all_classes_wellBehaved C
+
+/-! ## Bridge Instances (L1 ↔ L5) -/
+
+instance (priority := 60) MeasurableHypotheses.ofMeasurableConceptClass
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) [MeasurableConceptClass X C] :
+    MeasurableHypotheses X C where
+  mem_measurable := MeasurableConceptClass.hmeas_C C
+
+instance (priority := 50) MeasurableBoolSpace.ofUniversallyMeasurable
+    {X : Type u} [MeasurableSpace X] [h : UniversallyMeasurableSpace X] :
+    MeasurableBoolSpace X where
+  all_bool_measurable := h.all_concepts_measurable
+
+/-! ## Krapp-Wirth Ghost Gap Infrastructure
+
+Formalization of the ghost-gap machinery from Krapp & Wirth (2024, arXiv:2410.10243).
+Uses sSup over value sets (not ⨆) to avoid class-inference ambiguity.
+V-measurability is ONE-SIDED (not absolute) to match WellBehavedVC's event shape. -/
+
+noncomputable def oneSidedGhostGap
+    {X : Type u} [MeasurableSpace X]
+    (h : Concept X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) : ℝ :=
+  EmpiricalError X Bool h (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
+  EmpiricalError X Bool h (fun i => (p.1 i, c (p.1 i))) (zeroOneLoss Bool)
+
+noncomputable def absGhostGap
+    {X : Type u} [MeasurableSpace X]
+    (h : Concept X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) : ℝ :=
+  |oneSidedGhostGap h c m p|
+
+noncomputable def ghostGapVals
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) : Set ℝ :=
+  {r | ∃ h ∈ C, r = oneSidedGhostGap h c m p}
+
+noncomputable def absGhostGapVals
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) : Set ℝ :=
+  {r | ∃ h ∈ C, r = absGhostGap h c m p}
+
+noncomputable def ghostGapSup
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) : ℝ :=
+  sSup (ghostGapVals C c m p)
+
+noncomputable def absGhostGapSup
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) : ℝ :=
+  sSup (absGhostGapVals C c m p)
+
+/-! ## Krapp-Wirth Measurability Conditions (Definition 3.2)
+
+V-measurability uses the ONE-SIDED ghost gap sup (not absolute value).
+This is needed for the implication KrappWirthWellBehaved → WellBehavedVC,
+because WellBehavedVC's event is one-sided.
+
+The paper-faithful ABSOLUTE version is KrappWirthVAbs, kept separately. -/
+
+/-- V-measurability (one-sided): the ghost gap sup map is measurable. -/
+def KrappWirthV (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop :=
+  ∀ (c : Concept X Bool) (m : ℕ),
+    Measurable (ghostGapSup C c m)
+
+/-- V-measurability (absolute, paper-faithful): the abs ghost gap sup is measurable. -/
+def KrappWirthVAbs (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop :=
+  ∀ (c : Concept X Bool) (m : ℕ),
+    Measurable (absGhostGapSup C c m)
+
+/-- U-measurability: the UC gap map is measurable. -/
+def KrappWirthU (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop :=
+  ∀ (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
+    (c : Concept X Bool) (m : ℕ),
+    Measurable (fun xs : Fin m → X =>
+      sSup {r | ∃ h ∈ C, r =
+        |TrueErrorReal X h c D -
+         EmpiricalError X Bool h (fun i => (xs i, c (xs i))) (zeroOneLoss Bool)|})
+
+/-- Krapp-Wirth well-behavedness: measurable hypotheses + V + U.
+    Extends MeasurableHypotheses (L1).
+    Strictly stronger than MeasurableConceptClass (our condition). -/
+class KrappWirthWellBehaved (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) extends MeasurableHypotheses X C : Prop where
+  V_measurable : KrappWirthV X C
+  U_measurable : KrappWirthU X C
+
+/-! ## Finite-Grid Attainment
+
+EmpiricalError on m samples takes values in {0/m, 1/m, ..., m/m}.
+So the one-sided ghost gap takes values in a finite set (differences of grid values).
+Therefore sSup is attained, and {sSup ≥ ε} = {∃ h ∈ C, gap(h) ≥ ε}. -/
+
+noncomputable def empErrGrid (m : ℕ) : Finset ℝ :=
+  if m = 0 then {0}
+  else (Finset.range (m + 1)).image (fun (k : ℕ) => (k : ℝ) / (m : ℝ))
+
+noncomputable def ghostGapGrid (m : ℕ) : Finset ℝ :=
+  ((empErrGrid m).product (empErrGrid m)).image (fun ab => ab.1 - ab.2)
+
+private lemma empiricalError_mem_empErrGrid
+    {X : Type u} [MeasurableSpace X]
+    (h : Concept X Bool) {m : ℕ}
+    (S : Fin m → X × Bool) :
+    EmpiricalError X Bool h S (zeroOneLoss Bool) ∈ empErrGrid m := by
+  by_cases hm : m = 0
+  · simp [EmpiricalError, empErrGrid, hm]
+  · simp only [EmpiricalError, hm, ↓reduceIte, empErrGrid]
+    set k := (Finset.univ.filter (fun i : Fin m => h (S i).1 ≠ (S i).2)).card
+    have hsum : Finset.univ.sum (fun i => zeroOneLoss Bool (h (S i).1) (S i).2) = (k : ℝ) := by
+      simp only [zeroOneLoss, k]
+      have : ∀ i : Fin m, (if h (S i).1 = (S i).2 then (0 : ℝ) else 1) =
+          if h (S i).1 ≠ (S i).2 then 1 else 0 := by
+        intro i; split_ifs <;> simp_all
+      simp_rw [this, Finset.sum_boole]
+    rw [hsum]
+    have hk : k < m + 1 := by
+      calc k ≤ Finset.univ.card := Finset.card_filter_le _ _
+        _ = m := Finset.card_fin m
+        _ < m + 1 := Nat.lt_succ_iff.mpr le_rfl
+    exact Finset.mem_image.mpr ⟨k, Finset.mem_range.mpr hk, rfl⟩
+
+private lemma oneSidedGhostGap_mem_grid
+    {X : Type u} [MeasurableSpace X]
+    (h : Concept X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) :
+    oneSidedGhostGap h c m p ∈ ghostGapGrid m := by
+  simp only [ghostGapGrid, oneSidedGhostGap]
+  exact Finset.mem_image.mpr
+    ⟨(EmpiricalError X Bool h (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool),
+      EmpiricalError X Bool h (fun i => (p.1 i, c (p.1 i))) (zeroOneLoss Bool)),
+     Finset.mem_product.mpr
+       ⟨empiricalError_mem_empErrGrid h (fun i => (p.2 i, c (p.2 i))),
+        empiricalError_mem_empErrGrid h (fun i => (p.1 i, c (p.1 i)))⟩,
+     rfl⟩
+
+private lemma ghostGapVals_finite
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ)
+    (p : (Fin m → X) × (Fin m → X)) :
+    (ghostGapVals C c m p).Finite :=
+  (Finset.finite_toSet (ghostGapGrid m)).subset (fun r ⟨h, _, hr⟩ =>
+    hr ▸ oneSidedGhostGap_mem_grid h c m p)
+
+/-! ## Implication Chain: KrappWirth → WellBehavedVC -/
+
+private lemma wellBehaved_event_eq_preimage_gapSup
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ) (ε : ℝ)
+    (hC : C.Nonempty) :
+    {p : (Fin m → X) × (Fin m → X) | ∃ h ∈ C,
+      oneSidedGhostGap h c m p ≥ ε / 2}
+    = ghostGapSup C c m ⁻¹' Set.Ici (ε / 2) := by
+  ext p
+  simp only [Set.mem_setOf_eq, Set.mem_preimage, Set.mem_Ici, ghostGapSup]
+  constructor
+  · rintro ⟨h_wit, hh_wit, hge⟩
+    calc ε / 2 ≤ oneSidedGhostGap h_wit c m p := hge
+      _ ≤ sSup (ghostGapVals C c m p) :=
+          le_csSup (ghostGapVals_finite C c m p).bddAbove
+            (show oneSidedGhostGap h_wit c m p ∈ ghostGapVals C c m p from
+              ⟨h_wit, hh_wit, rfl⟩)
+  · intro hp
+    have hne : (ghostGapVals C c m p).Nonempty := by
+      obtain ⟨h0, hh0⟩ := hC
+      exact ⟨oneSidedGhostGap h0 c m p, h0, hh0, rfl⟩
+    have h_attained : sSup (ghostGapVals C c m p) ∈ ghostGapVals C c m p :=
+      hne.csSup_mem (ghostGapVals_finite C c m p)
+    obtain ⟨h_star, hh_star, h_eq⟩ := h_attained
+    exact ⟨h_star, hh_star, by rw [← h_eq]; exact hp⟩
+
+/-- KrappWirthWellBehaved → WellBehavedVC.
+    Map measurability → event NullMeasurability. -/
+theorem KrappWirthWellBehaved.toWellBehavedVC
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) [h : KrappWirthWellBehaved X C] :
+    WellBehavedVC X C := by
+  intro D _ c m ε
+  by_cases hC : C.Nonempty
+  · have hV := h.V_measurable c m
+    have hEq : {p : (Fin m → X) × (Fin m → X) | ∃ h_1 ∈ C,
+        EmpiricalError X Bool h_1 (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
+        EmpiricalError X Bool h_1 (fun i => (p.1 i, c (p.1 i))) (zeroOneLoss Bool) ≥ ε / 2}
+      = ghostGapSup C c m ⁻¹' Set.Ici (ε / 2) := by
+      have := wellBehaved_event_eq_preimage_gapSup C c m ε hC
+      simp only [oneSidedGhostGap] at this
+      exact this
+    rw [hEq]
+    exact (hV measurableSet_Ici).nullMeasurableSet
+  · -- C empty → event is empty → NullMeasurableSet
+    have : {p : (Fin m → X) × (Fin m → X) | ∃ h ∈ C,
+      EmpiricalError X Bool h (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
+      EmpiricalError X Bool h (fun i => (p.1 i, c (p.1 i))) (zeroOneLoss Bool) ≥ ε / 2} = ∅ := by
+      ext p; simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
+      push_neg; intro h hh; exact absurd ⟨h, hh⟩ hC
+    rw [this]; exact MeasureTheory.nullMeasurableSet_empty
+
+/-- KrappWirthWellBehaved → MeasurableConceptClass. -/
+instance (priority := 75) MeasurableConceptClass.ofKrappWirth
+    {X : Type u} [MeasurableSpace X]
+    (C : ConceptClass X Bool) [h : KrappWirthWellBehaved X C]
+    [hbool : MeasurableBoolSpace X] : MeasurableConceptClass X C where
+  mem_measurable := h.mem_measurable
+  all_measurable := hbool.all_bool_measurable
+  wellBehaved := KrappWirthWellBehaved.toWellBehavedVC C
+
+/-! ## Separation Interface (Open Questions) -/
+
+/-- OPEN: Does finite VC + measurable hypotheses imply WellBehavedVC? -/
+def WellBehavedVC_automatic : Prop :=
+  ∀ (X : Type) [MeasurableSpace X] (C : ConceptClass X Bool),
+    MeasurableHypotheses X C → VCDim X C < ⊤ → WellBehavedVC X C
+
+/-- OPEN: Does WellBehavedVC (NullMeasurable events) separate from
+    KrappWirthWellBehaved (measurable maps)? -/
+def KrappWirth_separation : Prop :=
+  ∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
+    MeasurableHypotheses X C ∧ WellBehavedVC X C ∧ ¬ KrappWirthWellBehaved X C

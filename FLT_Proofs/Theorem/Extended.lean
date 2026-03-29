@@ -1074,7 +1074,8 @@ theorem meta_pac_bound (X : Type u) [MeasurableSpace X]
             0 < δ → δ ≤ 1 → δ ≤ 1 / 7 → 1 ≤ d →
             Nat.ceil ((d - 1 : ℝ) / 2) ≤ SampleComplexity X C ε δ ∧
             Nat.ceil ((d - 1 : ℝ) / 2) ≤ mf ε δ) :=
-  pac_sample_complexity_sandwich X C hmeas_C hc_meas hWB
+  haveI : MeasurableConceptClass X C := ⟨hmeas_C, hc_meas, hWB⟩
+  pac_sample_complexity_sandwich X C
 
 -- unlabeled_not_implies_labeled MOVED to Benchmarks/CompressionConjecture.lean.
 -- Labeled/unlabeled compression separation requires distribution-dependent
