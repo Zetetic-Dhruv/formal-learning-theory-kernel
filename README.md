@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml)
 
-| Lean | Mathlib | LOC | Core theorems | Core sorry | Extended theorems | Extended sorry | Release |
-|------|---------|-----|---------------|------------|-------------------|----------------|---------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 17,350 | 259 | **0** | 5 | **2** | [`v2.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v2.0.0) |
+| Lean | Mathlib | LOC | Core theorems | Core sorry | Extended theorems | Extended sorry |
+|------|---------|-----|---------------|------------|-------------------|----------------|
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 17,350 | 259 | **0** | 5 | **2** |
 
 <p align="center">
   <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
@@ -678,7 +678,7 @@ The premise served as a **grammar** for the AI: instead of jointly discovering t
 
 ### Type architecture stability
 
-The type distribution across the kernel remained stable through the initial 12,033 lines of proof addition (v1.0.0), with abbreviations, propositions, and structures holding at roughly 33%, 31%, and 28% respectively. The v2.0.0 additions (2,405 lines, predominantly theorems: PAC-Bayes, Choquet capacity, Borel-analytic separation chain) shifted the balance toward propositions, which now account for 52% of named entities vs. 38% of definitions and 10% of structures. The proof infrastructure redistributed across layers (L5 Complexity grew from a stub to 9,454 lines), but the pre-designed grammar absorbed all additions without requiring new type categories or architectural modification.
+The kernel's 264 named entities distribute as 52% propositions (theorems/lemmas), 38% definitions, and 10% structures. The proof-heavy balance reflects the field's character: learning theory's vocabulary is small (L1-L4: 7% of the codebase), but the proof infrastructure connecting combinatorics to measure theory is vast (L5: 56%). The pre-designed type architecture (42 concept nodes across 8 layers) absorbed 14,438 lines of proof without requiring new type categories or architectural modification. The grammar was complete before proof search began.
 
 Both the origin and final type architectures are recorded in `premise/origin.json` and `premise/final.json`.
 
