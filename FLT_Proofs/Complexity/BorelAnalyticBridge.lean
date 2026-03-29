@@ -75,3 +75,86 @@ def patchEval
     (r : Ρ → Concept X Bool) :
     (Θ₁ × Θ₂ × Ρ) → Concept X Bool :=
   fun θ x => if r θ.2.2 x then e₁ θ.1 x else e₂ θ.2.1 x
+
+/-! ## Theorem A: Measurable witness graph -/
+
+/-- The witness set {(θ, p) | ghost-gap ≥ ε/2} is MeasurableSet
+    when the evaluation map e and target c are measurable.
+    This is the Borel half of the Borel-analytic bridge. -/
+theorem paramWitnessSet_measurable
+    {X : Type u} [MeasurableSpace X]
+    {Θ : Type*} [MeasurableSpace Θ]
+    (e : Θ → Concept X Bool)
+    (he : Measurable (fun p : Θ × X => e p.1 p.2))
+    (c : Concept X Bool) (hc : Measurable c)
+    (m : ℕ) (ε : ℝ) :
+    MeasurableSet (paramWitnessSet e c m ε) := by
+  unfold paramWitnessSet
+  -- The set is {q | ε/2 ≤ Δ(q)} where Δ = EmpErr_ghost - EmpErr_train
+  -- Suffices to show Δ is measurable, then use measurableSet_le
+  -- Helper: measurability of a single zeroOneLoss term for ghost sample
+  have ghost_term_meas : ∀ i : Fin m, Measurable fun q : Θ × GhostPairs X m =>
+      zeroOneLoss Bool (e q.1 (q.2.2 i)) (c (q.2.2 i)) := by
+    intro i
+    simp only [zeroOneLoss]
+    apply Measurable.ite
+    · exact measurableSet_eq_fun
+        (he.comp (measurable_fst.prodMk
+          ((measurable_pi_apply i).comp (measurable_snd.comp measurable_snd))))
+        (hc.comp ((measurable_pi_apply i).comp (measurable_snd.comp measurable_snd)))
+    · exact measurable_const
+    · exact measurable_const
+  -- Helper: measurability of a single zeroOneLoss term for train sample
+  have train_term_meas : ∀ i : Fin m, Measurable fun q : Θ × GhostPairs X m =>
+      zeroOneLoss Bool (e q.1 (q.2.1 i)) (c (q.2.1 i)) := by
+    intro i
+    simp only [zeroOneLoss]
+    apply Measurable.ite
+    · exact measurableSet_eq_fun
+        (he.comp (measurable_fst.prodMk
+          ((measurable_pi_apply i).comp (measurable_fst.comp measurable_snd))))
+        (hc.comp ((measurable_pi_apply i).comp (measurable_fst.comp measurable_snd)))
+    · exact measurable_const
+    · exact measurable_const
+  -- Helper: each EmpiricalError component is measurable
+  have ghost_meas : Measurable fun q : Θ × GhostPairs X m =>
+      EmpiricalError X Bool (e q.1) (fun i => (q.2.2 i, c (q.2.2 i))) (zeroOneLoss Bool) := by
+    simp only [EmpiricalError]
+    by_cases hm : m = 0
+    · simp [hm]
+    · simp only [hm, ↓reduceIte]
+      exact (Finset.measurable_sum _ (fun i _ => ghost_term_meas i)).div_const _
+  have train_meas : Measurable fun q : Θ × GhostPairs X m =>
+      EmpiricalError X Bool (e q.1) (fun i => (q.2.1 i, c (q.2.1 i))) (zeroOneLoss Bool) := by
+    simp only [EmpiricalError]
+    by_cases hm : m = 0
+    · simp [hm]
+    · simp only [hm, ↓reduceIte]
+      exact (Finset.measurable_sum _ (fun i _ => train_term_meas i)).div_const _
+  -- The gap Δ = ghost - train is measurable
+  exact measurableSet_le measurable_const (ghost_meas.sub train_meas)
+
+/-! ## Theorem B: Bad event is analytic (Suslin projection) -/
+
+/-- The bad event (projection of witness set) is analytic.
+    Projection of a Borel set from a StandardBorelSpace is analytic (Suslin).
+    This is the key step: existential quantification over parameters
+    produces an analytic (Σ₁¹) set, which may not be Borel. -/
+theorem borel_param_badEvent_analytic
+    {X : Type u} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [PolishSpace X]
+    {Θ : Type*} [MeasurableSpace Θ] [StandardBorelSpace Θ]
+    (e : Θ → Concept X Bool)
+    (he : Measurable (fun p : Θ × X => e p.1 p.2))
+    (c : Concept X Bool) (hc : Measurable c)
+    (m : ℕ) (ε : ℝ) :
+    MeasureTheory.AnalyticSet (paramBadEvent e c m ε) := by
+  -- paramBadEvent = Prod.snd '' paramWitnessSet (by definition)
+  show MeasureTheory.AnalyticSet (Prod.snd '' paramWitnessSet e c m ε)
+  -- paramWitnessSet is MeasurableSet (Theorem A)
+  have hW := paramWitnessSet_measurable e he c hc m ε
+  -- SecondCountableTopology on range of Prod.snd
+  -- range Prod.snd ⊆ GhostPairs X m which is SecondCountableTopology (from PolishSpace X)
+  -- Any subtype of a SecondCountableTopology space inherits it
+  haveI : SecondCountableTopology (Set.range (Prod.snd : Θ × GhostPairs X m → GhostPairs X m)) :=
+    inferInstance
+  exact hW.analyticSet_image measurable_snd
