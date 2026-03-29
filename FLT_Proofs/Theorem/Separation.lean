@@ -1467,17 +1467,14 @@ theorem ex_not_implies_pac :
 
 /-- Online learning is strictly stronger than PAC learning. -/
 theorem online_strictly_stronger_pac :
-    (∀ (X : Type) [MeasurableSpace X] (C : ConceptClass X Bool),
-      (∀ h ∈ C, Measurable h) → (∀ c : Concept X Bool, Measurable c) →
-      WellBehavedVC X C →
+    (∀ (X : Type) [MeasurableSpace X] (C : ConceptClass X Bool)
+      [MeasurableConceptClass X C],
       OnlineLearnable X Bool C → PACLearnable X C) ∧
     (∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
       PACLearnable X C ∧ ¬ OnlineLearnable X Bool C) :=
   -- Factored: conjunct 1 = online_imp_pac (Generalization.lean)
   --           conjunct 2 = pac_not_implies_online (this file, sorry)
-  ⟨fun X _ C hmeas_C hc_meas hWB hol =>
-    haveI : MeasurableConceptClass X C := ⟨hmeas_C, hc_meas, hWB⟩
-    online_imp_pac X C hol, pac_not_implies_online⟩
+  ⟨fun X _ C _ hol => online_imp_pac X C hol, pac_not_implies_online⟩
 
 -- Γ₆₈: `universal_strictly_stronger_pac` REMOVED from kernel.
 -- The original conjunct 2 (∃ PAC ∧ ¬ Universal) was FALSE — Bousquet et al.
