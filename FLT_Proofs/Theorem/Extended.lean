@@ -74,7 +74,7 @@ theorem universal_trichotomy (X : Type) [MeasurableSpace X]
       exact lt_irrefl _ this
     · -- Branch 3: VCDim = ⊤ ⟹ ¬UniversalLearnable
       exact Or.inr (Or.inr ⟨hvcdim, fun huniv =>
-        vcdim_infinite_not_pac X C hvcdim (universal_imp_pac X C hc_meas hL_meas huniv)⟩)
+        vcdim_infinite_not_pac X C hvcdim (universal_imp_pac X C hL_meas huniv)⟩)
 
 -- computational_hardness_pac MOVED to Benchmarks/CryptoHardness.lean.
 -- Requires cryptographic assumptions (one-way functions, pseudorandom generators)
