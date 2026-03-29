@@ -33,6 +33,7 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.GeneralizationResults,
     `FLT_Proofs.Complexity.Structures,
     `FLT_Proofs.Complexity.Measurability,
+    `FLT_Proofs.Complexity.BorelAnalyticBridge,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,

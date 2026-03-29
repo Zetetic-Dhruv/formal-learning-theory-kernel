@@ -374,3 +374,35 @@ def WellBehavedVC_automatic : Prop :=
 def KrappWirth_separation : Prop :=
   ∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
     MeasurableHypotheses X C ∧ WellBehavedVC X C ∧ ¬ KrappWirthWellBehaved X C
+
+/-! ## Measurable-Target Variants
+
+The Borel-analytic bridge theorem proves NullMeasurableSet for bad events
+only when the target concept c is measurable. These variants restrict
+the quantification to measurable targets. -/
+
+/-- WellBehavedVC restricted to measurable targets.
+    This is the correct target for the Borel-analytic positive bridge:
+    Borel parameterization ⇒ analytic bad event ⇒ NullMeasurableSet,
+    but only when c is measurable (so the ghost-gap map is measurable). -/
+def WellBehavedVCMeasTarget
+    (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop :=
+  ∀ (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
+    (c : Concept X Bool), Measurable c →
+    ∀ (m : ℕ) (ε : ℝ),
+      MeasureTheory.NullMeasurableSet
+        {p : (Fin m → X) × (Fin m → X) | ∃ h ∈ C,
+          EmpiricalError X Bool h (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
+          EmpiricalError X Bool h (fun i => (p.1 i, c (p.1 i))) (zeroOneLoss Bool) ≥ ε / 2}
+        ((MeasureTheory.Measure.pi (fun _ : Fin m => D)).prod
+         (MeasureTheory.Measure.pi (fun _ : Fin m => D)))
+
+/-- OPEN QUESTION (measurable-target version):
+    Does WellBehavedVCMeasTarget separate from KrappWirthWellBehaved?
+    The Borel-analytic bridge (BorelAnalyticBridge.lean) closes this. -/
+def KrappWirthSeparationMeasTarget : Prop :=
+  ∃ (C : ConceptClass ℝ Bool),
+    MeasurableHypotheses ℝ C ∧
+    WellBehavedVCMeasTarget ℝ C ∧
+    ¬ KrappWirthWellBehaved ℝ C
