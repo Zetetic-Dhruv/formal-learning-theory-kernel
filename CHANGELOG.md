@@ -1,0 +1,69 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+## [v2.0.0] - 2026-03-30
+
+### Added
+- **Borel-analytic separation theorem** (`Theorem/BorelAnalyticSeparation.lean`, 305 lines): first new mathematical result from this kernel. Proves that `WellBehavedVC` (NullMeasurableSet) is strictly weaker than `KrappWirthWellBehaved` (MeasurableSet) for learning theory bad events. Witness: singleton class over analytic non-Borel subset of R. Conditional on existence of analytic non-Borel sets.
+- **Choquet capacitability theorem** (`MathLib/ChoquetCapacity.lean`, 416 lines): Kechris 30.13. Pure measure theory on Polish spaces. Mathlib-contributable. Sorry-free.
+- **Analytic measurability bridge** (`MathLib/AnalyticMeasurability.lean`, 110 lines): analytic sets are universally measurable.
+- **Borel-analytic bridge** (`Complexity/BorelAnalyticBridge.lean`, 257 lines): Borel-parameterized concept classes have analytic bad events. Connects descriptive set theory to statistical learning.
+- **PAC-Bayes bound** (`Theorem/PACBayes.lean`, 525 lines): McAllester's PAC-Bayes for finite hypothesis classes. First Lean4 formalization. Three-theorem chain: per-hypothesis Hoeffding, simultaneous union bound, full Jensen-based Gibbs error bound. Sorry-free.
+- **Measurability typeclass hierarchy** (`Complexity/Measurability.lean`, 408 lines): three-level hierarchy `MeasurableHypotheses -> MeasurableConceptClass -> KrappWirthWellBehaved`, plus `MeasurableBatchLearner`. Replaces ad-hoc hypothesis threading.
+- **Krapp-Wirth ghost gap formalization**: first machine-checked verification of Krapp and Wirth (2024, arXiv:2410.10243). Sorry-free proof that `KrappWirthWellBehaved -> WellBehavedVC`.
+- **Baxter multi-task framework** (`Theorem/Extended.lean`): `TaskEnvironment`, `MetaLearnerPAC`, `SampleMetaLearner` structures. `baxter_base_case` and `baxter_full` theorems. Sorry-free.
+- `CHANGELOG.md` (this file)
+- `scripts/metrics.sh` for canonical count generation
+
+### Changed
+- **Package name**: `LimitsOfLearning` renamed to `FLTKernel` in `lakefile.lean`
+- **Mathlib pinned**: `master` replaced with commit `fde0cc508f5375f278f515cb2f50a34a545a4c5c`
+- **Typeclass refactor**: 8 files modified to replace explicit `hmeas_C`/`hc_meas`/`hWB` hypothesis threading with `[MeasurableConceptClass X C]` typeclass instances
+- `meta_pac_bound` rewritten from trivially-true statement (mf = 0) to meaningful delegation to `pac_sample_complexity_sandwich`
+- `premise/final.json` updated with v2 metrics
+
+### Fixed
+- `meta_pac_bound` was trivially true (proved by `mf = 0` since `0 <= n`). Replaced with non-trivial statement.
+- CI sorry check matched comment mentions of "sorry". Fixed to POSIX ERE matching standalone tactics only.
+
+### Metrics delta
+
+| Metric | v1.0.0 | v2.0.0 | Delta |
+|--------|--------|--------|-------|
+| Files | 31 | 37 | +6 |
+| Lines | 14,945 | 17,350 | +2,405 |
+| Theorems | 210 | 264 | +54 |
+| Definitions | 158 | 190 | +32 |
+| Structures | 46 | 52 | +6 |
+| Sorry | 2 | 2 | 0 |
+
+## [v1.0.0] - 2026-03-25
+
+### Added
+- Initial release: Lean4 formalization of the Fundamental Theorem of Statistical Learning
+- 31 files, 14,945 lines, 210 theorems, 2 sorry
+- VC characterization (PAC iff VCDim < infinity), sorry-free
+- Littlestone characterization (Online iff LittlestoneDim < infinity), sorry-free
+- Gold's theorem (locking sequence), sorry-free
+- Mind change characterization, sorry-free
+- All paradigm separations with constructive witnesses, sorry-free
+- Fundamental theorem (5-way equivalence, 4/5 conjuncts proved)
+- Universal trichotomy (2/3 branches proved)
+- Full symmetrization chain (3,027 lines, sorry-free)
+- Rademacher complexity infrastructure (1,901 lines, sorry-free)
+- NFL theorems for infinite domains, sorry-free
+- Sauer-Shelah via Mathlib bridge, sorry-free
+- PAC-Bayes boosting (7/12-fraction Chebyshev), sorry-free
+- Premise architecture: `premise/origin.json` and `premise/final.json`
+- CI via GitHub Actions with sorry count gate
+- Apache 2.0 license with prior art notice
+
+### Known issues
+- 2 sorry tactics blocked by results absent from Mathlib:
+  - `vcdim_finite_imp_compression` (Moran-Yehudayoff 2016)
+  - `bhmz_middle_branch` (BHMZ STOC 2021)
+
+[v2.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/compare/v1.0.0...v2.0.0
+[v1.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0
