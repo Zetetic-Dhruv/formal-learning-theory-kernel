@@ -256,7 +256,7 @@ noncomputable def empErrGrid (m : ℕ) : Finset ℝ :=
 noncomputable def ghostGapGrid (m : ℕ) : Finset ℝ :=
   ((empErrGrid m).product (empErrGrid m)).image (fun ab => ab.1 - ab.2)
 
-private lemma empiricalError_mem_empErrGrid
+lemma empiricalError_mem_empErrGrid
     {X : Type u} [MeasurableSpace X]
     (h : Concept X Bool) {m : ℕ}
     (S : Fin m → X × Bool) :
@@ -278,7 +278,7 @@ private lemma empiricalError_mem_empErrGrid
         _ < m + 1 := Nat.lt_succ_iff.mpr le_rfl
     exact Finset.mem_image.mpr ⟨k, Finset.mem_range.mpr hk, rfl⟩
 
-private lemma oneSidedGhostGap_mem_grid
+lemma oneSidedGhostGap_mem_grid
     {X : Type u} [MeasurableSpace X]
     (h : Concept X Bool) (c : Concept X Bool) (m : ℕ)
     (p : (Fin m → X) × (Fin m → X)) :
@@ -292,7 +292,7 @@ private lemma oneSidedGhostGap_mem_grid
         empiricalError_mem_empErrGrid h (fun i => (p.1 i, c (p.1 i)))⟩,
      rfl⟩
 
-private lemma ghostGapVals_finite
+lemma ghostGapVals_finite
     {X : Type u} [MeasurableSpace X]
     (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ)
     (p : (Fin m → X) × (Fin m → X)) :
@@ -302,7 +302,7 @@ private lemma ghostGapVals_finite
 
 /-! ## Implication Chain: KrappWirth → WellBehavedVC -/
 
-private lemma wellBehaved_event_eq_preimage_gapSup
+lemma wellBehaved_event_eq_preimage_gapSup
     {X : Type u} [MeasurableSpace X]
     (C : ConceptClass X Bool) (c : Concept X Bool) (m : ℕ) (ε : ℝ)
     (hC : C.Nonempty) :

@@ -34,6 +34,8 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.Structures,
     `FLT_Proofs.Complexity.Measurability,
     `FLT_Proofs.Complexity.BorelAnalyticBridge,
+    `FLT_Proofs.MathLib.ChoquetCapacity,
+    `FLT_Proofs.MathLib.AnalyticMeasurability,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,
@@ -41,6 +43,7 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.Separation,
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Theorem.Extended,
+    `FLT_Proofs.Theorem.BorelAnalyticSeparation,
     `FLT_Proofs.Process,
     `FLT_Proofs.Bridge
   ]

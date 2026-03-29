@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Complexity.Measurability
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Measure.NullMeasurable
+import FLT_Proofs.MathLib.AnalyticMeasurability
 
 /-!
 # Borel-Analytic Bridge for Statistical Learning Theory
@@ -158,3 +157,101 @@ theorem borel_param_badEvent_analytic
   haveI : SecondCountableTopology (Set.range (Prod.snd : Θ × GhostPairs X m → GhostPairs X m)) :=
     inferInstance
   exact hW.analyticSet_image measurable_snd
+
+/-! ## Theorem C' (F4c): Sample-space specialization -/
+
+noncomputable abbrev GhostPairMeasure
+    {X : Type u} [MeasurableSpace X]
+    (D : MeasureTheory.Measure X) (m : ℕ) :
+    MeasureTheory.Measure ((Fin m → X) × (Fin m → X)) :=
+  (MeasureTheory.Measure.pi (fun _ : Fin m => D)).prod
+    (MeasureTheory.Measure.pi (fun _ : Fin m => D))
+
+theorem analyticSet_nullMeasurableSet_ghostPairs
+    {X : Type u}
+    [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [PolishSpace X]
+    {m : ℕ} {s : Set ((Fin m → X) × (Fin m → X))}
+    (hs : MeasureTheory.AnalyticSet s)
+    (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D] :
+    MeasureTheory.NullMeasurableSet s (GhostPairMeasure D m) := by
+  haveI : MeasureTheory.IsFiniteMeasure (GhostPairMeasure D m) := inferInstance
+  exact analyticSet_nullMeasurableSet hs
+
+/-! ## Theorem D (F5): Positive bridge — bad event is NullMeasurableSet -/
+
+theorem borel_param_nullMeasurableSet_bad_event
+    {X : Type u} [MeasurableSpace X] [TopologicalSpace X] [PolishSpace X] [BorelSpace X]
+    {Θ : Type*} [MeasurableSpace Θ] [StandardBorelSpace Θ]
+    (e : Θ → Concept X Bool)
+    (he : Measurable (fun p : Θ × X => e p.1 p.2))
+    (c : Concept X Bool) (hc : Measurable c)
+    (m : ℕ) (ε : ℝ)
+    (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D] :
+    NullMeasurableSet (paramBadEvent e c m ε) (GhostPairMeasure D m) :=
+  analyticSet_nullMeasurableSet_ghostPairs
+    (borel_param_badEvent_analytic e he c hc m ε) D
+
+/-! ## Theorem E (F5): Class-level corollary -/
+
+theorem borel_param_wellBehavedVCMeasTarget
+    {X : Type u} [MeasurableSpace X] [TopologicalSpace X] [PolishSpace X] [BorelSpace X]
+    {Θ : Type*} [MeasurableSpace Θ] [StandardBorelSpace Θ]
+    (e : Θ → Concept X Bool)
+    (he : Measurable (fun p : Θ × X => e p.1 p.2)) :
+    WellBehavedVCMeasTarget X (Set.range e) := by
+  intro D _ c hc m ε
+  have hEq :
+      {p : (Fin m → X) × (Fin m → X) | ∃ h ∈ Set.range e,
+        EmpiricalError X Bool h (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
+        EmpiricalError X Bool h (fun i => (p.1 i, c (p.1 i))) (zeroOneLoss Bool) ≥ ε / 2}
+      = paramBadEvent e c m ε := by
+    ext p
+    simp only [paramBadEvent, paramWitnessSet, Set.mem_image, Set.mem_setOf_eq, Prod.exists]
+    constructor
+    · rintro ⟨_, ⟨θ, rfl⟩, hp⟩; exact ⟨θ, p.1, p.2, hp, rfl⟩
+    · rintro ⟨θ, s1, s2, hp, heq⟩
+      have : (s1, s2) = p := Prod.ext (congrArg Prod.fst heq) (congrArg Prod.snd heq)
+      subst this
+      exact ⟨e θ, ⟨θ, rfl⟩, hp⟩
+  rw [hEq]
+  exact borel_param_nullMeasurableSet_bad_event e he c hc m ε D
+
+/-! ## Theorem F (F6): Closure principle for patching -/
+
+theorem patchEval_measurable
+    {X : Type u} [MeasurableSpace X]
+    {Θ₁ Θ₂ Ρ : Type*} [MeasurableSpace Θ₁] [MeasurableSpace Θ₂] [MeasurableSpace Ρ]
+    (e₁ : Θ₁ → Concept X Bool) (e₂ : Θ₂ → Concept X Bool)
+    (r : Ρ → Concept X Bool)
+    (he₁ : Measurable (fun p : Θ₁ × X => e₁ p.1 p.2))
+    (he₂ : Measurable (fun p : Θ₂ × X => e₂ p.1 p.2))
+    (hr : Measurable (fun p : Ρ × X => r p.1 p.2)) :
+    Measurable (fun p : (Θ₁ × Θ₂ × Ρ) × X => patchEval e₁ e₂ r p.1 p.2) := by
+  simp only [patchEval]
+  have hpred : Measurable (fun p : (Θ₁ × Θ₂ × Ρ) × X => r p.1.2.2 p.2) :=
+    hr.comp (Measurable.prodMk
+      (measurable_snd.comp (measurable_snd.comp measurable_fst)) measurable_snd)
+  have hleft : Measurable (fun p : (Θ₁ × Θ₂ × Ρ) × X => e₁ p.1.1 p.2) :=
+    he₁.comp (Measurable.prodMk
+      (measurable_fst.comp measurable_fst) measurable_snd)
+  have hright : Measurable (fun p : (Θ₁ × Θ₂ × Ρ) × X => e₂ p.1.2.1 p.2) :=
+    he₂.comp (Measurable.prodMk
+      (measurable_fst.comp (measurable_snd.comp measurable_fst)) measurable_snd)
+  have hset : MeasurableSet {p : (Θ₁ × Θ₂ × Ρ) × X | r p.1.2.2 p.2 = true} :=
+    hpred (measurableSet_singleton true)
+  exact Measurable.piecewise hset hleft hright
+
+theorem patch_borel_param_wellBehavedVCMeasTarget
+    {X : Type u} [MeasurableSpace X] [TopologicalSpace X] [PolishSpace X] [BorelSpace X]
+    {Θ₁ Θ₂ Ρ : Type*}
+    [MeasurableSpace Θ₁] [StandardBorelSpace Θ₁]
+    [MeasurableSpace Θ₂] [StandardBorelSpace Θ₂]
+    [MeasurableSpace Ρ] [StandardBorelSpace Ρ]
+    (e₁ : Θ₁ → Concept X Bool) (e₂ : Θ₂ → Concept X Bool)
+    (r : Ρ → Concept X Bool)
+    (he₁ : Measurable (fun p : Θ₁ × X => e₁ p.1 p.2))
+    (he₂ : Measurable (fun p : Θ₂ × X => e₂ p.1 p.2))
+    (hr : Measurable (fun p : Ρ × X => r p.1 p.2)) :
+    WellBehavedVCMeasTarget X (Set.range (patchEval e₁ e₂ r)) :=
+  borel_param_wellBehavedVCMeasTarget (patchEval e₁ e₂ r)
+    (patchEval_measurable e₁ e₂ r he₁ he₂ hr)
