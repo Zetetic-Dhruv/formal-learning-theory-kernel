@@ -4,7 +4,7 @@
 
 | Lean | Mathlib | LOC | Core theorems | Core sorry | Extended theorems | Extended sorry | Release |
 |------|---------|-----|---------------|------------|-------------------|----------------|---------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 14,945 | 204 (132 public + 78 private, minus 6 sorry-tainted) | **0** | 6 | **2** | [`v1.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0) |
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 17,350 | 259 | **0** | 5 | **2** | [`v2.0.0`](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v2.0.0) |
 
 <p align="center">
   <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
@@ -114,7 +114,7 @@ flowchart TB
     L3["L3: Learner/\n303 lines"]:::types
     L4["L4: Criterion/\n409 lines"]:::types
 
-    subgraph L5["L5: Complexity/ (8,740 lines)"]
+    subgraph L5["L5: Complexity/ (9,454 lines)"]
         VCD["VCDimension"]:::infra
         LIT["Littlestone"]:::infra
         MC["MindChange"]:::infra
@@ -157,7 +157,7 @@ flowchart TB
     GEN --> GR
 ```
 
-The infrastructure layers (L5) account for **58%** of the codebase. The theorems (L6) account for 27%. Definitions (L1-L4) account for 7%. This ratio is itself a datum about learning theory: the conceptual vocabulary is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
+The infrastructure layers (L5) account for **56%** of the codebase (excluding the MathLib/ folder, which contains 526 lines of pure measure theory imported by the kernel). The theorems (L6) account for 30%. Definitions (L1-L4) account for 7%. This ratio is itself a datum about learning theory: the conceptual vocabulary is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
 
 ### The shared axis
 
@@ -427,14 +427,14 @@ fundamental_theorem
 
 | Metric | Count |
 |--------|-------|
-| Theorem/lemma statements | 210 (132 public, 78 private) |
+| Theorem/lemma statements | 264 (173 public, 91 private) |
 | Definitions | 158 |
 | Structures | 46 |
-| Total lines | 14,945 |
+| Total lines | 17,350 (16,824 excluding MathLib/) |
 | Sorry tactics | 2 |
-| Files | 31 |
+| Files | 37 |
 | Mathlib bridges | 5 (ConceptClass ↔ Set, Shatters ↔ Finset.Shatters, VCDim ↔ Finset.vcDim, IIDSample ↔ Measure.pi, WithTop Nat ↔ Ordinal) |
-| Paradigms formalized | 4 with proved theorems (PAC, Online, Gold, Universal); 2 with definitions and criteria only (Bayesian, Query) |
+| Paradigms formalized | 5 with proved theorems (PAC, Online, Gold, Universal, Bayesian); 1 with definitions only (Query) |
 | Break points | 7 |
 | Maximum dependency chain depth | 7 (Concept → VCDim → fundamental_theorem) |
 | Maximum fan-in node | ConceptClass (22 incoming edges) |
@@ -637,7 +637,7 @@ Each dashed node represents a proof route that was explored and killed. The anno
 
 Interventions 1, 3, and 5 killed provably false statements. Interventions 2, 4, and 6 repaired definitions or added hypotheses to rescue viable routes. Intervention 7 established a setting-specific boundary: the library's results hold for binary classification, and the restriction is mathematically necessary.
 
-The counterfactual branches collectively explain why the library has the shape it does. The NFL correction (1) explains why all NFL theorems require `[Infinite X]`. The Littlestone fix (2) explains why `Theorem/Online.lean` defines its own `LTree.isShattered` rather than using `Complexity/Littlestone.lean`. The symmetrization necessity (3) explains why 58% of the codebase is infrastructure. The WellBehavedVC introduction (4) explains the regularity hypothesis that appears in every measure-theoretic theorem. The PAC repair (5) explains why `Measure.pi` appears in the definition rather than an existential. The quantifier fix (6) explains the specific quantifier ordering in `HasUniformConvergence`. The Bool boundary (7) explains why the critical path theorems operate over `Bool`.
+The counterfactual branches collectively explain why the library has the shape it does. The NFL correction (1) explains why all NFL theorems require `[Infinite X]`. The Littlestone fix (2) explains why `Theorem/Online.lean` defines its own `LTree.isShattered` rather than using `Complexity/Littlestone.lean`. The symmetrization necessity (3) explains why 56% of the codebase is infrastructure. The WellBehavedVC introduction (4) explains the regularity hypothesis that appears in every measure-theoretic theorem. The PAC repair (5) explains why `Measure.pi` appears in the definition rather than an existential. The quantifier fix (6) explains the specific quantifier ordering in `HasUniformConvergence`. The Bool boundary (7) explains why the critical path theorems operate over `Bool`.
 
 ---
 
@@ -667,8 +667,8 @@ The premise served as a **grammar** for the AI: instead of jointly discovering t
 
 | | Before (origin) | After (final) |
 |-|-----------------|---------------|
-| Lines | 2,912 | 14,945 |
-| Files | 10 monolithic | 31 modular |
+| Lines | 2,912 | 17,350 |
+| Files | 10 monolithic | 37 modular |
 | Sorry count | 69 | 2 |
 | Structural hypotheses tested | 0 of 7 | 7 of 7 (3 confirmed as fractures, 4 resolved as design decisions) |
 
@@ -678,13 +678,7 @@ The premise served as a **grammar** for the AI: instead of jointly discovering t
 
 ### Type architecture stability
 
-The type distribution across the kernel remained constant through 12,033 lines of proof addition:
-
-<p align="center">
-  <img src="premise/type_distribution.svg" width="600" alt="Type distribution: origin vs final"/>
-</p>
-
-Abbreviations, propositions, and structures held at 32.9%, 31.4%, and 27.9% respectively in both the origin premise (2,912 LOC) and the final kernel (14,945 LOC). The proof infrastructure redistributed across layers (L5 Complexity grew from a stub to 8,740 lines), but the balance of type categories did not change. The pre-designed grammar absorbed the proofs without architectural modification.
+The type distribution across the kernel remained stable through the initial 12,033 lines of proof addition (v1.0.0), with abbreviations, propositions, and structures holding at roughly 33%, 31%, and 28% respectively. The v2.0.0 additions (2,405 lines, predominantly theorems: PAC-Bayes, Choquet capacity, Borel-analytic separation chain) shifted the balance toward propositions, which now account for 52% of named entities vs. 38% of definitions and 10% of structures. The proof infrastructure redistributed across layers (L5 Complexity grew from a stub to 9,454 lines), but the pre-designed grammar absorbed all additions without requiring new type categories or architectural modification.
 
 Both the origin and final type architectures are recorded in `premise/origin.json` and `premise/final.json`.
 
@@ -793,7 +787,7 @@ This kernel is one component of a larger programme. The four public companion re
                   of the Fundamental Theorem of Statistical Learning},
   year         = {2026},
   url          = {https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
-  note         = {31 files, 14{,}945 LOC, 2 sorry.
+  note         = {37 files, 17{,}350 LOC, 2 sorry.
                   Proof discovery via Claude Opus 4.6.}
 }
 
