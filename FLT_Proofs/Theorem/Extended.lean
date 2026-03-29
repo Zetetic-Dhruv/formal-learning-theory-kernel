@@ -54,12 +54,13 @@ private theorem bhmz_middle_branch (X : Type) [MeasurableSpace X]
 theorem universal_trichotomy (X : Type) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool)
-    (hc_meas : ∀ c ∈ C, Measurable c)
+    [MeasurableHypotheses X C]
     (hL_meas : ∀ (L : BatchLearner X Bool), LearnEvalMeasurable L) :
     (LittlestoneDim X C < ⊤ ∧ OnlineLearnable X Bool C) ∨
     (LittlestoneDim X C = ⊤ ∧ VCDim X C < ⊤ ∧
       UniversalLearnable X C ∧ ¬ OnlineLearnable X Bool C) ∨
     (VCDim X C = ⊤ ∧ ¬ UniversalLearnable X C) := by
+  have hc_meas := MeasurableHypotheses.mem_measurable (C := C)
   rcases lt_or_eq_of_le (le_top : LittlestoneDim X C ≤ ⊤) with hldim | hldim
   · -- Branch 1: LittlestoneDim < ⊤ ⟹ OnlineLearnable
     exact Or.inl ⟨hldim, (littlestone_characterization X C).mpr hldim⟩
@@ -513,9 +514,10 @@ private lemma used_sample_split_measure
     The [Fintype A] constraint is essential: for infinite A, the theorem is false
     (no finite union bound). [Nonempty A] ensures the advice space is inhabited. -/
 theorem advice_elimination (X : Type u) [MeasurableSpace X]
-    (C : ConceptClass X Bool) (A : Type*) [Fintype A] [Nonempty A]
-    (hc_meas : ∀ c ∈ C, Measurable c) :
+    (C : ConceptClass X Bool) [MeasurableHypotheses X C]
+    (A : Type*) [Fintype A] [Nonempty A] :
     PACLearnableWithAdviceRegular X C A → PACLearnable X C := by
+  have hc_meas : ∀ c ∈ C, Measurable c := MeasurableHypotheses.mem_measurable (C := C)
   intro ⟨LA, mf_adv, h_eval, h_adv⟩
   -- Construct the advice-elimination learner.
   -- The learner tries all advice values and picks the best one via validation.
