@@ -187,7 +187,11 @@ There is no proof in this library that does not participate in this axis.
 
 ---
 
-## II. The Fundamental Theorem
+## II. Characterizations
+
+A characterization theorem asserts equivalence between differently-typed mathematical objects. The type diversity is the content: the theorem's value lies in connecting objects that live in different branches of mathematics.
+
+### The fundamental theorem
 
 The central result, stated as `fundamental_theorem` in `Theorem/PAC.lean`:
 
@@ -232,9 +236,25 @@ The biconditional `PACLearnable ↔ VCDim < infinity` conceals a deep asymmetry:
 
 This asymmetry is *unavoidable*. It is not an artifact of the proof strategy but a genuine structural feature of the characterization. The forward direction builds a learner; the backward direction proves one cannot exist.
 
+### The Littlestone characterization
+
+`littlestone_characterization` in `Theorem/Online.lean`: a concept class is online-learnable if and only if its Littlestone dimension is finite. The equivalence connects a combinatorial object (the depth of the deepest shattered binary tree, path-restricted) to an adversarial game (the existence of a strategy that bounds mistakes against any sequence). The proof uses a version space potential argument for the backward direction and an explicit adversary construction for the forward direction. Both directions are sorry-free. The corrected tree definition (path-wise restriction of C at each branch) is critical; the standard branch-wise definition makes the characterization false (see Section IV).
+
+### Gold's theorem and the mind change characterization
+
+`gold_theorem` in `Theorem/Gold.lean`: no learner can identify in the limit (EX-learn) any concept class containing all finite subsets of a countable domain plus some infinite set. The proof constructs a locking sequence that forces the learner to commit to a finite concept, then extends the adversarial text to be consistent with the infinite target. The locking sequence technique is used exactly once in the library and nowhere else.
+
+`mind_change_characterization` in `Theorem/Gold.lean`: a concept class is EX-learnable if and only if every text presentation has finite mind change ordinal. The `MindChangeOrdinal` definition encodes both convergence and correctness in its return type: it returns a finite ordinal when the learner converges correctly with finitely many changes, and omega otherwise. This design collapses the backward direction of the characterization into a definition-level consequence.
+
+### PAC-Bayes: the frequentist-Bayesian bridge
+
+`pac_bayes_finite` in `Theorem/PACBayes.lean`: McAllester's PAC-Bayes bound for finite hypothesis classes. For any prior P and posterior Q over a finite hypothesis class, the expected generalization error of the Gibbs classifier is bounded by empirical Gibbs error plus a KL-divergence penalty. The proof chains through three lemmas: per-hypothesis Hoeffding with prior-weighted tail (`pac_bayes_per_hypothesis`), simultaneous bound via union bound (`pac_bayes_all_hypotheses`), and Jensen's inequality over the posterior (`pac_bayes_finite`).
+
+This is the only proved cross-paradigm result in the kernel. It connects the frequentist framework (PAC-style generalization guarantees) to the Bayesian framework (prior-posterior structure). It is, to our knowledge, the first Lean4 formalization of the PAC-Bayes bound. Sorry-free.
+
 ---
 
-## III. What Formalization Reveals That Textbooks Suppress
+## III. What Formalization Corrects
 
 ### 1. The No-Free-Lunch theorem is false for finite domains
 
