@@ -30,11 +30,13 @@ The kernel separates into a **fully checked core** (259 theorems, 0 sorry) and a
 
 ---
 
-## I. The Structure of Learning Theory
+## Part I: The Kernel
 
-### The Paradigm Joints
+## I. Paradigm Structure
 
-Six decades of learning theory produced three paradigms that textbooks treat as chapters of one story. Formalization reveals they are three theories sharing vocabulary but not structure.
+### The paradigm joints
+
+Given a field with multiple paradigms sharing vocabulary, we ask: do the paradigms share proof infrastructure? Six decades of learning theory produced three paradigms that textbooks treat as chapters of one story. In this kernel, they are three theories sharing vocabulary but not structure.
 
 ```mermaid
 flowchart TB
@@ -96,7 +98,7 @@ The type architecture also encountered four points where alternative designs wer
 |----------|------------|-------------|-----------------|
 | VC dimension type | `WithTop Nat` | `Ordinal` (uniform) | `WithTop Nat` gives `CompleteLattice` for free; `Ordinal` requires explicit `BddAbove` witnesses at every `iSup`. The embedding `VCDim_embed_ordinal` bridges the two when needed. |
 | Concept representation | `Set (X -> Bool)` (functions) | `Set (Set X)` (Mathlib set families) | Function application `c x` is natural for learner definitions and error computation. The bridge to Mathlib's `Finset.vcDim` is proved lossless for `Bool` via `conceptToFinset_injective`. |
-| ConceptClass variants | Bare `Set` + explicit hypotheses | Typeclass hierarchy (`DecidableConceptClass`, `MeasurableConceptClass`, ...) | Different theorems need decidable, RE, measurable, or multiclass variants. The bare `Set` with explicit hypothesis parameters (e.g., `hmeas_C`) keeps the primary definition simple. Four commented alternatives in `Basic.lean` document the spectrum. |
+| ConceptClass measurability | Typeclass hierarchy (`MeasurableHypotheses`, `MeasurableConceptClass`, `KrappWirthWellBehaved`) | Bare `Set` + explicit hypothesis parameters | The typeclass system replaced ad-hoc `hmeas_C`/`hc_meas`/`hWB` threading across 8 files. `[MeasurableConceptClass X C]` provides all measurability witnesses. The hierarchy is strict: `KrappWirthWellBehaved` implies `MeasurableConceptClass` implies `MeasurableHypotheses`, and the Borel-analytic separation proves the first implication is strict. See Section V. |
 | Bayesian prior type | `R`-valued (unnormalized density) | `ProbabilityMeasure (Concept X Y)` | The measure-theoretic type is mathematically canonical but requires `MeasurableSpace` on the function space. `R`-valued avoids this. No Bayesian theorem is on the critical path; the alternative is preserved as a commented structure in `Learner/Bayesian.lean`. |
 
 ### The Dependency DAG
@@ -120,19 +122,28 @@ flowchart TB
         MC["MindChange"]:::infra
         ORD["Ordinal"]:::infra
         STR["Structures"]:::infra
+        MEAS["Measurability\n408 lines"]:::infra
+        BAB["BorelAnalyticBridge\n257 lines"]:::infra
         GEN["Generalization\n2,997 lines"]:::infra
         SYM["Symmetrization\n3,027 lines"]:::infra
         RAD2["Rademacher\n1,901 lines"]:::infra
         GR["GeneralizationResults"]:::infra
     end
 
+    subgraph ML["MathLib/ (526 lines)"]
+        CHQ["ChoquetCapacity\n416 lines"]:::infra
+        ANM["AnalyticMeasurability\n110 lines"]:::infra
+    end
+
     BR["Bridge\n769 lines"]:::infra
 
-    subgraph L6["L6: Theorem/ (3,985 lines)"]
+    subgraph L6["L6: Theorem/ (5,087 lines)"]
         GOLD["Gold ✓"]:::thm
         TPAC["PAC ✓"]:::thm
         TONL["Online ✓"]:::thm
         SEP["Separation ✓"]:::thm
+        PB["PACBayes ✓"]:::thm
+        BAS["BorelAnalyticSep ✓"]:::thm
         EXT["Extended ⊘"]:::thm
     end
 
@@ -146,18 +157,23 @@ flowchart TB
     L5 --> BR
     BR --> L6
     L0 --> L7
+    ML --> L5
 
     VCD --> GEN
     LIT --> GEN
     MC --> GEN
     ORD --> GEN
     STR --> GEN
+    MEAS --> BAB
+    BAB --> BAS
+    CHQ --> ANM
+    ANM --> BAB
     GEN --> SYM
     SYM --> RAD2
     GEN --> GR
 ```
 
-The infrastructure layers (L5) account for **56%** of the codebase (excluding the MathLib/ folder, which contains 526 lines of pure measure theory imported by the kernel). The theorems (L6) account for 30%. Definitions (L1-L4) account for 7%. This ratio is itself a datum about learning theory: the conceptual vocabulary is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
+The infrastructure layers (L5) account for **56%** of the codebase (excluding MathLib/, which contributes 526 lines of pure measure theory). The theorems (L6) account for 30%. Definitions (L1-L4) account for 7%. MathLib/ accounts for 3%. This ratio is itself a datum: the conceptual vocabulary of learning theory is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
 
 ### The shared axis
 
