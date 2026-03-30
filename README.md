@@ -559,6 +559,9 @@ This premise extension produced: the Borel-analytic separation theorem (new math
 | Rademacher infrastructure | 1,901 | **Yes** | Massart's lemma, MGF bounds, VCDim-Rademacher connection. Self-contained chain (does not need symmetrization). |
 | NFL core counting | ~200 | **Yes** | Per-sample adversarial construction + product measure positivity. Cannot be simplified. |
 | Littlestone characterization | 690 | **Yes** | Corrected tree definition + version space potential argument. Non-constructive at each decision step. |
+| Borel-analytic chain | 562 | **Yes** | Choquet capacitability + analytic measurability + Borel-analytic bridge + separation theorem. Connects descriptive set theory to learning theory. |
+| PAC-Bayes chain | 525 | **Yes** | Per-hypothesis Hoeffding, union bound, Jensen. The only cross-paradigm proof (frequentist-Bayesian). |
+| Measurability typeclasses | 408 | **Yes** | Three-level hierarchy replacing ad-hoc hypothesis threading. Strict separation proved. |
 | Sauer-Shelah bridge | ~100 | Routine | Connects to Mathlib's `Finset.vcDim`. |
 | Hoeffding bounds | ~300 | Routine | Concentration inequality infrastructure from Mathlib. |
 | Occam's algorithm | ~50 | Routine | Follows immediately from the VCDim gate. |
@@ -590,8 +593,8 @@ fundamental_theorem
 | Metric | Count |
 |--------|-------|
 | Theorem/lemma statements | 264 (173 public, 91 private) |
-| Definitions | 158 |
-| Structures | 46 |
+| Definitions | 190 |
+| Structures | 52 |
 | Total lines | 17,350 (16,824 excluding MathLib/) |
 | Sorry tactics | 2 |
 | Files | 37 |
@@ -603,7 +606,7 @@ fundamental_theorem
 
 ### Proof techniques
 
-The library uses 8 distinct proof methods. Their distribution across the codebase is not uniform.
+The library uses 10 distinct proof methods. Their distribution across the codebase is not uniform.
 
 | Method | Paradigm | Where used | Frequency |
 |--------|----------|-----------|-----------|
@@ -615,8 +618,10 @@ The library uses 8 distinct proof methods. Their distribution across the codebas
 | **Concentration inequality** | PAC | `hoeffding_one_sided`, `chebyshev_seven_twelfths_bound`, `rademacher_mgf_bound` | 8 theorems |
 | **Induction on tree depth** | Online | `forward_direction`, `backward_direction`, `adversary_threshold` | 5 theorems |
 | **Locking sequence (an enumeration strategy that forces convergence)** | Gold | `gold_theorem` | 1 theorem |
+| **Descriptive set theory** (Suslin projection + Choquet capacity) | Cross-cutting | `planarWitnessEvent_analytic`, `analytic_nonborel_set_gives_measTarget_separation` | 2 theorems |
+| **KL-divergence / Jensen** | Bayesian | `pac_bayes_finite`, `jensen_sqrt_finpmf` | 3 theorems |
 
-No proof method is shared across all three paradigms. PAC theorems use concentration inequalities and symmetrization. Online theorems use potential functions and tree induction. Gold's theorem uses a locking sequence that appears nowhere else in the library. The shared mathematical axis (Section I) is answered by completely disjoint proof technologies. This is not an artifact of the formalization: the data presentations are incompatible (i.i.d. samples vs. adversarial sequences vs. enumerating streams), and incompatible data presentations force incompatible proof methods.
+No proof method is shared across the three classical paradigms. PAC theorems use concentration inequalities and symmetrization. Online theorems use potential functions and tree induction. Gold's theorem uses a locking sequence that appears nowhere else in the library. The shared mathematical axis (Section I) is answered by completely disjoint proof technologies. Two methods are cross-cutting: descriptive set theory (connecting the measurability hierarchy to the separation theorem) and KL-divergence/Jensen (bridging frequentist and Bayesian frameworks via PAC-Bayes). Both required infrastructure not present in the original premise.
 
 ### Formalization techniques
 
@@ -637,7 +642,21 @@ No proof method is shared across all three paradigms. PAC theorems use concentra
 | `Finset.vcDim` + `card_le_card_shatterer` | Sauer-Shelah lemma (bridged via `Bridge.lean`) |
 | `SetTheory.Ordinal.Arithmetic` | Ordinal VC dimension and mind change ordinals |
 | `MeasureTheory.Integral.Bochner` | Expected values in Rademacher and generalization bounds |
+| `MeasureTheory.Constructions.Polish.Basic` | Polish spaces for Choquet capacity and analytic sets |
+| `MeasureTheory.AnalyticSet` | Suslin projection, analytic set closure properties |
 | `Computability.TuringMachine` | Computation infrastructure (L0 layer) |
+
+### Contributions to Mathlib
+
+The kernel required three results that Mathlib does not currently contain. These are formalized in `MathLib/` and are independent of learning theory.
+
+| Result | File | Lines | What it proves | Reference |
+|--------|------|-------|---------------|-----------|
+| Choquet capacitability | `ChoquetCapacity.lean` | 416 | Finite Borel measures on Polish spaces are Choquet capacities. Analytic sets are capacitable: their compact capacity equals their measure. | Kechris, *Classical Descriptive Set Theory*, Theorem 30.13 |
+| Analytic measurability | `AnalyticMeasurability.lean` | 110 | Analytic sets are universally measurable (NullMeasurableSet under any probability measure). Bridge from Choquet to learning theory. | Lusin (1925); Kechris Ch. 29 |
+| Baxter base case | `Theorem/Extended.lean` | ~40 | Any meta-learner's output on a new task is subject to the NFL lower bound. | Baxter (2000) |
+
+All three are sorry-free. The Choquet capacitability theorem is the most substantial and is a candidate for upstream contribution to Mathlib.
 
 ---
 
@@ -812,12 +831,13 @@ Machine-generated from the codebase. Grouped by role.
 
 | Theorem | File | Status |
 |---------|------|--------|
-| `fundamental_theorem` | Theorem/PAC.lean:272 | Proved (4/5 conjuncts) |
-| `vc_characterization` | Theorem/PAC.lean:113 | Proved |
+| `fundamental_theorem` | Theorem/PAC.lean:293 | Proved (4/5 conjuncts) |
+| `vc_characterization` | Theorem/PAC.lean:126 | Proved |
 | `littlestone_characterization` | Theorem/Online.lean:608 | Proved |
 | `gold_theorem` | Theorem/Gold.lean:19 | Proved |
 | `mind_change_characterization` | Theorem/Gold.lean:206 | Proved |
-| `universal_trichotomy` | Theorem/Extended.lean:53 | 2/3 proved |
+| `universal_trichotomy` | Theorem/Extended.lean:54 | 2/3 proved |
+| `pac_bayes_finite` | Theorem/PACBayes.lean | Proved (first Lean4 PAC-Bayes) |
 
 ### Separation theorems
 
@@ -828,6 +848,8 @@ Machine-generated from the codebase. Grouped by role.
 | `online_imp_pac` | Theorem/Separation.lean:131 | (always: not a separation) |
 | `uc_does_not_imply_online` | Complexity/GeneralizationResults.lean:160 | (constructive) |
 | `online_pac_gold_separation` | Theorem/Separation.lean:1441 | (all three strict) |
+| `analytic_nonborel_set_gives_measTarget_separation` | Theorem/BorelAnalyticSeparation.lean:184 | Singleton class over analytic non-Borel A |
+| `exists_measTarget_separation` | Theorem/BorelAnalyticSeparation.lean:301 | (conditional on analytic non-Borel existence) |
 
 ### NFL and lower bounds
 
@@ -851,6 +873,12 @@ Machine-generated from the codebase. Grouped by role.
 | `vcdim_finite_imp_rademacher_vanishing` | Complexity/Rademacher.lean:1818 | Rademacher chain |
 | `finite_massart_lemma` | Complexity/Rademacher.lean:507 | Massart's lemma |
 | `advice_elimination` | Theorem/Extended.lean:514 | Advice-to-PAC reduction |
+| `borel_param_wellBehavedVCMeasTarget` | Complexity/BorelAnalyticBridge.lean | Borel parameterization implies WellBehavedVC |
+| `KrappWirthWellBehaved.toWellBehavedVC` | Complexity/Measurability.lean | Krapp-Wirth implies WellBehavedVC |
+| `AnalyticSet.compactCap_eq` | MathLib/ChoquetCapacity.lean | Choquet capacitability (Kechris 30.13) |
+| `pac_bayes_per_hypothesis` | Theorem/PACBayes.lean | Per-hypothesis Hoeffding with prior |
+| `pac_bayes_all_hypotheses` | Theorem/PACBayes.lean | Simultaneous bound via union |
+| `baxter_base_case` | Theorem/Extended.lean | Multi-task NFL base case |
 
 ### Bridge theorems (Mathlib interface)
 
@@ -867,7 +895,7 @@ Machine-generated from the codebase. Grouped by role.
 | Theorem | File | Blocked by | Required for |
 |---------|------|-----------|-------------|
 | `vcdim_finite_imp_compression` | Complexity/Generalization.lean:1903 | Moran-Yehudayoff 2016 | Fundamental theorem conjunct 2 (forward) |
-| `bhmz_middle_branch` | Theorem/Extended.lean:39 | BHMZ STOC 2021 | Universal trichotomy branch 2 |
+| `bhmz_middle_branch` | Theorem/Extended.lean:40 | BHMZ STOC 2021 | Universal trichotomy branch 2 |
 
 ---
 
