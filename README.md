@@ -10,23 +10,23 @@
   <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
 </p>
 
-A Lean4 formalization of the **Fundamental Theorem of Statistical Learning** (5-way equivalence, 4/5 conjuncts proved), the **Littlestone characterization** of online learnability, **Gold's theorem** on identification in the limit, all **paradigm separations** with constructive witnesses, and the **universal learning trichotomy** (2/3 branches proved). Built on Mathlib4.
+We derived a typed premise for learning theory: 42 concept nodes across 8 layers, 5 paradigm joints with binary obstruction tags, and 7 structural hypotheses about type-theoretic fractures. Human-guided, AI-driven proof search within this premise produced a 17,350-line Lean4 kernel containing 264 machine-checked theorems across three learning paradigms (PAC, online, Gold-style), with a fully checked core of 259 theorems and 0 sorry.
 
-The two remaining sorry tactics are blocked by Moran-Yehudayoff 2016 (compression conjecture) and Bousquet-Hanneke-Moran-Zhivotovskiy STOC 2021 (one-inclusion graph construction). Both require combinatorial infrastructure absent from Mathlib. They are the frontier, not engineering gaps.
+Two theorems remain at the frontier: the forward direction of the compression characterization (blocked by Moran-Yehudayoff 2016) and the middle branch of the universal trichotomy (blocked by Bousquet-Hanneke-Moran-Zhivotovskiy, STOC 2021). Both require combinatorial constructions absent from Mathlib. They are open problems in formalization, not engineering gaps.
 
-Beyond the artifact itself, this document argues that forcing PAC, online, and Gold-style learning through Lean4 exposes structural differences that are easy to blur in informal exposition: type-theoretic fractures, proof asymmetries that standard presentations suppress, and a dependency structure that makes the field's internal architecture legible.
+Forcing a field through a proof assistant with a pre-derived type architecture exposes structural features that informal exposition suppresses. In this kernel: three paradigms that share vocabulary but no proof infrastructure, a measurability hierarchy with a strict separation proved by a new theorem connecting descriptive set theory to statistical learning, seven corrections to standard textbook presentations, and a proof-technique taxonomy showing that no method in the library crosses paradigm boundaries. The typed premise absorbed 14,438 lines of proof without requiring a single new type category. The grammar was complete before proof search began.
 
 ### Core and extended modules
 
-The kernel separates into a **fully checked core** (204 theorems, 0 sorry) and an **extended frontier** (6 theorems, 2 sorry):
+The kernel separates into a **fully checked core** (259 theorems, 0 sorry) and an **extended frontier** (5 theorems, 2 sorry):
 
-- **Core** (0 sorry): Every theorem whose proof tree contains no sorry. This includes `vc_characterization` (PAC ↔ VCDim < ∞), `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL theorems, the full symmetrization chain (3,027 LOC), and all Rademacher bounds. A reviewer can audit the core and know it is complete.
-- **Extended frontier** (2 sorry): Six theorems whose proof trees pass through one of two sorry tactics. The sorry-tainted results are `fundamental_theorem` (the 5-way bundle, because conjunct 2 flows through `vcdim_finite_imp_compression`), `fundamental_vc_compression`, `universal_trichotomy` (because branch 2 flows through `bhmz_middle_branch`), and their direct dependencies. The individually proved conjuncts and branches are sorry-free; only the bundles that include all conjuncts/branches are tainted.
+- **Core** (0 sorry): Every theorem whose proof tree contains no sorry. This includes `vc_characterization` (PAC ↔ VCDim < ∞, under `[MeasurableConceptClass X C]`), `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL (No-Free-Lunch) theorems, the full symmetrization chain (3,027 LOC), the Rademacher bounds, the PAC-Bayes bound, and the Borel-analytic separation theorem. A reviewer can audit the core and know it is complete.
+- **Extended frontier** (2 sorry): Five theorems whose proof trees pass through one of two sorry tactics. The sorry-tainted results are `fundamental_theorem` (the 5-way bundle, because conjunct 2 flows through `vcdim_finite_imp_compression`), `fundamental_vc_compression`, `universal_trichotomy` (because branch 2 flows through `bhmz_middle_branch`), and their direct dependencies. The individually proved conjuncts and branches are sorry-free; only the bundles that include all conjuncts/branches are tainted.
 
 | Sorry | File | Blocks | Citation |
 |-------|------|--------|----------|
 | `vcdim_finite_imp_compression` | Generalization.lean:1903 | `fundamental_theorem` conjunct 2 (forward) | Moran-Yehudayoff 2016 |
-| `bhmz_middle_branch` | Extended.lean:39 | `universal_trichotomy` branch 2 | BHMZ STOC 2021 |
+| `bhmz_middle_branch` | Extended.lean:40 | `universal_trichotomy` branch 2 | BHMZ STOC 2021 |
 
 ---
 
