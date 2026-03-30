@@ -478,7 +478,78 @@ The measurability hierarchy opens several questions that this kernel does not re
 
 ---
 
-## VI. The Proof World Model
+
+## Part II: The Premise
+
+## VI. The Typed Premise
+
+A typed premise for a field consists of: concept nodes organized into dependency layers, paradigm joints with obstruction tags, and structural hypotheses about type-theoretic fractures. The premise scopes what is provable. Proof search operates within it, not alongside it.
+
+Before proof discovery began, a premise was derived for learning theory: 42 concept nodes across 8 layers (L0-L7), with 5 paradigm joints, 7 structural hypotheses, and 5 compilation constraints. This premise is recorded in `premise/origin.json`.
+
+The premise served as a grammar for the AI: instead of jointly discovering types and proofs (which produces trivially-true theorems, sorry-in-Prop, and type homogeneity), the AI searched for proofs within a well-scoped, pre-validated type structure. The grammar was complete. Not a single type category was added during 14,438 lines of proof.
+
+### What the premise contains
+
+| Component | Count | Role |
+|-----------|-------|------|
+| Concept nodes | 42 | The typed vocabulary of learning theory |
+| Dependency layers | 8 (L0-L7) | Compilation order: types before criteria before complexity before theorems |
+| Paradigm joints | 5 | Binary obstruction tags between paradigm pairs |
+| Structural hypotheses | 7 | Predictions about type-theoretic fractures (3 confirmed, 4 resolved as design decisions) |
+| Compilation constraints | 5 | Lean4-specific type-level issues discovered during compilation (e.g., `def` vs `abbrev` for typeclass synthesis) |
+
+### The premise as independent variable
+
+The premise is the most non-trivial component to change. A bad premise produces a kernel that either does not compile, compiles but proves vacuous theorems, or compiles but misses the field's structure. The quality of the premise determines the quality of the kernel. The 264 sorry-free theorems, the 2 genuine sorrys at published-result frontiers, and the emergence of new mathematics (the Borel-analytic separation) are all outputs of this specific premise.
+
+The premise was derived from informal learning theory (the author's textbook). It is not the only possible premise for this field. Alternative premises with different type choices would produce different kernels with different theorem landscapes. The structural hypotheses (Section I) and design decisions (Section I) document where the premise made specific, testable choices.
+
+## VII. Premise Evolution
+
+Each unfolding of the premise records: what the premise predicted, what formalization confirmed, what formalization corrected, and what emerged unpredicted.
+
+### Unfolding 1: Origin to proof-discovery completion (March 18-25)
+
+The origin premise (`premise/origin.json`) contained 42 concept nodes with 69 sorry placeholders. Human-guided, AI-driven proof search closed 65 of 67 open proofs. The premise evolved as follows:
+
+| Predicted | Outcome |
+|-----------|---------|
+| 7 structural hypotheses | 3 confirmed as genuine fractures (no common learner, no common data interface, five characterization signatures). 4 resolved as design decisions (WithTop Nat, function-class bridge, ConceptClass variants, Bayesian prior). |
+| `PACLearnable` with existential Dm | **Corrected**: existential Dm was trivially satisfiable. Fixed to `Measure.pi` (distribution-free). |
+| `NFL` for all X | **Corrected**: provably false for finite X. Fixed to require `[Infinite X]`. |
+| `LittlestoneDim` branch-wise | **Corrected**: the characterization theorem is false under branch-wise definition. Fixed to path-wise restriction. |
+| `HasUniformConvergence` with D-dependent m0 | **Corrected**: `mf(eps,delta)` must be distribution-free. Fixed quantifier ordering. |
+| `MindChangeCount : Nat` | **Corrected**: count does not encode convergence correctness. Replaced with `MindChangeOrdinal : Ordinal`. |
+| `VCDim : Nat` | **Forced by Mathlib**: `Finset.vcDim` uses `WithTop Nat`. Changed to match. |
+| `CompressionScheme` | **Blocked**: Moran-Yehudayoff 2016 requires infrastructure absent from Mathlib. Sorry. |
+| `ConceptClass`, `Bridge`, `BayesianLearner` | **Unchanged** |
+
+Five corrections were mathematical discoveries (the premise was provably inadequate). One was an external constraint (Mathlib API). One is an open problem. Three types survived unchanged.
+
+<div style="overflow-x: auto; overflow-y: auto; max-height: 1000px; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
+  <img src="premise/evolution_dag.svg" alt="Premise Evolution DAG: origin types, interventions, and final types" />
+</div>
+
+### Unfolding 2: Measurability infrastructure (March 28-30)
+
+The proof-discovery kernel exposed a systematic gap: measurability hypotheses were threaded ad-hoc through 8 files as explicit parameters (`hmeas_C`, `hc_meas`, `hWB`). The premise was extended:
+
+| Addition | What it produced |
+|----------|-----------------|
+| `MeasurableHypotheses` typeclass (L1) | Per-hypothesis measurability extracted from explicit parameters |
+| `MeasurableConceptClass` typeclass (L3) | Class-wide measurability + `WellBehavedVC` bundled |
+| `KrappWirthWellBehaved` typeclass (L5) | Borel-level measurability (Krapp-Wirth 2024 conditions formalized) |
+| `MeasurableBatchLearner` typeclass (L3) | Joint learner measurability (new precondition) |
+| `WellBehavedVCMeasTarget` | NullMeasurableSet variant for the separation theorem |
+
+This premise extension produced: the Borel-analytic separation theorem (new mathematics), the Choquet capacitability theorem (416 lines, Mathlib-contributable), the PAC-Bayes bound (525 lines, first Lean4 formalization), and the Baxter multi-task framework. The sorry count did not change. The extension was theorem-producing, not sorry-producing.
+
+---
+
+## Part III: The Proof Structure
+
+## VIII. The Proof World Model
 
 ### Load-bearing vs routine
 
@@ -570,20 +641,7 @@ No proof method is shared across all three paradigms. PAC theorems use concentra
 
 ---
 
-## VI. The Two Remaining Sorrys
-
-| File | Theorem | Blocked by | Citation | Role |
-|------|---------|-----------|----------|------|
-| `Complexity/Generalization.lean` | `vcdim_finite_imp_compression` | Approximate minimax on bounded-VC binary matrices | Moran-Yehudayoff 2016 (arXiv:1503.06960) | Forward direction of conjunct 2 |
-| `Theorem/Extended.lean` | `bhmz_middle_branch` | One-inclusion graph learners + doubling aggregation | Bousquet-Hanneke-Moran-Zhivotovskiy, STOC 2021 | Branch 2 of universal trichotomy |
-
-Both are blocked by deep combinatorial constructions with no Mathlib infrastructure. The Moran-Yehudayoff compression theorem has been open in some form since Littlestone and Warmuth's 1986 conjecture; the best known bound is 2^{O(d)}. The BHMZ universal learning construction requires ordinal analysis and tree-based aggregation schemes.
-
-These are not engineering gaps. They are the frontier.
-
----
-
-## VII. The Discovery DAG: Proof Structure with Counterfactual Branches
+## IX. The Discovery DAG
 
 The following diagram renders the full theorem dependency structure of this library. Solid arrows are proved dependencies. Dashed arrows with **X** marks are **counterfactual branches**: dead-end proof routes that were explored and killed by specific discoveries during formalization. Each counterfactual branch records the intervention that killed it and what was discovered.
 
@@ -732,54 +790,21 @@ The counterfactual branches collectively explain why the library has the shape i
 
 ---
 
-## VIII. Premise Evolution: From Textbook to Kernel
+## Part IV: Apparatus
 
-The type architecture began as a derivation from informal learning theory (the author's textbook). Formalization forced modifications. Some were mathematical discoveries (five definitions from the informal precursor were provably inadequate as stated). Others were forced by Mathlib's current state. The premise-evolution DAG shows which.
+## X. Methodology
 
-<div style="overflow-x: auto; overflow-y: auto; max-height: 1000px; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
-  <img src="premise/evolution_dag.svg" alt="Premise Evolution DAG: origin types, interventions, and final types" />
-</div>
+Built in **9 days** (March 18-25 for proof discovery, March 28-30 for measurability infrastructure and new mathematics) using **Claude Code (Opus 4.6)** as AI driver, guided by a human-derived typed premise. The public commit history begins March 26, 2026; the development phases are documented in `premise/origin.json`, `premise/final.json`, and the [companion discovery repository](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery). Subsequent additions (PAC-Bayes, Choquet capacity, Borel-analytic separation) followed the same methodology: premise extension first, then proof search within the extended premise.
 
-Seven of ten core types required attention during formalization. Five were mathematical discoveries: the original definitions were provably inadequate (PACLearnable, NFL, LittlestoneDim, HasUniformConvergence, MindChangeOrdinal). One was forced by Mathlib's ordinal/VC dimension API (VCDim: Nat to WithTop Nat). One remains at the frontier: CompressionScheme is blocked by Moran-Yehudayoff 2016, a mathematical result absent from Mathlib, not an API constraint. The remaining three types (ConceptClass, Bridge, BayesianLearner) survived formalization unchanged, though ConceptClass required 4 alternative definitions to be evaluated and rejected during premise creation. One type was added that was not in the original premise: `WellBehavedVC`, a regularity assumption for uncountable concept classes that textbooks suppress.
+**Without the premise**, the AI closed 8 of 67 open proofs correctly (and 12 more trivially/vacuously). The dominant failure mode was adding new sorrys faster than closing existing ones and attacking only the easiest proofs (trivial computation lemmas).
 
----
-
-## IX. Methodology
-
-Built in **7 days** (March 18-25, 2026) using **Claude Code (Opus 4.6)** guided by an epistemological framework for AI-assisted formalization. The public commit history begins March 26, 2026; the March 18-25 development phase is documented in `premise/origin.json`, `premise/final.json`, and the [companion discovery repository](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery).
-
-### The premise
-
-Before proof discovery began, a **type architecture premise** was derived: 42 concept nodes across 8 layers (L0-L7), with explicit paradigm joints, obstruction tags, structural hypotheses, and compilation constraints. This premise, recorded in `premise/origin.json`, defined the typed hypothesis space within which proof search operated.
-
-The premise served as a **grammar** for the AI: instead of jointly discovering types and proofs (which produces trivially-true theorems, sorry-in-Prop, and type homogeneity), the AI searched for proofs within a well-scoped, pre-validated type structure.
-
-### The delta
-
-| | Before (origin) | After (final) |
-|-|-----------------|---------------|
-| Lines | 2,912 | 17,350 |
-| Files | 10 monolithic | 37 modular |
-| Sorry count | 69 | 2 |
-| Structural hypotheses tested | 0 of 7 | 7 of 7 (3 confirmed as fractures, 4 resolved as design decisions) |
-
-**Without the framework**, Claude closed 8 of 67 open proofs correctly (and 12 more trivially/vacuously). The dominant failure mode was **adding new sorrys faster than closing existing ones** and **attacking only the easiest proofs** (trivial computation lemmas).
-
-**With the framework**, 65 of 67 were closed. The remaining 2 are blocked by results absent from Mathlib, not by AI capability.
-
-### Type architecture stability
-
-The kernel's 264 named entities distribute as 52% propositions (theorems/lemmas), 38% definitions, and 10% structures. The proof-heavy balance reflects the field's character: learning theory's vocabulary is small (L1-L4: 7% of the codebase), but the proof infrastructure connecting combinatorics to measure theory is vast (L5: 56%). The pre-designed type architecture (42 concept nodes across 8 layers) absorbed 14,438 lines of proof without requiring new type categories or architectural modification. The grammar was complete before proof search began.
-
-Both the origin and final type architectures are recorded in `premise/origin.json` and `premise/final.json`.
-
-### Discovery process
+**With the premise**, 65 of 67 were closed. The remaining 2 are blocked by results absent from Mathlib, not by AI capability. The measurability premise extension (unfolding 2) then produced 54 additional theorems including new mathematics, with 0 new sorrys.
 
 The full discovery process (10,000+ recorded tactics, 74 reasoning traces, error mode analysis) is documented in the [companion discovery repository](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery).
 
 ---
 
-## X. Theorem Index
+## XI. Theorem Index
 
 Machine-generated from the codebase. Grouped by role.
 
@@ -846,7 +871,7 @@ Machine-generated from the codebase. Grouped by role.
 
 ---
 
-## XI. Building
+## XII. Building
 
 ```bash
 lake build   # Requires elan. First build fetches Mathlib (~20 min).
@@ -856,7 +881,7 @@ Lean `v4.29.0-rc6` | Mathlib4 pinned to [`fde0cc5`](https://github.com/leanprove
 
 ---
 
-## XII. Companion Repositories
+## XIII. Companion Repositories
 
 This kernel is one component of a larger programme. The four public companion repositories:
 
@@ -869,7 +894,7 @@ This kernel is one component of a larger programme. The four public companion re
 
 ---
 
-## XIII. Citation
+## XIV. Citation
 
 ```bibtex
 @software{gupta2026flt_kernel,
@@ -913,7 +938,7 @@ This kernel is one component of a larger programme. The four public companion re
 
 ---
 
-## XIV. Attribution
+## XV. Attribution
 
 Copyright (c) 2026 Dhruv Gupta. Apache 2.0.
 
