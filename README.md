@@ -254,7 +254,54 @@ This is the only proved cross-paradigm result in the kernel. It connects the fre
 
 ---
 
-## III. What Formalization Corrects
+## III. Separations
+
+A separation theorem proves that an implication is strict by constructing a witness. The witness is the mathematics. In this kernel, four separation results are proved: three between learning paradigms (known results, formalized with constructive witnesses) and one between measurability conditions (new mathematics).
+
+```mermaid
+flowchart TB
+    classDef proved fill:#1a3a5c,stroke:#4a8abf,color:#fff
+    classDef sep fill:#dc2626,stroke:#991b1b,color:#fff
+    classDef sorry fill:#374151,stroke:#6b7280,color:#d1d5db,stroke-dasharray:5 5
+
+    GLD["Gold (EX)"]:::proved
+    PAC2["PAC"]:::proved
+    ONL2["Online"]:::proved
+    UNI["Universal"]:::proved
+
+    GLD -->|"✗ EX ↛ PAC\nfinite-subset indicators"| PAC2
+    ONL2 -->|"✓ online_imp_pac\n(always)"| PAC2
+    PAC2 -->|"✗ PAC ↛ Online\nthresholds on ℕ"| ONL2
+    UNI -->|"✗ ¬Univ if VCDim = ∞"| PAC2
+    UNI -.->|"Branch 2: BHMZ sorry"| ONL2
+```
+
+**PAC does not imply Online** (`pac_not_implies_online`): The witness is the threshold class on natural numbers, `C = {(· ≤ n) | n : Nat}`. VC dimension is 1, since only singletons are shattered (thresholds are monotone). Littlestone dimension is infinite: an adversary binary-searches the threshold by querying midpoints, forcing one mistake per query at every depth. The proof constructs the adversary strategy explicitly via induction on tree depth.
+
+**EX (identification in the limit) does not imply PAC** (`ex_not_implies_pac`): The witness is finite-subset indicators on natural numbers. The Gold learner outputs "true on everything seen so far" and converges because every finite concept eventually stabilizes. But every finite subset of natural numbers is shattered, giving VCDim = infinity.
+
+**Online implies PAC** (`online_imp_pac`): The only non-strict separation. Any online learner with mistake bound M gives a PAC learner with sample complexity polynomial in M, 1/epsilon, and 1/delta. The proof routes through the generalization bound from finite Littlestone dimension.
+
+### The Borel-analytic separation (new mathematics)
+
+`analytic_nonborel_set_gives_measTarget_separation` in `Theorem/BorelAnalyticSeparation.lean`: the kernel's measurability condition (`WellBehavedVC`, requiring `NullMeasurableSet`) is strictly weaker than the condition identified by Krapp and Wirth (2024, [arXiv:2410.10243](https://arxiv.org/abs/2410.10243)), which requires `MeasurableSet` (Borel).
+
+The witness is the singleton class `singletonClassOn(A)` where A is an analytic non-Borel subset of the reals. Six linked theorems establish the chain:
+
+1. **G** (`singletonClassOn_measurable`): every hypothesis in the singleton class is Borel-measurable.
+2. **H** (`singleton_badEvent_eq_preimage_planar`): the uniform convergence bad event equals the preimage of a planar witness event.
+3. **I** (`planarWitnessEvent_analytic`): the planar witness is analytic (Suslin projection of a Borel intersection).
+4. **J** (`planarWitnessEvent_not_measurable`): the planar witness is NOT Borel (via measurable preimage argument: if it were Borel, A would be Borel, contradicting the hypothesis).
+5. **K** (`singleton_badEvent_not_measurable`): the bad event in sample space is NOT Borel (via surjective measurable preimage from K to J).
+6. **L** (`analytic_nonborel_set_gives_measTarget_separation`): `WellBehavedVCMeasTarget` holds (via the Borel-analytic bridge: Borel-parameterized concept classes have analytic bad events, and analytic sets are universally measurable via Choquet capacitability). But `KrappWirthWellBehaved` fails (the bad event is not Borel).
+
+The separation is conditional on the existence of an analytic non-Borel set in the reals, which is provable under standard set-theoretic assumptions. The `exists_measTarget_separation` theorem takes this as a hypothesis.
+
+This is the only result in the kernel that is genuinely new mathematics, not a formalization of a known result. It emerged from the measurability infrastructure built to make the symmetrization chain compile (Section V).
+
+---
+
+## IV. What Formalization Corrects
 
 ### 1. The No-Free-Lunch theorem is false for finite domains
 
@@ -390,36 +437,6 @@ This pattern appears twice in the kernel, in unrelated proof chains:
 2. **Advice elimination** (`Theorem/Extended.lean`): The product-space success event `SuccessProd` (defined via `Classical.choose`) is not measurable. Resolution: construct `GoodPair`, a measurable inner event satisfying the same probability bound, then transport via monotonicity.
 
 The principle is not standard in informal mathematics. Measurability is invisible on paper. Formalization makes it load-bearing: without a measurability witness, `lintegral` and `integral` refuse to compute. The two instances were discovered independently (in different proof chains, weeks apart) and only recognized as the same pattern afterward.
-
----
-
-## IV. Paradigm Separations: The Witness Constructions
-
-Separation theorems prove that paradigm implications are strict. The constructions are explicit.
-
-```mermaid
-flowchart TB
-    classDef proved fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef sep fill:#dc2626,stroke:#991b1b,color:#fff
-    classDef sorry fill:#374151,stroke:#6b7280,color:#d1d5db,stroke-dasharray:5 5
-
-    GLD["Gold (EX)"]:::proved
-    PAC2["PAC"]:::proved
-    ONL2["Online"]:::proved
-    UNI["Universal"]:::proved
-
-    GLD -->|"✗ EX ↛ PAC\nfinite-subset indicators"| PAC2
-    ONL2 -->|"✓ online_imp_pac\n(always)"| PAC2
-    PAC2 -->|"✗ PAC ↛ Online\nthresholds on ℕ"| ONL2
-    UNI -->|"✗ ¬Univ if VCDim = ∞"| PAC2
-    UNI -.->|"Branch 2: BHMZ sorry"| ONL2
-```
-
-**PAC does not imply Online** (`pac_not_implies_online`): The witness is the threshold class on natural numbers, `C = {(· ≤ n) | n : Nat}`. VC dimension is 1, since only singletons are shattered (thresholds are monotone). Littlestone dimension is infinite: an adversary binary-searches the threshold by querying midpoints, forcing one mistake per query at every depth. The proof constructs the adversary strategy explicitly via induction on tree depth.
-
-**EX (identification in the limit) does not imply PAC** (`ex_not_implies_pac`): The witness is finite-subset indicators on natural numbers. The Gold learner outputs "true on everything seen so far" and converges because every finite concept eventually stabilizes. But every finite subset of natural numbers is shattered, giving VCDim = infinity.
-
-**Online implies PAC** (`online_imp_pac`): The only non-strict separation. Any online learner with mistake bound M gives a PAC learner with sample complexity polynomial in M, 1/epsilon, and 1/delta. The proof routes through the generalization bound from finite Littlestone dimension.
 
 ---
 
