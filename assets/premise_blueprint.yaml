@@ -1,164 +1,454 @@
-# Premise Design Blueprint
-# A machine-readable guide for constructing typed premises for AI-driven proof search.
-# Derived from the empirical record of the formal-learning-theory-kernel.
-# (42 concept nodes, 5 paradigm joints, 7 structural hypotheses, 67 proofs attempted, 65 closed)
+# =============================================================================
+# Premise Design Blueprint: From Formalization to Discovery
+# =============================================================================
+#
+# A general methodology for constructing typed premises that enable
+# AI-driven proof search to produce not just formalization of known results
+# but discovery of new mathematics.
+#
+# Thesis: A well-designed kernel discovers mathematics through refactoring.
+# Infrastructure built to formalize known theorems, when extracted and
+# abstracted, generates theorems the premise did not predict.
+#
+# Validated on: formal-learning-theory-kernel
+#   Premise: 42 concept nodes, 5 paradigm joints, 7 structural hypotheses
+#   Phase 1 (formalization): 65/67 known theorems closed
+#   Phase 2 (discovery): 3 original theorems from measurability refactoring
+#   Without structured inquiry: 8/67 closed
+#
+# =============================================================================
 
-premise:
+problem_statement: >
+  Given an unformalized mathematical field with known theorems, design a
+  typed premise and iterative refinement process such that AI-driven proof
+  search within the premise (a) formalizes known results, (b) reveals
+  structural properties the informal literature suppresses, and
+  (c) generates new mathematics through infrastructure extraction.
+
+# =============================================================================
+# PRINCIPLES
+# =============================================================================
+
+principles:
+
+  premise_scopes_search:
+    statement: >
+      The premise defines the search space. Proof search operates within
+      the premise, not alongside it. Without a premise, AI proof search
+      produces vacuous theorems, sorry-in-Prop, and type homogeneity.
+    evidence: "8/67 closure rate without structured inquiry vs 65/67 with it"
+    implication: >
+      The quality of the premise determines the quality of the kernel.
+      Investing in premise design has higher ROI than investing in
+      proof search capability.
+
+  types_before_proofs:
+    statement: >
+      All type definitions (structures, typeclasses, theorem statements)
+      are written and compiled before proof search begins. The premise
+      compiles with every proof as sorry.
+    implication: >
+      Type errors are caught before proof search is attempted.
+      The type checker validates the premise independently of any theorem.
+
+  refactoring_is_hypothesis_generation:
+    statement: >
+      Every extraction of infrastructure into a separate module is a
+      hypothesis: "this infrastructure is more general than the theorem
+      that required it." Every typeclass is a hypothesis: "this condition
+      applies to more objects than the ones currently carrying it."
+      Testing these hypotheses is how formalization becomes discovery.
+    evidence: >
+      Measurability typeclass extraction (engineering cleanup) produced
+      the Borel-analytic separation, interpolation descent, and version
+      space measurability theorem. Three original results from one refactoring.
+
+  infrastructure_predicts_discovery:
+    statement: >
+      The infrastructure ratio (percentage of codebase that is proof
+      infrastructure vs theorems vs definitions) predicts where new
+      mathematics is likely to emerge. High-infrastructure areas contain
+      the most extracted, abstracted, and reusable machinery.
+    evidence: >
+      56% of the learning theory kernel is proof infrastructure (L5).
+      All three original theorems emerged from L5 infrastructure.
+
+# =============================================================================
+# PHASE 1: PREMISE FOR FORMALIZATION
+# =============================================================================
+
+phase_1_formalization:
   description: >
-    A typed premise for a mathematical field scopes AI-driven proof search.
-    Without it, proof search produces vacuous theorems, sorry-in-Prop, and type homogeneity.
-  components:
-    - concept_nodes: "Definitions, structures, theorem statements with sorry placeholders"
-    - dependency_layers: "Compilation order (L0-L7) ensuring types are available before use"
-    - paradigm_joints: "Binary obstruction tags between paradigm pairs"
-    - structural_hypotheses: "Predictions about type-theoretic fractures and design tradeoffs"
+    Construct a typed premise that enables AI-driven proof search to
+    close known theorems. This phase produces a formalization kernel.
 
-steps:
-  1_identify_paradigms:
-    action: "List subfields sharing vocabulary but potentially not proof methods"
-    output: "Paradigm list + obstruction tags per pair"
-    tags:
-      obstructed: "Shared vocabulary, cross-paradigm theorems require explicit bridges"
-      independent: "Shared vocabulary, no theorem connects them"
-    example:
-      paradigms: [PAC, Online, Gold]
-      joints:
-        PAC_Online: obstructed
-        PAC_Gold: obstructed
-        Online_Gold: independent
+  steps:
 
-  2_assign_layers:
-    action: "Organize concept nodes so each layer depends only on layers above"
-    layers:
-      L0: "Computation infrastructure (automata, Turing machines)"
-      L1: "Base types (domain, concept, concept class, loss)"
-      L2: "Data interfaces (samples, streams, oracles)"
-      L3: "Learner types (batch, online, gold, bayesian)"
-      L4: "Success criteria (PAC, online, EX, universal)"
-      L5: "Complexity measures + proof infrastructure"
-      L6: "Theorems (characterizations, separations, NFL)"
-      L7: "Processes and applications"
-    validation: "lake build succeeds with all proofs as sorry"
+    1_identify_paradigms:
+      description: "List the field's paradigms and classify their relationships"
+      procedure:
+        - "List subfields or approaches that share vocabulary"
+        - "For each pair, determine: do they share proof infrastructure?"
+        - "Assign obstruction tag: obstructed (shared vocabulary, no shared proofs) or independent (no interaction)"
+      output: "Paradigm list + obstruction matrix"
+      general_principle: >
+        Any mathematical field with multiple traditions (algebraic vs analytic,
+        constructive vs classical, discrete vs continuous) has paradigm joints.
+        The obstruction tags predict which definitions can be shared and which
+        must be paradigm-specific.
+      example:
+        field: "Statistical learning theory"
+        paradigms: [PAC, Online, Gold]
+        matrix:
+          PAC_Online: obstructed
+          PAC_Gold: obstructed
+          Online_Gold: independent
 
-  3_write_definitions:
-    action: "Write each theorem STATEMENT with correct type signature. Leave proof as sorry."
-    principle: "The type signature is the premise. The proof is what the AI searches for."
+    2_identify_mathematical_domains:
+      description: "For each paradigm, identify which mathematical domains its definitions cross"
+      procedure:
+        - "List the mathematical domains each paradigm's definitions reference"
+        - "Identify crossings: definitions that bridge two or more domains"
+        - "Predict proof methods from the crossings"
+      output: "Domain crossing map"
+      general_principle: >
+        A paradigm whose definitions cross from domain A to domain B will
+        require proof infrastructure that bridges A and B. The infrastructure
+        volume is proportional to the distance between domains.
+      example:
+        PAC: "Combinatorics (VC dimension) x Measure theory (product measures)"
+        Online: "Combinatorics (tree depth) x Game theory (adversarial strategies)"
+        Gold: "Computability (enumerations) x Topology (pointwise convergence)"
 
-  4_check_failure_taxonomy:
-    action: "Before launching proof search, check each definition against three failure modes"
-    failure_modes:
+    3_assign_dependency_layers:
+      description: "Organize concept nodes into compilation layers"
+      procedure:
+        - "Layer 0: computation infrastructure (automata, machines)"
+        - "Layer 1: base types (the field's atomic definitions)"
+        - "Layer 2: data interfaces (how information enters the system)"
+        - "Layer 3: agent types (learners, strategies, estimators)"
+        - "Layer 4: success criteria (what counts as solving the problem)"
+        - "Layer 5: complexity measures + proof infrastructure"
+        - "Layer 6: theorems"
+        - "Layer 7: processes and applications"
+      validation: "lake build succeeds with all proofs as sorry"
+      general_principle: >
+        The layer structure is field-independent. Every mathematical field
+        has atomic types (L1), data interfaces (L2), agents (L3),
+        success criteria (L4), complexity measures (L5), and theorems (L6).
+        The specific contents of each layer are field-dependent.
+
+    4_write_definitions_with_sorry:
+      description: "Write each theorem statement with correct type signature. Proof = sorry."
+      general_principle: >
+        The type signature IS the premise. It determines what is provable.
+        A wrong type signature produces a wrong theorem (failure mode 1),
+        a vacuous theorem (failure mode 2), or a misplaced proof (failure mode 3).
+
+    5_check_failure_taxonomy:
+      description: "Before proof search, check each definition against three failure modes"
+
       false_theorem:
-        symptom: "Definition admits counterexample to intended characterization"
+        description: "The definition admits a counterexample to the intended characterization"
         diagnostic: "Does the quantifier structure admit more witnesses than the theorem requires?"
-        check:
+        general_check:
           - "Write the theorem's intended proof sketch"
-          - "Identify which objects the proof treats as 'the same' across parts of the argument"
-          - "Verify the definition forces these objects to BE the same, not merely to exist independently"
+          - "Identify objects the proof treats as 'the same' across parts of the argument"
+          - "Verify the definition forces identity, not merely independent existence"
+        detection: "Counterexample construction or trivially false proof attempt"
         example:
-          definition: "Branch-wise Littlestone: independent exists per level"
-          problem: "const_true/const_false gives LDim = infinity for a 1-mistake class"
-          fix: "Path-wise restriction: restrict C at each recursive call"
+          field: "Learning theory"
+          definition: "Branch-wise Littlestone tree shattering"
+          bug: "Independent witnesses per level; const_true/const_false gives LDim = infinity for 1-mistake class"
+          fix: "Path-wise restriction: restrict concept class at each recursive call"
 
       vacuous_theorem:
-        symptom: "Theorem has a trivial proof that should not exist"
-        diagnostic: "Can an existentially quantified auxiliary be constructed from the target concept?"
-        check:
-          - "For each existential, ask: what information can the witness access?"
-          - "If the witness can access the target concept or labels, the definition is too permissive"
-          - "Replace the existential with a fixed construction that blocks the information leak"
+        description: "The definition makes the theorem trivially true"
+        diagnostic: "Can an existentially quantified auxiliary access information the theorem should deny?"
+        general_check:
+          - "For each existential, trace what information the witness can access"
+          - "If the witness can access the target object or answer, the definition leaks"
+          - "Replace with a fixed construction that blocks the leak"
+        detection: "Unexpectedly short proof, or proof that does not use the hypothesis"
         example:
+          field: "Learning theory"
           definition: "PACLearnable with existential Dm"
-          problem: "Memorizer constructs Dm = point mass encoding target c"
-          fix: "Use Measure.pi (product of independent copies of D)"
+          bug: "Dm depends on target concept c via memorizer + point mass"
+          fix: "Use Measure.pi (product of independent copies)"
 
       displaced_proof:
-        symptom: "One direction of a characterization is unexpectedly difficult"
-        diagnostic: "Does the return type encode all properties the conclusion requires?"
-        check:
-          - "Write the theorem's conclusion"
-          - "List every property it asserts"
-          - "For each, check: encoded in definition's return type, or must be proved separately?"
+        description: "The definition forces proof work into the wrong location"
+        diagnostic: "Does the return type encode all properties the theorem's conclusion requires?"
+        general_check:
+          - "List every property the theorem's conclusion asserts"
+          - "For each property, check: encoded in definition, or must be proved separately?"
           - "If separate proof needed, consider encoding in the definition"
+        detection: "One direction of a biconditional is unexpectedly harder than the other"
         example:
-          definition: "MindChangeCount : Nat (count only)"
-          problem: "Forward direction requires separate proof of correct convergence"
+          field: "Learning theory"
+          definition: "MindChangeCount : Nat (count of changes only)"
+          bug: "Forward direction requires separate proof of correct convergence"
           fix: "MindChangeOrdinal branches on finiteness AND correctness"
 
-  5_check_domain_boundary:
-    action: "If the field involves both finite and infinite objects, check cardinality constraints"
-    checks:
-      - "Identify definitions requiring [Infinite X] or [Countable X]"
-      - "Check whether theorems for 'all X' are false for finite X"
-      - "Anticipate the tactic split: finite uses Finset, infinite uses lintegral/NullMeasurableSet"
-    example:
-      theorem: "NFL (No-Free-Lunch)"
-      bug: "VCDim(Set.univ) = |X| for finite X, so Set.univ is PAC-learnable"
-      fix: "Require [Infinite X]"
+    6_check_domain_boundary:
+      description: "Check for cardinality-dependent proof splits"
+      general_principle: >
+        If the field has both finite and infinite objects, theorems stated
+        for 'all X' may be false or trivial for one cardinality.
+        The proof methods for finite and infinite cases may be completely disjoint.
+      checks:
+        - "Identify definitions requiring [Infinite X], [Countable X], [Fintype X]"
+        - "Check whether theorems for 'all X' are false for some cardinalities"
+        - "Map the tactic split: which Lean4 API surfaces does each branch use?"
+      example:
+        field: "Learning theory"
+        theorem: "No-Free-Lunch"
+        bug: "VCDim(Set.univ) = |X| for finite X; Set.univ is PAC-learnable"
+        fix: "Require [Infinite X]"
 
-  6_check_measurability:
-    action: "If the field involves measure theory, check measurability requirements"
-    checks:
-      - "Identify definitions requiring measurability hypotheses"
-      - "Choose level: MeasurableSet (Borel, stronger) vs NullMeasurableSet (weaker, may suffice)"
-      - "Check whether measurability is trivial (countable domains) or non-trivial (uncountable)"
-      - "Introduce measurability typeclasses early (L1-L3, not L5)"
-    levels:
-      MeasurableHypotheses: "L1: per-hypothesis measurability"
-      MeasurableConceptClass: "L3: class-wide measurability + WellBehavedVC"
-      KrappWirthWellBehaved: "L5: Borel measurability (strictly stronger)"
+    7_check_measurability:
+      description: "If the field involves integration, check measurability requirements"
+      general_principle: >
+        Any field using probability, expectation, or integration requires
+        measurability of the objects being integrated. For uncountable
+        indexing sets, measurability is non-trivial and may require
+        infrastructure at multiple dependency layers.
+      checks:
+        - "Identify definitions requiring measurability hypotheses"
+        - "Choose level: MeasurableSet (stronger) vs NullMeasurableSet (weaker)"
+        - "Check if measurability is trivial (countable/finite) or non-trivial (uncountable)"
+        - "Introduce measurability typeclasses early in the layer structure (L1-L3)"
+      general_principle_2: >
+        NullMeasurableSet is the natural level for composed hypothesis classes.
+        MeasurableSet is sufficient for atomic classes but may be unnecessarily
+        strong for classes constructed by interpolation or amalgamation.
 
-  7_estimate_infrastructure:
-    action: "Predict the infrastructure ratio from the number of domain crossings"
-    estimates:
-      single_domain: "Infrastructure < 30% (e.g., Online: combinatorics + game theory)"
-      two_domain_crossing: "Infrastructure 40-60% (e.g., PAC: combinatorics x measure theory)"
-      three_domain_crossing: "Infrastructure > 60% (e.g., PAC-Bayes: info theory x combinatorics x measure theory)"
-    principle: "Budget proof search time proportionally"
+    8_estimate_infrastructure:
+      description: "Predict infrastructure ratio from domain crossing count"
+      estimates:
+        single_domain: "Infrastructure < 30%"
+        two_domain_crossing: "Infrastructure 40-60%"
+        three_domain_crossing: "Infrastructure > 60%"
+      general_principle: >
+        Budget proof search time proportionally. High-infrastructure proofs
+        need specialized agents or longer search budgets.
+
+# =============================================================================
+# PHASE 2: REFACTORING FOR DISCOVERY
+# =============================================================================
+
+phase_2_discovery:
+  description: >
+    After Phase 1 produces a formalization kernel, iteratively extract,
+    name, and abstract infrastructure. Each extraction is a hypothesis
+    about generality. Test the hypothesis by looking for new instances,
+    new theorems, new connections. This is how formalization becomes discovery.
+
+  steps:
+
+    1_identify_inlined_infrastructure:
+      description: "Find mathematical infrastructure that is inlined in proof files"
+      procedure:
+        - "Look for definitions, lemmas, or proof patterns that serve one theorem but could serve many"
+        - "Look for repeated hypothesis threading (the same parameters passed through many theorems)"
+        - "Look for proof steps that belong to a different mathematical domain than the theorem"
+      signal: >
+        If you see the same measurability hypothesis in 8 files, it is a typeclass
+        waiting to be extracted. If you see game-theoretic infrastructure in a
+        characterization theorem file, it is a module waiting to be separated.
+
+    2_extract_to_modules:
+      description: "Move inlined infrastructure to separate files, organized by mathematical domain"
+      procedure:
+        - "Pure math (independent of the field): PureMath/ folder"
+        - "Field-specific infrastructure: within the field's Complexity/ or equivalent"
+        - "Each module should compile independently of the theorems it serves"
+      hypothesis: >
+        Each extraction is a hypothesis: "this infrastructure is more general
+        than the theorem that required it." If the module compiles independently,
+        the hypothesis is supported.
+      example:
+        field: "Learning theory"
+        extractions:
+          - from: "Theorem/Online.lean"
+            to: "Complexity/GameInfra.lean"
+            content: "Version space, adversary strategy, SOA, mistake counting"
+            hypothesis: "Game-theoretic infrastructure is separable from online learning theorems"
+          - from: "Complexity/Symmetrization.lean"
+            to: "PureMath/Exchangeability.lean"
+            content: "Double sample, merge/split, valid splits"
+            hypothesis: "Exchangeability infrastructure is field-independent"
+          - from: "Theorem/PACBayes.lean"
+            to: "PureMath/KLDivergence.lean"
+            content: "FinitePMF, KL divergence, cross-entropy, expected value"
+            hypothesis: "Information-theoretic infrastructure is field-independent"
+
+    3_introduce_typeclasses:
+      description: "Replace repeated hypothesis parameters with typeclasses"
+      procedure:
+        - "Identify parameters that appear in >3 theorem statements"
+        - "Bundle them into a typeclass at the appropriate layer"
+        - "Refactor theorem statements to use the typeclass"
+      hypothesis: >
+        Each typeclass is a hypothesis: "this condition applies to more objects
+        than the ones currently carrying it." If new instances exist beyond the
+        original theorems, the typeclass is productive.
+      signal_of_discovery: >
+        If the typeclass has instances you did not expect, the infrastructure
+        is generating new structure. Pursue those instances.
+      example:
+        field: "Learning theory"
+        typeclass: "MeasurableBatchLearner"
+        original_purpose: "Clean up hypothesis threading in boosting proof"
+        unexpected_instance: "Version space learners satisfy it (VersionSpace.lean)"
+        discovery: "Non-neural learners are valid RL policy classes"
+
+    4_test_generality:
+      description: "For each extracted module, look for theorems it enables beyond the original use"
+      procedure:
+        - "Ask: does this infrastructure connect to a mathematical domain not in the original premise?"
+        - "Ask: does this typeclass have instances from a different paradigm?"
+        - "Ask: does this module prove something about COMPOSITION of the field's objects?"
+      signal_of_discovery: >
+        Composition results are the highest-value discovery targets.
+        If the infrastructure proves that composing two well-behaved objects
+        produces a less-well-behaved object (measurability descent, interpolation
+        weakening), that is a structural theorem about the field.
+      example:
+        field: "Learning theory"
+        infrastructure: "Measurability typeclass hierarchy"
+        original_purpose: "Clean up hypothesis threading for uniform convergence"
+        discoveries:
+          - "Borel-analytic separation: NullMeasurableSet strictly weaker than MeasurableSet"
+          - "Interpolation descent: composition of Borel classes weakens measurability"
+          - "Version space measurability: non-neural RL policy classes"
+
+    5_iterate:
+      description: "After each discovery, return to step 1 and look for more inlined infrastructure"
+      general_principle: >
+        Discovery is iterative. Each new theorem may inline infrastructure
+        that can be extracted. Each extraction may produce new theorems.
+        The cycle terminates when no more infrastructure can be productively
+        extracted.
+
+# =============================================================================
+# DIAGNOSTICS
+# =============================================================================
 
 diagnostics:
-  - symptom: "Counterexample found to characterization theorem"
-    cause: "Quantifier mismatch (failure mode 1)"
-    question: "Does the definition allow independent witnesses where the theorem needs consistent ones?"
-    fix: "Restrict quantifier scope"
 
-  - symptom: "Trivial proof exists for non-trivial theorem"
-    cause: "Information leak (failure mode 2)"
-    question: "Can the existential witness access the target concept?"
-    fix: "Replace existential with fixed construction"
+  phase_1_diagnostics:
+    - symptom: "Counterexample found to characterization theorem"
+      cause: "Quantifier mismatch in definition"
+      question: "Does the definition allow independent witnesses where the theorem needs consistent ones?"
+      fix: "Restrict quantifier scope"
 
-  - symptom: "One proof direction is 10x harder than expected"
-    cause: "Return type underspecified (failure mode 3)"
-    question: "Does the return type encode all properties the conclusion requires?"
-    fix: "Encode properties in the definition"
+    - symptom: "Trivial proof exists for non-trivial theorem"
+      cause: "Information leak in existential"
+      question: "Can the existential witness access the target object?"
+      fix: "Replace existential with fixed construction"
 
-  - symptom: "Proof blocked at measurability step"
-    cause: "Missing measurability infrastructure"
-    question: "Is the concept class uncountable? Is the bad event defined by an uncountable existential?"
-    fix: "Add NullMeasurableSet + typeclass hierarchy"
+    - symptom: "One proof direction is 10x harder than expected"
+      cause: "Return type underspecified"
+      question: "Does the return type encode all properties the conclusion requires?"
+      fix: "Encode properties in the definition"
 
-  - symptom: "Agent produces 2^{2m} where GrowthFunction is needed"
-    cause: "Finite tactics applied to infinite domain"
-    question: "Does the goal contain [Infinite X] or uncountable C?"
-    fix: "Route to symmetrization + Rademacher tactics"
+    - symptom: "Theorem is false for some cardinalities"
+      cause: "Domain cardinality not constrained"
+      question: "Does the theorem require [Infinite X] or [Fintype X]?"
+      fix: "Add cardinality constraint"
 
-  - symptom: "Theorem is false for finite domains"
-    cause: "Domain cardinality not constrained"
-    question: "Does the theorem require [Infinite X]?"
-    fix: "Add cardinality constraint"
+    - symptom: "Proof blocked at measurability step"
+      cause: "Missing measurability infrastructure"
+      question: "Is the indexing set uncountable? Is the bad event defined by an uncountable existential?"
+      fix: "Add NullMeasurableSet infrastructure + typeclass hierarchy"
 
-  - symptom: "Quantifier ordering makes theorem unprovable"
-    cause: "Uniform vs pointwise convergence"
-    question: "Does the sample complexity function need to be distribution-free?"
-    fix: "Use forall eps, exists m0, forall D (uniform ordering)"
+    - symptom: "Agent produces wrong bound (e.g., 2^{2m} instead of GrowthFunction)"
+      cause: "Finite tactics applied to infinite domain"
+      question: "Does the goal contain [Infinite X] or uncountable parameters?"
+      fix: "Route to domain-appropriate tactic library"
 
-metaprogram:
+    - symptom: "Quantifier ordering makes theorem unprovable"
+      cause: "Uniform vs pointwise convergence conflated"
+      question: "Does the output need to be parameter-free (uniform) or parameter-dependent (pointwise)?"
+      fix: "Enforce correct quantifier ordering"
+
+  phase_2_diagnostics:
+    - symptom: "Same hypothesis parameters appear in >3 theorem statements"
+      cause: "Typeclass waiting to be extracted"
+      action: "Bundle into typeclass, refactor theorems"
+
+    - symptom: "Proof file contains definitions from a different mathematical domain"
+      cause: "Module waiting to be separated"
+      action: "Extract to PureMath/ or domain-specific infrastructure file"
+
+    - symptom: "A typeclass has unexpected instances from a different paradigm"
+      cause: "Discovery opportunity"
+      action: "Prove the instance. Check what theorems it enables."
+
+    - symptom: "Composed objects are less well-behaved than atomic ones"
+      cause: "Structural theorem about the field"
+      action: "Prove the descent/weakening. This is likely publishable."
+
+    - symptom: "Extracted module compiles independently of the field's theorems"
+      cause: "Pure math contribution"
+      action: "Check if it belongs in Mathlib or the field's PureMath/ folder"
+
+# =============================================================================
+# METAPROGRAMS
+# =============================================================================
+
+metaprograms:
+
   measurable_inner_event:
-    trigger: "Goal involves integrating over event defined by exists theta in Theta, P(theta, x) where Theta is uncountable and selector is non-measurable"
+    trigger: >
+      Goal involves integrating over event defined by
+      exists theta in Theta, P(theta, x) where Theta is uncountable
+      and selector theta*(x) = Classical.choose is not measurable
     condition: "Joint measurability of P in (theta, x)"
     procedure:
       - "Find measurable subset E_inner of target event E_target"
-      - "Prove P(E_inner) >= P(E_target) by monotonicity"
+      - "Prove mu(E_inner) >= mu(E_target) by monotonicity"
       - "Prove the bound on E_inner"
-    instances:
-      - "Symmetrization bad event: uncountable union over C, resolved via NullMeasurableSet"
-      - "Advice elimination: Classical.choose in bestAdvice, resolved via GoodPair subset of SuccessProd"
+    general_principle: >
+      This pattern applies in any proof assistant formalization involving
+      integration over non-constructively selected objects from uncountable
+      indexing sets. It is not specific to learning theory.
+
+  tactic_routing:
+    trigger: "New proof goal arrives"
+    procedure:
+      - "Read the goal's type signature"
+      - "If goal mentions MeasureTheory.Measure: load measure-theoretic tactics"
+      - "If goal mentions sequential state or adversarial commitment: load game-theoretic tactics"
+      - "If goal mentions enumeration or convergence on prefixes: load topological/computability tactics"
+      - "If goal mentions [Infinite X]: avoid finite-domain tactics (direct enumeration, union bound)"
+    general_principle: >
+      The premise's type signatures are a routing table for proof search.
+      This routing is field-independent: any field with typed definitions
+      can use the type signature to predict which tactics are relevant.
+
+# =============================================================================
+# PREDICTIONS
+# =============================================================================
+
+predictions:
+  - claim: "The failure taxonomy (false/vacuous/displaced) applies to any Lean4 formalization project"
+    test: "Apply the taxonomy to a formalization in a different field. Do the three failure modes occur?"
+    status: "Untested beyond learning theory"
+
+  - claim: "Phase 2 (refactoring for discovery) produces new mathematics in proportion to the infrastructure ratio"
+    test: "Formalize a field with high infrastructure ratio. Does extraction produce unexpected theorems?"
+    status: "Supported by one data point (learning theory: 56% infrastructure, 3 original theorems)"
+
+  - claim: "Measurability infrastructure is the highest-ROI extraction target in any field involving integration"
+    test: "In a formalization of probability theory, Bayesian inference, or stochastic processes, does measurability extraction produce new results?"
+    status: "Supported by one data point"
+
+  - claim: "The domain crossing count predicts infrastructure ratio within 15 percentage points"
+    test: "Formalize fields with 1, 2, and 3 domain crossings. Measure infrastructure ratios."
+    status: "Untested. Learning theory (2 crossings) has 56% infrastructure."
+
+  - claim: "Tactic routing from type signatures reduces proof search time by >50% compared to unrouted search"
+    test: "Run proof search with and without routing on the same set of goals. Measure closure rate."
+    status: "Indirectly supported by the 8/67 vs 65/67 ablation (structured inquiry includes routing)"
