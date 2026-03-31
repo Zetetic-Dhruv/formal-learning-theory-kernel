@@ -79,6 +79,13 @@ Interpolation splits the domain spatially (region A vs complement). Amalgamation
 </details>
 
 <details>
+<summary><strong>Is MeasurableBatchLearner closed under composition?</strong></summary>
+
+If `MeasurableBatchLearner` is closed under the kernel's natural operations (boosting via majority vote, interpolation via piecewise learners, concatenation of enumerations), it is not just a technical gate but an algebraic object: the class of measurable learners would be a category closed under the operations that learning theory uses to build complex learners from simple ones. Closure would mean that any learner constructed from measurable components by standard operations is automatically measurable. The three closure properties (boosting, interpolation, version space concatenation) have been stated as Lean4 conjectures with known proof directions.
+
+</details>
+
+<details>
 <summary><strong>Is there a measurability dimension?</strong></summary>
 
 A complexity measure capturing how much additional sigma-algebra structure a concept class requires, analogous to how VC dimension captures combinatorial complexity. If composition weakens measurability by a quantifiable amount, the measurability dimension of a composed class would be a function of its components' dimensions and the composition operation. No definition has been proposed.
