@@ -38,14 +38,24 @@ The premise for learning theory was derived from the author's textbook before pr
 
 ### Premise invariance
 
-The premise is the most non-trivial component to change. A bad premise produces a kernel that either does not compile, compiles but proves vacuous theorems, or compiles but misses the field's structure. Two kinds of invariance distinguish a productive premise from a brittle one.
+The premise is the most non-trivial component to change. A bad premise produces a kernel that either does not compile, compiles but proves vacuous theorems, or compiles but misses the field's structure. Two properties distinguish a productive premise from a brittle one.
 
-**Stability under discovery.** Under derivation of consequences (proof search closing sorry placeholders), does the premise hold still? Sixty-five of 67 sorry placeholders were closed. Five definitions were corrected (Section IV). But no layer was added, no paradigm was introduced, no structural category changed. The perturbations were local (definition-level), not global (architecture-level). The premise's stated goals were achievable within its type architecture, with corrections confined to individual definitions. This is a property of the premise alone: it can be tested by any agent running proof search within it.
+**Stability under task execution.** Under derivation of consequences (proof search closing sorry placeholders), does the premise hold still? Sixty-five of 67 sorry placeholders were closed. Five definitions were corrected (Section IV). But no layer was added, no paradigm was introduced, no structural category changed. The perturbations were local (definition-level), not global (architecture-level). This is a property of the premise alone: it can be tested by any agent running proof search within it.
 
-**Stability of direction under inquiry.** When the premise is modified (not just used but changed), do the modifications consistently deepen understanding? The original premise had 67 open proofs and 7 structural hypotheses. After proof search, it had 2 open proofs and 7 resolved hypotheses. After the measurability refactoring, it had 2 open proofs, 3 original theorems, and 5 new open frontier questions (Section V). The frontier grew. Each premise modification opened more structure than it closed.
+**Structured growth of the open frontier.** When the premise is modified, does the modification produce more precisely stated open questions than existed before?
 
-The measurability typeclass extension is the clearest instance. The original premise did not contain measurability typeclasses. The layer structure (L1 for base types, L3 for learner types, L5 for complexity infrastructure) had slots where measurability could be inserted without restructuring. But having slots is not the same as filling them. The decision to extract measurability, to formalize it as a typeclass hierarchy, and to test whether the hierarchy was strict required judgment about what was worth pursuing. The premise accommodated the extension. It did not initiate it.
+| Stage | Open proofs | Resolved hypotheses | Open frontier questions | Character of ignorance |
+|-------|------------|--------------------|-----------------------|----------------------|
+| Original premise | 67 | 0 of 7 | "Are the structural hypotheses correct? Will the proofs close?" | Broad, unstructured |
+| After proof search | 2 | 7 of 7 | "Can Moran-Yehudayoff and BHMZ be formalized?" | Narrow, specific (two published results) |
+| After measurability refactoring | 2 | 7 of 7 | 5 precisely stated questions (Section V) + 3 original theorems | Broad again, but articulate |
 
-A premise with good stability under discovery holds still while you work within it. A premise with good stability of direction accumulates depth across modifications: each change produces more open questions than it resolves, and the questions are deeper than the ones that preceded them. The first property is testable from the premise alone. The second is observable only in the trace of modifications, and it depends on what is brought to the premise, not just what the premise contains.
+The frontier grew from 67 vague placeholders to 2 specific blockers to 5 precise research questions. The volume of ignorance increased from the second stage to the third. But its structure sharpened at every step: each of the five frontier questions has specific evidence motivating it and a known mathematical approach or obstruction.
 
-The premise files (`premise/origin.json` and `premise/final.json`) record the before and after. The trace between them (Sections VII and X) records the direction.
+The premise modification did not just produce theorems. It produced better ignorance. Before the measurability refactoring, the relationship between NullMeasurableSet and MeasurableSet was an unstructured gap. After: the gap is inhabited by a concrete witness, the witness is connected to composition operations, the composition connection is connected to RL policy validity, and each connection opens a specific further question.
+
+> A premise that produces theorems but leaves the open frontier vague has been consumed. A premise whose modifications articulate what is not yet known, and make that articulation more precise with each iteration, is productive beyond its original scope.
+
+The measurability typeclass hierarchy is the primary evidence. It was not in the original premise. It was introduced to solve an engineering problem (hypothesis threading). It generated both new theorems and new questions that the original premise could not have stated. The premise accommodated the extension. It did not initiate it.
+
+The premise files (`premise/origin.json` and `premise/final.json`) record the before and after. The trace between them (Sections VII and X) records what changed and what it produced.
