@@ -101,3 +101,56 @@ When the target event is defined by an existential quantifier over an uncountabl
 Two instances appear in the kernel: the symmetrization bad event (uncountable union over C, resolved via NullMeasurableSet) and the advice elimination success event (`Classical.choose` in bestAdvice, resolved via GoodPair subset of SuccessProd). Both involve events defined by non-constructive selection over uncountable indexing sets. The proof pattern is the same: replace the non-measurable selection with a measurable approximation, then use measure monotonicity.
 
 The class of proofs requiring this pattern: any proof where the goal involves integrating over an event defined by `exists theta in Theta, P(theta, x)` where Theta is uncountable and the selector `theta*(x) = Classical.choose` is not measurable. Joint measurability of P in (theta, x) is the sufficient condition for the pattern to apply.
+
+### The premise design blueprint
+
+The failure taxonomy, domain boundary checks, and measurability requirements above are codified as a machine-readable premise design blueprint in `assets/premise_blueprint.yaml`. The blueprint encodes the 7-step premise construction process and the diagnostic table as structured YAML for consumption by proof search agents and fine-tuned models.
+
+<!-- FIGURE: premise_blueprint_flow.svg
+     Style: black/white, Times New Roman, old school academic
+     Vertical flow diagram, 7 steps connected by arrows:
+
+     [1. Identify paradigms]
+          |
+          v
+     [2. Assign dependency layers (L0-L7)]
+          |
+          v
+     [3. Write definitions with sorry placeholders]
+          |
+          v
+     [4. Check failure taxonomy]
+        / | \
+       /  |  \
+      v   v   v
+    [False?] [Vacuous?] [Displaced?]
+    "quantifier" "info leak" "return type"
+    "mismatch"                "underspec"
+       \  |  /
+        \ | /
+          v
+     [5. Check domain boundary]
+     "finite vs infinite tactic split"
+          |
+          v
+     [6. Check measurability]
+     "MeasurableSet vs NullMeasurableSet"
+     "introduce typeclasses at L1-L3"
+          |
+          v
+     [7. Estimate infrastructure ratio]
+     "single domain: <30%"
+     "two-domain crossing: 40-60%"
+     "three-domain crossing: >60%"
+          |
+          v
+     [Launch proof search]
+
+     Caption: "Premise construction pipeline. Steps 4-6 are diagnostic gates:
+     each can send the process back to Step 3 for definition revision."
+     Dashed arrows from steps 4, 5, 6 back to step 3 to show the feedback loop.
+-->
+
+The pipeline has three diagnostic gates (steps 4-6). Each gate can reject a definition and send the process back to step 3 for revision. The failure taxonomy (step 4) catches logical errors in definitions. The domain boundary check (step 5) catches cardinality errors. The measurability check (step 6) catches measure-theoretic gaps. A definition that passes all three gates is ready for proof search.
+
+The blueprint is an engineering contribution: it encodes the negative-space knowledge (what NOT to do when writing premises) as a reusable diagnostic protocol. The diagnostic table in the YAML maps observable symptoms during proof search (counterexample found, trivial proof exists, proof direction unexpectedly hard, measurability blocked, agent produces wrong bound) to their causes and fixes.

@@ -1,0 +1,164 @@
+# Premise Design Blueprint
+# A machine-readable guide for constructing typed premises for AI-driven proof search.
+# Derived from the empirical record of the formal-learning-theory-kernel.
+# (42 concept nodes, 5 paradigm joints, 7 structural hypotheses, 67 proofs attempted, 65 closed)
+
+premise:
+  description: >
+    A typed premise for a mathematical field scopes AI-driven proof search.
+    Without it, proof search produces vacuous theorems, sorry-in-Prop, and type homogeneity.
+  components:
+    - concept_nodes: "Definitions, structures, theorem statements with sorry placeholders"
+    - dependency_layers: "Compilation order (L0-L7) ensuring types are available before use"
+    - paradigm_joints: "Binary obstruction tags between paradigm pairs"
+    - structural_hypotheses: "Predictions about type-theoretic fractures and design tradeoffs"
+
+steps:
+  1_identify_paradigms:
+    action: "List subfields sharing vocabulary but potentially not proof methods"
+    output: "Paradigm list + obstruction tags per pair"
+    tags:
+      obstructed: "Shared vocabulary, cross-paradigm theorems require explicit bridges"
+      independent: "Shared vocabulary, no theorem connects them"
+    example:
+      paradigms: [PAC, Online, Gold]
+      joints:
+        PAC_Online: obstructed
+        PAC_Gold: obstructed
+        Online_Gold: independent
+
+  2_assign_layers:
+    action: "Organize concept nodes so each layer depends only on layers above"
+    layers:
+      L0: "Computation infrastructure (automata, Turing machines)"
+      L1: "Base types (domain, concept, concept class, loss)"
+      L2: "Data interfaces (samples, streams, oracles)"
+      L3: "Learner types (batch, online, gold, bayesian)"
+      L4: "Success criteria (PAC, online, EX, universal)"
+      L5: "Complexity measures + proof infrastructure"
+      L6: "Theorems (characterizations, separations, NFL)"
+      L7: "Processes and applications"
+    validation: "lake build succeeds with all proofs as sorry"
+
+  3_write_definitions:
+    action: "Write each theorem STATEMENT with correct type signature. Leave proof as sorry."
+    principle: "The type signature is the premise. The proof is what the AI searches for."
+
+  4_check_failure_taxonomy:
+    action: "Before launching proof search, check each definition against three failure modes"
+    failure_modes:
+      false_theorem:
+        symptom: "Definition admits counterexample to intended characterization"
+        diagnostic: "Does the quantifier structure admit more witnesses than the theorem requires?"
+        check:
+          - "Write the theorem's intended proof sketch"
+          - "Identify which objects the proof treats as 'the same' across parts of the argument"
+          - "Verify the definition forces these objects to BE the same, not merely to exist independently"
+        example:
+          definition: "Branch-wise Littlestone: independent exists per level"
+          problem: "const_true/const_false gives LDim = infinity for a 1-mistake class"
+          fix: "Path-wise restriction: restrict C at each recursive call"
+
+      vacuous_theorem:
+        symptom: "Theorem has a trivial proof that should not exist"
+        diagnostic: "Can an existentially quantified auxiliary be constructed from the target concept?"
+        check:
+          - "For each existential, ask: what information can the witness access?"
+          - "If the witness can access the target concept or labels, the definition is too permissive"
+          - "Replace the existential with a fixed construction that blocks the information leak"
+        example:
+          definition: "PACLearnable with existential Dm"
+          problem: "Memorizer constructs Dm = point mass encoding target c"
+          fix: "Use Measure.pi (product of independent copies of D)"
+
+      displaced_proof:
+        symptom: "One direction of a characterization is unexpectedly difficult"
+        diagnostic: "Does the return type encode all properties the conclusion requires?"
+        check:
+          - "Write the theorem's conclusion"
+          - "List every property it asserts"
+          - "For each, check: encoded in definition's return type, or must be proved separately?"
+          - "If separate proof needed, consider encoding in the definition"
+        example:
+          definition: "MindChangeCount : Nat (count only)"
+          problem: "Forward direction requires separate proof of correct convergence"
+          fix: "MindChangeOrdinal branches on finiteness AND correctness"
+
+  5_check_domain_boundary:
+    action: "If the field involves both finite and infinite objects, check cardinality constraints"
+    checks:
+      - "Identify definitions requiring [Infinite X] or [Countable X]"
+      - "Check whether theorems for 'all X' are false for finite X"
+      - "Anticipate the tactic split: finite uses Finset, infinite uses lintegral/NullMeasurableSet"
+    example:
+      theorem: "NFL (No-Free-Lunch)"
+      bug: "VCDim(Set.univ) = |X| for finite X, so Set.univ is PAC-learnable"
+      fix: "Require [Infinite X]"
+
+  6_check_measurability:
+    action: "If the field involves measure theory, check measurability requirements"
+    checks:
+      - "Identify definitions requiring measurability hypotheses"
+      - "Choose level: MeasurableSet (Borel, stronger) vs NullMeasurableSet (weaker, may suffice)"
+      - "Check whether measurability is trivial (countable domains) or non-trivial (uncountable)"
+      - "Introduce measurability typeclasses early (L1-L3, not L5)"
+    levels:
+      MeasurableHypotheses: "L1: per-hypothesis measurability"
+      MeasurableConceptClass: "L3: class-wide measurability + WellBehavedVC"
+      KrappWirthWellBehaved: "L5: Borel measurability (strictly stronger)"
+
+  7_estimate_infrastructure:
+    action: "Predict the infrastructure ratio from the number of domain crossings"
+    estimates:
+      single_domain: "Infrastructure < 30% (e.g., Online: combinatorics + game theory)"
+      two_domain_crossing: "Infrastructure 40-60% (e.g., PAC: combinatorics x measure theory)"
+      three_domain_crossing: "Infrastructure > 60% (e.g., PAC-Bayes: info theory x combinatorics x measure theory)"
+    principle: "Budget proof search time proportionally"
+
+diagnostics:
+  - symptom: "Counterexample found to characterization theorem"
+    cause: "Quantifier mismatch (failure mode 1)"
+    question: "Does the definition allow independent witnesses where the theorem needs consistent ones?"
+    fix: "Restrict quantifier scope"
+
+  - symptom: "Trivial proof exists for non-trivial theorem"
+    cause: "Information leak (failure mode 2)"
+    question: "Can the existential witness access the target concept?"
+    fix: "Replace existential with fixed construction"
+
+  - symptom: "One proof direction is 10x harder than expected"
+    cause: "Return type underspecified (failure mode 3)"
+    question: "Does the return type encode all properties the conclusion requires?"
+    fix: "Encode properties in the definition"
+
+  - symptom: "Proof blocked at measurability step"
+    cause: "Missing measurability infrastructure"
+    question: "Is the concept class uncountable? Is the bad event defined by an uncountable existential?"
+    fix: "Add NullMeasurableSet + typeclass hierarchy"
+
+  - symptom: "Agent produces 2^{2m} where GrowthFunction is needed"
+    cause: "Finite tactics applied to infinite domain"
+    question: "Does the goal contain [Infinite X] or uncountable C?"
+    fix: "Route to symmetrization + Rademacher tactics"
+
+  - symptom: "Theorem is false for finite domains"
+    cause: "Domain cardinality not constrained"
+    question: "Does the theorem require [Infinite X]?"
+    fix: "Add cardinality constraint"
+
+  - symptom: "Quantifier ordering makes theorem unprovable"
+    cause: "Uniform vs pointwise convergence"
+    question: "Does the sample complexity function need to be distribution-free?"
+    fix: "Use forall eps, exists m0, forall D (uniform ordering)"
+
+metaprogram:
+  measurable_inner_event:
+    trigger: "Goal involves integrating over event defined by exists theta in Theta, P(theta, x) where Theta is uncountable and selector is non-measurable"
+    condition: "Joint measurability of P in (theta, x)"
+    procedure:
+      - "Find measurable subset E_inner of target event E_target"
+      - "Prove P(E_inner) >= P(E_target) by monotonicity"
+      - "Prove the bound on E_inner"
+    instances:
+      - "Symmetrization bad event: uncountable union over C, resolved via NullMeasurableSet"
+      - "Advice elimination: Classical.choose in bestAdvice, resolved via GoodPair subset of SuccessProd"
