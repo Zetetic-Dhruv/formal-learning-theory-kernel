@@ -11,7 +11,7 @@ A separation theorem proves that an implication is strict by constructing a witn
 | Shattering dimension = 1 on a linearly ordered domain | Adversarial game value is finite | Threshold functions on N | Monotonicity bounds shattering (pairs cannot be labeled non-monotonically) but does not bound adversarial depth (binary search has no finite stopping point on N) | PAC-learnable but not online-learnable |
 | A family admits a pointwise-convergent selector on every countable enumeration | Shattering dimension is finite | Finite-subset indicators on N | Every finite set is realized (shattering is maximal) but the "output everything seen" selector stabilizes on every enumeration (convergence is trivial) | EX-learnable but not PAC-learnable |
 | Adversarial game value is M | Shattering dimension ≤ M | (holds unconditionally) | A shattered set of size > M would allow 2^{>M} labelings, contradicting the finite mistake bound | Online-learnable implies PAC-learnable |
-| A set is Σ₁¹ (analytic) in a Polish space | The set is Borel | Singleton class over analytic non-Borel A ⊆ R | Suslin projection creates Σ₁¹ sets that are universally measurable but exit the Borel σ-algebra. Proof chain is machine-checked; existence of analytic non-Borel A (Suslin 1917) is taken as hypothesis. | WellBehavedVC holds but KrappWirth fails |
+| A set is Σ₁¹ (analytic) in a Polish space | The set is Borel | Singleton class over analytic non-Borel A ⊆ R | Suslin projection creates Σ₁¹ sets that are universally measurable but exit the Borel σ-algebra | WellBehavedVC holds but KrappWirth fails |
 
 ### PAC does not imply Online
 
