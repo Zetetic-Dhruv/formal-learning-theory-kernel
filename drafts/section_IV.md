@@ -104,53 +104,80 @@ The class of proofs requiring this pattern: any proof where the goal involves in
 
 ### The premise design blueprint
 
-The failure taxonomy, domain boundary checks, and measurability requirements above are codified as a machine-readable premise design blueprint in `assets/premise_blueprint.yaml`. The blueprint encodes the 7-step premise construction process and the diagnostic table as structured YAML for consumption by proof search agents and fine-tuned models.
+The failure taxonomy, domain boundary checks, and measurability requirements above are codified as a machine-readable premise design blueprint in [`assets/premise_blueprint.yaml`](assets/premise_blueprint.yaml). The blueprint is a general methodology for constructing typed premises that enable AI-driven proof search to produce not just formalization but discovery.
+
+The methodology has two phases:
+
+**Phase 1: Premise for formalization.** Eight steps that produce a typed premise compiling with all proofs as sorry. Steps 1-4 construct the premise (identify paradigms, identify domain crossings, assign dependency layers, write definitions). Steps 5-7 are diagnostic gates that check definitions against three failure modes (false, vacuous, displaced) plus domain boundary and measurability requirements. Step 8 estimates the infrastructure ratio from the domain crossing count. A definition that fails a gate returns to step 4 for revision.
+
+**Phase 2: Refactoring for discovery.** Five steps that iteratively extract infrastructure from the formalization kernel. Each extraction is a hypothesis: "this infrastructure is more general than the theorem that required it." Each typeclass is a hypothesis: "this condition applies to more objects than the ones currently carrying it." Testing these hypotheses is how formalization becomes discovery. In this kernel, the measurability typeclass extraction (engineering cleanup of hypothesis threading) produced three original theorems.
 
 <!-- FIGURE: premise_blueprint_flow.svg
      Style: black/white, Times New Roman, old school academic
-     Vertical flow diagram, 7 steps connected by arrows:
+     Two-column vertical flow diagram:
 
-     [1. Identify paradigms]
+     LEFT COLUMN: "Phase 1: Formalization"
+
+     [1. Identify paradigms + obstruction tags]
           |
           v
-     [2. Assign dependency layers (L0-L7)]
+     [2. Identify domain crossings per paradigm]
           |
           v
-     [3. Write definitions with sorry placeholders]
+     [3. Assign dependency layers (L0-L7)]
           |
           v
-     [4. Check failure taxonomy]
+     [4. Write definitions with sorry]
+          |
+          v
+     [5. Diagnostic gate: failure taxonomy]
         / | \
        /  |  \
-      v   v   v
     [False?] [Vacuous?] [Displaced?]
-    "quantifier" "info leak" "return type"
-    "mismatch"                "underspec"
        \  |  /
         \ | /
+     (fail: return to 4)
+          |  pass
           v
-     [5. Check domain boundary]
-     "finite vs infinite tactic split"
-          |
+     [6. Diagnostic gate: domain boundary]
+     (fail: return to 4)
+          |  pass
           v
-     [6. Check measurability]
-     "MeasurableSet vs NullMeasurableSet"
-     "introduce typeclasses at L1-L3"
-          |
+     [7. Diagnostic gate: measurability]
+     (fail: return to 4)
+          |  pass
           v
-     [7. Estimate infrastructure ratio]
-     "single domain: <30%"
-     "two-domain crossing: 40-60%"
-     "three-domain crossing: >60%"
+     [8. Estimate infrastructure ratio]
           |
           v
      [Launch proof search]
 
-     Caption: "Premise construction pipeline. Steps 4-6 are diagnostic gates:
-     each can send the process back to Step 3 for definition revision."
-     Dashed arrows from steps 4, 5, 6 back to step 3 to show the feedback loop.
+     RIGHT COLUMN: "Phase 2: Discovery"
+
+     [Formalization kernel complete]
+          |
+          v
+     [A. Identify inlined infrastructure]
+          |
+          v
+     [B. Extract to modules (PureMath/, GameInfra, etc.)]
+          |
+          v
+     [C. Introduce typeclasses from repeated hypotheses]
+          |
+          v
+     [D. Test generality: new instances? new theorems? composition results?]
+          |
+          v
+     [E. Iterate: new theorem may inline new infrastructure]
+          |
+     (loop back to A)
+
+     Arrow from bottom of left column to top of right column:
+     "Phase 1 output feeds Phase 2 input"
+
+     Caption: "The premise design pipeline. Phase 1 produces a formalization kernel.
+     Phase 2 extracts infrastructure and tests generality, producing new mathematics."
 -->
 
-The pipeline has three diagnostic gates (steps 4-6). Each gate can reject a definition and send the process back to step 3 for revision. The failure taxonomy (step 4) catches logical errors in definitions. The domain boundary check (step 5) catches cardinality errors. The measurability check (step 6) catches measure-theoretic gaps. A definition that passes all three gates is ready for proof search.
-
-The blueprint is an engineering contribution: it encodes the negative-space knowledge (what NOT to do when writing premises) as a reusable diagnostic protocol. The diagnostic table in the YAML maps observable symptoms during proof search (counterexample found, trivial proof exists, proof direction unexpectedly hard, measurability blocked, agent produces wrong bound) to their causes and fixes.
+The blueprint encodes negative-space knowledge (what NOT to do when writing premises) as diagnostic tables mapping observable symptoms during proof search to their causes and fixes. Phase 2 diagnostics detect discovery opportunities: repeated hypothesis parameters signal typeclasses waiting to be extracted, unexpected typeclass instances signal new theorems, and composed objects that are less well-behaved than atomic ones signal structural theorems about the field.
