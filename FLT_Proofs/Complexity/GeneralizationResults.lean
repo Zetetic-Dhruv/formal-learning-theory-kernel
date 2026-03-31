@@ -9,11 +9,11 @@ import FLT_Proofs.Complexity.Rademacher
 import FLT_Proofs.Complexity.Measurability
 
 /-!
-# Generalization Results (redirected to sorry-free primed versions)
+# Generalization Results (redirected to primed versions)
 
 Theorems moved from Generalization.lean and Rademacher.lean.
 Each call has been redirected from the orphaned sorry'd version
-(e.g. `vcdim_finite_imp_uc`) to the sorry-free primed version
+(e.g. `vcdim_finite_imp_uc`) to the primed version
 (e.g. `vcdim_finite_imp_uc'`) in Symmetrization.lean.
 
 ## Main results

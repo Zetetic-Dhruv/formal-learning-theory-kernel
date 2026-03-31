@@ -6,6 +6,7 @@ Authors: Dhruv Gupta
 import FLT_Proofs.Basic
 import FLT_Proofs.Complexity.Generalization
 import FLT_Proofs.Complexity.Rademacher
+import FLT_Proofs.MathLib.Exchangeability
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -37,107 +38,18 @@ then bounds the double-sample event via exchangeability + growth function.
 
 ## Design notes
 
-All theorems use the exchangeability + permutation approach for the double sample
-pattern bound, rather than the relaxed iid Rademacher approach. This avoids
-introducing unnecessary independence assumptions.
+All theorems use the STANDARD Approach A (exchangeability + permutation) for T3,
+NOT the relaxed iid Rademacher approach. This is the structurally correct argument
+that avoids introducing unnecessary independence assumptions.
 -/
 
 universe u v
 
 open MeasureTheory ENNReal
 
-/-! ## Helper Definitions -/
+/-! ## Helper Definitions (DoubleSampleMeasure, ValidSplit, etc. in MathLib.Exchangeability) -/
 
-/-- The double sample measure: D^m ⊗ D^m, the product of two independent
-    m-fold product measures. This is the joint distribution of the training
-    sample S and the ghost sample S'.
-
-    Construction: `Measure.pi` gives D^m on `Fin m → X`. The `.prod` gives
-    the product of two such measures on `(Fin m → X) × (Fin m → X)`.
-
-    Measurability: both factors are probability measures (by `Measure.pi`
-    preserving `IsProbabilityMeasure`), so the product is also a probability measure. -/
-noncomputable def DoubleSampleMeasure {X : Type u} [MeasurableSpace X]
-    (D : MeasureTheory.Measure X) (m : ℕ) : MeasureTheory.Measure ((Fin m → X) × (Fin m → X)) :=
-  (MeasureTheory.Measure.pi (fun _ : Fin m => D)).prod
-    (MeasureTheory.Measure.pi (fun _ : Fin m => D))
-
-/-- Type alias for a merged sample of 2m points from X.
-    A merged sample arises from concatenating the training sample S and ghost sample S'
-    into a single sequence of 2m points. The key property is that under D^{2m},
-    all 2m points are iid, so the joint distribution is invariant under permutations. -/
-abbrev MergedSample (X : Type u) (m : ℕ) := Fin (2 * m) → X
-
-/-- Merge two samples of size m into a single sample of size 2m.
-    Uses `Fin.append` via the canonical `Fin m ⊕ Fin m ≃ Fin (m + m)` isomorphism,
-    composed with the `m + m = 2 * m` cast.
-
-    This is the structural bridge between `(Fin m → X) × (Fin m → X)` and
-    `Fin (2*m) → X`. The inverse is `splitMergedSample`. -/
-noncomputable def mergeSamples {X : Type u} {m : ℕ}
-    (p : (Fin m → X) × (Fin m → X)) : MergedSample X m :=
-  fun i =>
-    let j : Fin (m + m) := i.cast (two_mul m)
-    if h : j.val < m
-    then p.1 ⟨j.val, h⟩
-    else p.2 ⟨j.val - m, by omega⟩
-
-/-- Split a merged sample of 2m points back into two samples of size m.
-    Inverse of `mergeSamples`. -/
-noncomputable def splitMergedSample {X : Type u} {m : ℕ}
-    (z : MergedSample X m) : (Fin m → X) × (Fin m → X) :=
-  (fun i => z (Fin.castAdd m i |>.cast (two_mul m).symm),
-   fun i => z (Fin.natAdd m i |>.cast (two_mul m).symm))
-
-/-- A split of a 2m-element set into two groups of m.
-    Represented as a function `Fin (2*m) → Bool` where `true` = first group, `false` = second.
-    A valid split has exactly m elements in each group.
-
-    The set of all valid splits has cardinality `Nat.choose (2*m) m`. -/
-structure ValidSplit (m : ℕ) where
-  /-- Assignment of each of 2m indices to one of two groups -/
-  assign : Fin (2 * m) → Bool
-  /-- Exactly m indices are assigned to the first group -/
-  card_true : (Finset.univ.filter (fun i => assign i = true)).card = m
-  deriving DecidableEq
-
-/-- ValidSplit m is finite: it is a subtype of the finite type `Fin (2*m) → Bool`. -/
-noncomputable instance (m : ℕ) : Fintype (ValidSplit m) :=
-  Fintype.ofInjective (fun vs => vs.assign)
-    (fun a b h => by cases a; cases b; simp_all)
-
-/-- Discrete measurable space on ValidSplit (all sets measurable). -/
-instance (m : ℕ) : MeasurableSpace (ValidSplit m) := ⊤
-
-/-- The uniform measure over all valid splits of 2m elements into two groups of m.
-    This is the key construction for the exchangeability argument.
-
-    Under D^{2m}, conditioning on the merged sample z and averaging over all
-    valid splits gives the same distribution as D^m ⊗ D^m. This is because
-    D^{2m} is invariant under permutations of coordinates.
-
-    The measure assigns weight 1/C(2m,m) to each valid split.
-
-    MEASURABILITY NOTE: ValidSplit m is a finite type (subtype of Fin (2*m) → Bool),
-    so all sets are measurable under the discrete σ-algebra. -/
-noncomputable def SplitMeasure (m : ℕ) : MeasureTheory.Measure (ValidSplit m) :=
-  if _h : Fintype.card (ValidSplit m) = 0 then 0
-  else (Fintype.card (ValidSplit m) : ENNReal)⁻¹ •
-    ∑ vs : ValidSplit m, MeasureTheory.Measure.dirac vs
-
-/-- Given a merged sample z and a valid split, extract the first group (training sample). -/
-def splitFirst {X : Type u} {m : ℕ} (z : MergedSample X m) (_vs : ValidSplit m) :
-    Fin m → X := by
-  -- The first group consists of the m indices where assign = true
-  -- We need to enumerate them and index into z
-  exact fun i => z (Fin.castAdd m i |>.cast (two_mul m).symm)
-
-/-- Given a merged sample z and a valid split, extract the second group (ghost sample). -/
-def splitSecond {X : Type u} {m : ℕ} (z : MergedSample X m) (_vs : ValidSplit m) :
-    Fin m → X := by
-  exact fun i => z (Fin.natAdd m i |>.cast (two_mul m).symm)
-
-/-! ## One-sided Hoeffding Inequality -/
+/-! ## T1: One-sided Hoeffding Inequality -/
 
 /-- One-sided Hoeffding: for iid Bernoulli(p) draws, the empirical average
     undershoots the mean by ≥ t with probability ≤ exp(-2mt²).
@@ -514,7 +426,7 @@ theorem hoeffding_one_sided {X : Type u} [MeasurableSpace X]
         push_cast
         field_simp
 
-/-! ## Symmetrization Step -/
+/-! ## T2: Symmetrization Step -/
 
 /-- Symmetrization: the probability of a large gap TrueErr-EmpErr
     is at most twice the probability of a large gap EmpErr'-EmpErr
@@ -785,7 +697,7 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
     _ = (μ.prod μ) B' := h_prod.symm
     _ = (μ.prod μ) B := MeasureTheory.measure_toMeasurable B
 
-/-! ## Double Sample Pattern Bound (Exchangeability Argument) -/
+/-! ## T3: Double Sample Pattern Bound (Approach A — Standard Exchangeability) -/
 
 /-- Per-hypothesis Hoeffding on the double sample: for a FIXED hypothesis h,
     the probability that EmpErr(h,S') - EmpErr(h,S) ≥ ε/2 under D^m ⊗ D^m
@@ -796,7 +708,7 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
     independent, bounded in [-1,1], and centered (E[Wᵢ] = 0).
     By Hoeffding's inequality: P[(1/m)∑Wᵢ ≥ ε/2] ≤ exp(-mε²/8).
 
-    This uses the sub-Gaussian machinery from hoeffding_one_sided, extended to the product space.
+    This uses the sub-Gaussian machinery from T1, extended to the product space.
 
     **Proof sketch:**
     1. Pair D^m ⊗ D^m ≅ (D⊗D)^m via the natural isomorphism
@@ -1102,9 +1014,19 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
        (MeasureTheory.Measure.pi (fun _ : Fin m => D)))
 
 /- The exchangeability + union bound + Hoeffding chain.
-   The fully proved path uses `uc_bad_event_le_delta_proved` (below), which
-   composes `symmetrization_uc_bound` + `growth_exp_le_delta` via
-   `finite_exchangeability_bound` + NullMeasurableSet. -/
+   ORPHANED — contains 2 sorrys (swap→signed avg + Tonelli).
+   The critical path now uses `uc_bad_event_le_delta_proved` (below) which
+   composes `symmetrization_uc_bound` + `growth_exp_le_delta` via the
+   `finite_exchangeability_bound` + NullMeasurableSet architecture.
+   This version remains because `double_sample_pattern_bound` and
+   `symmetrization_uc_bound` (unprimed) call it, and those are called by
+   the unprimed `vcdim_finite_imp_uc` in Generalization.lean.
+
+   γ₁₈ (Session 7 discovery): The 2 sorrys here represent the original
+   attempt to close the exchangeability chain via direct Tonelli interchange.
+   Sorry A (swap→signed avg) needed connecting swap_fun to a Rademacher sum.
+   Sorry B (Tonelli) was blocked by MeasurableSet requirements for uncountable C.
+   Resolution: NullMeasurableSet + finite_exchangeability_bound (above). -/
 
 theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -1481,7 +1403,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
               congr 1; rw [Real.exp_sub]
           _ = (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
               congr 1; rw [ht₀_def]; field_simp; ring
-      -- Step 4: Connect swap_fun σ z ∈ S to the signed average condition
+      -- Step A4: Connect swap_fun σ z ∈ S to the signed average condition
       -- For each σ, swap_fun σ z ∈ S iff ∃h ∈ C with gap under swap ≥ ε/2.
       -- The gap under swap = (1/m)∑ sign(σ_i) · a_i(h,z).
       -- Two h's with the same pattern on merged have the same gap.
@@ -1654,7 +1576,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
 /-- On the double sample, the probability that any hypothesis has
     EmpErr' - EmpErr ≥ ε/2 is bounded by GF(C,2m) · exp(-mε²/8).
 
-    **Proof strategy (exchangeability argument, 5 steps):**
+    **Proof strategy (Approach A — standard exchangeability, 5 steps):**
 
     1. **EXCHANGEABILITY:** Under D^m ⊗ D^m, the 2m draws z₁,...,z_{2m} are iid from D.
        The joint distribution is invariant under permutations of {1,...,2m}.
@@ -2200,7 +2122,7 @@ theorem symmetrization_step_lower {X : Type u} [MeasurableSpace X]
     _ = (μ.prod μ) B' := h_prod.symm
     _ = (μ.prod μ) B := MeasureTheory.measure_toMeasurable B
 
-/-! ## Symmetrization Uniform Convergence Bound (two-sided) -/
+/-! ## T4: Symmetrization Uniform Convergence Bound (two-sided) -/
 
 /-- The symmetrization uniform convergence bound: two-sided version.
     P[∃h∈C: |TrueErr-EmpErr| ≥ ε] ≤ 4·GF(C,2m)·exp(-mε²/8).
@@ -2363,7 +2285,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     _ = ENNReal.ofReal (4 * ↑(GrowthFunction X C (2 * m)) *
           Real.exp (-(↑m * ε ^ 2 / 8))) := by rw [hgf_exp_def]; ring_nf
 
-/-! ## Arithmetic — Growth Function x Exponential le delta -/
+/-! ## T5: Arithmetic — Growth Function × Exponential ≤ δ -/
 
 -- Arithmetic: 4*GF(C,2m)*exp(-m*eps^2/8) <= delta and 2*ln2 <= m*eps^2.
 -- Uses: Sauer-Shelah + pow_mul_exp_neg_le_factorial_div + hm_bound.
@@ -2695,15 +2617,15 @@ theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
       have hm_ge_1 : (1 : ℝ) ≤ ↑m := Nat.one_le_cast.mpr hm
       nlinarith
 
-/-! ## UC proof: composing symmetrization + arithmetic
+/-! ## Sorry-free UC proof: composing symmetrization + arithmetic
 
-These theorems close the gap in `uc_bad_event_le_delta` (Generalization.lean)
+These theorems close the sorry in `uc_bad_event_le_delta` (Generalization.lean)
 by composing `symmetrization_uc_bound` with `growth_exp_le_delta`.
 They live here because Symmetrization.lean has access to both components,
 whereas Generalization.lean cannot import Symmetrization.lean (circular). -/
 
-/-- UC bad-event bound: for m ≥ m₀(v,ε,δ), the probability of the bad event
-    (∃ h with |TrueErr-EmpErr| ≥ ε) is at most δ.
+/-- UC bad-event bound: for m ≥ m₀(v,ε,δ), the probability
+    of the bad event (∃ h with |TrueErr-EmpErr| ≥ ε) is at most δ.
     Composes `symmetrization_uc_bound` with `growth_exp_le_delta`. -/
 private lemma uc_bad_event_le_delta_proved {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -3014,7 +2936,7 @@ theorem vcdim_finite_imp_uc' (X : Type u) [MeasurableSpace X]
                   rw [ENNReal.add_sub_cancel_left (ne_top_of_le_ne_top ENNReal.one_ne_top
                     MeasureTheory.prob_le_one)]
 
-/-- VCDim < ⊤ → PACLearnable via the uniform convergence route. -/
+/-- VCDim < ⊤ → PACLearnable via UC route. -/
 theorem vcdim_finite_imp_pac_via_uc' (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (hC : VCDim X C < ⊤)
     (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : ∀ c : Concept X Bool, Measurable c)

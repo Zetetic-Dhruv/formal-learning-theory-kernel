@@ -78,8 +78,8 @@ theorem vcdim_finite_imp_pac (X : Type u) [MeasurableSpace X]
   have hmeas_C := MeasurableConceptClass.hmeas_C C
   have hc_meas := MeasurableConceptClass.hc_meas C
   have hWB := MeasurableConceptClass.hWB C
-  -- Route through sorry-free UC path in Symmetrization.lean:
-  -- vcdim_finite_imp_uc' + uc_imp_pac (both sorry-free).
+  -- Route through UC path in Symmetrization.lean:
+  -- vcdim_finite_imp_uc' + uc_imp_pac.
   by_cases hne : C.Nonempty
   · exact uc_imp_pac X C hne (vcdim_finite_imp_uc' X C hC hmeas_C hc_meas hWB)
   · rw [Set.not_nonempty_iff_eq_empty] at hne
@@ -272,7 +272,7 @@ theorem fundamental_rademacher (X : Type u) [MeasurableSpace X]
      have hmeas_C := MeasurableConceptClass.hmeas_C C
      have hc_meas := MeasurableConceptClass.hc_meas C
      have hWB := MeasurableConceptClass.hWB C
-     -- Rademacher vanishing → VCDim < ⊤ (contrapositive) → PAC (sorry-free via UC')
+     -- Rademacher vanishing → VCDim < ⊤ (contrapositive) → PAC (via UC')
      have hvcdim : VCDim X C < ⊤ := by
        by_contra hvcdim_inf
        push_neg at hvcdim_inf

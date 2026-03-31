@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package FLTKernel where
+package LimitsOfLearning where
   leanOptions := #[
     ⟨`autoImplicit, false⟩
   ]
@@ -36,16 +36,33 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.BorelAnalyticBridge,
     `FLT_Proofs.MathLib.ChoquetCapacity,
     `FLT_Proofs.MathLib.AnalyticMeasurability,
+    `FLT_Proofs.MathLib.KLDivergence,
+    `FLT_Proofs.MathLib.Concentration,
+    `FLT_Proofs.MathLib.Exchangeability,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,
     `FLT_Proofs.Theorem.Online,
     `FLT_Proofs.Theorem.Separation,
-    `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Theorem.Extended,
     `FLT_Proofs.Theorem.BorelAnalyticSeparation,
+    `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
     `FLT_Proofs.Bridge
   ]
+
+lean_lib MetaKernel where
+  roots := #[
+    `MetaKernel.Core,
+    `MetaKernel.Tactics,
+    `MetaKernel.Measure,
+    `MetaKernel.Phi,
+    `MetaKernel.Discovery,
+    `MetaKernel.WorldModel.PriorArt,
+    `MetaKernel.WorldModel.MeasuredTactic,
+    `MetaKernel.WorldModel.Feedback,
+    `MetaKernel.Test
+  ]
+
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "fde0cc508f5375f278f515cb2f50a34a545a4c5c"
+  "https://github.com/leanprover-community/mathlib4" @ "master"

@@ -5,6 +5,7 @@ Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Complexity.Generalization
 import FLT_Proofs.Complexity.Symmetrization
+import FLT_Proofs.MathLib.KLDivergence
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -33,35 +34,8 @@ universe u
 open MeasureTheory Finset
 
 -- ============================================================================
--- Definitions: probability mass functions and PAC-Bayes quantities
+-- Definitions: PAC-Bayes quantities (FinitePMF, klDiv, etc. in MathLib.KLDivergence)
 -- ============================================================================
-
-/-- A probability mass function over a finite type.
-    Named FinitePMF to avoid conflict with Mathlib's PMF. -/
-structure FinitePMF (H : Type*) [Fintype H] where
-  prob : H → ℝ
-  prob_nonneg : ∀ h, 0 ≤ prob h
-  prob_sum_one : ∑ h : H, prob h = 1
-
-/-- KL divergence between two FinitePMFs over a finite type.
-    KL(Q‖P) = ∑_h Q(h) · log(Q(h)/P(h)).
-    Convention: 0 · log(0/p) = 0. -/
-noncomputable def klDivFinitePMF {H : Type*} [Fintype H]
-    (Q P : FinitePMF H) : ℝ :=
-  ∑ h : H, if Q.prob h = 0 then 0
-    else Q.prob h * Real.log (Q.prob h / P.prob h)
-
-/-- Cross-entropy: ∑_h Q(h) · log(1/P(h)).
-    Equals KL(Q‖P) + H(Q) where H(Q) is Shannon entropy. -/
-noncomputable def crossEntropyFinitePMF {H : Type*} [Fintype H]
-    (Q P : FinitePMF H) : ℝ :=
-  ∑ h : H, if Q.prob h = 0 then 0
-    else Q.prob h * Real.log (1 / P.prob h)
-
-/-- Expected value of a real-valued function under a FinitePMF. -/
-noncomputable def expectFinitePMF {H : Type*} [Fintype H]
-    (Q : FinitePMF H) (f : H → ℝ) : ℝ :=
-  ∑ h : H, Q.prob h * f h
 
 /-- The Gibbs error: expected true error under posterior Q.
     E_{h~Q}[D{x | h(x) ≠ c(x)}]. -/
