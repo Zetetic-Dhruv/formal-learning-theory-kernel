@@ -1,4 +1,4 @@
-# Section I Draft — The Combinatorics-Measure Theory Axis
+# Section I — FINAL DRAFT
 
 ---
 
@@ -8,7 +8,7 @@
 
 Each learning paradigm's proof methods are determined by the mathematical domains its definitions cross. In this kernel, PAC learning sits at the intersection of finite combinatorics and infinite measure theory. Online learning sits at the intersection of combinatorics and game theory. Gold-style learning sits within computability and topology. The paradigms connect to each other only through PAC.
 
-This hypothesis predicts: given a new paradigm's type signature, the proof methods it requires are determined before a single theorem is proved. A paradigm whose definitions cross into measure theory will need concentration inequalities and symmetrization. A paradigm whose definitions involve sequential commitment will need game-theoretic potential arguments. A paradigm whose definitions involve convergence on enumerations will need topological arguments. The premise's type choices are a routing table for proof search.
+This hypothesis predicts: given a new paradigm's type signature, the proof methods it requires are determined before a single theorem is proved. A paradigm whose definitions cross into measure theory will need concentration inequalities and symmetrization. A paradigm whose definitions involve sequential commitment will need game-theoretic potential arguments. A paradigm whose definitions involve convergence on enumerations will need topological arguments. The premise's type choices are a routing table for proof search. The hypothesis would be falsified by a PAC proof requiring no measure theory, an Online proof requiring concentration inequalities, or a direct Online-Gold theorem bypassing PAC.
 
 ### The PAC crossing
 
@@ -20,21 +20,21 @@ Every PAC theorem in this kernel crosses from combinatorics to measure theory. T
 | Symmetrization | Growth function bound | Uniform convergence (measure-theoretic) | Ghost sample + exchangeability |
 | Concentration | Uniform convergence | PAC guarantee (measure-theoretic) | Hoeffding via sub-Gaussian MGF |
 
-The infrastructure for this crossing accounts for 56% of the kernel's codebase (excluding PureMath/). A paradigm that stayed within one mathematical domain would not need it. The infrastructure ratio is not an artifact of the codebase; it is a consequence of the crossing.
+A paradigm staying within one mathematical domain would not need this infrastructure, which accounts for 56% of this kernel precisely because PAC crosses two domains.
 
 ### Online learning: combinatorics and game theory
 
 The Littlestone characterization asserts that online learnability is equivalent to finite Littlestone dimension. Both sides are combinatorial, but the proof method is game-theoretic. The adversary inspects the learner's prediction and plays the opposite label. The Standard Optimal Algorithm (SOA) is a minimax strategy: at each step, predict the label whose version-space branch has higher Littlestone dimension. The version space is the game state. The Littlestone dimension is the game value.
 
-The game-theoretic infrastructure (version space, adversary strategy, SOA, mistake counting) is extracted to `Complexity/GameInfra.lean` (219 lines). No product measures. No concentration inequalities. No sigma-algebras. The proof infrastructure is 690 lines total, not 5,000, because no combinatorics-to-measure-theory crossing is needed.
+The game-theoretic infrastructure (version space, adversary strategy, SOA, mistake counting) is extracted to `Complexity/GameInfra.lean` (219 lines). No product measures. No concentration inequalities. No sigma-algebras. The proof infrastructure is 690 lines, not 5,000, because no combinatorics-to-measure-theory crossing is needed.
 
-A `SequentialGame` typeclass abstracting over the adversary-learner interaction would connect online learning to bandits and adversarial settings. It is deferred until a second implementation motivates the abstraction.
+The adversary-learner interaction pattern (sequential commitment, state update, payoff counting) is shared with bandits and chosen-plaintext attacks, suggesting a common game-theoretic abstraction across these settings.
 
 ### Gold-style learning: computability and topology
 
 Gold's theorem constructs a locking sequence: an enumeration strategy that forces the learner to commit to a finite concept, then extends the adversarial text to be consistent with the infinite target. This is a computability argument operating on enumerations. The mind change characterization uses topological convergence: the sequence of conjectures must stabilize on a growing prefix of the enumeration, which is convergence in the pointwise topology on function spaces.
 
-Gold-style learning shares neither the combinatorial shattering structure of PAC and Online nor the measure-theoretic machinery of PAC. On countable domains (which Gold's theorem requires via `[Countable X]`), every function is measurable under the discrete sigma-algebra. Measurability is trivially satisfied. The proof difficulty is elsewhere: in the enumeration structure and the convergence argument.
+Gold-style learning shares neither the combinatorial shattering structure of PAC and Online nor the measure-theoretic machinery of PAC. It is the only paradigm in this kernel that does not share any proof infrastructure with either of the other two, which is why no theorem connects it to Online directly. On countable domains (which Gold's theorem requires via `[Countable X]`), every function is measurable under the discrete sigma-algebra. Measurability is trivially satisfied. The proof difficulty is elsewhere: in the enumeration structure and the convergence argument.
 
 ### The hub structure
 
@@ -65,30 +65,3 @@ If a new learning paradigm is formalized, its proof methods will be determined b
 A paradigm crossing combinatorics and information theory (e.g., compression-based learning) will need information-theoretic proof infrastructure but may share the combinatorial side with PAC. A paradigm crossing measure theory and game theory (e.g., stochastic online learning) will need tools from both PAC and Online. A paradigm staying within a single domain will require proportionally less proof infrastructure.
 
 For AI-driven proof search: an agent that reads the goal's type signature before choosing tactics can restrict its search space to the paradigm-appropriate methods. Goals mentioning `MeasureTheory.Measure` route to the PAC tactic library. Goals mentioning sequential state route to the Online tactic library. Goals mentioning enumerations and convergence route to the Gold tactic library. The premise is a routing table.
-
----
-
-## Design notes (not in final)
-
-### Tone trajectory
-Methodical (hypothesis statement) → parallactic shift at each paradigm (PAC gets measure-theoretic language, Online gets game-theoretic language, Gold gets computability language) → compressed (hub structure table) → precise/diagnostic (why types cannot unify: each in two sentences) → forward-looking (predictions).
-
-### Tonal crux
-The moment Online is described without measure theory. The ABSENCE is the content.
-
-### What was removed from the old Section I
-- Design decisions table (moved to premise section, only measurability row kept as forward ref to Section V)
-- "This ratio is itself a datum" orphaned observation (replaced with causal connection: "the infrastructure ratio is a consequence of the crossing")
-- "The type system does not permit conflation. This is not a limitation. It is the mathematics." (replaced with the specific WHY for each learner type)
-- Mermaid paradigm joints diagram (replaced with the obstruction table which carries more information)
-- Mermaid dependency DAG (moved to Part III)
-- All engineering details about design decisions (moved to premise/origin.json references)
-
-### What was added
-- The axis hypothesis as organizing principle
-- The crossing table (Sauer-Shelah → Symmetrization → Concentration)
-- Game-theoretic framing of Online (version space as game state, SOA as minimax, GameInfra.lean reference)
-- Topological framing of Gold (pointwise convergence, trivial measurability on countable domains)
-- Predictions about new paradigms and AI proof search routing
-- Hub structure table with evidence column
-- Explicit hypothesis status for Online/Gold independence
