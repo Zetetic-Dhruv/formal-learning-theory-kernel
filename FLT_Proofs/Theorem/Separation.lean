@@ -12,7 +12,7 @@ import FLT_Proofs.Complexity.Generalization
 import FLT_Proofs.Complexity.Symmetrization
 import FLT_Proofs.Complexity.Measurability
 import FLT_Proofs.Theorem.Online
-import FLT_Proofs.MathLib.Concentration
+import FLT_Proofs.PureMath.Concentration
 import Mathlib.Probability.Moments.Variance
 
 /-!
@@ -149,7 +149,7 @@ theorem online_imp_pac (X : Type u) [MeasurableSpace X]
 private def boosted_majority (k : ℕ) (votes : Fin k → Bool) : Bool :=
   k < 2 * ((Finset.univ.filter (fun j => votes j)).card)
 
--- chebyshev_majority_bound moved to MathLib.Concentration
+-- chebyshev_majority_bound moved to PureMath.Concentration
 
 -- ============================================================
 -- FP4 Phase 1: Scaffolding for boost_two_thirds_to_pac

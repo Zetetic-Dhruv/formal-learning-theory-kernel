@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Complexity.Measurability
-import FLT_Proofs.MathLib.AnalyticMeasurability
+import FLT_Proofs.PureMath.AnalyticMeasurability
 
 /-!
 # Borel-Analytic Bridge for Statistical Learning Theory

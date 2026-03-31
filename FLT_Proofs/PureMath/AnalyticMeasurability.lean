@@ -3,7 +3,7 @@ Copyright (c) 2026 Dhruv Gupta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
-import FLT_Proofs.MathLib.ChoquetCapacity
+import FLT_Proofs.PureMath.ChoquetCapacity
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.Measure.Real
 

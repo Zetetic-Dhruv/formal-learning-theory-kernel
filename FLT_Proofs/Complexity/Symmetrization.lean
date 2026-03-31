@@ -6,7 +6,7 @@ Authors: Dhruv Gupta
 import FLT_Proofs.Basic
 import FLT_Proofs.Complexity.Generalization
 import FLT_Proofs.Complexity.Rademacher
-import FLT_Proofs.MathLib.Exchangeability
+import FLT_Proofs.PureMath.Exchangeability
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -47,7 +47,7 @@ universe u v
 
 open MeasureTheory ENNReal
 
-/-! ## Helper Definitions (DoubleSampleMeasure, ValidSplit, etc. in MathLib.Exchangeability) -/
+/-! ## Helper Definitions (DoubleSampleMeasure, ValidSplit, etc. in PureMath.Exchangeability) -/
 
 /-! ## T1: One-sided Hoeffding Inequality -/
 

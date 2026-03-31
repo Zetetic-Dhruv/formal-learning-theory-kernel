@@ -5,7 +5,7 @@ Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Complexity.Generalization
 import FLT_Proofs.Complexity.Symmetrization
-import FLT_Proofs.MathLib.KLDivergence
+import FLT_Proofs.PureMath.KLDivergence
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -34,7 +34,7 @@ universe u
 open MeasureTheory Finset
 
 -- ============================================================================
--- Definitions: PAC-Bayes quantities (FinitePMF, klDiv, etc. in MathLib.KLDivergence)
+-- Definitions: PAC-Bayes quantities (FinitePMF, klDiv, etc. in PureMath.KLDivergence)
 -- ============================================================================
 
 /-- The Gibbs error: expected true error under posterior Q.
