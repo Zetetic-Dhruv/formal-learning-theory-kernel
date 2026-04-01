@@ -1,0 +1,589 @@
+{
+  "metadata": {
+    "name": "formal_learning_theory_proof_world_model",
+    "description": "Operational knowledge base encoding 21 metaprograms extracted from actual tactic sequences in the kernel. Each metaprogram is a reusable proof composition pattern: a DAG of TacticM transformations on MVarId goals with typed inputs, outputs, and failure diagnostics.",
+    "generated": "2026-03-31",
+    "kernel_version": "v2.0.0",
+    "unit": "metaprogram (TacticM composition pattern)",
+    "extraction_method": "grep + agent analysis of by-blocks across 43 Lean4 source files",
+    "lean4_model": {
+      "goal": "MVarId with target Expr and LocalContext",
+      "tactic": "TacticM Unit = Syntax -> TacticM Unit",
+      "metaprogram": "sequence of TacticM transformations producing subgoals",
+      "composition": "sequential (;), parallel (all_goals), focused (focus), backtracking (saveState/restoreState)"
+    }
+  },
+  "metaprograms": [
+    {
+      "id": "MP1",
+      "name": "M-Pipeline",
+      "description": "Delegate to a single infrastructure lemma after extracting typeclass instances",
+      "tactic_pattern": "have (extract instances) -> exact (single call to infrastructure)",
+      "paradigm": "PAC",
+      "instances": [
+        {
+          "theorem": "vcdim_finite_imp_pac",
+          "file": "Theorem/PAC.lean:72",
+          "delegates_to": "uc_imp_pac + vcdim_finite_imp_uc'"
+        },
+        {
+          "theorem": "pac_lower_bound",
+          "file": "Theorem/PAC.lean:172",
+          "delegates_to": "sample_complexity_lower_bound"
+        },
+        {
+          "theorem": "nfl_fixed_sample",
+          "file": "Theorem/PAC.lean:400",
+          "delegates_to": "nfl_core"
+        },
+        {
+          "theorem": "occam_algorithm",
+          "file": "Theorem/PAC.lean:430",
+          "delegates_to": "vc_characterization.mpr"
+        }
+      ]
+    },
+    {
+      "id": "MP2",
+      "name": "M-Contrapositive",
+      "description": "Assume negation, normalize, construct witness for contradiction",
+      "tactic_pattern": "by_contra -> push_neg -> (construct witness or apply lemma) -> absurd/lt_irrefl/linarith",
+      "paradigm": "PAC",
+      "instances": [
+        {
+          "theorem": "pac_imp_vcdim_finite",
+          "file": "Theorem/PAC.lean:105"
+        },
+        {
+          "theorem": "compression_imp_vcdim_finite",
+          "file": "Complexity/Generalization.lean:2003"
+        },
+        {
+          "theorem": "fundamental_rademacher (backward)",
+          "file": "Theorem/PAC.lean:261"
+        },
+        {
+          "theorem": "vcdim_infinite_not_pac",
+          "file": "Complexity/Generalization.lean:2714"
+        }
+      ]
+    },
+    {
+      "id": "MP3",
+      "name": "M-Construction",
+      "description": "Build an explicit mathematical object (measure, function, set) and verify properties",
+      "tactic_pattern": "let/set (construct) -> have (verify properties) -> refine/exact",
+      "paradigm": [
+        "PAC",
+        "Online"
+      ],
+      "instances": [
+        {
+          "theorem": "vcdim_univ_infinite",
+          "file": "Theorem/PAC.lean:341",
+          "constructs": "shattering via Function.extend"
+        },
+        {
+          "theorem": "nfl_core",
+          "file": "Complexity/Generalization.lean:1445",
+          "constructs": "uniform measure + adversarial concept"
+        },
+        {
+          "theorem": "rademacher_lower_bound_on_shattered",
+          "file": "Complexity/Rademacher.lean:1217",
+          "constructs": "uniform measure on shattered set"
+        },
+        {
+          "theorem": "vcdim_infinite_not_pac",
+          "file": "Complexity/Generalization.lean:2714",
+          "constructs": "hard distribution on large shattered set"
+        }
+      ]
+    },
+    {
+      "id": "MP4",
+      "name": "M-Bridge",
+      "description": "Bridge between events via set monotonicity and measure calc chains",
+      "tactic_pattern": "apply ge_trans/measure_mono -> calc chain through set containments",
+      "paradigm": "PAC",
+      "instances": [
+        {
+          "theorem": "uc_imp_pac",
+          "file": "Complexity/Generalization.lean:800"
+        },
+        {
+          "theorem": "hoeffding_one_sided",
+          "file": "Complexity/Symmetrization.lean:100"
+        },
+        {
+          "theorem": "vcdim_finite_imp_uc'",
+          "file": "Complexity/Symmetrization.lean:2667"
+        }
+      ]
+    },
+    {
+      "id": "MP5",
+      "name": "M-UnionBound",
+      "description": "Bound measure of union by sum of individual measures",
+      "tactic_pattern": "measure_biUnion_finset_le -> Finset.sum_le_sum -> sum_const -> arithmetic",
+      "paradigm": "PAC (finite domain)",
+      "instances": [
+        {
+          "theorem": "vcdim_finite_imp_uc' (finite branch)",
+          "file": "Complexity/Symmetrization.lean:2667"
+        }
+      ]
+    },
+    {
+      "id": "MP6",
+      "name": "M-Complement",
+      "description": "Convert bad-event bound to good-event bound via complement probability",
+      "tactic_pattern": "prob_compl_eq_one_sub -> tsub_le_tsub -> add_sub_cancel",
+      "paradigm": "PAC",
+      "instances": [
+        {
+          "theorem": "vcdim_finite_imp_uc' (both branches)",
+          "file": "Complexity/Symmetrization.lean:2667"
+        }
+      ]
+    },
+    {
+      "id": "MP7",
+      "name": "M-IntegralBound",
+      "description": "Reduce integral bound to pointwise bound via monotonicity",
+      "tactic_pattern": "suffices (pointwise) -> integral_mono_of_nonneg -> integral_const",
+      "paradigm": "PAC",
+      "instances": [
+        {
+          "theorem": "vcdim_bounds_rademacher_quantitative",
+          "file": "Complexity/Rademacher.lean:930"
+        }
+      ]
+    },
+    {
+      "id": "MP8",
+      "name": "M-Pigeonhole",
+      "description": "Prove injectivity of a map, then derive cardinality contradiction",
+      "tactic_pattern": "have h_inj : Injective f -> cardinality comparison -> contradiction",
+      "paradigm": "PAC",
+      "instances": [
+        {
+          "theorem": "compression_imp_vcdim_finite",
+          "file": "Complexity/Generalization.lean:2003"
+        }
+      ]
+    },
+    {
+      "id": "MP9",
+      "name": "M-Adversary",
+      "description": "Induction on tree depth, branching on learner prediction at each node",
+      "tactic_pattern": "induction n -> match .branch x l r -> by_cases hpred : L.predict s x = true -> simp -> omega",
+      "paradigm": "Online",
+      "instances": [
+        {
+          "theorem": "adversary_core",
+          "file": "Complexity/GameInfra.lean:95"
+        },
+        {
+          "theorem": "adversary_from_shatters",
+          "file": "Theorem/Separation.lean:82"
+        }
+      ]
+    },
+    {
+      "id": "MP10",
+      "name": "M-Potential",
+      "description": "Induction on sequence with potential function (Ldim) strictly decreasing on mistakes",
+      "tactic_pattern": "induction seq -> by_cases hmistake -> cases d zero/succ -> ldim_strict_decrease -> omega",
+      "paradigm": "Online",
+      "instances": [
+        {
+          "theorem": "soa_mistakes_bounded",
+          "file": "Theorem/Online.lean:322"
+        }
+      ]
+    },
+    {
+      "id": "MP11",
+      "name": "M-LatticeMinMax",
+      "description": "Three-way case split on WithBot(WithTop Nat), then lattice sup/inf manipulation",
+      "tactic_pattern": "cases (bot/coe-top/coe-coe) -> le_antisymm -> iSup2_le/le_iSup2_of_le -> norm_cast -> omega",
+      "paradigm": "Online",
+      "instances": [
+        {
+          "theorem": "forward_direction",
+          "file": "Theorem/Online.lean:27"
+        },
+        {
+          "theorem": "backward_direction",
+          "file": "Theorem/Online.lean:389"
+        },
+        {
+          "theorem": "optimal_mistake_bound_eq_ldim",
+          "file": "Theorem/Online.lean:440"
+        },
+        {
+          "theorem": "ldim_strict_decrease_on_mistake",
+          "file": "Theorem/Online.lean:195"
+        }
+      ]
+    },
+    {
+      "id": "MP12",
+      "name": "M-Locking",
+      "description": "Recursive chain construction forcing learner commitment, then adversarial extension",
+      "tactic_pattern": "Nat.rec (chain build) -> modular arithmetic -> List.ext_getElem -> funext -> omega",
+      "paradigm": "Gold",
+      "instances": [
+        {
+          "theorem": "gold_theorem",
+          "file": "Theorem/Gold.lean:19"
+        }
+      ],
+      "note": "Paradigm-specific. Exploits enumeration structure. Cannot be applied to PAC or Online."
+    },
+    {
+      "id": "MP13",
+      "name": "M-DefinitionUnfolding",
+      "description": "Unfold piecewise definition via conditional rewrites, then case analysis",
+      "tactic_pattern": "dif_pos/dif_neg/if_pos/if_neg -> by_cases (finiteness, convergence) -> lt_irrefl",
+      "paradigm": "Gold",
+      "instances": [
+        {
+          "theorem": "mind_change_characterization",
+          "file": "Theorem/Gold.lean:206"
+        }
+      ]
+    },
+    {
+      "id": "MP14",
+      "name": "M-WitnessConstruction",
+      "description": "Build a concept class witness satisfying one condition and violating another",
+      "tactic_pattern": "refine <..., ?_, ?_> -> (prove condition A) -> (prove not condition B)",
+      "paradigm": "Separation",
+      "instances": [
+        {
+          "theorem": "pac_not_implies_online",
+          "file": "Theorem/Separation.lean:1175",
+          "witness": "threshold class"
+        },
+        {
+          "theorem": "ex_not_implies_pac",
+          "file": "Theorem/Separation.lean:1237",
+          "witness": "finite-subset indicators"
+        },
+        {
+          "theorem": "analytic_nonborel_set_gives_measTarget_separation",
+          "file": "Theorem/BorelAnalyticSeparation.lean:184",
+          "witness": "singleton class"
+        }
+      ]
+    },
+    {
+      "id": "MP15",
+      "name": "M-ComponentMeasurability",
+      "description": "Prove measurability of a piecewise-defined function component by component",
+      "tactic_pattern": "simp only [definition] -> Measurable.piecewise + measurableSet_singleton",
+      "paradigm": "Measurability",
+      "instances": [
+        {
+          "theorem": "singletonClassOn_measurable",
+          "file": "Theorem/BorelAnalyticSeparation.lean:52"
+        },
+        {
+          "theorem": "routerOfSet_measurable",
+          "file": "Complexity/Interpolation.lean:77"
+        },
+        {
+          "theorem": "patchEval_measurable",
+          "file": "Complexity/BorelAnalyticBridge.lean:221"
+        }
+      ]
+    },
+    {
+      "id": "MP16",
+      "name": "M-SetExtensionBridge",
+      "description": "Prove set equality between learning-theoretic event and measure-theoretic preimage",
+      "tactic_pattern": "ext -> simp only [domain definitions] -> constructor -> case analysis -> linarith/omega",
+      "paradigm": "Measurability",
+      "instances": [
+        {
+          "theorem": "singleton_badEvent_eq_preimage_planar",
+          "file": "Theorem/BorelAnalyticSeparation.lean:64"
+        },
+        {
+          "theorem": "wellBehaved_event_eq_preimage_gapSup",
+          "file": "Complexity/Measurability.lean:305"
+        },
+        {
+          "theorem": "interpClassFixed_eq_range_patchEval",
+          "file": "Complexity/Interpolation.lean:99"
+        }
+      ]
+    },
+    {
+      "id": "MP17",
+      "name": "M-AnalyticChain",
+      "description": "Establish analyticity via Suslin projection, then transfer to NullMeasurableSet",
+      "tactic_pattern": "AnalyticSet.preimage -> .analyticSet -> .iInter -> analyticSet_nullMeasurableSet",
+      "paradigm": "Descriptive set theory (cross-cutting)",
+      "instances": [
+        {
+          "theorem": "planarWitnessEvent_analytic",
+          "file": "Theorem/BorelAnalyticSeparation.lean:133"
+        },
+        {
+          "theorem": "borel_param_badEvent_analytic",
+          "file": "Complexity/BorelAnalyticBridge.lean:142"
+        }
+      ]
+    },
+    {
+      "id": "MP18",
+      "name": "M-SurjectiveTransfer",
+      "description": "Transfer non-measurability through a surjective measurable map",
+      "tactic_pattern": "prove Measurable f + Surjective f -> measurableSet_preimage_iff_of_surjective -> contradiction",
+      "paradigm": "Descriptive set theory (cross-cutting)",
+      "instances": [
+        {
+          "theorem": "singleton_badEvent_not_measurable",
+          "file": "Theorem/BorelAnalyticSeparation.lean:168"
+        }
+      ]
+    },
+    {
+      "id": "MP19",
+      "name": "M-RectangleDecomposition",
+      "description": "Decompose evaluation preimage into countable union of measurable rectangles",
+      "tactic_pattern": "ext -> prove preimage = Union n, (A_n x B_n) -> MeasurableSet.iUnion -> .prod",
+      "paradigm": "Measurability (cross-cutting)",
+      "instances": [
+        {
+          "theorem": "measurableSet_versionSpace_true",
+          "file": "Learner/VersionSpace.lean:126"
+        },
+        {
+          "theorem": "versionSpaceLearner_measurableBatchLearner",
+          "file": "Learner/VersionSpace.lean:183"
+        }
+      ]
+    },
+    {
+      "id": "MP20",
+      "name": "M-ChoquetCapacitability",
+      "description": "Recursive compact approximation via Nat.rec + closure intersection",
+      "tactic_pattern": "le_antisymm -> Nat.rec (build compact sequence) -> iInter_closure -> Classical.choose",
+      "paradigm": "Descriptive set theory (pure math)",
+      "instances": [
+        {
+          "theorem": "AnalyticSet.cap_eq_iSup_isCompact",
+          "file": "PureMath/ChoquetCapacity.lean:282"
+        }
+      ]
+    },
+    {
+      "id": "MP21",
+      "name": "M-JensenChain",
+      "description": "Per-hypothesis bound via Hoeffding, then uniformize via union bound + Jensen over posterior",
+      "tactic_pattern": "per-h Hoeffding -> union bound (sum) -> Jensen (sqrt convexity) -> calc",
+      "paradigm": "Bayesian",
+      "instances": [
+        {
+          "theorem": "pac_bayes_finite",
+          "file": "Theorem/PACBayes.lean:467"
+        }
+      ]
+    }
+  ],
+  "failure_diagnostics": [
+    {
+      "id": "FD1",
+      "metaprogram": "MP4/MP5",
+      "trigger": "[Fintype X] in context",
+      "symptom": "2^{2m} instead of GrowthFunction",
+      "fix": "Route to MP5 (union bound), skip MP4+symmetrization",
+      "observed": 3,
+      "provenance": "discovery_repo"
+    },
+    {
+      "id": "FD2",
+      "metaprogram": "MP4",
+      "trigger": "C not finite/countable",
+      "symptom": "union bound undefined for uncountable",
+      "fix": "Insert symmetrization (MP4 pipeline)",
+      "observed": 3,
+      "provenance": "discovery_repo"
+    },
+    {
+      "id": "FD3",
+      "metaprogram": "MP4",
+      "trigger": "[MeasurableConceptClass X C] absent",
+      "symptom": "lintegral refuses",
+      "fix": "Add typeclass or route to MP17 (analytic chain)",
+      "provenance": "kernel"
+    },
+    {
+      "id": "FD4",
+      "metaprogram": "MP4",
+      "trigger": "UC uses forall D exists m0",
+      "symptom": "cannot extract distribution-free mf",
+      "fix": "Use uniform ordering: exists m0 forall D",
+      "provenance": "kernel"
+    },
+    {
+      "id": "FD5",
+      "metaprogram": "MP9/MP11",
+      "trigger": "isShattered does not restrict C",
+      "symptom": "characterization false (const_true/false counterexample)",
+      "fix": "Use path-wise definition (GameInfra.lean)",
+      "provenance": "kernel"
+    },
+    {
+      "id": "FD6",
+      "metaprogram": "MP1",
+      "trigger": "PACLearnable uses exists Dm",
+      "symptom": "trivial proof via memorizer",
+      "fix": "Use Measure.pi definition",
+      "provenance": "kernel"
+    },
+    {
+      "id": "FD7",
+      "metaprogram": "any with integration over exists h in C",
+      "trigger": "Classical.choose over uncountable set",
+      "symptom": "MeasurableSet instance missing",
+      "fix": "Measurable inner event: find measurable E_inner subset E_target, monotonicity",
+      "provenance": "kernel"
+    }
+  ],
+  "method_compositions": [
+    {
+      "from": "MP3 (Sauer-Shelah)",
+      "to": "MP4 (Symmetrization)",
+      "interface": "GrowthFunction bound",
+      "bridge": "sauer_shelah_exp_bound"
+    },
+    {
+      "from": "MP4 (Symmetrization)",
+      "to": "MP4 (Concentration)",
+      "interface": "HasUniformConvergence",
+      "bridge": "vcdim_finite_imp_uc'"
+    },
+    {
+      "from": "MP4 (Concentration)",
+      "to": "MP1 (ERM)",
+      "interface": "UC -> PACLearnable",
+      "bridge": "uc_imp_pac"
+    },
+    {
+      "from": "MP17 (Suslin)",
+      "to": "MP20 (Choquet)",
+      "interface": "AnalyticSet",
+      "bridge": "AnalyticSet.compactCap_eq"
+    },
+    {
+      "from": "MP20 (Choquet)",
+      "to": "MP15 (NullMeasurable)",
+      "interface": "universally measurable",
+      "bridge": "analyticSet_nullMeasurableSet"
+    },
+    {
+      "from": "MP21 (per-h Hoeffding)",
+      "to": "MP21 (union)",
+      "interface": "per-h tail bounds",
+      "bridge": "pac_bayes_all_hypotheses"
+    },
+    {
+      "from": "MP21 (union)",
+      "to": "MP21 (Jensen)",
+      "interface": "simultaneous bound + Q",
+      "bridge": "pac_bayes_finite"
+    },
+    {
+      "from": "MP10 (Potential)",
+      "to": "MP9 (Adversary)",
+      "interface": "Ldim comparison -> predict -> recurse",
+      "bridge": "soa_predict_spec + adversary_core"
+    }
+  ],
+  "paradigm_locking": [
+    {
+      "methods": [
+        "MP4",
+        "MP5",
+        "MP6",
+        "MP7"
+      ],
+      "locked_to": "PAC",
+      "detection": "MeasureTheory.Measure or ENNReal in goal"
+    },
+    {
+      "methods": [
+        "MP9",
+        "MP10",
+        "MP11"
+      ],
+      "locked_to": "Online",
+      "detection": "OnlineLearner.State or versionSpace or LTree in goal"
+    },
+    {
+      "methods": [
+        "MP12",
+        "MP13"
+      ],
+      "locked_to": "Gold",
+      "detection": "DataStream or TextPresentation or MindChangeOrdinal in goal"
+    },
+    {
+      "methods": [
+        "MP17",
+        "MP18",
+        "MP20"
+      ],
+      "locked_to": "DST (cross-cutting)",
+      "detection": "AnalyticSet or NullMeasurableSet or PolishSpace in goal"
+    },
+    {
+      "methods": [
+        "MP21"
+      ],
+      "locked_to": "Bayesian",
+      "detection": "FinitePMF or klDiv in goal"
+    },
+    {
+      "methods": [
+        "MP19"
+      ],
+      "locked_to": "cross-cutting",
+      "detection": "MeasurableBatchLearner or Nat.find in goal"
+    }
+  ],
+  "sorry_sites": [
+    {
+      "theorem": "vcdim_finite_imp_compression",
+      "file": "Complexity/Generalization.lean:1903",
+      "blocked_by": "Moran-Yehudayoff 2016",
+      "blocks": [
+        "fundamental_theorem conjunct 2"
+      ]
+    },
+    {
+      "theorem": "bhmz_middle_branch",
+      "file": "Theorem/Extended.lean:40",
+      "blocked_by": "BHMZ STOC 2021",
+      "blocks": [
+        "universal_trichotomy branch 2"
+      ]
+    }
+  ],
+  "theorem_inventory": {
+    "total": 278,
+    "public": 190,
+    "private": 88,
+    "classification": {
+      "metaprogram_instances": 40,
+      "private_substeps": 85,
+      "public_infrastructure": 153
+    },
+    "coverage_note": "40 theorems are direct instances of the 21 metaprograms. 85 are private substeps within larger proofs. 153 are public infrastructure lemmas that support metaprogram execution but are not standalone instances. The 21 metaprograms cover all MAJOR proof strategies in the kernel; the infrastructure lemmas are the building blocks these strategies compose."
+  }
+}
