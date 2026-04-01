@@ -34,11 +34,11 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.Structures,
     `FLT_Proofs.Complexity.Measurability,
     `FLT_Proofs.Complexity.BorelAnalyticBridge,
-    `FLT_Proofs.PureMath.ChoquetCapacity,
-    `FLT_Proofs.PureMath.AnalyticMeasurability,
-    `FLT_Proofs.PureMath.KLDivergence,
-    `FLT_Proofs.PureMath.Concentration,
-    `FLT_Proofs.PureMath.Exchangeability,
+    `FLT_Proofs.MathLib.ChoquetCapacity,
+    `FLT_Proofs.MathLib.AnalyticMeasurability,
+    `FLT_Proofs.MathLib.KLDivergence,
+    `FLT_Proofs.MathLib.Concentration,
+    `FLT_Proofs.MathLib.Exchangeability,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,
@@ -48,7 +48,12 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.BorelAnalyticSeparation,
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
-    `FLT_Proofs.Bridge
+    `FLT_Proofs.Bridge,
+    `FLT_Proofs.Meta.ProofOperad,
+    `FLT_Proofs.Meta.ProofOperadInstances,
+    `FLT_Proofs.Meta.ProofOperadTheorems,
+    `FLT_Proofs.Meta.BridgeTactic,
+    `FLT_Proofs.Meta.BridgeTests
   ]
 
 lean_lib MetaKernel where

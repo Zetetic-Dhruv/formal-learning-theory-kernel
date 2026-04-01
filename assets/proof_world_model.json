@@ -579,12 +579,11 @@
     "total": 278,
     "public": 190,
     "private": 88,
-    "by_module": {
-      "PureMath": 18,
-      "Complexity": 151,
-      "Theorem": 87,
-      "Learner": 6,
-      "Bridge": 16
-    }
+    "classification": {
+      "metaprogram_instances": 40,
+      "private_substeps": 85,
+      "public_infrastructure": 153
+    },
+    "coverage_note": "40 theorems are direct instances of the 21 metaprograms. 85 are private substeps within larger proofs. 153 are public infrastructure lemmas that support metaprogram execution but are not standalone instances. The 21 metaprograms cover all MAJOR proof strategies in the kernel; the infrastructure lemmas are the building blocks these strategies compose."
   }
 }
