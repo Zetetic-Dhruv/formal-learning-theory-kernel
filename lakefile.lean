@@ -53,7 +53,8 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Meta.ProofOperadInstances,
     `FLT_Proofs.Meta.ProofOperadTheorems,
     `FLT_Proofs.Meta.BridgeTactic,
-    `FLT_Proofs.Meta.BridgeTests
+    `FLT_Proofs.Meta.BridgeTests,
+    `FLT_Proofs.Meta.NonTrivialTests
   ]
 
 lean_lib MetaKernel where
