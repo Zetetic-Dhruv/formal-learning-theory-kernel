@@ -27,6 +27,75 @@ import FLT_Proofs.Meta.ProofOperadTheorems
 example : ∃ r, fltTheory.admissible iOnlineLearnable genUCToPAC = .error r := by
   exact ⟨_, rfl⟩
 
+set_option maxHeartbeats 400000 in
+/-- Cross-paradigm composition is ill-typed at the composition level:
+    seq TreePotential UCToPAC does NOT type iFiniteLDim to [iPACLearnable].
+    Proof uses inversion lemmas to extract generator identity, then
+    derives contradiction from interface mismatch. -/
+theorem nt1_cross_paradigm_composition_fails :
+    ¬ HasType fltTheory
+      (.seq (.atom "TreePotential") (.atom "UCToPAC"))
+      iFiniteLDim [iPACLearnable] := by
+  intro h
+  -- Step 1: Invert the seq to get intermediate interfaces Js
+  obtain ⟨Js, hTP, hUC⟩ := h.seq_inv
+  -- Step 2: Invert the atom for TreePotential
+  obtain ⟨gen₁, hg₁, hname₁, hinput₁, houtput₁⟩ := hTP.atom_inv
+  -- Step 3: Enumerate generators to identify gen₁ = genTreePotential
+  simp only [fltTheory, List.mem_cons, List.mem_nil_iff] at hg₁
+  rcases hg₁ with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+    rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | h
+  -- Cases 1-5: structural generators (name ≠ "TreePotential")
+  · exact absurd hname₁ (by decide)   -- Contrapose
+  · exact absurd hname₁ (by decide)   -- Extensionalize
+  · exact absurd hname₁ (by decide)   -- CaseSplit
+  · exact absurd hname₁ (by decide)   -- CalcChain
+  · exact absurd hname₁ (by decide)   -- WitnessRefine
+  -- Cases 6-8: PAC generators
+  · exact absurd hname₁ (by decide)   -- GrowthConstruction
+  · exact absurd hname₁ (by decide)   -- MeasureBridge
+  · exact absurd hname₁ (by decide)   -- UCToPAC
+  -- Case 9: gen₁ = genTreePotential — the surviving case
+  · -- Js = genTreePotential.outputs = [iOnlineLearnable]
+    -- Now apply hUC to iOnlineLearnable
+    have hUC' := hUC iOnlineLearnable (by simp [genTreePotential] at houtput₁; rw [← houtput₁]; exact List.Mem.head _)
+    -- Invert atom for UCToPAC
+    obtain ⟨gen₂, hg₂, hname₂, hinput₂, _⟩ := hUC'.atom_inv
+    -- Enumerate generators for gen₂
+    simp only [fltTheory, List.mem_cons, List.mem_nil_iff] at hg₂
+    rcases hg₂ with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl |
+      rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | h₂
+    · exact absurd hname₂ (by decide)   -- Contrapose
+    · exact absurd hname₂ (by decide)   -- Extensionalize
+    · exact absurd hname₂ (by decide)   -- CaseSplit
+    · exact absurd hname₂ (by decide)   -- CalcChain
+    · exact absurd hname₂ (by decide)   -- WitnessRefine
+    · exact absurd hname₂ (by decide)   -- GrowthConstruction
+    · exact absurd hname₂ (by decide)   -- MeasureBridge
+    -- gen₂ = genUCToPAC: hinput₂ says genUCToPAC.input = iOnlineLearnable
+    -- but genUCToPAC.input = iHasUC ≠ iOnlineLearnable
+    · exact absurd hinput₂ (by decide)  -- UCToPAC: input mismatch
+    · exact absurd hname₂ (by decide)   -- TreePotential
+    · exact absurd hname₂ (by decide)   -- Adversary
+    · exact absurd hname₂ (by decide)   -- Locking
+    · exact absurd hname₂ (by decide)   -- AnalyticProjection
+    · exact absurd hname₂ (by decide)   -- CompactApproximation
+    · exact absurd hname₂ (by decide)   -- WitnessSeparation
+    · exact absurd hname₂ (by decide)   -- ComponentMeasurability
+    · exact absurd hname₂ (by decide)   -- RectangleDecomposition
+    · exact absurd hname₂ (by decide)   -- JensenChain
+    · exact absurd h₂ (by simp)         -- empty list case
+  -- Cases 10-17: remaining generators
+  · exact absurd hname₁ (by decide)   -- Adversary
+  · exact absurd hname₁ (by decide)   -- Locking
+  · exact absurd hname₁ (by decide)   -- AnalyticProjection
+  · exact absurd hname₁ (by decide)   -- CompactApproximation
+  · exact absurd hname₁ (by decide)   -- WitnessSeparation
+  · exact absurd hname₁ (by decide)   -- ComponentMeasurability
+  · exact absurd hname₁ (by decide)   -- RectangleDecomposition
+  · exact absurd hname₁ (by decide)   -- JensenChain
+  · exact absurd h (by simp)           -- empty list case
+
 -- ============================================================
 -- NT2: FD1 fires — Fintype blocks MeasureBridge
 -- ============================================================

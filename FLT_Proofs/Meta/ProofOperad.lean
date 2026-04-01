@@ -60,7 +60,7 @@ structure Generator where
   outputs : List Interface
   tacticPattern : String
   paradigm : List Paradigm
-  deriving Repr
+  deriving Repr, DecidableEq
 
 -- ============================================================
 -- 5. Plan
@@ -172,6 +172,24 @@ inductive HasType (Sigma : Theory) : Plan → Interface → List Interface → P
   | extend {gapName : String} {I : Interface} :
       HasType Sigma (.extend gapName) I
         [⟨gapName, I.locks, I.premises, gapName⟩]
+
+-- ============================================================
+-- Inversion lemmas
+-- ============================================================
+
+/-- Inversion for atom: if `.atom g` is well-typed, a matching generator exists. -/
+theorem HasType.atom_inv {Sigma : Theory} {g : String} {I : Interface} {Os : List Interface}
+    (h : HasType Sigma (.atom g) I Os) :
+    ∃ gen ∈ Sigma.generators, gen.name = g ∧ gen.input = I ∧ gen.outputs = Os := by
+  cases h with
+  | atom gen hg hinput hadm => exact ⟨gen, hg, rfl, hinput, rfl⟩
+
+/-- Inversion for seq: if `.seq p q` is well-typed, p types to intermediate Js. -/
+theorem HasType.seq_inv {Sigma : Theory} {p q : Plan} {I : Interface} {Os : List Interface}
+    (h : HasType Sigma (.seq p q) I Os) :
+    ∃ Js, HasType Sigma p I Js ∧ ∀ J, J ∈ Js → HasType Sigma q J Os := by
+  cases h with
+  | seq hp hq => exact ⟨_, hp, hq⟩
 
 -- ============================================================
 -- Theorem 1: failure_as_negative_typing
