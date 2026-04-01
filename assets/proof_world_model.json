@@ -1,0 +1,207 @@
+{
+  "metadata": {
+    "name": "formal_learning_theory_proof_world_model",
+    "description": "Typed graph encoding proof methods, theorems, infrastructure, mathematical domains, and their relationships. Consumable by agents for proof search routing and by humans for proof architecture navigation.",
+    "generated": "2026-03-31",
+    "kernel_version": "v2.0.0",
+    "sources": ["FLT_Proofs/**/*.lean", "MetaKernel/WorldModel/PROOF_METHODS.md"]
+  },
+
+  "ontology": {
+    "node_types": [
+      "proof_method",
+      "theorem",
+      "infrastructure_module",
+      "mathematical_domain",
+      "typeclass",
+      "sorry_site"
+    ],
+    "edge_types": [
+      "uses_method",
+      "requires_infrastructure",
+      "crosses_domain",
+      "blocked_by",
+      "produced_by_extension",
+      "paradigm_locked_to",
+      "composes_with",
+      "incompatible_with",
+      "extracts_to",
+      "instances_of"
+    ]
+  },
+
+  "nodes": {
+    "methods": [
+      {"id": "M1", "label": "Diagonalization", "domain": "combinatorics", "paradigm": ["PAC", "Gold"]},
+      {"id": "M2", "label": "Concentration inequality", "domain": "measure_theory", "paradigm": ["PAC"]},
+      {"id": "M3", "label": "Combinatorial counting", "domain": "combinatorics", "paradigm": ["PAC"]},
+      {"id": "M4", "label": "Game-theoretic (adversary/minimax)", "domain": "game_theory", "paradigm": ["Online"]},
+      {"id": "M5", "label": "Topological convergence", "domain": "topology", "paradigm": ["Gold"]},
+      {"id": "M6", "label": "Witness construction", "domain": "combinatorics", "paradigm": ["PAC", "Online", "Gold"]},
+      {"id": "M7", "label": "Reduction (problem-to-problem)", "domain": "combinatorics", "paradigm": ["PAC"]},
+      {"id": "M8", "label": "Symmetrization (ghost sample)", "domain": "measure_theory", "paradigm": ["PAC"]},
+      {"id": "M9", "label": "Potential function", "domain": "game_theory", "paradigm": ["Online"]},
+      {"id": "M10", "label": "Induction on tree depth", "domain": "game_theory", "paradigm": ["Online"]},
+      {"id": "M11", "label": "Locking sequence", "domain": "computability", "paradigm": ["Gold"]},
+      {"id": "M12", "label": "Contrapositive", "domain": "combinatorics", "paradigm": ["PAC"]},
+      {"id": "M13", "label": "Pigeonhole", "domain": "combinatorics", "paradigm": ["PAC"]},
+      {"id": "M14", "label": "Descriptive set theory (Suslin + Choquet)", "domain": "descriptive_set_theory", "paradigm": ["cross_cutting"]},
+      {"id": "M15", "label": "KL-divergence / Jensen", "domain": "information_theory", "paradigm": ["Bayesian"]},
+      {"id": "M16", "label": "Product factorization (MGF)", "domain": "measure_theory", "paradigm": ["PAC"]},
+      {"id": "M17", "label": "Finite Jensen via soft-max", "domain": "measure_theory", "paradigm": ["PAC"]},
+      {"id": "M18", "label": "Subtype restriction", "domain": "combinatorics", "paradigm": ["PAC"]},
+      {"id": "M19", "label": "Rectangle decomposition (measurable selection)", "domain": "measure_theory", "paradigm": ["cross_cutting"]}
+    ],
+
+    "domains": [
+      {"id": "D_comb", "label": "Combinatorics"},
+      {"id": "D_meas", "label": "Measure theory"},
+      {"id": "D_game", "label": "Game theory"},
+      {"id": "D_comp", "label": "Computability"},
+      {"id": "D_topo", "label": "Topology"},
+      {"id": "D_info", "label": "Information theory"},
+      {"id": "D_dst", "label": "Descriptive set theory"}
+    ],
+
+    "infrastructure": [
+      {"id": "I_sym", "label": "Symmetrization", "file": "Complexity/Symmetrization.lean", "lines": 3027, "domain": "D_meas"},
+      {"id": "I_rad", "label": "Rademacher", "file": "Complexity/Rademacher.lean", "lines": 1901, "domain": "D_meas"},
+      {"id": "I_gen", "label": "Generalization", "file": "Complexity/Generalization.lean", "lines": 2997, "domain": "D_meas"},
+      {"id": "I_game", "label": "GameInfra", "file": "Complexity/GameInfra.lean", "lines": 219, "domain": "D_game"},
+      {"id": "I_meas", "label": "Measurability", "file": "Complexity/Measurability.lean", "lines": 408, "domain": "D_meas"},
+      {"id": "I_bab", "label": "BorelAnalyticBridge", "file": "Complexity/BorelAnalyticBridge.lean", "lines": 257, "domain": "D_dst"},
+      {"id": "I_interp", "label": "Interpolation", "file": "Complexity/Interpolation.lean", "lines": 249, "domain": "D_dst"},
+      {"id": "I_bridge", "label": "Bridge", "file": "Bridge.lean", "lines": 769, "domain": "D_comb"},
+      {"id": "P_choq", "label": "ChoquetCapacity", "file": "PureMath/ChoquetCapacity.lean", "lines": 416, "domain": "D_dst", "field_independent": true},
+      {"id": "P_anal", "label": "AnalyticMeasurability", "file": "PureMath/AnalyticMeasurability.lean", "lines": 110, "domain": "D_dst", "field_independent": true},
+      {"id": "P_conc", "label": "Concentration", "file": "PureMath/Concentration.lean", "lines": 195, "domain": "D_meas", "field_independent": true},
+      {"id": "P_exch", "label": "Exchangeability", "file": "PureMath/Exchangeability.lean", "lines": 128, "domain": "D_meas", "field_independent": true},
+      {"id": "P_kl", "label": "KLDivergence", "file": "PureMath/KLDivergence.lean", "lines": 59, "domain": "D_info", "field_independent": true}
+    ],
+
+    "typeclasses": [
+      {"id": "TC_mh", "label": "MeasurableHypotheses", "layer": "L1", "file": "Basic.lean"},
+      {"id": "TC_mcc", "label": "MeasurableConceptClass", "layer": "L3", "file": "Complexity/Measurability.lean"},
+      {"id": "TC_kwwb", "label": "KrappWirthWellBehaved", "layer": "L5", "file": "Complexity/Measurability.lean"},
+      {"id": "TC_mbl", "label": "MeasurableBatchLearner", "layer": "L3", "file": "Learner/Core.lean"},
+      {"id": "TC_brc", "label": "BorelRouterCode", "layer": "L5", "file": "Complexity/Interpolation.lean"}
+    ],
+
+    "theorems": {
+      "characterizations": [
+        {"id": "T_ft", "label": "fundamental_theorem", "file": "Theorem/PAC.lean:284", "paradigm": "PAC", "crosses": ["D_comb", "D_meas"], "methods": ["M2", "M3", "M8", "M12"], "status": "4/5 proved", "sorry_dep": true},
+        {"id": "T_vc", "label": "vc_characterization", "file": "Theorem/PAC.lean:126", "paradigm": "PAC", "crosses": ["D_comb", "D_meas"], "methods": ["M2", "M8", "M12"], "status": "proved"},
+        {"id": "T_lc", "label": "littlestone_characterization", "file": "Theorem/Online.lean:608", "paradigm": "Online", "crosses": ["D_comb", "D_game"], "methods": ["M4", "M9", "M10"], "status": "proved"},
+        {"id": "T_gt", "label": "gold_theorem", "file": "Theorem/Gold.lean:19", "paradigm": "Gold", "crosses": ["D_comp", "D_topo"], "methods": ["M11"], "status": "proved"},
+        {"id": "T_mc", "label": "mind_change_characterization", "file": "Theorem/Gold.lean:206", "paradigm": "Gold", "crosses": ["D_comp", "D_topo"], "methods": ["M5"], "status": "proved"},
+        {"id": "T_pb", "label": "pac_bayes_finite", "file": "Theorem/PACBayes.lean", "paradigm": "Bayesian", "crosses": ["D_info", "D_comb", "D_meas"], "methods": ["M2", "M15"], "status": "proved"},
+        {"id": "T_ut", "label": "universal_trichotomy", "file": "Theorem/Extended.lean:54", "paradigm": "PAC", "crosses": ["D_comb", "D_meas", "D_game"], "methods": ["M2", "M4"], "status": "2/3 proved", "sorry_dep": true}
+      ],
+      "separations": [
+        {"id": "T_pno", "label": "pac_not_implies_online", "file": "Theorem/Separation.lean:1175", "witness": "threshold class on N", "exploits": "monotonicity bounds shattering but not adversarial depth", "methods": ["M6", "M10"]},
+        {"id": "T_enp", "label": "ex_not_implies_pac", "file": "Theorem/Separation.lean:1237", "witness": "finite-subset indicators on N", "exploits": "convergence does not require generalization", "methods": ["M6", "M1"]},
+        {"id": "T_oip", "label": "online_imp_pac", "file": "Theorem/Separation.lean:132", "note": "positive direction, not a separation", "methods": ["M2", "M7"]},
+        {"id": "T_bas", "label": "analytic_nonborel_set_gives_measTarget_separation", "file": "Theorem/BorelAnalyticSeparation.lean:184", "witness": "singleton class over analytic non-Borel A", "exploits": "Suslin projection exits Borel algebra", "methods": ["M14"]},
+        {"id": "T_ems", "label": "exists_measTarget_separation", "file": "Theorem/BorelAnalyticSeparation.lean:301", "note": "conditional on analytic non-Borel existence", "methods": ["M14"]}
+      ],
+      "nfl": [
+        {"id": "T_nfli", "label": "nfl_theorem_infinite", "file": "Theorem/PAC.lean:342", "requires": "[Infinite X]", "methods": ["M12", "M6"]},
+        {"id": "T_nfls", "label": "nfl_fixed_sample", "file": "Theorem/PAC.lean:368", "methods": ["M11", "M3"]},
+        {"id": "T_vui", "label": "vcdim_univ_infinite", "file": "Theorem/PAC.lean:321", "note": "NFL false for finite X", "methods": ["M6"]}
+      ],
+      "measurability_arc": [
+        {"id": "T_kwwb_wb", "label": "KrappWirthWellBehaved.toWellBehavedVC", "file": "Complexity/Measurability.lean", "note": "strict hierarchy", "methods": ["M14"]},
+        {"id": "T_bpwb", "label": "borel_param_wellBehavedVCMeasTarget", "file": "Complexity/BorelAnalyticBridge.lean", "note": "Borel parameterization implies WellBehavedVC", "methods": ["M14"]},
+        {"id": "T_ifw", "label": "interpClassFixed_wellBehaved", "file": "Complexity/Interpolation.lean", "note": "fixed-region interpolation is well-behaved", "methods": ["M14"]},
+        {"id": "T_icw", "label": "interpClassCountable_wellBehaved", "file": "Complexity/Interpolation.lean", "note": "countable-family interpolation is well-behaved", "methods": ["M14"]},
+        {"id": "T_irc", "label": "interpClass_wellBehaved_of_routerCode", "file": "Complexity/Interpolation.lean", "note": "conditional interpolation via BorelRouterCode", "methods": ["M14"]},
+        {"id": "T_nkw", "label": "not_KrappWirth_of_nonBorel_badEvent", "file": "Complexity/Interpolation.lean", "note": "measurability descent", "methods": ["M14"]},
+        {"id": "T_vsm", "label": "versionSpaceLearner_measurableBatchLearner", "file": "Learner/VersionSpace.lean", "note": "non-neural RL policy class", "methods": ["M19"]}
+      ],
+      "infrastructure_theorems": [
+        {"id": "T_uc", "label": "vcdim_finite_imp_uc'", "file": "Complexity/Symmetrization.lean:2745", "methods": ["M8", "M2", "M3"]},
+        {"id": "T_ss", "label": "sauer_shelah_exp_bound", "file": "Complexity/Rademacher.lean:905", "methods": ["M3"]},
+        {"id": "T_rv", "label": "vcdim_finite_imp_rademacher_vanishing", "file": "Complexity/Rademacher.lean:1818", "methods": ["M2", "M3"]},
+        {"id": "T_ml", "label": "finite_massart_lemma", "file": "Complexity/Rademacher.lean:507", "methods": ["M17"]},
+        {"id": "T_ho", "label": "hoeffding_one_sided", "file": "Complexity/Symmetrization.lean:188", "methods": ["M2", "M16"]},
+        {"id": "T_ex", "label": "finite_exchangeability_bound", "file": "Complexity/Symmetrization.lean:1047", "methods": ["M8"]},
+        {"id": "T_cc", "label": "AnalyticSet.compactCap_eq", "file": "PureMath/ChoquetCapacity.lean:409", "methods": ["M14"], "field_independent": true}
+      ],
+      "sorry_sites": [
+        {"id": "S_comp", "label": "vcdim_finite_imp_compression", "file": "Complexity/Generalization.lean:1903", "blocked_by": "Moran-Yehudayoff 2016", "blocks": ["T_ft"]},
+        {"id": "S_bhmz", "label": "bhmz_middle_branch", "file": "Theorem/Extended.lean:40", "blocked_by": "BHMZ STOC 2021", "blocks": ["T_ut"]}
+      ]
+    }
+  },
+
+  "edges": {
+    "paradigm_locking": [
+      {"method": "M2", "locked_to": "PAC", "reason": "requires product measure (Measure.pi)"},
+      {"method": "M8", "locked_to": "PAC", "reason": "requires i.i.d. double sample"},
+      {"method": "M4", "locked_to": "Online", "reason": "requires sequential commitment (predict before label)"},
+      {"method": "M9", "locked_to": "Online", "reason": "requires version space monotonicity"},
+      {"method": "M10", "locked_to": "Online", "reason": "requires Littlestone tree structure"},
+      {"method": "M11", "locked_to": "Gold", "reason": "requires enumeration structure of text presentations"},
+      {"method": "M5", "locked_to": "Gold", "reason": "requires pointwise convergence on prefix streams"},
+      {"method": "M14", "locked_to": "cross_cutting", "reason": "connects descriptive set theory to learning theory; required infrastructure not in original premise"},
+      {"method": "M15", "locked_to": "Bayesian", "reason": "requires prior-posterior structure (FinitePMF)"},
+      {"method": "M19", "locked_to": "cross_cutting", "reason": "countable selection via Nat.find; applies to any countable enumeration"}
+    ],
+
+    "method_compositions": [
+      {"from": "M3", "to": "M8", "label": "Sauer-Shelah feeds symmetrization (growth function bound → UC)"},
+      {"from": "M8", "to": "M2", "label": "symmetrization feeds concentration (UC → PAC guarantee)"},
+      {"from": "M12", "to": "M6", "label": "contrapositive uses witness (hard distribution construction)"},
+      {"from": "M14", "to": "M2", "label": "analytic measurability feeds integration (NullMeasurableSet → lintegral)"},
+      {"from": "M15", "to": "M2", "label": "KL divergence feeds concentration (prior-weighted Hoeffding)"},
+      {"from": "M16", "to": "M17", "label": "product factorization feeds finite Jensen (MGF → soft-max)"},
+      {"from": "M4", "to": "M10", "label": "adversary strategy uses tree induction (game search)"},
+      {"from": "M9", "to": "M4", "label": "potential function guides adversary (version space Ldim comparison)"}
+    ],
+
+    "method_incompatibilities": [
+      {"method": "M8", "incompatible_with": "finite_domain_goals", "reason": "symmetrization requires infinite sample space; on finite X, direct enumeration suffices"},
+      {"method": "M2", "incompatible_with": "non_measure_goals", "reason": "concentration requires MeasureTheory.Measure in goal type"},
+      {"method": "M11", "incompatible_with": "non_enumeration_goals", "reason": "locking sequence requires DataStream/TextPresentation"},
+      {"method": "M4", "incompatible_with": "batch_goals", "reason": "adversary construction requires sequential state (OnlineLearner signature)"}
+    ],
+
+    "infrastructure_dependencies": [
+      {"theorem": "T_vc", "requires": ["I_sym", "I_gen", "I_bridge"]},
+      {"theorem": "T_lc", "requires": ["I_game"]},
+      {"theorem": "T_gt", "requires": []},
+      {"theorem": "T_pb", "requires": ["P_kl"]},
+      {"theorem": "T_bas", "requires": ["I_bab", "P_choq", "P_anal", "I_meas"]},
+      {"theorem": "T_vsm", "requires": []},
+      {"theorem": "T_ifw", "requires": ["I_bab", "I_interp"]},
+      {"theorem": "T_uc", "requires": ["I_sym", "P_exch", "P_conc"]},
+      {"theorem": "T_ho", "requires": ["P_conc"]}
+    ],
+
+    "typeclass_instances": [
+      {"typeclass": "TC_mbl", "instance": "versionSpaceLearner", "file": "Learner/VersionSpace.lean", "proof_method": "M19"},
+      {"typeclass": "TC_mcc", "instance": "any class with MeasurableHypotheses + WellBehavedVC", "file": "Complexity/Measurability.lean"},
+      {"typeclass": "TC_kwwb", "implies": "TC_mcc", "strict": true, "witness": "T_bas"}
+    ],
+
+    "produced_by_extension": [
+      {"theorem": "T_bas", "produced_by": "TC_mcc", "mechanism": "making WellBehavedVC a typeclass raised the question: is it equivalent to KrappWirth?"},
+      {"theorem": "T_vsm", "produced_by": "TC_mbl", "mechanism": "formalizing joint learner measurability as a gate raised the question: which non-neural architectures pass?"},
+      {"theorem": "T_ifw", "produced_by": "T_bas", "mechanism": "separation proved the gap exists; interpolation asked what operation produces it"},
+      {"theorem": "T_nkw", "produced_by": "T_ifw", "mechanism": "interpolation well-behavedness implies the descent: Borel level can fail for composed classes"}
+    ]
+  },
+
+  "routing_rules": {
+    "description": "Given a GoalProfile, these rules predict which methods and infrastructure are relevant.",
+    "rules": [
+      {"condition": "goal mentions MeasureTheory.Measure or ENNReal", "load": ["M2", "M8", "M16"], "infrastructure": ["I_sym", "I_gen", "P_conc", "P_exch"]},
+      {"condition": "goal mentions OnlineLearner or State or predict", "load": ["M4", "M9", "M10"], "infrastructure": ["I_game"]},
+      {"condition": "goal mentions List or DataStream or prefix or Countable", "load": ["M5", "M11"], "infrastructure": []},
+      {"condition": "goal mentions AnalyticSet or NullMeasurableSet or BorelSpace", "load": ["M14"], "infrastructure": ["I_bab", "P_choq", "P_anal"]},
+      {"condition": "goal mentions FinitePMF or klDiv or posterior", "load": ["M15"], "infrastructure": ["P_kl"]},
+      {"condition": "goal mentions Infinite X and VCDim", "avoid": ["direct_enumeration", "union_bound_on_hypotheses"], "reason": "produces 2^{2m} not GrowthFunction; route to M8"},
+      {"condition": "goal mentions Fintype X", "prefer": ["M3", "M6"], "avoid": ["M8"], "reason": "symmetrization unnecessary on finite domains"}
+    ]
+  }
+}
