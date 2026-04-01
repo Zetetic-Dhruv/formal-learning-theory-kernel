@@ -49,12 +49,13 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
     `FLT_Proofs.Bridge,
-    `FLT_Proofs.Meta.ProofOperad,
-    `FLT_Proofs.Meta.ProofOperadInstances,
-    `FLT_Proofs.Meta.ProofOperadTheorems,
-    `FLT_Proofs.Meta.BridgeTactic,
-    `FLT_Proofs.Meta.BridgeTests,
-    `FLT_Proofs.Meta.NonTrivialTests
+    -- World model: proof operad (see world_model/ for reference view)
+    `FLT_Proofs.Meta.ProofOperad,          -- Core calculus: Interface, Generator, Plan, HasType
+    `FLT_Proofs.Meta.ProofOperadInstances, -- 17 generators, 7 failures, fltTheory
+    `FLT_Proofs.Meta.ProofOperadTheorems,  -- Completeness, paradigm lock, normalization
+    `FLT_Proofs.Meta.BridgeTactic,         -- bridge_search tactic (RCA layer, under construction)
+    `FLT_Proofs.Meta.BridgeTests,          -- Smoke tests (27/27 pass)
+    `FLT_Proofs.Meta.NonTrivialTests       -- Non-trivial tests (cross-paradigm, extension, cost)
   ]
 
 lean_lib MetaKernel where
