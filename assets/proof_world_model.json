@@ -4,9 +4,13 @@
     "description": "Typed graph encoding proof methods, theorems, infrastructure, mathematical domains, and their relationships. Consumable by agents for proof search routing and by humans for proof architecture navigation.",
     "generated": "2026-03-31",
     "kernel_version": "v2.0.0",
-    "sources": ["FLT_Proofs/**/*.lean", "MetaKernel/WorldModel/PROOF_METHODS.md"]
+    "sources": [
+      "FLT_Proofs/**/*.lean",
+      "MetaKernel/WorldModel/PROOF_METHODS.md"
+    ],
+    "theorem_count": 278,
+    "provenance_note": "All theorem nodes are extracted from the kernel source files via grep. Line numbers, file paths, and visibility are from the kernel codebase. Method annotations on curated theorems are hand-assigned based on proof inspection. Edges without direct kernel provenance are marked with provenance: discovery_repo for future cross-referencing."
   },
-
   "ontology": {
     "node_types": [
       "proof_method",
@@ -29,179 +33,2732 @@
       "instances_of"
     ]
   },
-
   "nodes": {
     "methods": [
-      {"id": "M1", "label": "Diagonalization", "domain": "combinatorics", "paradigm": ["PAC", "Gold"]},
-      {"id": "M2", "label": "Concentration inequality", "domain": "measure_theory", "paradigm": ["PAC"]},
-      {"id": "M3", "label": "Combinatorial counting", "domain": "combinatorics", "paradigm": ["PAC"]},
-      {"id": "M4", "label": "Game-theoretic (adversary/minimax)", "domain": "game_theory", "paradigm": ["Online"]},
-      {"id": "M5", "label": "Topological convergence", "domain": "topology", "paradigm": ["Gold"]},
-      {"id": "M6", "label": "Witness construction", "domain": "combinatorics", "paradigm": ["PAC", "Online", "Gold"]},
-      {"id": "M7", "label": "Reduction (problem-to-problem)", "domain": "combinatorics", "paradigm": ["PAC"]},
-      {"id": "M8", "label": "Symmetrization (ghost sample)", "domain": "measure_theory", "paradigm": ["PAC"]},
-      {"id": "M9", "label": "Potential function", "domain": "game_theory", "paradigm": ["Online"]},
-      {"id": "M10", "label": "Induction on tree depth", "domain": "game_theory", "paradigm": ["Online"]},
-      {"id": "M11", "label": "Locking sequence", "domain": "computability", "paradigm": ["Gold"]},
-      {"id": "M12", "label": "Contrapositive", "domain": "combinatorics", "paradigm": ["PAC"]},
-      {"id": "M13", "label": "Pigeonhole", "domain": "combinatorics", "paradigm": ["PAC"]},
-      {"id": "M14", "label": "Descriptive set theory (Suslin + Choquet)", "domain": "descriptive_set_theory", "paradigm": ["cross_cutting"]},
-      {"id": "M15", "label": "KL-divergence / Jensen", "domain": "information_theory", "paradigm": ["Bayesian"]},
-      {"id": "M16", "label": "Product factorization (MGF)", "domain": "measure_theory", "paradigm": ["PAC"]},
-      {"id": "M17", "label": "Finite Jensen via soft-max", "domain": "measure_theory", "paradigm": ["PAC"]},
-      {"id": "M18", "label": "Subtype restriction", "domain": "combinatorics", "paradigm": ["PAC"]},
-      {"id": "M19", "label": "Rectangle decomposition (measurable selection)", "domain": "measure_theory", "paradigm": ["cross_cutting"]}
+      {
+        "id": "M1",
+        "label": "Diagonalization",
+        "domain": "combinatorics",
+        "paradigm": [
+          "PAC",
+          "Gold"
+        ]
+      },
+      {
+        "id": "M2",
+        "label": "Concentration inequality",
+        "domain": "measure_theory",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M3",
+        "label": "Combinatorial counting",
+        "domain": "combinatorics",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M4",
+        "label": "Game-theoretic (adversary/minimax)",
+        "domain": "game_theory",
+        "paradigm": [
+          "Online"
+        ]
+      },
+      {
+        "id": "M5",
+        "label": "Topological convergence",
+        "domain": "topology",
+        "paradigm": [
+          "Gold"
+        ]
+      },
+      {
+        "id": "M6",
+        "label": "Witness construction",
+        "domain": "combinatorics",
+        "paradigm": [
+          "PAC",
+          "Online",
+          "Gold"
+        ]
+      },
+      {
+        "id": "M7",
+        "label": "Reduction (problem-to-problem)",
+        "domain": "combinatorics",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M8",
+        "label": "Symmetrization (ghost sample)",
+        "domain": "measure_theory",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M9",
+        "label": "Potential function",
+        "domain": "game_theory",
+        "paradigm": [
+          "Online"
+        ]
+      },
+      {
+        "id": "M10",
+        "label": "Induction on tree depth",
+        "domain": "game_theory",
+        "paradigm": [
+          "Online"
+        ]
+      },
+      {
+        "id": "M11",
+        "label": "Locking sequence",
+        "domain": "computability",
+        "paradigm": [
+          "Gold"
+        ]
+      },
+      {
+        "id": "M12",
+        "label": "Contrapositive",
+        "domain": "combinatorics",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M13",
+        "label": "Pigeonhole",
+        "domain": "combinatorics",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M14",
+        "label": "Descriptive set theory (Suslin + Choquet)",
+        "domain": "descriptive_set_theory",
+        "paradigm": [
+          "cross_cutting"
+        ]
+      },
+      {
+        "id": "M15",
+        "label": "KL-divergence / Jensen",
+        "domain": "information_theory",
+        "paradigm": [
+          "Bayesian"
+        ]
+      },
+      {
+        "id": "M16",
+        "label": "Product factorization (MGF)",
+        "domain": "measure_theory",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M17",
+        "label": "Finite Jensen via soft-max",
+        "domain": "measure_theory",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M18",
+        "label": "Subtype restriction",
+        "domain": "combinatorics",
+        "paradigm": [
+          "PAC"
+        ]
+      },
+      {
+        "id": "M19",
+        "label": "Rectangle decomposition (measurable selection)",
+        "domain": "measure_theory",
+        "paradigm": [
+          "cross_cutting"
+        ]
+      }
     ],
-
     "domains": [
-      {"id": "D_comb", "label": "Combinatorics"},
-      {"id": "D_meas", "label": "Measure theory"},
-      {"id": "D_game", "label": "Game theory"},
-      {"id": "D_comp", "label": "Computability"},
-      {"id": "D_topo", "label": "Topology"},
-      {"id": "D_info", "label": "Information theory"},
-      {"id": "D_dst", "label": "Descriptive set theory"}
+      {
+        "id": "D_comb",
+        "label": "Combinatorics"
+      },
+      {
+        "id": "D_meas",
+        "label": "Measure theory"
+      },
+      {
+        "id": "D_game",
+        "label": "Game theory"
+      },
+      {
+        "id": "D_comp",
+        "label": "Computability"
+      },
+      {
+        "id": "D_topo",
+        "label": "Topology"
+      },
+      {
+        "id": "D_info",
+        "label": "Information theory"
+      },
+      {
+        "id": "D_dst",
+        "label": "Descriptive set theory"
+      }
     ],
-
     "infrastructure": [
-      {"id": "I_sym", "label": "Symmetrization", "file": "Complexity/Symmetrization.lean", "lines": 3027, "domain": "D_meas"},
-      {"id": "I_rad", "label": "Rademacher", "file": "Complexity/Rademacher.lean", "lines": 1901, "domain": "D_meas"},
-      {"id": "I_gen", "label": "Generalization", "file": "Complexity/Generalization.lean", "lines": 2997, "domain": "D_meas"},
-      {"id": "I_game", "label": "GameInfra", "file": "Complexity/GameInfra.lean", "lines": 219, "domain": "D_game"},
-      {"id": "I_meas", "label": "Measurability", "file": "Complexity/Measurability.lean", "lines": 408, "domain": "D_meas"},
-      {"id": "I_bab", "label": "BorelAnalyticBridge", "file": "Complexity/BorelAnalyticBridge.lean", "lines": 257, "domain": "D_dst"},
-      {"id": "I_interp", "label": "Interpolation", "file": "Complexity/Interpolation.lean", "lines": 249, "domain": "D_dst"},
-      {"id": "I_bridge", "label": "Bridge", "file": "Bridge.lean", "lines": 769, "domain": "D_comb"},
-      {"id": "P_choq", "label": "ChoquetCapacity", "file": "PureMath/ChoquetCapacity.lean", "lines": 416, "domain": "D_dst", "field_independent": true},
-      {"id": "P_anal", "label": "AnalyticMeasurability", "file": "PureMath/AnalyticMeasurability.lean", "lines": 110, "domain": "D_dst", "field_independent": true},
-      {"id": "P_conc", "label": "Concentration", "file": "PureMath/Concentration.lean", "lines": 195, "domain": "D_meas", "field_independent": true},
-      {"id": "P_exch", "label": "Exchangeability", "file": "PureMath/Exchangeability.lean", "lines": 128, "domain": "D_meas", "field_independent": true},
-      {"id": "P_kl", "label": "KLDivergence", "file": "PureMath/KLDivergence.lean", "lines": 59, "domain": "D_info", "field_independent": true}
+      {
+        "id": "I_sym",
+        "label": "Symmetrization",
+        "file": "Complexity/Symmetrization.lean",
+        "lines": 3027,
+        "domain": "D_meas"
+      },
+      {
+        "id": "I_rad",
+        "label": "Rademacher",
+        "file": "Complexity/Rademacher.lean",
+        "lines": 1901,
+        "domain": "D_meas"
+      },
+      {
+        "id": "I_gen",
+        "label": "Generalization",
+        "file": "Complexity/Generalization.lean",
+        "lines": 2997,
+        "domain": "D_meas"
+      },
+      {
+        "id": "I_game",
+        "label": "GameInfra",
+        "file": "Complexity/GameInfra.lean",
+        "lines": 219,
+        "domain": "D_game"
+      },
+      {
+        "id": "I_meas",
+        "label": "Measurability",
+        "file": "Complexity/Measurability.lean",
+        "lines": 408,
+        "domain": "D_meas"
+      },
+      {
+        "id": "I_bab",
+        "label": "BorelAnalyticBridge",
+        "file": "Complexity/BorelAnalyticBridge.lean",
+        "lines": 257,
+        "domain": "D_dst"
+      },
+      {
+        "id": "I_interp",
+        "label": "Interpolation",
+        "file": "Complexity/Interpolation.lean",
+        "lines": 249,
+        "domain": "D_dst"
+      },
+      {
+        "id": "I_bridge",
+        "label": "Bridge",
+        "file": "Bridge.lean",
+        "lines": 769,
+        "domain": "D_comb"
+      },
+      {
+        "id": "P_choq",
+        "label": "ChoquetCapacity",
+        "file": "PureMath/ChoquetCapacity.lean",
+        "lines": 416,
+        "domain": "D_dst",
+        "field_independent": true
+      },
+      {
+        "id": "P_anal",
+        "label": "AnalyticMeasurability",
+        "file": "PureMath/AnalyticMeasurability.lean",
+        "lines": 110,
+        "domain": "D_dst",
+        "field_independent": true
+      },
+      {
+        "id": "P_conc",
+        "label": "Concentration",
+        "file": "PureMath/Concentration.lean",
+        "lines": 195,
+        "domain": "D_meas",
+        "field_independent": true
+      },
+      {
+        "id": "P_exch",
+        "label": "Exchangeability",
+        "file": "PureMath/Exchangeability.lean",
+        "lines": 128,
+        "domain": "D_meas",
+        "field_independent": true
+      },
+      {
+        "id": "P_kl",
+        "label": "KLDivergence",
+        "file": "PureMath/KLDivergence.lean",
+        "lines": 59,
+        "domain": "D_info",
+        "field_independent": true
+      }
     ],
-
     "typeclasses": [
-      {"id": "TC_mh", "label": "MeasurableHypotheses", "layer": "L1", "file": "Basic.lean"},
-      {"id": "TC_mcc", "label": "MeasurableConceptClass", "layer": "L3", "file": "Complexity/Measurability.lean"},
-      {"id": "TC_kwwb", "label": "KrappWirthWellBehaved", "layer": "L5", "file": "Complexity/Measurability.lean"},
-      {"id": "TC_mbl", "label": "MeasurableBatchLearner", "layer": "L3", "file": "Learner/Core.lean"},
-      {"id": "TC_brc", "label": "BorelRouterCode", "layer": "L5", "file": "Complexity/Interpolation.lean"}
+      {
+        "id": "TC_mh",
+        "label": "MeasurableHypotheses",
+        "layer": "L1",
+        "file": "Basic.lean"
+      },
+      {
+        "id": "TC_mcc",
+        "label": "MeasurableConceptClass",
+        "layer": "L3",
+        "file": "Complexity/Measurability.lean"
+      },
+      {
+        "id": "TC_kwwb",
+        "label": "KrappWirthWellBehaved",
+        "layer": "L5",
+        "file": "Complexity/Measurability.lean"
+      },
+      {
+        "id": "TC_mbl",
+        "label": "MeasurableBatchLearner",
+        "layer": "L3",
+        "file": "Learner/Core.lean"
+      },
+      {
+        "id": "TC_brc",
+        "label": "BorelRouterCode",
+        "layer": "L5",
+        "file": "Complexity/Interpolation.lean"
+      }
     ],
-
     "theorems": {
       "characterizations": [
-        {"id": "T_ft", "label": "fundamental_theorem", "file": "Theorem/PAC.lean:284", "paradigm": "PAC", "crosses": ["D_comb", "D_meas"], "methods": ["M2", "M3", "M8", "M12"], "status": "4/5 proved", "sorry_dep": true},
-        {"id": "T_vc", "label": "vc_characterization", "file": "Theorem/PAC.lean:126", "paradigm": "PAC", "crosses": ["D_comb", "D_meas"], "methods": ["M2", "M8", "M12"], "status": "proved"},
-        {"id": "T_lc", "label": "littlestone_characterization", "file": "Theorem/Online.lean:608", "paradigm": "Online", "crosses": ["D_comb", "D_game"], "methods": ["M4", "M9", "M10"], "status": "proved"},
-        {"id": "T_gt", "label": "gold_theorem", "file": "Theorem/Gold.lean:19", "paradigm": "Gold", "crosses": ["D_comp", "D_topo"], "methods": ["M11"], "status": "proved"},
-        {"id": "T_mc", "label": "mind_change_characterization", "file": "Theorem/Gold.lean:206", "paradigm": "Gold", "crosses": ["D_comp", "D_topo"], "methods": ["M5"], "status": "proved"},
-        {"id": "T_pb", "label": "pac_bayes_finite", "file": "Theorem/PACBayes.lean", "paradigm": "Bayesian", "crosses": ["D_info", "D_comb", "D_meas"], "methods": ["M2", "M15"], "status": "proved"},
-        {"id": "T_ut", "label": "universal_trichotomy", "file": "Theorem/Extended.lean:54", "paradigm": "PAC", "crosses": ["D_comb", "D_meas", "D_game"], "methods": ["M2", "M4"], "status": "2/3 proved", "sorry_dep": true}
+        {
+          "id": "T_ft",
+          "label": "fundamental_theorem",
+          "file": "Theorem/PAC.lean:284",
+          "paradigm": "PAC",
+          "crosses": [
+            "D_comb",
+            "D_meas"
+          ],
+          "methods": [
+            "M2",
+            "M3",
+            "M8",
+            "M12"
+          ],
+          "status": "4/5 proved",
+          "sorry_dep": true
+        },
+        {
+          "id": "T_vc",
+          "label": "vc_characterization",
+          "file": "Theorem/PAC.lean:126",
+          "paradigm": "PAC",
+          "crosses": [
+            "D_comb",
+            "D_meas"
+          ],
+          "methods": [
+            "M2",
+            "M8",
+            "M12"
+          ],
+          "status": "proved"
+        },
+        {
+          "id": "T_lc",
+          "label": "littlestone_characterization",
+          "file": "Theorem/Online.lean:608",
+          "paradigm": "Online",
+          "crosses": [
+            "D_comb",
+            "D_game"
+          ],
+          "methods": [
+            "M4",
+            "M9",
+            "M10"
+          ],
+          "status": "proved"
+        },
+        {
+          "id": "T_gt",
+          "label": "gold_theorem",
+          "file": "Theorem/Gold.lean:19",
+          "paradigm": "Gold",
+          "crosses": [
+            "D_comp",
+            "D_topo"
+          ],
+          "methods": [
+            "M11"
+          ],
+          "status": "proved"
+        },
+        {
+          "id": "T_mc",
+          "label": "mind_change_characterization",
+          "file": "Theorem/Gold.lean:206",
+          "paradigm": "Gold",
+          "crosses": [
+            "D_comp",
+            "D_topo"
+          ],
+          "methods": [
+            "M5"
+          ],
+          "status": "proved"
+        },
+        {
+          "id": "T_pb",
+          "label": "pac_bayes_finite",
+          "file": "Theorem/PACBayes.lean",
+          "paradigm": "Bayesian",
+          "crosses": [
+            "D_info",
+            "D_comb",
+            "D_meas"
+          ],
+          "methods": [
+            "M2",
+            "M15"
+          ],
+          "status": "proved"
+        },
+        {
+          "id": "T_ut",
+          "label": "universal_trichotomy",
+          "file": "Theorem/Extended.lean:54",
+          "paradigm": "PAC",
+          "crosses": [
+            "D_comb",
+            "D_meas",
+            "D_game"
+          ],
+          "methods": [
+            "M2",
+            "M4"
+          ],
+          "status": "2/3 proved",
+          "sorry_dep": true
+        }
       ],
       "separations": [
-        {"id": "T_pno", "label": "pac_not_implies_online", "file": "Theorem/Separation.lean:1175", "witness": "threshold class on N", "exploits": "monotonicity bounds shattering but not adversarial depth", "methods": ["M6", "M10"]},
-        {"id": "T_enp", "label": "ex_not_implies_pac", "file": "Theorem/Separation.lean:1237", "witness": "finite-subset indicators on N", "exploits": "convergence does not require generalization", "methods": ["M6", "M1"]},
-        {"id": "T_oip", "label": "online_imp_pac", "file": "Theorem/Separation.lean:132", "note": "positive direction, not a separation", "methods": ["M2", "M7"]},
-        {"id": "T_bas", "label": "analytic_nonborel_set_gives_measTarget_separation", "file": "Theorem/BorelAnalyticSeparation.lean:184", "witness": "singleton class over analytic non-Borel A", "exploits": "Suslin projection exits Borel algebra", "methods": ["M14"]},
-        {"id": "T_ems", "label": "exists_measTarget_separation", "file": "Theorem/BorelAnalyticSeparation.lean:301", "note": "conditional on analytic non-Borel existence", "methods": ["M14"]}
+        {
+          "id": "T_pno",
+          "label": "pac_not_implies_online",
+          "file": "Theorem/Separation.lean:1175",
+          "witness": "threshold class on N",
+          "exploits": "monotonicity bounds shattering but not adversarial depth",
+          "methods": [
+            "M6",
+            "M10"
+          ]
+        },
+        {
+          "id": "T_enp",
+          "label": "ex_not_implies_pac",
+          "file": "Theorem/Separation.lean:1237",
+          "witness": "finite-subset indicators on N",
+          "exploits": "convergence does not require generalization",
+          "methods": [
+            "M6",
+            "M1"
+          ]
+        },
+        {
+          "id": "T_oip",
+          "label": "online_imp_pac",
+          "file": "Theorem/Separation.lean:132",
+          "note": "positive direction, not a separation",
+          "methods": [
+            "M2",
+            "M7"
+          ]
+        },
+        {
+          "id": "T_bas",
+          "label": "analytic_nonborel_set_gives_measTarget_separation",
+          "file": "Theorem/BorelAnalyticSeparation.lean:184",
+          "witness": "singleton class over analytic non-Borel A",
+          "exploits": "Suslin projection exits Borel algebra",
+          "methods": [
+            "M14"
+          ]
+        },
+        {
+          "id": "T_ems",
+          "label": "exists_measTarget_separation",
+          "file": "Theorem/BorelAnalyticSeparation.lean:301",
+          "note": "conditional on analytic non-Borel existence",
+          "methods": [
+            "M14"
+          ]
+        }
       ],
       "nfl": [
-        {"id": "T_nfli", "label": "nfl_theorem_infinite", "file": "Theorem/PAC.lean:342", "requires": "[Infinite X]", "methods": ["M12", "M6"]},
-        {"id": "T_nfls", "label": "nfl_fixed_sample", "file": "Theorem/PAC.lean:368", "methods": ["M11", "M3"]},
-        {"id": "T_vui", "label": "vcdim_univ_infinite", "file": "Theorem/PAC.lean:321", "note": "NFL false for finite X", "methods": ["M6"]}
+        {
+          "id": "T_nfli",
+          "label": "nfl_theorem_infinite",
+          "file": "Theorem/PAC.lean:342",
+          "requires": "[Infinite X]",
+          "methods": [
+            "M12",
+            "M6"
+          ]
+        },
+        {
+          "id": "T_nfls",
+          "label": "nfl_fixed_sample",
+          "file": "Theorem/PAC.lean:368",
+          "methods": [
+            "M11",
+            "M3"
+          ]
+        },
+        {
+          "id": "T_vui",
+          "label": "vcdim_univ_infinite",
+          "file": "Theorem/PAC.lean:321",
+          "note": "NFL false for finite X",
+          "methods": [
+            "M6"
+          ]
+        }
       ],
       "measurability_arc": [
-        {"id": "T_kwwb_wb", "label": "KrappWirthWellBehaved.toWellBehavedVC", "file": "Complexity/Measurability.lean", "note": "strict hierarchy", "methods": ["M14"]},
-        {"id": "T_bpwb", "label": "borel_param_wellBehavedVCMeasTarget", "file": "Complexity/BorelAnalyticBridge.lean", "note": "Borel parameterization implies WellBehavedVC", "methods": ["M14"]},
-        {"id": "T_ifw", "label": "interpClassFixed_wellBehaved", "file": "Complexity/Interpolation.lean", "note": "fixed-region interpolation is well-behaved", "methods": ["M14"]},
-        {"id": "T_icw", "label": "interpClassCountable_wellBehaved", "file": "Complexity/Interpolation.lean", "note": "countable-family interpolation is well-behaved", "methods": ["M14"]},
-        {"id": "T_irc", "label": "interpClass_wellBehaved_of_routerCode", "file": "Complexity/Interpolation.lean", "note": "conditional interpolation via BorelRouterCode", "methods": ["M14"]},
-        {"id": "T_nkw", "label": "not_KrappWirth_of_nonBorel_badEvent", "file": "Complexity/Interpolation.lean", "note": "measurability descent", "methods": ["M14"]},
-        {"id": "T_vsm", "label": "versionSpaceLearner_measurableBatchLearner", "file": "Learner/VersionSpace.lean", "note": "non-neural RL policy class", "methods": ["M19"]}
+        {
+          "id": "T_kwwb_wb",
+          "label": "KrappWirthWellBehaved.toWellBehavedVC",
+          "file": "Complexity/Measurability.lean",
+          "note": "strict hierarchy",
+          "methods": [
+            "M14"
+          ]
+        },
+        {
+          "id": "T_bpwb",
+          "label": "borel_param_wellBehavedVCMeasTarget",
+          "file": "Complexity/BorelAnalyticBridge.lean",
+          "note": "Borel parameterization implies WellBehavedVC",
+          "methods": [
+            "M14"
+          ]
+        },
+        {
+          "id": "T_ifw",
+          "label": "interpClassFixed_wellBehaved",
+          "file": "Complexity/Interpolation.lean",
+          "note": "fixed-region interpolation is well-behaved",
+          "methods": [
+            "M14"
+          ]
+        },
+        {
+          "id": "T_icw",
+          "label": "interpClassCountable_wellBehaved",
+          "file": "Complexity/Interpolation.lean",
+          "note": "countable-family interpolation is well-behaved",
+          "methods": [
+            "M14"
+          ]
+        },
+        {
+          "id": "T_irc",
+          "label": "interpClass_wellBehaved_of_routerCode",
+          "file": "Complexity/Interpolation.lean",
+          "note": "conditional interpolation via BorelRouterCode",
+          "methods": [
+            "M14"
+          ]
+        },
+        {
+          "id": "T_nkw",
+          "label": "not_KrappWirth_of_nonBorel_badEvent",
+          "file": "Complexity/Interpolation.lean",
+          "note": "measurability descent",
+          "methods": [
+            "M14"
+          ]
+        },
+        {
+          "id": "T_vsm",
+          "label": "versionSpaceLearner_measurableBatchLearner",
+          "file": "Learner/VersionSpace.lean",
+          "note": "non-neural RL policy class",
+          "methods": [
+            "M19"
+          ]
+        }
       ],
       "infrastructure_theorems": [
-        {"id": "T_uc", "label": "vcdim_finite_imp_uc'", "file": "Complexity/Symmetrization.lean:2745", "methods": ["M8", "M2", "M3"]},
-        {"id": "T_ss", "label": "sauer_shelah_exp_bound", "file": "Complexity/Rademacher.lean:905", "methods": ["M3"]},
-        {"id": "T_rv", "label": "vcdim_finite_imp_rademacher_vanishing", "file": "Complexity/Rademacher.lean:1818", "methods": ["M2", "M3"]},
-        {"id": "T_ml", "label": "finite_massart_lemma", "file": "Complexity/Rademacher.lean:507", "methods": ["M17"]},
-        {"id": "T_ho", "label": "hoeffding_one_sided", "file": "Complexity/Symmetrization.lean:188", "methods": ["M2", "M16"]},
-        {"id": "T_ex", "label": "finite_exchangeability_bound", "file": "Complexity/Symmetrization.lean:1047", "methods": ["M8"]},
-        {"id": "T_cc", "label": "AnalyticSet.compactCap_eq", "file": "PureMath/ChoquetCapacity.lean:409", "methods": ["M14"], "field_independent": true}
+        {
+          "id": "T_uc",
+          "label": "vcdim_finite_imp_uc'",
+          "file": "Complexity/Symmetrization.lean:2745",
+          "methods": [
+            "M8",
+            "M2",
+            "M3"
+          ]
+        },
+        {
+          "id": "T_ss",
+          "label": "sauer_shelah_exp_bound",
+          "file": "Complexity/Rademacher.lean:905",
+          "methods": [
+            "M3"
+          ]
+        },
+        {
+          "id": "T_rv",
+          "label": "vcdim_finite_imp_rademacher_vanishing",
+          "file": "Complexity/Rademacher.lean:1818",
+          "methods": [
+            "M2",
+            "M3"
+          ]
+        },
+        {
+          "id": "T_ml",
+          "label": "finite_massart_lemma",
+          "file": "Complexity/Rademacher.lean:507",
+          "methods": [
+            "M17"
+          ]
+        },
+        {
+          "id": "T_ho",
+          "label": "hoeffding_one_sided",
+          "file": "Complexity/Symmetrization.lean:188",
+          "methods": [
+            "M2",
+            "M16"
+          ]
+        },
+        {
+          "id": "T_ex",
+          "label": "finite_exchangeability_bound",
+          "file": "Complexity/Symmetrization.lean:1047",
+          "methods": [
+            "M8"
+          ]
+        },
+        {
+          "id": "T_cc",
+          "label": "AnalyticSet.compactCap_eq",
+          "file": "PureMath/ChoquetCapacity.lean:409",
+          "methods": [
+            "M14"
+          ],
+          "field_independent": true
+        }
       ],
       "sorry_sites": [
-        {"id": "S_comp", "label": "vcdim_finite_imp_compression", "file": "Complexity/Generalization.lean:1903", "blocked_by": "Moran-Yehudayoff 2016", "blocks": ["T_ft"]},
-        {"id": "S_bhmz", "label": "bhmz_middle_branch", "file": "Theorem/Extended.lean:40", "blocked_by": "BHMZ STOC 2021", "blocks": ["T_ut"]}
+        {
+          "id": "S_comp",
+          "label": "vcdim_finite_imp_compression",
+          "file": "Complexity/Generalization.lean:1903",
+          "blocked_by": "Moran-Yehudayoff 2016",
+          "blocks": [
+            "T_ft"
+          ]
+        },
+        {
+          "id": "S_bhmz",
+          "label": "bhmz_middle_branch",
+          "file": "Theorem/Extended.lean:40",
+          "blocked_by": "BHMZ STOC 2021",
+          "blocks": [
+            "T_ut"
+          ]
+        }
       ]
+    },
+    "complete_theorem_inventory": {
+      "description": "All 278 theorem/lemma declarations in the kernel, grouped by file. Each entry has id (name), line number, kind (theorem/lemma), and visibility (private/public). This is the complete inventory; the curated theorem nodes above are representative selections with method and domain annotations.",
+      "total_count": 278,
+      "public_count": 190,
+      "private_count": 88,
+      "by_module": {
+        "PureMath": 18,
+        "Complexity": 151,
+        "Theorem": 87,
+        "Learner": 6,
+        "Bridge": 16,
+        "Criterion": 0
+      },
+      "by_file": {
+        "PureMath/ChoquetCapacity": [
+          {
+            "id": "MeasureTheory.compactCap_mono",
+            "line": 46,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "MeasureTheory.measure_isChoquetCapacity",
+            "line": 68,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "MeasureTheory.MeasurableSet.compactCap_eq",
+            "line": 83,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "compactCap_eq_iSup_isCompact",
+            "line": 108,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "isCompact_bnd",
+            "line": 135,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "bnd_subset_cyl",
+            "line": 142,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "cyl_succ_eq",
+            "line": 145,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "monotone_cyl_split",
+            "line": 150,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "cyl_inter_eq_cyl_update",
+            "line": 155,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "cyl_ext",
+            "line": 169,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "truncate_mem_bnd",
+            "line": 178,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "truncate_agree_on_cyl",
+            "line": 181,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "iInter_closure_image_cyl_eq",
+            "line": 188,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "MeasureTheory.AnalyticSet.cap_eq_iSup_isCompact",
+            "line": 282,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "MeasureTheory.AnalyticSet.compactCap_eq",
+            "line": 409,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "PureMath/Concentration": [
+          {
+            "id": "chebyshev_majority_bound",
+            "line": 45,
+            "kind": "lemma",
+            "private": false
+          }
+        ],
+        "PureMath/AnalyticMeasurability": [
+          {
+            "id": "MeasureTheory.AnalyticSet.exists_isCompact_measureReal_gt",
+            "line": 24,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "analyticSet_nullMeasurableSet",
+            "line": 75,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Theorem/Gold": [
+          {
+            "id": "gold_theorem",
+            "line": 19,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "mind_change_characterization",
+            "line": 206,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Theorem/Separation": [
+          {
+            "id": "mistakesFromU_init_eq",
+            "line": 42,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "shatters_restrict",
+            "line": 60,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "adversary_from_shatters",
+            "line": 82,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "vcdim_le_of_mistake_bounded",
+            "line": 116,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "online_imp_pac",
+            "line": 132,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "learn_measurable_fixed",
+            "line": 166,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "goodBlockEvent_measurable",
+            "line": 186,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "measurableSet_goodBlock_A",
+            "line": 234,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "map_block_extract_eq_pi",
+            "line": 276,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "iIndepSet_goodBlockEvents",
+            "line": 326,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "goodBlockEvent_prob_ge_two_thirds",
+            "line": 357,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "chebyshev_seven_twelfths_bound",
+            "line": 393,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "majority_error_le_seven_rate_of_good_fraction",
+            "line": 547,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "boosted_sample_error_le_of_good_blocks",
+            "line": 729,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "boost_two_thirds_to_pac",
+            "line": 801,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "universal_imp_pac",
+            "line": 993,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "threshold_monotone",
+            "line": 1021,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "threshold_not_shatter_pair",
+            "line": 1027,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "vcdim_threshold_finite",
+            "line": 1081,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "thresholdTree_shattered",
+            "line": 1109,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "threshold_shattered_all_depths",
+            "line": 1144,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "ldim_threshold_top",
+            "line": 1150,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "pac_not_implies_online",
+            "line": 1175,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "ex_not_implies_pac",
+            "line": 1237,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "online_strictly_stronger_pac",
+            "line": 1316,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "ex_strictly_stronger_finite",
+            "line": 1335,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "online_pac_gold_separation",
+            "line": 1358,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Theorem/Extended": [
+          {
+            "id": "bhmz_middle_branch",
+            "line": 35,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "universal_trichotomy",
+            "line": 54,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "learnWithAdvice_measurable_fixed",
+            "line": 135,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "trueErrorReal_le_of_bestAdvice",
+            "line": 142,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "finite_validation_family_bound",
+            "line": 165,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "prob_ge_one_sub_compl",
+            "line": 261,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "product_complement_bound",
+            "line": 277,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "pi_cylinder_set_eq",
+            "line": 318,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "pi_uniform_conditional_bound",
+            "line": 349,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "nat_pair_sample_marginal",
+            "line": 430,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "used_sample_split_measure",
+            "line": 476,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "advice_elimination",
+            "line": 516,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "meta_pac_bound",
+            "line": 1056,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "baxter_base_case",
+            "line": 1134,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "baxter_full",
+            "line": 1210,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_not_implies_hardness",
+            "line": 1241,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Theorem/PAC": [
+          {
+            "id": "vcdim_finite_imp_pac",
+            "line": 73,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "pac_imp_vcdim_finite",
+            "line": 105,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vc_characterization",
+            "line": 126,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "sauer_shelah_quantitative",
+            "line": 143,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "sauer_shelah",
+            "line": 152,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "pac_lower_bound",
+            "line": 172,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "sample_complexity_upper_of_pac_witness",
+            "line": 189,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "pac_sample_complexity_sandwich",
+            "line": 211,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "fundamental_vc_compression",
+            "line": 249,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "fundamental_rademacher",
+            "line": 261,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "fundamental_theorem",
+            "line": 293,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_univ_infinite",
+            "line": 341,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "nfl_theorem_infinite",
+            "line": 370,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "nfl_fixed_sample",
+            "line": 400,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "occam_algorithm",
+            "line": 430,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Theorem/PACBayes": [
+          {
+            "id": "pac_bayes_per_hypothesis",
+            "line": 69,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "prob_ge_one_sub_compl'",
+            "line": 176,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "pac_bayes_all_hypotheses",
+            "line": 191,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "jensen_sqrt_finpmf",
+            "line": 299,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "gibbs_bound_of_pointwise",
+            "line": 367,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "pac_bayes_finite",
+            "line": 467,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Theorem/BorelAnalyticSeparation": [
+          {
+            "id": "singletonClassOn_measurable",
+            "line": 52,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "singleton_badEvent_eq_preimage_planar",
+            "line": 64,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "planarWitnessEvent_analytic",
+            "line": 133,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "planarWitnessEvent_not_measurable",
+            "line": 150,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "singleton_badEvent_not_measurable",
+            "line": 168,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "analytic_nonborel_set_gives_measTarget_separation",
+            "line": 184,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "exists_measTarget_separation",
+            "line": 301,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Theorem/Online": [
+          {
+            "id": "forward_direction",
+            "line": 27,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "WithBot_WithTop_lt_succ_le",
+            "line": 56,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "ldim_restriction_le",
+            "line": 72,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "ldim_branch_lower_bound",
+            "line": 80,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "soa_predict_spec",
+            "line": 95,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "LTree.isShattered_truncate",
+            "line": 116,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "exists_shattered_of_ldim_ge",
+            "line": 131,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "ldim_zero_all_agree",
+            "line": 166,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "ldim_strict_decrease_on_mistake",
+            "line": 195,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "soa_mistakes_bounded",
+            "line": 322,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "backward_direction",
+            "line": 389,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "littlestone_characterization",
+            "line": 419,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "adversary_lower_bound",
+            "line": 427,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "optimal_mistake_bound_eq_ldim",
+            "line": 440,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Rademacher": [
+          {
+            "id": "boolToSign_abs_eq_one",
+            "line": 36,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "boolToSign_abs_le_one",
+            "line": 39,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "boolToSign_sq",
+            "line": 42,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "boolToSign_sum_zero",
+            "line": 45,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "boolToSign_mul_abs_le_one",
+            "line": 48,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "flipAt_involutive",
+            "line": 61,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "flipAt_boolToSign",
+            "line": 68,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "flipAt_other",
+            "line": 73,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "sum_boolToSign_cancel",
+            "line": 81,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "rademacher_cross_cancel",
+            "line": 108,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "rademacher_diagonal",
+            "line": 114,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "rademacher_variance_eq",
+            "line": 123,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "rademacherCorrelation_abs_le_one",
+            "line": 183,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "empiricalRademacherComplexity_le_one",
+            "line": 214,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "empRad_nonneg",
+            "line": 254,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "rademacherComplexity_le_one",
+            "line": 291,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "rademacherComplexity_nonneg",
+            "line": 306,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "rademacher_gen_bound",
+            "line": 315,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "corr_eq_one_of_agree",
+            "line": 325,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "shatters_subset",
+            "line": 341,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "empRad_eq_one_of_all_labelings",
+            "line": 366,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "exp_mul_sup'_le_sum",
+            "line": 399,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "cosh_le_exp_sq_half",
+            "line": 412,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "rademacher_mgf_bound",
+            "line": 416,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "finite_massart_lemma",
+            "line": 507,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "ncard_restrictions_le_sum_choose_set",
+            "line": 685,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "growth_function_le_sum_choose_set",
+            "line": 799,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "sum_choose_le_exp_pow",
+            "line": 813,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "sauer_shelah_exp_bound",
+            "line": 905,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_bounds_rademacher_quantitative",
+            "line": 930,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "empRad_eq_one_of_injective_in_shattered",
+            "line": 1185,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "rademacher_lower_bound_on_shattered",
+            "line": 1217,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_zero_concepts_agree",
+            "line": 1581,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "vcdim_zero_rademacher_le_inv_sqrt",
+            "line": 1614,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "analytical_log_sqrt_bound",
+            "line": 1697,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "vcdim_finite_imp_rademacher_vanishing",
+            "line": 1818,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Interpolation": [
+          {
+            "id": "routerOfSet_measurable",
+            "line": 77,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "routerOfSetFamily_measurable",
+            "line": 84,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "interpClassFixed_eq_range_patchEval",
+            "line": 99,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "interpClassCountable_eq_range_patchEval",
+            "line": 120,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "interpClassFixed_wellBehaved",
+            "line": 142,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "interpClassCountable_wellBehaved",
+            "line": 156,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "not_KrappWirth_of_nonBorel_badEvent",
+            "line": 174,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "range_patchEval_sub_interpClass",
+            "line": 206,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "interpClass_wellBehaved_of_routerCode",
+            "line": 228,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Measurability": [
+          {
+            "id": "MeasurableConceptClass.hmeas_C",
+            "line": 77,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "MeasurableConceptClass.hc_meas",
+            "line": 83,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "MeasurableConceptClass.hWB",
+            "line": 89,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "UniversallyMeasurableSpace.concept_measurable",
+            "line": 142,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "UniversallyMeasurableSpace.class_wellBehaved",
+            "line": 147,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "empiricalError_mem_empErrGrid",
+            "line": 259,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "oneSidedGhostGap_mem_grid",
+            "line": 281,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "ghostGapVals_finite",
+            "line": 295,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "wellBehaved_event_eq_preimage_gapSup",
+            "line": 305,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "KrappWirthWellBehaved.toWellBehavedVC",
+            "line": 332,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Generalization": [
+          {
+            "id": "ermLearn_in_H",
+            "line": 100,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "trueError_eq_genError",
+            "line": 170,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "empiricalMeasureError_eq_empiricalError",
+            "line": 231,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "consistent_imp_zero_empiricalError",
+            "line": 289,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "zeroOneLoss_faithful",
+            "line": 318,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "empError_zero_iff_consistent",
+            "line": 326,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "erm_consistent_realizable",
+            "line": 356,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "empiricalError_bounded_diff",
+            "line": 449,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "prob_compl_ge_of_le",
+            "line": 489,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "consistent_tail_bound",
+            "line": 514,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "growth_function_cover",
+            "line": 563,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "pow_mul_exp_neg_le_factorial_div",
+            "line": 585,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "vcdim_finite_imp_growth_bounded",
+            "line": 611,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "uc_imp_pac",
+            "line": 800,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "pac_sample_complexity_pos",
+            "line": 929,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "gold_does_not_imply_pac",
+            "line": 954,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "disagreement_sum_eq",
+            "line": 983,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "exists_many_disagreements",
+            "line": 1045,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "agreement_count_markov",
+            "line": 1106,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "per_sample_labeling_bound",
+            "line": 1173,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "nfl_counting_core",
+            "line": 1271,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "uniformMeasure_isProbability",
+            "line": 1426,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "nfl_core",
+            "line": 1445,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "pac_lower_bound_core",
+            "line": 1575,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_finite_imp_compression",
+            "line": 1897,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "compress_injective_on_labelings",
+            "line": 1909,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "succ_le_two_pow",
+            "line": 1935,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "shatters_subset",
+            "line": 1942,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "exp_beats_poly_at",
+            "line": 1959,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "compression_imp_vcdim_finite",
+            "line": 2003,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "growth_bounded_imp_vcdim_finite",
+            "line": 2127,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "pac_lower_bound_member",
+            "line": 2211,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "block_extract_disjoint",
+            "line": 2540,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "block_extract_measurable",
+            "line": 2553,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "iIndepFun_block_extract",
+            "line": 2560,
+            "kind": "lemma",
+            "private": false
+          },
+          {
+            "id": "shatters_realize",
+            "line": 2628,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "shatters_hard_labeling",
+            "line": 2636,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "nfl_per_sample_shattered",
+            "line": 2652,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_infinite_not_pac",
+            "line": 2714,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/GeneralizationResults": [
+          {
+            "id": "thresholdX_mem",
+            "line": 42,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "thresholdX_not_mem",
+            "line": 47,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "thresholdX_not_shatter_pair",
+            "line": 55,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "vcdim_thresholdX_finite",
+            "line": 83,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "mistakesFromG_init_eq",
+            "line": 102,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "adversary_threshold",
+            "line": 121,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "uc_does_not_imply_online",
+            "line": 164,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "uc_does_not_imply_online'",
+            "line": 187,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "consistent_learner_pac",
+            "line": 202,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "consistent_learner_pac'",
+            "line": 216,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "sample_complexity_lower_bound",
+            "line": 230,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "sample_complexity_lower_bound'",
+            "line": 260,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "rademacher_vanishing_imp_pac",
+            "line": 275,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "rademacher_vanishing_imp_pac'",
+            "line": 300,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Littlestone": [
+          {
+            "id": "MistakeTree.fromList_depth",
+            "line": 60,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "Shatters.subset",
+            "line": 68,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "MistakeTree.fromList_shattered",
+            "line": 82,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "BranchWiseLittlestoneDim_ge_VCDim",
+            "line": 104,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/GameInfra": [
+          {
+            "id": "LTree.nonempty_of_isShattered",
+            "line": 49,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "LTree.isShattered_mono",
+            "line": 60,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "adversary_core",
+            "line": 95,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "mistakesFrom_init_eq",
+            "line": 125,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "SOA_predict_eq",
+            "line": 166,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "SOA_update_eq",
+            "line": 175,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "SOA_init_eq",
+            "line": 180,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "SOA_mistakesFrom_cons",
+            "line": 184,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "versionSpace_subset",
+            "line": 195,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "target_in_versionSpace",
+            "line": 201,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "versionSpace_append",
+            "line": 208,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "ldim_versionSpace_le",
+            "line": 215,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Ordinal": [
+          {
+            "id": "ordinalVCDim_inner_bddAbove",
+            "line": 30,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "ordinalVCDim_outer_bddAbove",
+            "line": 37,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_card_le",
+            "line": 64,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "VCDim_embed_ordinal",
+            "line": 76,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Structures": [
+          {
+            "id": "DSDim_le_NatarajanDim",
+            "line": 107,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/Symmetrization": [
+          {
+            "id": "hoeffding_one_sided",
+            "line": 100,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "symmetrization_step",
+            "line": 506,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "per_hypothesis_gap_bound",
+            "line": 722,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "restriction_pattern_count",
+            "line": 900,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "finite_exchangeability_bound",
+            "line": 959,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "exchangeability_chain_bound",
+            "line": 1031,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "double_sample_pattern_bound",
+            "line": 1672,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "hoeffding_one_sided_upper",
+            "line": 1826,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "symmetrization_step_lower",
+            "line": 1951,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "symmetrization_uc_bound",
+            "line": 2172,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "growth_function_le_two_pow",
+            "line": 2296,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "growth_exp_le_delta",
+            "line": 2323,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "uc_bad_event_le_delta_proved",
+            "line": 2630,
+            "kind": "lemma",
+            "private": true
+          },
+          {
+            "id": "vcdim_finite_imp_uc'",
+            "line": 2667,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_finite_imp_pac_via_uc'",
+            "line": 2940,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Complexity/BorelAnalyticBridge": [
+          {
+            "id": "paramWitnessSet_measurable",
+            "line": 83,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "borel_param_badEvent_analytic",
+            "line": 142,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "analyticSet_nullMeasurableSet_ghostPairs",
+            "line": 170,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "borel_param_nullMeasurableSet_bad_event",
+            "line": 182,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "borel_param_wellBehavedVCMeasTarget",
+            "line": 196,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "patchEval_measurable",
+            "line": 221,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "patch_borel_param_wellBehavedVCMeasTarget",
+            "line": 244,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Bridge": [
+          {
+            "id": "bridge_round_trip",
+            "line": 55,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "conceptToFinset_injective",
+            "line": 97,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "shatters_iff_finset_shatters",
+            "line": 130,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_eq_finset_vcdim",
+            "line": 217,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_finite_of_fintype",
+            "line": 252,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "growthFunction_le_card_restrict",
+            "line": 285,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "funcToSubset_injective",
+            "line": 303,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "restrict_shatters_lift",
+            "line": 314,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "vcDim_restrict_le",
+            "line": 377,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "card_restrict_le_sauer_shelah_bound",
+            "line": 393,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "ncard_restrictions_eq_card",
+            "line": 435,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "ncard_restrictions_le_bound",
+            "line": 457,
+            "kind": "theorem",
+            "private": true
+          },
+          {
+            "id": "growth_function_le_sauer_shelah",
+            "line": 465,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "withTopNatToOrdinal_mono",
+            "line": 514,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "vcdim_to_ordinal_vcdim",
+            "line": 532,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "compression_bounds_vcdim",
+            "line": 627,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Learner/VersionSpace": [
+          {
+            "id": "measurableSet_isConsistent",
+            "line": 80,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "measurableSet_isFirstConsistent",
+            "line": 98,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "nat_find_eq_iff_isFirstConsistent",
+            "line": 117,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "measurableSet_versionSpace_true",
+            "line": 126,
+            "kind": "theorem",
+            "private": false
+          },
+          {
+            "id": "versionSpaceLearner_measurableBatchLearner",
+            "line": 183,
+            "kind": "theorem",
+            "private": false
+          }
+        ],
+        "Learner/Properties": [
+          {
+            "id": "MeasurableBatchLearner.learn_measurable",
+            "line": 62,
+            "kind": "theorem",
+            "private": false
+          }
+        ]
+      }
     }
   },
-
   "edges": {
     "paradigm_locking": [
-      {"method": "M2", "locked_to": "PAC", "reason": "requires product measure (Measure.pi)"},
-      {"method": "M8", "locked_to": "PAC", "reason": "requires i.i.d. double sample"},
-      {"method": "M4", "locked_to": "Online", "reason": "requires sequential commitment (predict before label)"},
-      {"method": "M9", "locked_to": "Online", "reason": "requires version space monotonicity"},
-      {"method": "M10", "locked_to": "Online", "reason": "requires Littlestone tree structure"},
-      {"method": "M11", "locked_to": "Gold", "reason": "requires enumeration structure of text presentations"},
-      {"method": "M5", "locked_to": "Gold", "reason": "requires pointwise convergence on prefix streams"},
-      {"method": "M14", "locked_to": "cross_cutting", "reason": "connects descriptive set theory to learning theory; required infrastructure not in original premise"},
-      {"method": "M15", "locked_to": "Bayesian", "reason": "requires prior-posterior structure (FinitePMF)"},
-      {"method": "M19", "locked_to": "cross_cutting", "reason": "countable selection via Nat.find; applies to any countable enumeration"}
+      {
+        "method": "M2",
+        "locked_to": "PAC",
+        "reason": "requires product measure (Measure.pi)",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M8",
+        "locked_to": "PAC",
+        "reason": "requires i.i.d. double sample",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M4",
+        "locked_to": "Online",
+        "reason": "requires sequential commitment (predict before label)",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M9",
+        "locked_to": "Online",
+        "reason": "requires version space monotonicity",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M10",
+        "locked_to": "Online",
+        "reason": "requires Littlestone tree structure",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M11",
+        "locked_to": "Gold",
+        "reason": "requires enumeration structure of text presentations",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M5",
+        "locked_to": "Gold",
+        "reason": "requires pointwise convergence on prefix streams",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M14",
+        "locked_to": "cross_cutting",
+        "reason": "connects descriptive set theory to learning theory; required infrastructure not in original premise",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M15",
+        "locked_to": "Bayesian",
+        "reason": "requires prior-posterior structure (FinitePMF)",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M19",
+        "locked_to": "cross_cutting",
+        "reason": "countable selection via Nat.find; applies to any countable enumeration",
+        "provenance": "kernel"
+      }
     ],
-
     "method_compositions": [
-      {"from": "M3", "to": "M8", "label": "Sauer-Shelah feeds symmetrization (growth function bound → UC)"},
-      {"from": "M8", "to": "M2", "label": "symmetrization feeds concentration (UC → PAC guarantee)"},
-      {"from": "M12", "to": "M6", "label": "contrapositive uses witness (hard distribution construction)"},
-      {"from": "M14", "to": "M2", "label": "analytic measurability feeds integration (NullMeasurableSet → lintegral)"},
-      {"from": "M15", "to": "M2", "label": "KL divergence feeds concentration (prior-weighted Hoeffding)"},
-      {"from": "M16", "to": "M17", "label": "product factorization feeds finite Jensen (MGF → soft-max)"},
-      {"from": "M4", "to": "M10", "label": "adversary strategy uses tree induction (game search)"},
-      {"from": "M9", "to": "M4", "label": "potential function guides adversary (version space Ldim comparison)"}
+      {
+        "from": "M3",
+        "to": "M8",
+        "label": "Sauer-Shelah feeds symmetrization (growth function bound \u2192 UC)",
+        "provenance": "kernel"
+      },
+      {
+        "from": "M8",
+        "to": "M2",
+        "label": "symmetrization feeds concentration (UC \u2192 PAC guarantee)",
+        "provenance": "kernel"
+      },
+      {
+        "from": "M12",
+        "to": "M6",
+        "label": "contrapositive uses witness (hard distribution construction)",
+        "provenance": "kernel"
+      },
+      {
+        "from": "M14",
+        "to": "M2",
+        "label": "analytic measurability feeds integration (NullMeasurableSet \u2192 lintegral)",
+        "provenance": "kernel"
+      },
+      {
+        "from": "M15",
+        "to": "M2",
+        "label": "KL divergence feeds concentration (prior-weighted Hoeffding)",
+        "provenance": "kernel"
+      },
+      {
+        "from": "M16",
+        "to": "M17",
+        "label": "product factorization feeds finite Jensen (MGF \u2192 soft-max)",
+        "provenance": "kernel"
+      },
+      {
+        "from": "M4",
+        "to": "M10",
+        "label": "adversary strategy uses tree induction (game search)",
+        "provenance": "kernel"
+      },
+      {
+        "from": "M9",
+        "to": "M4",
+        "label": "potential function guides adversary (version space Ldim comparison)",
+        "provenance": "kernel"
+      }
     ],
-
     "method_incompatibilities": [
-      {"method": "M8", "incompatible_with": "finite_domain_goals", "reason": "symmetrization requires infinite sample space; on finite X, direct enumeration suffices"},
-      {"method": "M2", "incompatible_with": "non_measure_goals", "reason": "concentration requires MeasureTheory.Measure in goal type"},
-      {"method": "M11", "incompatible_with": "non_enumeration_goals", "reason": "locking sequence requires DataStream/TextPresentation"},
-      {"method": "M4", "incompatible_with": "batch_goals", "reason": "adversary construction requires sequential state (OnlineLearner signature)"}
+      {
+        "method": "M8",
+        "incompatible_with": "finite_domain_goals",
+        "reason": "symmetrization requires infinite sample space; on finite X, direct enumeration suffices",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M2",
+        "incompatible_with": "non_measure_goals",
+        "reason": "concentration requires MeasureTheory.Measure in goal type",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M11",
+        "incompatible_with": "non_enumeration_goals",
+        "reason": "locking sequence requires DataStream/TextPresentation",
+        "provenance": "kernel"
+      },
+      {
+        "method": "M4",
+        "incompatible_with": "batch_goals",
+        "reason": "adversary construction requires sequential state (OnlineLearner signature)",
+        "provenance": "kernel"
+      }
     ],
-
     "infrastructure_dependencies": [
-      {"theorem": "T_vc", "requires": ["I_sym", "I_gen", "I_bridge"]},
-      {"theorem": "T_lc", "requires": ["I_game"]},
-      {"theorem": "T_gt", "requires": []},
-      {"theorem": "T_pb", "requires": ["P_kl"]},
-      {"theorem": "T_bas", "requires": ["I_bab", "P_choq", "P_anal", "I_meas"]},
-      {"theorem": "T_vsm", "requires": []},
-      {"theorem": "T_ifw", "requires": ["I_bab", "I_interp"]},
-      {"theorem": "T_uc", "requires": ["I_sym", "P_exch", "P_conc"]},
-      {"theorem": "T_ho", "requires": ["P_conc"]}
+      {
+        "theorem": "T_vc",
+        "requires": [
+          "I_sym",
+          "I_gen",
+          "I_bridge"
+        ],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_lc",
+        "requires": [
+          "I_game"
+        ],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_gt",
+        "requires": [],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_pb",
+        "requires": [
+          "P_kl"
+        ],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_bas",
+        "requires": [
+          "I_bab",
+          "P_choq",
+          "P_anal",
+          "I_meas"
+        ],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_vsm",
+        "requires": [],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_ifw",
+        "requires": [
+          "I_bab",
+          "I_interp"
+        ],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_uc",
+        "requires": [
+          "I_sym",
+          "P_exch",
+          "P_conc"
+        ],
+        "provenance": "kernel"
+      },
+      {
+        "theorem": "T_ho",
+        "requires": [
+          "P_conc"
+        ],
+        "provenance": "kernel"
+      }
     ],
-
     "typeclass_instances": [
-      {"typeclass": "TC_mbl", "instance": "versionSpaceLearner", "file": "Learner/VersionSpace.lean", "proof_method": "M19"},
-      {"typeclass": "TC_mcc", "instance": "any class with MeasurableHypotheses + WellBehavedVC", "file": "Complexity/Measurability.lean"},
-      {"typeclass": "TC_kwwb", "implies": "TC_mcc", "strict": true, "witness": "T_bas"}
+      {
+        "typeclass": "TC_mbl",
+        "instance": "versionSpaceLearner",
+        "file": "Learner/VersionSpace.lean",
+        "proof_method": "M19"
+      },
+      {
+        "typeclass": "TC_mcc",
+        "instance": "any class with MeasurableHypotheses + WellBehavedVC",
+        "file": "Complexity/Measurability.lean"
+      },
+      {
+        "typeclass": "TC_kwwb",
+        "implies": "TC_mcc",
+        "strict": true,
+        "witness": "T_bas"
+      }
     ],
-
     "produced_by_extension": [
-      {"theorem": "T_bas", "produced_by": "TC_mcc", "mechanism": "making WellBehavedVC a typeclass raised the question: is it equivalent to KrappWirth?"},
-      {"theorem": "T_vsm", "produced_by": "TC_mbl", "mechanism": "formalizing joint learner measurability as a gate raised the question: which non-neural architectures pass?"},
-      {"theorem": "T_ifw", "produced_by": "T_bas", "mechanism": "separation proved the gap exists; interpolation asked what operation produces it"},
-      {"theorem": "T_nkw", "produced_by": "T_ifw", "mechanism": "interpolation well-behavedness implies the descent: Borel level can fail for composed classes"}
+      {
+        "theorem": "T_bas",
+        "produced_by": "TC_mcc",
+        "mechanism": "making WellBehavedVC a typeclass raised the question: is it equivalent to KrappWirth?",
+        "provenance": "kernel + discovery_repo"
+      },
+      {
+        "theorem": "T_vsm",
+        "produced_by": "TC_mbl",
+        "mechanism": "formalizing joint learner measurability as a gate raised the question: which non-neural architectures pass?",
+        "provenance": "kernel + discovery_repo"
+      },
+      {
+        "theorem": "T_ifw",
+        "produced_by": "T_bas",
+        "mechanism": "separation proved the gap exists; interpolation asked what operation produces it",
+        "provenance": "kernel + discovery_repo"
+      },
+      {
+        "theorem": "T_nkw",
+        "produced_by": "T_ifw",
+        "mechanism": "interpolation well-behavedness implies the descent: Borel level can fail for composed classes",
+        "provenance": "kernel + discovery_repo"
+      }
     ]
   },
-
   "routing_rules": {
     "description": "Given a GoalProfile, these rules predict which methods and infrastructure are relevant.",
     "rules": [
-      {"condition": "goal mentions MeasureTheory.Measure or ENNReal", "load": ["M2", "M8", "M16"], "infrastructure": ["I_sym", "I_gen", "P_conc", "P_exch"]},
-      {"condition": "goal mentions OnlineLearner or State or predict", "load": ["M4", "M9", "M10"], "infrastructure": ["I_game"]},
-      {"condition": "goal mentions List or DataStream or prefix or Countable", "load": ["M5", "M11"], "infrastructure": []},
-      {"condition": "goal mentions AnalyticSet or NullMeasurableSet or BorelSpace", "load": ["M14"], "infrastructure": ["I_bab", "P_choq", "P_anal"]},
-      {"condition": "goal mentions FinitePMF or klDiv or posterior", "load": ["M15"], "infrastructure": ["P_kl"]},
-      {"condition": "goal mentions Infinite X and VCDim", "avoid": ["direct_enumeration", "union_bound_on_hypotheses"], "reason": "produces 2^{2m} not GrowthFunction; route to M8"},
-      {"condition": "goal mentions Fintype X", "prefer": ["M3", "M6"], "avoid": ["M8"], "reason": "symmetrization unnecessary on finite domains"}
+      {
+        "condition": "goal mentions MeasureTheory.Measure or ENNReal",
+        "load": [
+          "M2",
+          "M8",
+          "M16"
+        ],
+        "infrastructure": [
+          "I_sym",
+          "I_gen",
+          "P_conc",
+          "P_exch"
+        ]
+      },
+      {
+        "condition": "goal mentions OnlineLearner or State or predict",
+        "load": [
+          "M4",
+          "M9",
+          "M10"
+        ],
+        "infrastructure": [
+          "I_game"
+        ]
+      },
+      {
+        "condition": "goal mentions List or DataStream or prefix or Countable",
+        "load": [
+          "M5",
+          "M11"
+        ],
+        "infrastructure": []
+      },
+      {
+        "condition": "goal mentions AnalyticSet or NullMeasurableSet or BorelSpace",
+        "load": [
+          "M14"
+        ],
+        "infrastructure": [
+          "I_bab",
+          "P_choq",
+          "P_anal"
+        ]
+      },
+      {
+        "condition": "goal mentions FinitePMF or klDiv or posterior",
+        "load": [
+          "M15"
+        ],
+        "infrastructure": [
+          "P_kl"
+        ]
+      },
+      {
+        "condition": "goal mentions Infinite X and VCDim",
+        "avoid": [
+          "direct_enumeration",
+          "union_bound_on_hypotheses"
+        ],
+        "reason": "produces 2^{2m} not GrowthFunction; route to M8"
+      },
+      {
+        "condition": "goal mentions Fintype X",
+        "prefer": [
+          "M3",
+          "M6"
+        ],
+        "avoid": [
+          "M8"
+        ],
+        "reason": "symmetrization unnecessary on finite domains"
+      }
     ]
   }
 }
