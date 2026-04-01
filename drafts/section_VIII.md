@@ -6,46 +6,65 @@
 
 ## VIII. Proof Technique Taxonomy
 
-The kernel's proof architecture is encoded as a typed graph in [`assets/proof_world_model.json`](assets/proof_world_model.json). The graph contains 19 proof methods, 278 theorems, 13 infrastructure modules, 7 mathematical domains, 5 typeclasses, and 2 sorry sites, connected by typed edges encoding method usage, domain crossings, infrastructure dependencies, paradigm locking, method compositions, and method incompatibilities. An agent consuming the world model can route proof search from a goal's type signature to the appropriate methods and infrastructure without reading the kernel's source files.
+The kernel's proof architecture is encoded as a metaprogram world model in [`assets/proof_world_model.json`](assets/proof_world_model.json). The primary unit is the metaprogram: a structured proof prediction with typed inputs, outputs, strategy steps, preconditions, failure diagnostics, and known instances. An agent consuming the world model can route proof search from a goal's type signature to the appropriate methods and infrastructure without reading the kernel's source files.
 
-The tables below are projections of this graph.
+### How the world model works
 
-### Methods by paradigm
+Given a new proof goal, an agent:
 
-| Method | Domain | Paradigm | Representative theorems |
-|--------|--------|----------|------------------------|
-| Symmetrization (ghost sample) | Measure theory | PAC | `symmetrization_uc_bound`, `vcdim_finite_imp_uc'` |
-| Concentration inequality | Measure theory | PAC | `hoeffding_one_sided`, `rademacher_mgf_bound`, `chebyshev_seven_twelfths_bound` |
-| Contrapositive | Combinatorics | PAC | `pac_imp_vcdim_finite`, `nfl_theorem_infinite` |
-| Adversary construction | Combinatorics | PAC, Online | `pac_not_implies_online`, `nfl_core` |
-| Pigeonhole | Combinatorics | PAC | `compression_imp_vcdim_finite` |
-| Potential function | Game theory | Online | `backward_direction` (SOA), `ldim_versionSpace_le` |
-| Induction on tree depth | Game theory | Online | `forward_direction`, `backward_direction` |
-| Locking sequence | Computability | Gold | `gold_theorem` |
-| Descriptive set theory (Suslin + Choquet) | Descriptive set theory | Cross-cutting | `analytic_nonborel_set_gives_measTarget_separation` |
-| KL-divergence / Jensen | Information theory | Bayesian | `pac_bayes_finite` |
+1. **Matches the goal profile.** The goal's type signature (shape, quantifier depth, mentions of specific types) is matched against 10 goal profile patterns. Each pattern routes to one or more metaprograms and lists which metaprograms to avoid.
 
-No method crosses all three classical paradigm boundaries. Two methods are cross-cutting: descriptive set theory (connecting the measurability hierarchy to the separation theorem) and KL-divergence (bridging frequentist and Bayesian frameworks). Both required infrastructure not in the original premise.
+2. **Selects a metaprogram.** Each metaprogram specifies a strategy: a sequence of steps with typed inputs and outputs, the infrastructure files required, and the preconditions that must hold. For example, `MP_pac_chain` (PAC characterization via uniform convergence) is a 3-step pipeline: Sauer-Shelah → Symmetrization → Concentration, requiring `[MeasurableConceptClass X C]` and 7,925 lines of infrastructure.
 
-### Method compositions
+3. **Checks failure diagnostics.** Before executing, the agent consults 7 failure diagnostics. Each diagnostic has an early detection rule that can be checked against the local context. For example: if `[Fintype X]` is in context, do not attempt symmetrization (it produces 2^{2m} instead of GrowthFunction).
 
-The world model encodes which methods compose into proof chains:
+4. **Composes methods via typed interfaces.** Methods compose when one's output type matches another's input type. The world model encodes 8 composition types with bridge lemma references. For example: Sauer-Shelah outputs a GrowthFunction bound, which is the input type for Symmetrization, bridged by `sauer_shelah_exp_bound`.
 
-```
-Sauer-Shelah (M3) → Symmetrization (M8) → Concentration (M2)
-    [combinatorics]    [combinatorics → measure]    [measure theory]
-```
+### The metaprograms
 
-This is the PAC crossing from Section I, expressed as a method chain. Each arrow is a typed edge in the world model. An agent following the chain knows that M3 produces a growth function bound, M8 converts it to uniform convergence, and M2 converts that to a PAC guarantee.
+| Metaprogram | Type | Paradigm | Strategy summary | Infrastructure |
+|-------------|------|----------|-----------------|----------------|
+| PAC chain | Pipeline (3 steps) | PAC | Sauer-Shelah → Symmetrization → Concentration | 7,925 lines |
+| PAC contrapositive | Single step | PAC | Contrapositive + hard distribution witness | 200 lines |
+| SOA construction | Pipeline | Online | Version space potential → mistake bound = Ldim | 400 lines |
+| Adversary tree | Single step | Online | Adversary on shattered tree forces n mistakes | 100 lines |
+| Gold locking | Single step | Gold | Locking sequence on monotone enumeration | 0 lines (self-contained) |
+| Witness construction | Construction | Any | Build concept class satisfying A, violating B | varies |
+| Symmetrization | Pipeline (3 steps) | PAC (infinite X) | Ghost sample → exchangeability → Hoeffding | 3,027 lines |
+| Finite enumeration | Single step | PAC (finite X) | Enumerate, Hoeffding, union bound | ~100 lines |
+| Borel-analytic bridge | Pipeline (3 steps) | Cross-cutting | Borel parameterization → Suslin → Choquet | 783 lines |
+| PAC-Bayes chain | Pipeline (3 steps) | Bayesian | Per-hypothesis Hoeffding → union → Jensen | 584 lines |
+| Rectangle decomposition | Single step | Cross-cutting | Nat.find preimage → countable union of rectangles | 203 lines |
+| Interpolation descent | Reduction | Cross-cutting | Reduce to patchEval range → apply bridge | Interpolation.lean |
 
-### Method incompatibilities
+### Paradigm locking
 
-| Method | Incompatible with | Reason |
-|--------|------------------|--------|
-| Symmetrization | Finite domain goals | Requires infinite sample space; on finite X, direct enumeration suffices |
-| Concentration | Non-measure goals | Requires `MeasureTheory.Measure` in goal type |
-| Locking sequence | Non-enumeration goals | Requires `DataStream`/`TextPresentation` |
-| Adversary construction | Batch goals | Requires sequential state (`OnlineLearner` signature) |
+Methods are locked to paradigms because their preconditions reference paradigm-specific types. The lock is detectable from the goal's type signature.
+
+| Method | Locked to | Detection: goal mentions |
+|--------|-----------|------------------------|
+| Symmetrization, Concentration | PAC | `MeasureTheory.Measure`, `ENNReal` |
+| Version space potential, Tree induction | Online | `OnlineLearner.State`, `versionSpace`, `LTree` |
+| Locking sequence, Topological convergence | Gold | `DataStream`, `TextPresentation`, `MindChangeOrdinal` |
+| Suslin + Choquet | Cross-cutting | `AnalyticSet`, `NullMeasurableSet`, `PolishSpace` |
+| KL-divergence / Jensen | Bayesian | `FinitePMF`, `klDiv` |
+| Rectangle decomposition | Cross-cutting | `MeasurableBatchLearner`, `Nat.find` |
+
+No method crosses all three classical paradigm boundaries. The paradigm-locking hypothesis (Section I) predicts that formalizing a theorem crossing new domains will require methods not in this table.
+
+### Failure diagnostics
+
+The world model encodes 7 failure diagnostics, each with early detection rules:
+
+| Failure | Early detection | Fix |
+|---------|----------------|-----|
+| Symmetrization on finite domain | `[Fintype X]` in context | Route to finite enumeration |
+| Union bound on uncountable C | C not provably finite/countable | Insert symmetrization |
+| Measurability blocked | `[MeasurableConceptClass X C]` absent | Add typeclass or route to Borel-analytic bridge |
+| Quantifier order wrong | UC uses `∀ D, ∃ m₀` instead of `∃ m₀, ∀ D` | Use uniform ordering |
+| Branch-wise Littlestone | `isShattered` does not restrict C at recursive calls | Use path-wise definition (GameInfra.lean) |
+| Existential Dm leak | PACLearnable uses `∃ Dm` instead of `Measure.pi` | Use Measure.pi definition |
+| Non-measurable selection | Goal has `∃ h ∈ C` with `Classical.choose` over uncountable set | Measurable inner event pattern |
 
 ### Infrastructure by domain
 
@@ -56,24 +75,9 @@ This is the PAC crossing from Section I, expressed as a method chain. Each arrow
 | PureMath/Concentration | 195 | Probability theory | Yes |
 | PureMath/Exchangeability | 128 | Measure theory | Yes |
 | PureMath/KLDivergence | 59 | Information theory | Yes |
-| Complexity/GameInfra | 219 | Game theory | No (learning-theory-specific) |
+| Complexity/GameInfra | 219 | Game theory | No |
 
-908 lines in PureMath/ are field-independent and reusable in any Lean4 project needing concentration inequalities, exchangeability, KL divergence, or Choquet capacity.
-
-### Routing rules
-
-The world model includes routing rules that map goal type signatures to methods:
-
-| Goal signature contains | Load methods | Avoid | Reason |
-|------------------------|-------------|-------|--------|
-| `MeasureTheory.Measure` or `ENNReal` | Symmetrization, Concentration | — | Measure-theoretic goal |
-| `OnlineLearner` or `State` or `predict` | Adversary, Potential, Tree induction | — | Game-theoretic goal |
-| `List` or `DataStream` or `Countable` | Topological convergence, Locking | — | Computability goal |
-| `AnalyticSet` or `NullMeasurableSet` | Descriptive set theory | — | Measurability goal |
-| `Infinite X` and `VCDim` | Symmetrization | Direct enumeration, union bound | Produces 2^{2m} not GrowthFunction |
-| `Fintype X` | Combinatorial counting | Symmetrization | Unnecessary on finite domains |
-
-These rules are the operational semantics of the paradigm-locking hypothesis (Section I): the type signature determines the method.
+908 lines in PureMath/ are field-independent and reusable in any Lean4 project.
 
 ### Quantitative profile
 
