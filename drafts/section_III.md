@@ -45,7 +45,7 @@ VCDim = 1, LittlestoneDim = ∞. The class is PAC-learnable but not online-learn
      Right panel: Shattering diagram.
      Set S = {a, b} on number line.
      Four labelings shown as four indicator functions:
-     {a,b}, {a}, {b}, {} — all realized by Finset indicators.
+     {a,b}, {a}, {b}, {} -- all realized by Finset indicators.
      Label: "Every finite set shattered. VCDim = infinity."
      Caption: "EX-learnable (convergence on enumeration) but not PAC-learnable (VCDim = infinity)."
 -->

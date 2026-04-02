@@ -37,7 +37,7 @@ The proof-discovery kernel exposed ad-hoc measurability hypothesis threading acr
 | `MeasurableBatchLearner` (L3) | Version space measurability theorem (non-neural RL policy class) | Is the measurable learner class closed under composition? |
 | `BorelRouterCode` (L5) | Interpolation descent theorem | Does amalgamation also weaken measurability? |
 | Measurability refactoring (L1, L3, L5) | Typeclass hierarchy replacing 8-file hypothesis threading | Does network depth increase measurability complexity? |
-| PureMath/ extraction | 908 lines of field-independent pure math | — |
+| PureMath/ extraction | 908 lines of field-independent pure math | (complete) |
 | GameInfra.lean extraction | 219 lines of explicit game infrastructure | Does the adversary-learner pattern connect to bandits or chosen-plaintext attacks? |
 
 Every premise addition produced theorems, extracted infrastructure, or opened precisely stated questions. The frontier grew from 2 specific blockers to 7 research questions, each with known mathematical approaches or specific obstructions.

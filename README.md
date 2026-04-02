@@ -2,26 +2,31 @@
 
 [![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml)
 
-| Lean | Mathlib | LOC | Core theorems | Core sorry | Extended theorems | Extended sorry |
-|------|---------|-----|---------------|------------|-------------------|----------------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 17,350 | 259 | **0** | 5 | **2** |
+| Lean | Mathlib | LOC | Theorems | Sorry (core) | Sorry (extended) |
+|------|---------|-----|----------|-------------|-----------------|
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 17,956 | 278 | **0** (core) | **2** (extended) |
 
 <p align="center">
-  <img src="premise/hero.svg?v=3" alt="The Fundamental Theorem of Statistical Learning: five equivalent characterizations of learnability" width="820" />
+  <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning" width="820" />
 </p>
 
-We derived a typed premise for learning theory: 42 concept nodes across 8 layers, 5 paradigm joints with binary obstruction tags, and 7 structural hypotheses about type-theoretic fractures. Human-guided, AI-driven proof search within this premise produced a 17,350-line Lean4 kernel containing 264 machine-checked theorems across three learning paradigms (PAC, online, Gold-style), with a fully checked core of 259 theorems and 0 sorry.
+A 42-node typed premise scoped human-guided, AI-driven proof search across three learning paradigms. The search formalized 278 machine-checked theorems in 17,956 lines of Lean 4. The infrastructure it required produced three results that had never been proved.
 
-Two theorems remain at the frontier: the forward direction of the compression characterization (blocked by Moran-Yehudayoff 2016) and the middle branch of the universal trichotomy (blocked by Bousquet-Hanneke-Moran-Zhivotovskiy, STOC 2021). Both require combinatorial constructions absent from Mathlib. They are open problems in formalization, not engineering gaps.
+The type structure of a field's definitions determines the proof methods available to formalize it. A typed premise, derived before proof search, constrains the search space enough for AI-driven proof discovery to succeed where unconstrained search fails, and the infrastructure forced by the types can generate mathematics the premise did not predict.
 
-Forcing a field through a proof assistant with a pre-derived type architecture exposes structural features that informal exposition suppresses. In this kernel: three paradigms that share vocabulary but no proof infrastructure, a measurability hierarchy with a strict separation proved by a new theorem connecting descriptive set theory to statistical learning, seven corrections to standard textbook presentations, and a proof-technique taxonomy showing that no method in the library crosses paradigm boundaries. The typed premise absorbed 14,438 lines of proof without requiring a single new type category. The grammar was complete before proof search began.
+| | Contributions |
+|---|---|
+| **New proof methodology** | 1. Piecewise composition of Borel-parameterized families produces analytic suprema; transportable to optimization, game theory, and control theory beyond learning. 2. Bridge between descriptive set theory and statistical learning: Suslin projections and Choquet capacitability applied to uniform convergence bad events. 3. Rectangle decomposition for `Nat.find`-based measurable selection, bypassing Kuratowski-Ryll-Nardzewski for countable families. |
+| **New learning theory** | 1. Borel-analytic separation: `NullMeasurableSet` is strictly weaker than `MeasurableSet` for uniform convergence bad events (corrects Krapp-Wirth 2024). 2. Interpolation descent: composition of Borel concept classes weakens measurability to NullMeasurable. 3. `MeasurableBatchLearner`: new precondition isolating joint learner measurability; gates RL policy validity for non-neural architectures. 4. Version space measurability: first proof that non-neural learners satisfy `MeasurableBatchLearner`. 5. NullMeasurableSet correction: weakens the hypothesis for the entire fundamental theorem. |
+| **First formalizations** | 1. Fundamental theorem of statistical learning (5-way equivalence, 4/5 conjuncts). 2. Choquet capacitability theorem (Kechris 30.13; Mathlib-contributable). 3. PAC-Bayes bound (McAllester; first frequentist-Bayesian bridge in Lean 4). 4. Littlestone characterization with corrected path-wise tree definition. 5. Gold's theorem and mind change characterization. 6. Baxter multi-task base case. 7. All paradigm separations with constructive witnesses. 8. Confidence boosting via 7/12-fraction Chebyshev concentration. 9. Measurability typeclass hierarchy with strict separation. |
+| **Proof engineering** | 1. Definition sensitivity taxonomy: wrong definition produces false theorems (Littlestone), vacuous theorems (PACLearnable), or wrong proof architecture (MindChangeOrdinal). 2. Measurable inner event metaprogram for non-measurable target events defined by uncountable selection. 3. `BorelRouterCode` abstraction for conditional interpolation (attention, routing, transfer). 4. Countable enumeration bypass of Kuratowski-Ryll-Nardzewski measurable selection. 5. Premise ablation: 67 to 187 sorrys without structured inquiry framework, 65/67 closed with it. 87.5% vs 0% first-attempt success on articulated unknowns. |
 
 ### Core and extended modules
 
-The kernel separates into a **fully checked core** (259 theorems, 0 sorry) and an **extended frontier** (5 theorems, 2 sorry):
+The kernel separates into a **fully checked core** (0 sorry) and an **extended frontier** (2 sorry):
 
-- **Core** (0 sorry): Every theorem whose proof tree contains no sorry. This includes `vc_characterization` (PAC ↔ VCDim < ∞, under `[MeasurableConceptClass X C]`), `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL (No-Free-Lunch) theorems, the full symmetrization chain (3,027 LOC), the Rademacher bounds, the PAC-Bayes bound, and the Borel-analytic separation theorem. A reviewer can audit the core and know it is complete.
-- **Extended frontier** (2 sorry): Five theorems whose proof trees pass through one of two sorry tactics. The sorry-tainted results are `fundamental_theorem` (the 5-way bundle, because conjunct 2 flows through `vcdim_finite_imp_compression`), `fundamental_vc_compression`, `universal_trichotomy` (because branch 2 flows through `bhmz_middle_branch`), and their direct dependencies. The individually proved conjuncts and branches are sorry-free; only the bundles that include all conjuncts/branches are tainted.
+- **Core**: Every theorem whose proof tree contains no sorry. This includes `vc_characterization`, `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL theorems, the full symmetrization chain (3,027 LOC), the Rademacher bounds, the PAC-Bayes bound, the Borel-analytic separation, and the interpolation descent theorem.
+- **Extended frontier**: Theorems whose proof trees pass through one of two sorry tactics. The individually proved conjuncts and branches are in the core; only the bundles that include all conjuncts/branches are tainted.
 
 | Sorry | File | Blocks | Citation |
 |-------|------|--------|----------|
@@ -32,518 +37,671 @@ The kernel separates into a **fully checked core** (259 theorems, 0 sorry) and a
 
 ## Part I: The Kernel
 
-## I. Paradigm Structure
+## I. The Combinatorics-Measure Theory Axis
 
-### The paradigm joints
+Each learning paradigm's proof methods are determined by the mathematical domains its definitions cross. In this kernel, PAC learning sits at the intersection of finite combinatorics and infinite measure theory. Online learning sits at the intersection of combinatorics and game theory. Gold-style learning sits within computability and topology. The paradigms connect to each other only through PAC.
 
-Given a field with multiple paradigms sharing vocabulary, we ask: do the paradigms share proof infrastructure? Six decades of learning theory produced three paradigms that textbooks treat as chapters of one story. In this kernel, they are three theories sharing vocabulary but not structure.
+This hypothesis predicts: given a new paradigm's type signature, the proof methods it requires are determined before a single theorem is proved. A paradigm whose definitions cross into measure theory will need concentration inequalities and symmetrization. A paradigm whose definitions involve sequential commitment will need game-theoretic potential arguments. A paradigm whose definitions involve convergence on enumerations will need topological arguments. The premise's type choices are a routing table for proof search. The hypothesis would be falsified by a PAC proof requiring no measure theory, an Online proof requiring concentration inequalities, or a direct Online-Gold theorem bypassing PAC.
 
-```mermaid
-flowchart TB
-    classDef shared fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef pac fill:#2563eb,stroke:#1d4ed8,color:#fff
-    classDef online fill:#374151,stroke:#6b7280,color:#fff
-    classDef gold fill:#111827,stroke:#374151,color:#d1d5db
+### The PAC crossing
 
-    CC["ConceptClass\n(shared grammar)"]:::shared
+Every PAC theorem in this kernel crosses from combinatorics to measure theory. The fundamental theorem asserts that PAC learnability (a measure-theoretic property: probability over i.i.d. samples) is equivalent to finite VC dimension (a combinatorial property: the largest shattered set). The proof infrastructure exists to bridge the crossing:
 
-    PAC["PAC paradigm"]:::pac
-    ONL["Online paradigm"]:::online
-    GLD["Gold paradigm"]:::gold
+| Step | From | To | Mechanism |
+|------|------|----|-----------|
+| Sauer-Shelah | VCDim (combinatorial) | Growth function bound (combinatorial) | Counting restricted labelings |
+| Symmetrization | Growth function bound | Uniform convergence (measure-theoretic) | Ghost sample + exchangeability |
+| Concentration | Uniform convergence | PAC guarantee (measure-theoretic) | Hoeffding via sub-Gaussian MGF |
 
-    CC --> PAC
-    CC --> ONL
-    CC --> GLD
+A paradigm staying within one mathematical domain would not need this infrastructure, which accounts for 56% of this kernel precisely because PAC crosses two domains.
 
-    BL["BatchLearner"]:::pac
-    IID["IIDSample"]:::pac
-    STP["State + predict"]:::online
-    DS["DataStream"]:::gold
-    LST["List → conjecture"]:::gold
+### Online learning: combinatorics and game theory
 
-    PAC --> BL
-    PAC --> IID
-    ONL --> STP
-    GLD --> DS
-    GLD --> LST
-```
+The Littlestone characterization asserts that online learnability is equivalent to finite Littlestone dimension. Both sides are combinatorial, but the proof method is game-theoretic. The adversary inspects the learner's prediction and plays the opposite label. The Standard Optimal Algorithm (SOA) is a minimax strategy: at each step, predict the label whose version-space branch has higher Littlestone dimension. The version space is the game state. The Littlestone dimension is the game value.
 
-Each paradigm pair carries a binary **obstruction tag**: *obstructed* (the paradigms share vocabulary but no proof infrastructure transfers between them; cross-paradigm theorems require explicit bridges) or *independent* (the paradigms share vocabulary but never interact in any theorem).
+The game-theoretic infrastructure (version space, adversary strategy, SOA, mistake counting) is extracted to `Complexity/GameInfra.lean` (219 lines). No product measures. No concentration inequalities. No sigma-algebras. The proof infrastructure is 690 lines, not 5,000, because no combinatorics-to-measure-theory crossing is needed.
 
-| Pair | Tag | Evidence |
-|------|-----|----------|
-| PAC / Online | obstructed | `online_imp_pac` exists, but `pac_not_implies_online` proves the reverse fails |
-| PAC / Gold | obstructed | `ex_not_implies_pac` proves Gold learnability does not entail PAC learnability |
-| Online / Gold | independent | No theorem in this library connects them. No shared proof technique. |
+The adversary-learner interaction pattern (sequential commitment, state update, payoff counting) is shared with bandits and chosen-plaintext attacks, suggesting a common game-theoretic abstraction across these settings.
 
-No common learner parent type exists. A `BatchLearner` takes `{m : Nat} -> (Fin m -> X x Y) -> Concept X Y`. An `OnlineLearner` carries mutable `State` and processes instances one at a time. A `GoldLearner` takes `List (X x Y) -> Concept X Y`. No common parent captures all three without erasing the structural properties their theorems depend on.
+### Gold-style learning: computability and topology
 
-The type system does not permit conflation. This is not a limitation. It is the mathematics.
+Gold's theorem constructs a locking sequence: an enumeration strategy that forces the learner to commit to a finite concept, then extends the adversarial text to be consistent with the infinite target. This is a computability argument operating on enumerations. The mind change characterization uses topological convergence: the sequence of conjectures must stabilize on a growing prefix of the enumeration, which is convergence in the pointwise topology on function spaces.
 
-### Three structural fractures
+Gold-style learning shares neither the combinatorial shattering structure of PAC and Online nor the measure-theoretic machinery of PAC. It is the only paradigm in this kernel that does not share any proof infrastructure with either of the other two, which is why no theorem connects it to Online directly. On countable domains (which Gold's theorem requires via `[Countable X]`), every function is measurable under the discrete sigma-algebra. Measurability is trivially satisfied. The proof difficulty is elsewhere: in the enumeration structure and the convergence argument.
 
-In this kernel, three points emerged where the type system *cannot* be unified. These are not design choices. A faithful Lean4 formalization of all three paradigms that preserves theorem-specific structure will encounter them.
+### The hub structure
 
-**No common learner.** `BatchLearner`, `OnlineLearner`, and `GoldLearner` have incompatible signatures. A batch learner receives a sample and returns a hypothesis. An online learner commits to a prediction before seeing the label, round by round. A Gold learner conjectures from a growing prefix of an enumeration. The Littlestone characterization requires the sequential commitment; the fundamental theorem requires the batch structure; Gold's theorem requires the enumeration interface. No parent type captures all three without destroying the property each theorem quantifies over.
+PAC is the hub. Online connects to PAC through the VC dimension: `online_imp_pac` proves that any online learner with mistake bound M gives a PAC learner. Gold connects to PAC only negatively: `ex_not_implies_pac` proves that Gold-style learnability does not imply PAC learnability. No theorem in the learning theory literature known to us directly connects online learnability and Gold-style identification without routing through PAC. We state this as a hypothesis, not a fact: if a direct Online-Gold theorem exists, the hub structure would change.
 
-**No common data interface.** PAC learning quantifies over probability distributions (measure-theoretic). Online learning quantifies over adversary strategies (game-theoretic). Gold-style learning quantifies over enumerations of the target concept (topological/computability). These are three different universal quantifiers with three different mathematical frameworks. A sum type would push the case split into every theorem statement without resolving the incompatibility.
+| Pair | Relationship | Evidence | Through PAC? |
+|------|-------------|----------|-------------|
+| PAC / Online | Obstructed: one direction holds, reverse fails | `online_imp_pac`, `pac_not_implies_online` | N/A (direct) |
+| PAC / Gold | Obstructed: Gold does not imply PAC | `ex_not_implies_pac` | N/A (direct) |
+| Online / Gold | Independent (hypothesis) | No known direct theorem | All paths route through PAC |
 
-**Five characterizations, five signatures.** The fundamental theorem asserts the equivalence of five differently-typed mathematical statements: PAC learnability (algorithmic), finite VC dimension (combinatorial), finite compression (information-theoretic), vanishing Rademacher complexity (measure-theoretic), and bounded growth function (enumerative). The theorem's significance is precisely that these five objects from five branches of mathematics are equivalent. The type diversity is the content, not an obstacle.
+### Why the learner types cannot unify
 
-### Four design decisions
+The learner types are incompatible because each characterization theorem quantifies over a structural feature that exists only in its paradigm's signature.
 
-The type architecture also encountered four points where alternative designs were possible. These were resolved during premise construction (the first two predicted before compilation, the latter two discovered during it). Each records a tradeoff, not an impossibility.
+The fundamental theorem requires that sample complexity `mf(ε, δ)` is distribution-free: it must work for all probability measures simultaneously. This measure-theoretic universal quantifier forces the `BatchLearner` signature, where the sample size `m` is a parameter that depends only on `ε` and `δ`, not on the distribution.
 
-| Decision | Chosen type | Alternative | Why this choice |
-|----------|------------|-------------|-----------------|
-| VC dimension type | `WithTop Nat` | `Ordinal` (uniform) | `WithTop Nat` gives `CompleteLattice` for free; `Ordinal` requires explicit `BddAbove` witnesses at every `iSup`. The embedding `VCDim_embed_ordinal` bridges the two when needed. |
-| Concept representation | `Set (X -> Bool)` (functions) | `Set (Set X)` (Mathlib set families) | Function application `c x` is natural for learner definitions and error computation. The bridge to Mathlib's `Finset.vcDim` is proved lossless for `Bool` via `conceptToFinset_injective`. |
-| ConceptClass measurability | Typeclass hierarchy (`MeasurableHypotheses`, `MeasurableConceptClass`, `KrappWirthWellBehaved`) | Bare `Set` + explicit hypothesis parameters | The typeclass system replaced ad-hoc `hmeas_C`/`hc_meas`/`hWB` threading across 8 files. `[MeasurableConceptClass X C]` provides all measurability witnesses. The hierarchy is strict: `KrappWirthWellBehaved` implies `MeasurableConceptClass` implies `MeasurableHypotheses`, and the Borel-analytic separation proves the first implication is strict. See Section V. |
-| Bayesian prior type | `R`-valued (unnormalized density) | `ProbabilityMeasure (Concept X Y)` | The measure-theoretic type is mathematically canonical but requires `MeasurableSpace` on the function space. `R`-valued avoids this. No Bayesian theorem is on the critical path; the alternative is preserved as a commented structure in `Learner/Bayesian.lean`. |
+The Littlestone characterization requires that the learner commits to a prediction before seeing the label. This temporal commitment is a property of the `OnlineLearner` signature's `predict : State → X → Y`: the output depends on state accumulated from past rounds, not on the current round's label.
 
-### The Dependency DAG
+Gold's theorem requires that the learner stabilizes on a growing enumeration prefix. This convergence property is a property of the `GoldLearner` signature's `List (X × Y) → Concept X Y`: the output depends on the full history, and the theorem's conclusion is that the output eventually stops changing.
 
-```mermaid
-flowchart TB
-    classDef types fill:#d1d5db,stroke:#6b7280,color:#111827
-    classDef infra fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef thm fill:#2563eb,stroke:#1d4ed8,color:#fff
-    classDef vocab fill:#9ca3af,stroke:#6b7280,color:#111827
+A parent type that erases the sample size parameter, the temporal commitment, or the growing prefix would erase the mathematical property that the corresponding theorem quantifies over. The type incompatibility is entailed by the theorems.
 
-    L0["L0: Computation\n241 lines"]:::vocab
-    L1["L1: Basic\n163 lines"]:::types
-    L2["L2: Data\n155 lines"]:::types
-    L3["L3: Learner/\n303 lines"]:::types
-    L4["L4: Criterion/\n409 lines"]:::types
+### What this predicts
 
-    subgraph L5["L5: Complexity/ (9,454 lines)"]
-        VCD["VCDimension"]:::infra
-        LIT["Littlestone"]:::infra
-        MC["MindChange"]:::infra
-        ORD["Ordinal"]:::infra
-        STR["Structures"]:::infra
-        MEAS["Measurability\n408 lines"]:::infra
-        BAB["BorelAnalyticBridge\n257 lines"]:::infra
-        GEN["Generalization\n2,997 lines"]:::infra
-        SYM["Symmetrization\n3,027 lines"]:::infra
-        RAD2["Rademacher\n1,901 lines"]:::infra
-        GR["GeneralizationResults"]:::infra
-    end
+If a new learning paradigm is formalized, its proof methods will be determined by which mathematical domains its definitions cross.
 
-    subgraph ML["MathLib/ (526 lines)"]
-        CHQ["ChoquetCapacity\n416 lines"]:::infra
-        ANM["AnalyticMeasurability\n110 lines"]:::infra
-    end
+A paradigm crossing combinatorics and information theory (e.g., compression-based learning) will need information-theoretic proof infrastructure but may share the combinatorial side with PAC. A paradigm crossing measure theory and game theory (e.g., stochastic online learning) will need tools from both PAC and Online. A paradigm staying within a single domain will require proportionally less proof infrastructure.
 
-    BR["Bridge\n769 lines"]:::infra
-
-    subgraph L6["L6: Theorem/ (5,087 lines)"]
-        GOLD["Gold ✓"]:::thm
-        TPAC["PAC ✓"]:::thm
-        TONL["Online ✓"]:::thm
-        SEP["Separation ✓"]:::thm
-        PB["PACBayes ✓"]:::thm
-        BAS["BorelAnalyticSep ✓"]:::thm
-        EXT["Extended ⊘"]:::thm
-    end
-
-    L7["L7: Process\n180 lines"]:::vocab
-
-    L0 --> L1
-    L1 --> L2
-    L2 --> L3
-    L3 --> L4
-    L4 --> L5
-    L5 --> BR
-    BR --> L6
-    L0 --> L7
-    ML --> L5
-
-    VCD --> GEN
-    LIT --> GEN
-    MC --> GEN
-    ORD --> GEN
-    STR --> GEN
-    MEAS --> BAB
-    BAB --> BAS
-    CHQ --> ANM
-    ANM --> BAB
-    GEN --> SYM
-    SYM --> RAD2
-    GEN --> GR
-```
-
-The infrastructure layers (L5) account for **56%** of the codebase (excluding MathLib/, which contributes 526 lines of pure measure theory). The theorems (L6) account for 30%. Definitions (L1-L4) account for 7%. MathLib/ accounts for 3%. This ratio is itself a datum: the conceptual vocabulary of learning theory is small, but the proof infrastructure connecting combinatorics to measure theory is vast.
-
-### The shared axis
-
-Every proof in this library answers one question: *How does finite combinatorial structure control infinite measure-theoretic objects?*
-
-The VC dimension is a finite combinatorial quantity (largest shattered set). PAC learnability is a measure-theoretic property (probability over i.i.d. samples). The fundamental theorem says they are equivalent. The entire proof infrastructure exists to cross this bridge: Sauer-Shelah translates VCDim into growth function bounds (combinatorics to combinatorics), symmetrization translates growth bounds into uniform convergence (combinatorics to measure theory), and concentration inequalities translate uniform convergence into PAC guarantees (measure theory to measure theory).
-
-The two sorry theorems sit on this same axis. Moran-Yehudayoff's compression theorem shows that finite VCDim implies a finite compression scheme (combinatorics to combinatorics, but the construction requires approximate minimax on binary matrices). BHMZ's (Bousquet-Hanneke-Moran-Zhivotovskiy) universal learning theorem shows that finite VCDim with infinite Littlestone dimension still permits learning (combinatorics to measure theory, but the construction requires one-inclusion graph aggregation).
-
-There is no proof in this library that does not participate in this axis.
+For AI-driven proof search: an agent that reads the goal's type signature before choosing tactics can restrict its search space to the paradigm-appropriate methods. Goals mentioning `MeasureTheory.Measure` route to the PAC tactic library. Goals mentioning sequential state route to the Online tactic library. Goals mentioning enumerations and convergence route to the Gold tactic library. The premise is a routing table.
 
 ---
 
-## II. Characterizations
+## II. Characterization Theorems
 
-A characterization theorem asserts equivalence between differently-typed mathematical objects. The type diversity is the content: the theorem's value lies in connecting objects that live in different branches of mathematics.
+A characterization theorem asserts that two objects from different mathematical domains are equivalent. The theorem's difficulty is proportional to the distance between the domains it bridges.
+
+### The equivalence landscape
+
+| Theorem | Object A (structural) | Object B (algorithmic) | Domains bridged |
+|---------|----------------------|----------------------|-----------------|
+| Fundamental theorem | VCDim(C) < ∞ | PACLearnable(C): `select hypothesis minimizing empirical error over C` | Combinatorics ↔ Measure theory |
+| Littlestone char. | LittlestoneDim(C) < ∞ | OnlineLearnable(C): `predict majority label in version space V` | Combinatorics ↔ Game theory |
+| Mind change char. | MindChangeOrdinal < ω | EXLearnable(C): `conjecture first h in C consistent with prefix` | Ordinal arithmetic ↔ Computability |
+| PAC-Bayes | KL(Q ‖ P) penalty | Gibbs error bound: `classify via h sampled from posterior Q` | Information theory ↔ Combinatorics × Measure theory |
+
+Each row connects a structural object (a dimension, a divergence) to an algorithmic object (a learner, a bound). The type signatures of A and B live in different mathematical domains. The proof infrastructure required to bridge them is determined by the distance between those domains.
+
+### The asymmetry hypothesis
+
+**In biconditional characterization theorems where both directions are proved, the constructive direction (structural → algorithmic: "build a learner from a bound") requires more proof infrastructure than the non-constructive direction (algorithmic → structural: "if a learner exists, derive the bound").**
+
+| Theorem | Forward (structural → algorithmic) | Backward (algorithmic → structural) | Ratio |
+|---------|-----------------------------------|-------------------------------------|-------|
+| Fundamental theorem | ERM via symmetrization, 3,027 lines | Contrapositive + counting, ~200 lines | 15:1 |
+| Littlestone char. | SOA via version space potential, ~400 lines | Adversary construction, ~100 lines | 4:1 |
+
+The pattern: building the algorithm from the structural bound is harder than proving the structural bound from the algorithm's existence. The 15:1 ratio in the fundamental theorem reflects the combinatorics-to-measure-theory crossing from Section I: the symmetrization infrastructure exists because the constructive direction must bridge from a combinatorial bound to a measure-theoretic guarantee. The 4:1 ratio in Littlestone is smaller because both directions stay within combinatorics and game theory.
+
+This predicts that for any new characterization theorem in this kernel, the constructive direction will dominate the proof burden.
+
+PAC-Bayes is a one-directional bound (prior + posterior + data → generalization guarantee), not a biconditional. The asymmetry hypothesis does not apply. PAC-Bayes exhibits a different asymmetry: pointwise-to-uniform (per-hypothesis Hoeffding is straightforward; uniformizing over all hypotheses via Jensen requires the KL machinery).
 
 ### The fundamental theorem
 
-The central result, stated as `fundamental_theorem` in `Theorem/PAC.lean`:
+The central result, stated as `fundamental_theorem` in `Theorem/PAC.lean` (under `[MeasurableConceptClass X C]`):
 
-> **Theorem** (5-way equivalence). *For a concept class* C *over a measurable space* X, *the following are equivalent:*
+> **Theorem** (5-way equivalence). *For a concept class C over a measurable space X, the following are equivalent:*
 >
-> 1. C *is PAC-learnable*
-> 2. C *admits a finite compression scheme*
-> 3. *The Rademacher complexity of* C *vanishes uniformly*
-> 4. *The sample complexity of* C *is finitely bounded (with quantitative sandwich)*
-> 5. *The growth function of* C *is bounded by Sauer-Shelah*
+> 1. *C is PAC-learnable*
+> 2. *C admits a finite compression scheme*
+> 3. *The Rademacher complexity of C vanishes uniformly*
+> 4. *The sample complexity of C is finitely bounded (with quantitative sandwich)*
+> 5. *The growth function of C is bounded by Sauer-Shelah*
 >
 > *and all five are equivalent to* VCDim(C) < infinity.
 
-```mermaid
-flowchart TB
-    classDef center fill:#2563eb,stroke:#1d4ed8,color:#fff
-    classDef equiv fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef sorry fill:#dc2626,stroke:#991b1b,color:#fff
+Four of five equivalences are proved. The forward direction of the compression characterization (finite VCDim implies compression scheme exists) is blocked by Moran-Yehudayoff 2016.
 
-    VC2["VCDim(C) &lt; ∞"]:::center
-    C1["(1) PACLearnable"]:::equiv
-    C2["(2) Compression\nscheme"]:::sorry
-    C3["(3) Rademacher → 0"]:::equiv
-    C4["(4) Sample bounds"]:::equiv
-    C5["(5) Growth ≤ S-S"]:::equiv
-
-    VC2 <--> C1
-    VC2 <--> C2
-    VC2 <--> C3
-    VC2 --> C4
-    VC2 <--> C5
-```
-
-**Status**: 4 of 5 conjuncts fully proved. The forward direction of conjunct 2 (VCDim finite implies compression scheme exists) requires Moran-Yehudayoff's 2016 construction, an approximate minimax argument on bounded-VC binary matrices that has no Mathlib infrastructure.
-
-### The constructive / non-constructive asymmetry
-
-The biconditional `PACLearnable ↔ VCDim < infinity` conceals a deep asymmetry:
-
-- **Forward** (finite VCDim → PAC): **Constructive.** Produces an explicit ERM (Empirical Risk Minimization) learner. Routes through 3,000 lines of symmetrization infrastructure to establish uniform convergence.
-- **Backward** (PAC → finite VCDim): **Non-constructive.** Constructs an adversarial hard distribution via contrapositive. The witness is a probability measure that cannot be computed from the learner.
-
-This asymmetry is *unavoidable*. It is not an artifact of the proof strategy but a genuine structural feature of the characterization. The forward direction builds a learner; the backward direction proves one cannot exist.
+The constructive direction (VCDim → PAC) produces an explicit ERM learner and routes through 3,027 lines of symmetrization infrastructure to establish uniform convergence. The non-constructive direction (PAC → VCDim) proves the contrapositive: infinite VCDim implies a hard distribution exists. The proof is ~200 lines. The 15:1 ratio is the largest in the kernel and reflects the combinatorics-to-measure-theory crossing from Section I: the symmetrization infrastructure exists because the constructive direction must bridge from a combinatorial bound to a measure-theoretic guarantee.
 
 ### The Littlestone characterization
 
-`littlestone_characterization` in `Theorem/Online.lean`: a concept class is online-learnable if and only if its Littlestone dimension is finite. The equivalence connects a combinatorial object (the depth of the deepest shattered binary tree, path-restricted) to an adversarial game (the existence of a strategy that bounds mistakes against any sequence). The proof uses a version space potential argument for the backward direction and an explicit adversary construction for the forward direction. Both directions are sorry-free. The corrected tree definition (path-wise restriction of C at each branch) is critical; the standard branch-wise definition makes the characterization false (see Section IV).
+Online learnability is equivalent to finite Littlestone dimension. The forward direction constructs the SOA (Standard Optimal Algorithm), a minimax strategy over version spaces: ~400 lines. The backward direction constructs an adversary that forces mistakes along a shattered tree: ~100 lines. The 4:1 ratio is smaller than the fundamental theorem's 15:1 because both directions stay within combinatorics and game theory. No domain crossing is needed.
 
-### Gold's theorem and the mind change characterization
+### Gold's theorem and definition as proof technique
 
-`gold_theorem` in `Theorem/Gold.lean`: no learner can identify in the limit (EX-learn) any concept class containing all finite subsets of a countable domain plus some infinite set. The proof constructs a locking sequence that forces the learner to commit to a finite concept, then extends the adversarial text to be consistent with the infinite target. The locking sequence technique is used exactly once in the library and nowhere else.
+The mind change characterization asserts: a concept class is EX-learnable if and only if every text presentation has finite mind change ordinal.
 
-`mind_change_characterization` in `Theorem/Gold.lean`: a concept class is EX-learnable if and only if every text presentation has finite mind change ordinal. The `MindChangeOrdinal` definition encodes both convergence and correctness in its return type: it returns a finite ordinal when the learner converges correctly with finitely many changes, and omega otherwise. This design collapses the backward direction of the characterization into a definition-level consequence.
+The definition of `MindChangeOrdinal` encodes the forward direction:
+
+```
+MindChangeOrdinal X L c T :=
+  if change_set.Finite then
+    if ∃ t₀, ∀ t ≥ t₀, L.conjecture (T.prefix t) = c then
+      change_set.toFinset.card    -- finite ordinal: converged correctly
+    else
+      omega                       -- omega: converged to wrong concept or did not converge
+  else
+    omega                         -- omega: infinitely many changes
+```
+
+The return type carries the convergence proof: a finite ordinal means the learner both converged AND converged correctly. The backward direction of the characterization (EX → finite ordinal) requires showing the change set is finite and the limit is correct: ~30 lines. The forward direction (finite ordinal → EX) is a definitional consequence: if the ordinal is finite, the definition's branching structure already guarantees correct convergence.
+
+The mind change characterization does not participate in the asymmetry hypothesis because the forward direction is not proved but defined. It is an instance of a different phenomenon: definition choice determines where proof work lives. The constructive content (encoding correctness in the return type) is a design decision, not a proof obligation.
+
+Gold's theorem itself (`gold_theorem` in `Theorem/Gold.lean`) proves that no learner can identify in the limit a concept class containing all finite subsets plus an infinite set. The proof constructs a locking sequence: an enumeration strategy that forces the learner to commit to a finite concept, then extends the adversarial text to be consistent with the infinite target. The locking sequence is a paradigm-specific proof technique: it exploits the enumeration structure of text presentations, which exists only in the Gold paradigm. It cannot be applied to PAC (no enumeration) or Online (no convergence requirement).
 
 ### PAC-Bayes: the frequentist-Bayesian bridge
 
-`pac_bayes_finite` in `Theorem/PACBayes.lean`: McAllester's PAC-Bayes bound for finite hypothesis classes. For any prior P and posterior Q over a finite hypothesis class, the expected generalization error of the Gibbs classifier is bounded by empirical Gibbs error plus a KL-divergence penalty. The proof chains through three lemmas: per-hypothesis Hoeffding with prior-weighted tail (`pac_bayes_per_hypothesis`), simultaneous bound via union bound (`pac_bayes_all_hypotheses`), and Jensen's inequality over the posterior (`pac_bayes_finite`).
+McAllester's PAC-Bayes bound connects three mathematical domains. PAC learning is itself the intersection of combinatorics and measure theory (Section I). PAC-Bayes adds information theory to this intersection:
 
-This is the only proved cross-paradigm result in the kernel. It connects the frequentist framework (PAC-style generalization guarantees) to the Bayesian framework (prior-posterior structure). It is, to our knowledge, the first Lean4 formalization of the PAC-Bayes bound. Sorry-free.
+| Domain | Object | Role in the bound |
+|--------|--------|-------------------|
+| Information theory | KL divergence KL(Q ‖ P) | Complexity penalty for the posterior |
+| Measure theory | Gibbs posterior Q over hypotheses | The distribution whose expected error is bounded |
+| Combinatorics | Finite hypothesis class H | The space over which prior and posterior are defined |
+
+The proof chains through three steps: per-hypothesis Hoeffding with prior-weighted tail (`pac_bayes_per_hypothesis`), simultaneous bound via union bound (`pac_bayes_all_hypotheses`), and Jensen's inequality over the posterior (`pac_bayes_finite`). The pure mathematical infrastructure (KL divergence, finite PMFs, expected values) is extracted to `PureMath/KLDivergence.lean`.
+
+In the hub structure established in Section I, PAC is the hub through which all paradigms connect. PAC-Bayes provides evidence: it connects the Bayesian paradigm to PAC not through shared vocabulary (both use `ConceptClass` and `HypothesisSpace`) but through a shared bound. The KL divergence penalty mediates between the Bayesian prior-posterior structure and the PAC generalization guarantee. Without this bound, Bayesian and PAC learning share types but not theorems. PAC-Bayes is the theorem that makes the connection substantive.
 
 ---
 
 ## III. Separations
 
-A separation theorem proves that an implication is strict by constructing a witness. The witness is the mathematics. In this kernel, four separation results are proved: three between learning paradigms (known results, formalized with constructive witnesses) and one between measurability conditions (new mathematics).
+A separation theorem proves that an implication is strict by constructing a witness: a specific mathematical object that satisfies one condition and provably fails the other. The witness is the mathematics. The theorem statement is the label on the witness.
 
-```mermaid
-flowchart TB
-    classDef proved fill:#1a3a5c,stroke:#4a8abf,color:#fff
-    classDef sep fill:#dc2626,stroke:#991b1b,color:#fff
-    classDef sorry fill:#374151,stroke:#6b7280,color:#d1d5db,stroke-dasharray:5 5
+| If... | ...then one expects | Witness | What it exploits | Learning theory |
+|-------|--------------------|---------|-----------------|-----------------|
+| Shattering dimension = 1 on a linearly ordered domain | Adversarial game value is finite | Threshold functions on N | Monotonicity bounds shattering (pairs cannot be labeled non-monotonically) but does not bound adversarial depth (binary search has no finite stopping point on N) | PAC-learnable but not online-learnable |
+| A family admits a pointwise-convergent selector on every countable enumeration | Shattering dimension is finite | Finite-subset indicators on N | Every finite set is realized (shattering is maximal) but the "output everything seen" selector stabilizes on every enumeration (convergence is trivial) | EX-learnable but not PAC-learnable |
+| Adversarial game value is M | Shattering dimension ≤ M | (holds unconditionally) | A shattered set of size > M would allow 2^{>M} labelings, contradicting the finite mistake bound | Online-learnable implies PAC-learnable |
+| A set is Σ₁¹ (analytic) in a Polish space | The set is Borel | Singleton class over analytic non-Borel A ⊆ R | Suslin projection creates Σ₁¹ sets that are universally measurable but exit the Borel σ-algebra | WellBehavedVC holds but KrappWirth fails |
 
-    GLD["Gold (EX)"]:::proved
-    PAC2["PAC"]:::proved
-    ONL2["Online"]:::proved
-    UNI["Universal"]:::proved
+### PAC does not imply Online
 
-    GLD -->|"✗ EX ↛ PAC\nfinite-subset indicators"| PAC2
-    ONL2 -->|"✓ online_imp_pac\n(always)"| PAC2
-    PAC2 -->|"✗ PAC ↛ Online\nthresholds on ℕ"| ONL2
-    UNI -->|"✗ ¬Univ if VCDim = ∞"| PAC2
-    UNI -.->|"Branch 2: BHMZ sorry"| ONL2
-```
+<!-- FIGURE: threshold_separation.svg
+     Style: black/white, Times New Roman, old school academic
+     Left panel: Number line (N). Step function showing threshold (· ≤ n).
+     Mark a singleton {k} as shattered: threshold at k vs k-1 separates it.
+     Mark a pair {a,b} with a < b: labeling (false, true) impossible with monotone function.
+     Right panel: Binary search tree. Root queries midpoint m.
+     Left child: learner predicted true, adversary reveals false, threshold moves left.
+     Right child: learner predicted false, adversary reveals true, threshold moves right.
+     Tree grows to arbitrary depth. Each edge labeled with one mistake.
+     Caption: "VCDim = 1, LittlestoneDim = infinity. Monotonicity helps sampling, not adversaries."
+-->
 
-**PAC does not imply Online** (`pac_not_implies_online`): The witness is the threshold class on natural numbers, `C = {(· ≤ n) | n : Nat}`. VC dimension is 1, since only singletons are shattered (thresholds are monotone). Littlestone dimension is infinite: an adversary binary-searches the threshold by querying midpoints, forcing one mistake per query at every depth. The proof constructs the adversary strategy explicitly via induction on tree depth.
+Consider the threshold class on the natural numbers: `C = {(· ≤ n) | n : Nat}`. Every threshold function is monotone. VC dimension is 1: any singleton {k} is shattered (the threshold at k vs the threshold at k-1 separates it), but no pair {a, b} with a < b is shattered (the labeling "a false, b true" requires a non-monotone function).
 
-**EX (identification in the limit) does not imply PAC** (`ex_not_implies_pac`): The witness is finite-subset indicators on natural numbers. The Gold learner outputs "true on everything seen so far" and converges because every finite concept eventually stabilizes. But every finite subset of natural numbers is shattered, giving VCDim = infinity.
+Littlestone dimension is infinite. An adversary plays the following game: query the midpoint of the current interval. Whatever the learner predicts, the adversary reveals the opposite. The threshold moves to whichever half the learner got wrong. This binary search forces one mistake per round at every depth. The adversary strategy constructs a shattered tree of arbitrary depth by induction.
 
-**Online implies PAC** (`online_imp_pac`): The only non-strict separation. Any online learner with mistake bound M gives a PAC learner with sample complexity polynomial in M, 1/epsilon, and 1/delta. The proof routes through the generalization bound from finite Littlestone dimension.
+VCDim = 1, LittlestoneDim = ∞. The class is PAC-learnable but not online-learnable. The separation exploits the gap between statistical sampling (where monotonicity helps) and adversarial sequencing (where monotonicity is irrelevant because the adversary adapts).
 
-### The Borel-analytic separation (new mathematics)
+### Gold does not imply PAC
 
-`analytic_nonborel_set_gives_measTarget_separation` in `Theorem/BorelAnalyticSeparation.lean`: the kernel's measurability condition (`WellBehavedVC`, requiring `NullMeasurableSet`) is strictly weaker than the condition identified by Krapp and Wirth (2024, [arXiv:2410.10243](https://arxiv.org/abs/2410.10243)), which requires `MeasurableSet` (Borel).
+<!-- FIGURE: gold_separation.svg
+     Style: black/white, Times New Roman, old school academic
+     Left panel: Timeline showing Gold learner's conjectures.
+     t=1: sees 2, conjectures {2}
+     t=2: sees 5, conjectures {2,5}
+     t=3: sees 7, conjectures {2,5,7} = target. Stabilizes.
+     Arrow labeled "converges" at the stabilization point.
+     Right panel: Shattering diagram.
+     Set S = {a, b} on number line.
+     Four labelings shown as four indicator functions:
+     {a,b}, {a}, {b}, {} -- all realized by Finset indicators.
+     Label: "Every finite set shattered. VCDim = infinity."
+     Caption: "EX-learnable (convergence on enumeration) but not PAC-learnable (VCDim = infinity)."
+-->
 
-The witness is the singleton class `singletonClassOn(A)` where A is an analytic non-Borel subset of the reals. Six linked theorems establish the chain:
+Consider finite-subset indicators on the natural numbers: `C = {fun x => decide (x ∈ S) | S : Finset Nat}`. The Gold learner outputs "true on everything seen so far." After finitely many observations, every element of the target finite set has appeared, and the learner's conjecture stabilizes. The class is EX-learnable.
 
-1. **G** (`singletonClassOn_measurable`): every hypothesis in the singleton class is Borel-measurable.
-2. **H** (`singleton_badEvent_eq_preimage_planar`): the uniform convergence bad event equals the preimage of a planar witness event.
-3. **I** (`planarWitnessEvent_analytic`): the planar witness is analytic (Suslin projection of a Borel intersection).
-4. **J** (`planarWitnessEvent_not_measurable`): the planar witness is NOT Borel (via measurable preimage argument: if it were Borel, A would be Borel, contradicting the hypothesis).
-5. **K** (`singleton_badEvent_not_measurable`): the bad event in sample space is NOT Borel (via surjective measurable preimage from K to J).
-6. **L** (`analytic_nonborel_set_gives_measTarget_separation`): `WellBehavedVCMeasTarget` holds (via the Borel-analytic bridge: Borel-parameterized concept classes have analytic bad events, and analytic sets are universally measurable via Choquet capacitability). But `KrappWirthWellBehaved` fails (the bad event is not Borel).
+Every finite subset of N is shattered: given any S = {a₁, ..., aₖ}, each labeling f : S → Bool is realized by the indicator of {aᵢ | f(aᵢ) = true}. VCDim = ∞. The class is not PAC-learnable.
 
-The separation is conditional on the existence of an analytic non-Borel set in the reals, which is provable under standard set-theoretic assumptions. The `exists_measTarget_separation` theorem takes this as a hypothesis.
+The separation exploits the gap between convergence on a fixed enumeration (which requires only eventual correctness) and generalization from a random sample (which requires uniform error control over the entire domain). Gold-style learning does not need to generalize. PAC learning does.
 
-This is the only result in the kernel that is genuinely new mathematics, not a formalization of a known result. It emerged from the measurability infrastructure built to make the symmetrization chain compile (Section V).
+### Online implies PAC
+
+The reverse implication holds unconditionally: any online learner with mistake bound M gives a PAC learner with sample complexity polynomial in M, 1/ε, and 1/δ. The proof routes through the generalization bound from finite Littlestone dimension. This is the only non-strict paradigm separation in the kernel.
+
+### The Borel-analytic separation
+
+<!-- FIGURE: borel_analytic_separation.svg
+     Style: black/white, Times New Roman, old school academic
+     Three panels stacked vertically:
+
+     Top panel: "The witness class"
+     Real line R with a shaded region A labeled "A ⊆ R (analytic, non-Borel)".
+     Below the line: zeroConcept shown as flat line at y=false.
+     Above the line: three spikes at points a₁, a₂, a₃ ∈ A, each labeled singletonConcept(aᵢ).
+     Caption: "singletonClassOn(A): every hypothesis is Borel-measurable."
+
+     Middle panel: "The proof chain"
+     Flow diagram, left to right:
+     Box "Bad event defined by ∃ a ∈ A"
+       → arrow labeled "Suslin projection" →
+     Box "Analytic (Σ₁¹)"
+       → arrow labeled "Choquet capacity" →
+     Box "NullMeasurable"
+     Below, a separate path:
+     Box "Assume Borel"
+       → arrow labeled "preimage under x ↦ (a₀, x)" →
+     Box "A is Borel"
+       → arrow labeled "contradiction" →
+     Box "NOT Borel" (crossed out)
+
+     Bottom panel: "The separation"
+     Two boxes side by side:
+     Left box (solid border): "WellBehavedVC: HOLDS" with "NullMeasurable ✓" below
+     Right box (dashed border): "KrappWirth: FAILS" with "not Borel ✗" below
+     Gap between them labeled "strict"
+
+     Caption: "The gap between NullMeasurableSet and MeasurableSet is inhabited."
+-->
+
+The kernel's measurability condition for uniform convergence (`WellBehavedVC`, requiring `NullMeasurableSet`) is strictly weaker than the condition proposed by Krapp and Wirth (2024), which requires `MeasurableSet` (Borel). The separation is proved by constructing a concept class whose bad event is NullMeasurable but not Borel.
+
+The witness: let A be an analytic non-Borel subset of the reals. Define the singleton class `singletonClassOn(A) = {zeroConcept} ∪ {singletonConcept(a) | a ∈ A}`, where `singletonConcept(a)` returns true only at x = a.
+
+Every hypothesis in this class is Borel-measurable: the zero concept is constant, and each singleton concept is piecewise constant on a measurable singleton. The uniform convergence bad event (the set of ghost sample pairs where some hypothesis in the class has empirical gap ≥ ε/2) reduces to a planar witness event via a preimage calculation.
+
+The planar witness is analytic. It is defined by an existential projection: "there exists a ∈ A such that the training point misses a and the ghost point hits a." The projection of a Borel set through an existential quantifier is analytic by Suslin's theorem (1917). Analytic sets are universally measurable by Choquet's capacitability theorem (1954), which this kernel formalizes from Kechris 30.13.
+
+The planar witness is not Borel. If it were, then the preimage under the constant section x ↦ (a₀, x) would be Borel. But this preimage is A itself, which is not Borel by hypothesis. Contradiction.
+
+Therefore: `WellBehavedVCMeasTarget` holds (the bad event is NullMeasurable via the analytic-to-universally-measurable chain) but `KrappWirthWellBehaved` fails (the bad event is not Borel). The gap between NullMeasurableSet and MeasurableSet is inhabited by a concrete concept class.
+
+The separation is conditional on the existence of an analytic non-Borel subset of the reals, which is provable under standard set-theoretic assumptions. The theorem `exists_measTarget_separation` takes this as a hypothesis.
+
+This separation connects three fields that had not been connected in this way: descriptive set theory (Suslin projections, Choquet capacity), measure theory (NullMeasurableSet vs MeasurableSet), and statistical learning (uniform convergence bad events for concept classes). The proof method is transportable beyond learning theory to any setting where supremum events over Borel-parameterized families arise.
 
 ---
 
-## IV. What Formalization Corrects
+## IV. Definition Sensitivity
 
-### 1. The No-Free-Lunch theorem is false for finite domains
+A definition is not a stylistic choice. In this kernel, three definitions that appeared correct on paper produced, respectively, a false theorem, a vacuous theorem, and a proof whose difficulty was located in the wrong place. Each was detected during formalization. Each was repaired by modifying the definition.
 
-Every standard textbook states a version of: "No learner can learn `Set.univ`." Formalization exposes that this claim, as typically stated, is **provably false** when the domain X is finite.
+### The taxonomy
 
-For finite X: `VCDim(Set.univ) = |X| < infinity`. By the fundamental theorem (forward direction), `Set.univ` *is* PAC-learnable. The learner is trivial: take m >= |X| samples and memorize.
+| Failure mode | What goes wrong | Example | How to anticipate |
+|-------------|----------------|---------|-------------------|
+| **False theorem** | The definition admits a counterexample to the intended characterization | Littlestone tree shattering | Check: does the definition's quantifier structure admit more witnesses than the theorem requires? |
+| **Vacuous theorem** | The definition makes the theorem trivially true | PACLearnable with existential Dm | Check: can the existentially quantified auxiliary be constructed from the target concept? |
+| **Displaced proof** | The definition forces proof work into the wrong location | MindChangeOrdinal without correctness encoding | Check: does the return type encode the properties the theorem's conclusion requires? |
 
-The correct NFL (No-Free-Lunch) theorem requires **infinite X**, where `VCDim(Set.univ) = infinity`. The proof in `Theorem/PAC.lean` constructs this via `Function.extend` on `Subtype.val_injective`. For every finite S, every labeling of S is realized by some function in `Set.univ`, giving VCDim = infinity by `WithTop.eq_top_iff_forall_ge`.
+### False theorem: Littlestone tree shattering
 
-This is not a pedantic point. It reflects a genuine structural divide: the boundary between learnable and unlearnable is not "all functions" vs "some functions" but "finite VC dimension" vs "infinite VC dimension." Cardinality of the hypothesis space is irrelevant.
-
-### 2. Infinite domains double proof complexity
-
-For **finite X**, the PAC learnability proof is direct:
-- Hoeffding concentration on i.i.d. samples
-- Union bound over finitely many hypotheses
-- ~100 lines of Lean4
-
-For **infinite X**, the same mathematical statement requires:
-- **Ghost sample (independent copy of the training set) construction** (the double-sample trick)
-- **Symmetrization** (exchanging order of expectation and supremum over uncountable C)
-- **Exchangeability bounds** via `NullMeasurableSet` + Tonelli interchange
-- **Growth function restriction** to reduce uncountable union to polynomial bound
-- ~3,000 lines of Lean4
-
-The textbook treatment occupies the same two paragraphs in both cases. In this kernel, the infinite-domain case required roughly **30x more** proof infrastructure, because the symmetrization argument, invisible in informal mathematics, requires explicit construction of swap functions, product measure isomorphisms, and measurability witnesses for every intermediate step.
-
-In this kernel, the PAC characterization is proved for all measurable spaces X satisfying `[MeasurableSingletonClass X]` and `WellBehavedVC X C`. The proof splits via `rcases finite_or_infinite X`: the finite branch is trivial (enumerate all concepts, union bound), roughly 100 lines. The infinite branch requires the full symmetrization apparatus: 3,000 lines. The entire VC dimension theory, as a proof infrastructure, exists to handle the infinite case.
-
-The direct union bound over uncountable concept classes gives 2^{2m}, which is vacuous. The Rademacher route succeeds because it takes suprema over finite sample restrictions, reducing the uncountable class to a polynomial-sized set of labelings. This is why Rademacher complexity appears in the formalization at all: not as a theoretical nicety, but as the only viable route through uncountable C.
-
-The three irreducible layers of the symmetrization route:
-
-```
-Layer 3: Growth function restriction              ~400 lines
-  GrowthFunction(C, 2m) bounds distinct labelings on 2m points.
-  Reduces uncountable sup over C to finite union bound.
-  Uses: sauer_shelah_exp_bound, growth_exp_le_delta
-         │
-         ▼
-Layer 2: Ghost-sample symmetrization               ~1,200 lines
-  Introduces independent copy S' of sample S.
-  Exchanges sup and expectation via exchangeability.
-  Pr[sup |gen - emp| ≥ ε] ≤ 2 · Pr[sup |emp' - emp| ≥ ε/2]
-  Uses: symmetrization_step, double_sample_pattern_bound,
-        finite_exchangeability_bound (NullMeasurableSet + Tonelli)
-         │
-         ▼
-Layer 1: Concentration (Hoeffding)                  ~300 lines
-  Per-hypothesis tail bound via sub-Gaussian MGF (moment generating function).
-  Pr[emp_err - true_err ≥ t] ≤ exp(-2mt^2)
-  Uses: hoeffding_one_sided, cosh_le_exp_sq_half,
-        rademacher_mgf_bound
-```
-
-No layer can be removed. Layer 3 is needed because C may be uncountable. Layer 2 is needed because the sup over C does not commute with expectation. Layer 1 is needed because individual hypothesis errors are random variables requiring concentration.
-
-### 3. Measure-theoretic regularity is non-negotiable
-
-For uncountable concept classes, the "bad event"
-
-{xs : Fin m -> X | exists h in C, |true_err(h) - emp_err(h)| >= eps}
-
-is not `MeasurableSet`. This is stronger than "not automatically measurable": the sigma-algebra generated by the product measure genuinely does not contain the uncountable union. The standard Lean4/Mathlib integration API (`lintegral`, `integral`) requires measurability witnesses.
-
-The resolution: `NullMeasurableSet` suffices. Integration via `lintegral_indicator_one₀` and `AEMeasurable.indicator₀` requires only almost-everywhere measurability, not pointwise. The formalization introduces `WellBehavedVC` as a regularity assumption: the bad event is null-measurable with respect to the product measure. This is not a formalization artifact. It is a mathematical condition that pen-and-paper proofs suppress by working with parametric or countable hypothesis classes implicitly. The measurability gap was independently identified by Krapp and Wirth (2024, [arXiv:2410.10243](https://arxiv.org/abs/2410.10243)), who provide a rigorous informal treatment in the agnostic PAC setting. This kernel provides the first machine-checked verification of the same regularity requirements.
-
-### 4. The Littlestone tree definition has a subtle bug
-
-The standard branch-wise definition of tree shattering:
+The branch-wise definition allows independent witnesses at each branch:
 
 ```
 isShattered C (.branch x l r) =
-  (∃ c ∈ C, c x = true ∧ isShattered C l) ∧
-  (∃ c ∈ C, c x = false ∧ isShattered C r)
+  (exists c in C, c x = true and isShattered C l) and
+  (exists c in C, c x = false and isShattered C r)
 ```
 
-does **not** restrict the concept class at recursive calls. Different witness concepts may appear at each tree level without path consistency.
+Let C = {const_true, const_false}. const_true witnesses every left branch. const_false witnesses every right branch. LittlestoneDim = infinity. But C is online-learnable with 1 mistake: after one observation, the learner knows which constant it faces. The characterization theorem is false under this definition.
 
-The informal counterexample: let C = {const_true, const_false}. Under the branch-wise definition, an adversary constructs a shattered tree of arbitrary depth. At each node x, const_true witnesses the left branch and const_false witnesses the right. No path consistency is required, so this works at every depth. LittlestoneDim = infinity. But C is online-learnable with exactly 1 mistake: after one observation the learner knows which constant it faces. The characterization theorem is false under this definition.
-
-The corrected definition restricts C at each branch:
+The corrected definition restricts C at each recursive call:
 
 ```
 isShattered C (.branch x l r) =
-  (∃ c ∈ C, c x = true) ∧ (∃ c ∈ C, c x = false) ∧
-  isShattered {c ∈ C | c x = true} l ∧
-  isShattered {c ∈ C | c x = false} r
+  (exists c in C, c x = true) and (exists c in C, c x = false) and
+  isShattered {c in C | c x = true} l and
+  isShattered {c in C | c x = false} r
 ```
 
-The characterization theorem (`Theorem/Online.lean`) uses the corrected version. The original buggy definition is preserved in `Complexity/Littlestone.lean` with documentation.
+Under the corrected definition, C = {const_true, const_false} gives LittlestoneDim = 1. The characterization theorem holds. The two definitions are different logical formulas: the first quantifies independent witnesses per level, the second restricts to a consistent class along each path.
 
-### 5. Quantifier ordering in uniform convergence is load-bearing
+### Vacuous theorem: PACLearnable with existential Dm
 
-The definition of uniform convergence uses:
-
-```
-∀ ε > 0, ∃ m₀, ∀ D (probability measure), ∀ m ≥ m₀, [UC bound ≤ ε]
-```
-
-This is **not** the same as:
+The original definition:
 
 ```
-∀ ε > 0, ∀ D, ∃ m₀, ∀ m ≥ m₀, [UC bound ≤ ε]
+exists Dm : Measure (Fin m -> X x Y), [probability conditions] and [PAC guarantee]
 ```
 
-The first (used in this formalization) makes m₀ independent of D and c, which is essential, because `PACLearnable`'s sample size function `mf(ε, δ)` must be distribution-free. The second allows m₀ to depend on D, which makes `uc_imp_pac` unprovable.
+The existential allows Dm to depend on the target concept c. A memorizer constructs Dm as the point mass encoding c. Every finite concept class is trivially PAC-learnable. The theorem is vacuous.
 
-Textbooks state both orders interchangeably. They are not interchangeable.
+The corrected definition uses Measure.pi:
 
-### 6. Bool is fundamentally special
+```
+Measure.pi (fun _ : Fin m => D) { xs | ... }
+```
 
-The bridge between `ConceptClass X Bool` (our type: sets of functions) and `Set (Set X)` (Mathlib's type: set families) is a **bijection**: the map `c ↦ {x | c x = true}` is lossless for `Y = Bool`.
+The sample measure is the product of m independent copies of D. The learner cannot see c through the sample distribution. PAC learnability becomes non-trivial.
 
-For `|Y| > 2`, this bridge is **lossy**. Multiple functions map to the same family of level sets. The critical path theorems and bridge results in this kernel operate over `Bool`. Multiclass complexity definitions (Natarajan dimension, DS dimension, pseudodimension, fat-shattering) are scaffolded outside this path but do not carry proved theorems. Binary classification is the unique setting where function-based and set-based approaches coincide.
+### Displaced proof: MindChangeOrdinal
 
-### 7. Definition as proof technique
+The original MindChangeCount returned a natural number: the count of mind changes. The forward direction of the characterization (finite count implies EX-learnable) required a separate proof that the learner converges correctly, not just that it stops changing. The proof was unexpectedly difficult because the definition did not carry the information the theorem needed.
 
-The standard mind change count records how many times a learner changes its hypothesis. It says nothing about whether the final hypothesis is correct. The backward direction of any characterization theorem ("few mind changes implies learning") must separately establish convergence to the right concept.
+The corrected MindChangeOrdinal branches on finiteness AND correctness:
 
-`MindChangeOrdinal` in `Complexity/MindChange.lean` takes a different approach. It returns a finite ordinal when the learner converges correctly with finitely many changes. It returns omega otherwise, for both non-convergent and wrong-limit learners. This single design choice collapses the backward direction to: "MindChangeOrdinal < omega implies, by definition, that the learner converges to the correct concept with finitely many changes." The definition IS the proof.
+```
+MindChangeOrdinal X L c T :=
+  if change_set.Finite then
+    if exists t0, forall t >= t0, L.conjecture (T.prefix t) = c then
+      change_set.toFinset.card    -- finite ordinal: converged correctly
+    else
+      omega                       -- omega: wrong concept or no convergence
+  else
+    omega                         -- omega: infinitely many changes
+```
 
-This pattern, encoding a theorem's conclusion into a definition's return type, is not standard in the learning theory literature. It appears once in this kernel (for Gold-style learning). Formalization forced it: Lean4's type system rewards definitions that make theorems structurally obvious.
+A finite return value guarantees correct convergence. The forward direction becomes definitional. The proof work moved from the theorem into the definition.
 
-### 8. The measurable inner event principle
+### Additional corrections
 
-When the target event is non-measurable, find a measurable event inside it with the same probability bound. Conclude by monotonicity.
+**NFL and domain cardinality.** The No-Free-Lunch theorem is provably false for finite domains: VCDim(Set.univ) = |X| when X is finite, so Set.univ is PAC-learnable by memorization. The correct statement requires `[Infinite X]`. This is a known correction in the learning theory community, formalized here.
 
-This pattern appears twice in the kernel, in unrelated proof chains:
+**Quantifier ordering.** The orderings `forall eps, exists m0, forall D` (uniform convergence) and `forall eps, forall D, exists m0` (pointwise convergence) are not interchangeable. The first makes m0 independent of D. The second allows m0 to depend on D. PACLearnable requires distribution-free sample complexity, which forces the uniform ordering. The distinction is the Dini/Arzela gap from real analysis: uniform convergence implies pointwise, but not conversely.
 
-1. **Symmetrization** (`Complexity/Symmetrization.lean`): The union over uncountable C of "hypothesis h has generalization gap >= epsilon" is not measurable. Resolution: construct a `NullMeasurableSet` inner event via `MeasureTheory.measurable_measure_prod_mk_left`, then bound by measure monotonicity.
+### The finite-infinite tactic hypothesis
 
-2. **Advice elimination** (`Theorem/Extended.lean`): The product-space success event `SuccessProd` (defined via `Classical.choose`) is not measurable. Resolution: construct `GoodPair`, a measurable inner event satisfying the same probability bound, then transport via monotonicity.
+The corrections above cluster around a structural boundary: the distinction between finite and infinite domains changes the proof methods available.
 
-The principle is not standard in informal mathematics. Measurability is invisible on paper. Formalization makes it load-bearing: without a measurability witness, `lintegral` and `integral` refuse to compute. The two instances were discovered independently (in different proof chains, weeks apart) and only recognized as the same pattern afterward.
+For finite X, the PAC proof is direct: enumerate all hypotheses, apply Hoeffding, union bound. ~100 lines. For infinite X, the same mathematical statement requires symmetrization, ghost samples, exchangeability bounds, NullMeasurableSet. ~3,000 lines.
+
+This suggests three hypotheses about proof search:
+
+1. **Tactic space signature.** The finite branch uses `Finset.sum`, `Finset.card`, direct counting. The infinite branch uses `lintegral`, `NullMeasurableSet`, product measure isomorphisms. The two tactic spaces are disjoint. An agent that detects `[Infinite X]` or uncountable C in the goal can restrict its tactic library before searching.
+
+2. **Predictable agent failure.** AI proof search agents attempting the infinite-domain case with finite-domain tactics (direct union bound) fail predictably: they produce 2^{2m} where the proof needs GrowthFunction(C, 2m). This failure mode was observed in three independent agent attempts during proof discovery.
+
+3. **Non-inductive atoms.** Each infinite-domain proof technique (symmetrization, Rademacher restriction, Choquet capacity, NullMeasurableSet) is a new local construction that cannot be obtained by inductive extension of the finite case. The finite case does not contain the seed of symmetrization. These techniques are atoms: they must be introduced, not derived.
+
+### The measurable inner event metaprogram
+
+When the target event is defined by an existential quantifier over an uncountable set (`exists h in C, ...`) and the selection involves `Classical.choose` or a non-constructive principle, the target event may not be measurable. The proof design for this class of problems: find a measurable subset of the target event that carries the same probability bound, then conclude by monotonicity.
+
+Two instances appear in the kernel: the symmetrization bad event (uncountable union over C, resolved via NullMeasurableSet) and the advice elimination success event (`Classical.choose` in bestAdvice, resolved via GoodPair subset of SuccessProd). Both involve events defined by non-constructive selection over uncountable indexing sets. The proof pattern is the same: replace the non-measurable selection with a measurable approximation, then use measure monotonicity.
+
+The class of proofs requiring this pattern: any proof where the goal involves integrating over an event defined by `exists theta in Theta, P(theta, x)` where Theta is uncountable and the selector `theta*(x) = Classical.choose` is not measurable. Joint measurability of P in (theta, x) is the sufficient condition for the pattern to apply.
+
+### The premise design blueprint
+
+The failure taxonomy, domain boundary checks, and measurability requirements above are codified as a machine-readable premise design blueprint in [`assets/premise_blueprint.yaml`](assets/premise_blueprint.yaml). The blueprint is a general methodology for constructing typed premises that enable AI-driven proof search to produce not just formalization but discovery.
+
+The methodology has two phases:
+
+**Phase 1: Premise for formalization.** Eight steps that produce a typed premise compiling with all proofs as sorry. Steps 1-4 construct the premise (identify paradigms, identify domain crossings, assign dependency layers, write definitions). Steps 5-7 are diagnostic gates that check definitions against three failure modes (false, vacuous, displaced) plus domain boundary and measurability requirements. Step 8 estimates the infrastructure ratio from the domain crossing count. A definition that fails a gate returns to step 4 for revision.
+
+**Phase 2: Refactoring for discovery.** Five steps that iteratively extract infrastructure from the formalization kernel. Each extraction is a hypothesis: "this infrastructure is more general than the theorem that required it." Each typeclass is a hypothesis: "this condition applies to more objects than the ones currently carrying it." Testing these hypotheses is how formalization becomes discovery. In this kernel, the measurability typeclass extraction (engineering cleanup of hypothesis threading) produced three original theorems.
+
+<!-- FIGURE: premise_blueprint_flow.svg
+     Style: black/white, Times New Roman, old school academic
+     Two-column vertical flow diagram:
+
+     LEFT COLUMN: "Phase 1: Formalization"
+
+     [1. Identify paradigms + obstruction tags]
+          |
+          v
+     [2. Identify domain crossings per paradigm]
+          |
+          v
+     [3. Assign dependency layers (L0-L7)]
+          |
+          v
+     [4. Write definitions with sorry]
+          |
+          v
+     [5. Diagnostic gate: failure taxonomy]
+        / | \
+       /  |  \
+    [False?] [Vacuous?] [Displaced?]
+       \  |  /
+        \ | /
+     (fail: return to 4)
+          |  pass
+          v
+     [6. Diagnostic gate: domain boundary]
+     (fail: return to 4)
+          |  pass
+          v
+     [7. Diagnostic gate: measurability]
+     (fail: return to 4)
+          |  pass
+          v
+     [8. Estimate infrastructure ratio]
+          |
+          v
+     [Launch proof search]
+
+     RIGHT COLUMN: "Phase 2: Discovery"
+
+     [Formalization kernel complete]
+          |
+          v
+     [A. Identify inlined infrastructure]
+          |
+          v
+     [B. Extract to modules (PureMath/, GameInfra, etc.)]
+          |
+          v
+     [C. Introduce typeclasses from repeated hypotheses]
+          |
+          v
+     [D. Test generality: new instances? new theorems? composition results?]
+          |
+          v
+     [E. Iterate: new theorem may inline new infrastructure]
+          |
+     (loop back to A)
+
+     Arrow from bottom of left column to top of right column:
+     "Phase 1 output feeds Phase 2 input"
+
+     Caption: "The premise design pipeline. Phase 1 produces a formalization kernel.
+     Phase 2 extracts infrastructure and tests generality, producing new mathematics."
+-->
+
+The blueprint encodes negative-space knowledge (what NOT to do when writing premises) as diagnostic tables mapping observable symptoms during proof search to their causes and fixes. Phase 2 diagnostics detect discovery opportunities: repeated hypothesis parameters signal typeclasses waiting to be extracted, unexpected typeclass instances signal new theorems, and composed objects that are less well-behaved than atomic ones signal structural theorems about the field.
 
 ---
 
 ## V. The Measurability Question
 
-When a field is formalized, what measurability conditions are implicit in its standard presentations, and are they necessary or merely sufficient?
+What measurability conditions does learning theory actually require? `MeasurableSet` (Borel) is sufficient but unnecessarily strong. `NullMeasurableSet` is necessary and sufficient. The gap between them is strict, inhabited by concrete concept classes, and widened by composition.
 
-### Why measurability is not routine
+### The question and its answer
 
-Standard learning theory textbooks treat measurability as a technicality: assume the concept class is "nice" and proceed. In this kernel, measurability became the primary obstruction to completing the symmetrization chain. The bad event for uniform convergence, `{xs | exists h in C, |true_err(h) - emp_err(h)| >= eps}`, is not `MeasurableSet` for uncountable concept classes C. The sigma-algebra generated by the product measure does not contain the uncountable union. This is not a Lean4 artifact. It is a mathematical fact that pen-and-paper proofs suppress by working with countable or parametric hypothesis classes implicitly. Krapp and Wirth (2024, [arXiv:2410.10243](https://arxiv.org/abs/2410.10243)) independently identified the same gap in the agnostic PAC setting.
+Standard learning theory textbooks treat measurability as a technicality. Krapp and Wirth (2024, [arXiv:2410.10243](https://arxiv.org/abs/2410.10243)) identified the gap and proposed `MeasurableSet` as the fix. This kernel proves a weaker condition suffices.
+
+The uniform convergence bad event for a concept class C,
+
+```
+{xs | exists h in C, |true_err(h) - emp_err(h)| >= eps}
+```
+
+is not `MeasurableSet` for uncountable C. The sigma-algebra generated by the product measure does not contain the uncountable union. But the Lean4 integration API (`lintegral_indicator_one₀`, `AEMeasurable.indicator₀`) requires only `NullMeasurableSet`: almost-everywhere measurability, not pointwise. The formalization introduces `WellBehavedVC` as the regularity condition: the bad event is null-measurable with respect to the product measure.
+
+The Borel-analytic separation (Section III) proves the gap is strict: there exist concept classes where `WellBehavedVC` holds but `KrappWirthWellBehaved` (Borel measurability) fails. `NullMeasurableSet` is not just a convenience. It is the correct level.
 
 ### The typeclass hierarchy
 
-The resolution required a three-level measurability hierarchy, formalized as Lean4 typeclasses in `Complexity/Measurability.lean`:
+The resolution required a three-level measurability hierarchy, formalized as Lean4 typeclasses:
 
-| Level | Typeclass | What it provides | Where it lives |
-|-------|-----------|-----------------|----------------|
-| L1 | `MeasurableHypotheses` | Per-hypothesis measurability: `forall h in C, Measurable h` | `Basic.lean` |
-| L3 | `MeasurableConceptClass` | Class-wide measurability + `WellBehavedVC` (NullMeasurableSet for bad events) | `Complexity/Measurability.lean` |
-| L5 | `KrappWirthWellBehaved` | Borel measurability: ghost gap supremum is a measurable function | `Complexity/Measurability.lean` |
+| Level | Typeclass | What it provides | Layer |
+|-------|-----------|-----------------|-------|
+| 1 | `MeasurableHypotheses` | Per-hypothesis measurability: every h in C is a measurable function | L1 (Basic) |
+| 2 | `MeasurableConceptClass` | Class-wide measurability + `WellBehavedVC` (NullMeasurableSet for bad events) | L3 (Learner) |
+| 3 | `KrappWirthWellBehaved` | Borel measurability: ghost gap supremum is a measurable function | L5 (Complexity) |
 
-The hierarchy is strict: `KrappWirthWellBehaved` implies `MeasurableConceptClass` implies `MeasurableHypotheses`. The implication `KrappWirthWellBehaved -> WellBehavedVC` is proved sorry-free. The Borel-analytic separation (Section III) proves the reverse implication fails.
+The hierarchy is strict: Level 3 implies Level 2 implies Level 1. The Borel-analytic separation proves that Level 2 does not imply Level 3. The measurability typeclasses cross-cut the kernel's dependency layers (L1, L3, L5), which is why they were not in the original premise and had to be introduced during refactoring.
 
-This typeclass system replaced ad-hoc hypothesis threading (`hmeas_C`, `hc_meas`, `hWB`) across 8 files. The theorem `vc_characterization` now reads `[MeasurableConceptClass X C]` instead of carrying three explicit hypothesis parameters.
+This typeclass system replaced ad-hoc hypothesis threading (`hmeas_C`, `hc_meas`, `hWB`) across 8 files. The theorem `vc_characterization` now carries `[MeasurableConceptClass X C]` instead of three explicit parameters. The engineering cleanup produced the infrastructure that made the Borel-analytic separation provable.
 
-### MeasurableBatchLearner: a new precondition
+### MeasurableBatchLearner
 
-The formalization also required joint measurability of the learner's evaluation map: the function `(training_sample, x) -> L(training_sample)(x)` must be measurable as a map on the product space. This condition, formalized as `MeasurableBatchLearner`, is not isolated as a standalone precondition in any paper we are aware of. It emerged because Lean4 refused to integrate over the learner's output in the boosting proof (`boost_two_thirds_to_pac`) without a measurability witness for the composition. For ERM (Empirical Risk Minimization) learners over finite hypothesis classes, the condition is trivially satisfied. For ERM over uncountable classes, it depends on the argmin selection rule and may require measurable selection theorems (Kuratowski-Ryll-Nardzewski).
+The formalization also required a condition on the learner itself: the joint map `(training_data, x) → L(training_data)(x)` must be measurable as a function on the product space. This condition, formalized as `MeasurableBatchLearner`, determines which learner architectures can participate in measure-theoretic guarantees.
 
-### Open directions
+Neural networks satisfy it trivially: compositions of continuous functions are measurable. The non-trivial question is which non-neural architectures satisfy it.
 
-The measurability hierarchy opens several questions that this kernel does not resolve:
+Version space learners satisfy it. The proof (`versionSpaceLearner_measurableBatchLearner` in `Learner/VersionSpace.lean`, 203 lines) decomposes the evaluation preimage into countable unions of measurable rectangles via `Nat.find` and `IsFirstConsistent`. The proof pattern (rectangle decomposition + `measurable_to_countable'`) applies to any learner defined by selecting the first element of a countable enumeration satisfying a decidable predicate.
 
-1. **Is the gap inhabited by natural concept classes?** The Borel-analytic separation uses a singleton class over an analytic non-Borel set. Do concept classes arising in practice (neural networks, kernel methods, Gaussian processes) ever land in the gap between `WellBehavedVC` and `KrappWirthWellBehaved`?
+`MeasurableBatchLearner` is the condition that gates RL policy validity for batch/offline settings. Any learner satisfying it can serve as an RL policy class: the value function V^pi(s) = E[sum gamma^t r(s_t, a_t)] is well-defined as an integral. The version space theorem proves that non-neural learners pass this gate.
 
-2. **Does interpolation break Borel measurability?** If two concept classes C1, C2 are Borel-parameterized, their interpolation (the class of all concepts agreeing with some c1 on a region A and some c2 on X \ A) has a bad event defined by a Suslin projection. Analytic sets are NullMeasurable but not always Borel. This suggests that interpolation of measurable classes may exit the Borel algebra while remaining NullMeasurable, connecting the measurability gap to the interpolation/amalgamation structure of concept classes.
+*Remark.* On countable domains (`[Countable X]`), every function is measurable under the discrete sigma-algebra. Gold learners are trivially `MeasurableBatchLearner` when retyped as batch learners. EX-learning on countable domains can engineer RL policy without measurability obstruction.
 
-3. **Is there a measurability dimension?** A complexity measure capturing how much additional sigma-algebra structure a concept class requires, analogous to how VC dimension captures combinatorial complexity.
+### The measurability arc
+
+The four results form a progression:
+
+| Step | Result | What it establishes |
+|------|--------|-------------------|
+| Correction | NullMeasurableSet suffices (corrects Krapp-Wirth 2024) | The hypothesis for the fundamental theorem can be weakened |
+| Separation | The gap is strict (singleton class witness) | The weakening is non-vacuous: concrete classes live in the gap |
+| Prediction | Version space learners satisfy `MeasurableBatchLearner` | Non-neural architectures pass the RL policy gate |
+| Descent | Interpolation of Borel classes weakens measurability | Composition is a measurability-weakening operation |
+
+Each step emerged from the measurability typeclass infrastructure. The infrastructure was built for engineering (clean up hypothesis threading). It produced mathematics (four results, three of them original). This is the primary evidence for the thesis that refactoring for discovery works: the engineering cleanup was the discovery.
 
 ---
 
+> [!IMPORTANT]
+> **Open frontier.** The measurability arc is closed through four proved results. The frontier it opens is not.
+
+<details>
+<summary><strong>Does the gap contain natural concept classes?</strong></summary>
+
+The Borel-analytic separation uses a singleton class over an analytic non-Borel set. Do concept classes arising in practice (neural networks, kernel methods, Gaussian processes) ever land in the gap between `WellBehavedVC` and `KrappWirthWellBehaved`? Neural networks are compositions of continuous functions on R^d; their bad events are likely Borel. Kernel methods with uncountable feature maps are less clear. It is not known whether any natural concept class requires NullMeasurableSet but not MeasurableSet.
+
+</details>
+
+<details>
+<summary><strong>Does amalgamation also weaken measurability?</strong></summary>
+
+Interpolation splits the domain spatially (region A vs complement). Amalgamation merges hypotheses by shared-type agreement (evidential composition). If amalgamation also produces analytic-but-not-Borel bad events, then BOTH fundamental operations on concept classes (spatial and evidential) drop measurability from Borel to NullMeasurable. The proof direction is known: amalgamation over a measurable shared type produces a restricted parameter space whose projection is analytic.
+
+</details>
+
+<details>
+<summary><strong>Is MeasurableBatchLearner closed under composition?</strong></summary>
+
+If `MeasurableBatchLearner` is closed under the kernel's natural operations (boosting via majority vote, interpolation via piecewise learners, concatenation of enumerations), it is not just a technical gate but an algebraic object: the class of measurable learners would be a category closed under the operations that learning theory uses to build complex learners from simple ones. Closure would mean that any learner constructed from measurable components by standard operations is automatically measurable. The three closure properties (boosting, interpolation, version space concatenation) have been stated as Lean4 conjectures with known proof directions.
+
+</details>
+
+<details>
+<summary><strong>Is there a measurability dimension?</strong></summary>
+
+A complexity measure capturing how much additional sigma-algebra structure a concept class requires, analogous to how VC dimension captures combinatorial complexity. If composition weakens measurability by a quantifiable amount, the measurability dimension of a composed class would be a function of its components' dimensions and the composition operation. No definition has been proposed.
+
+</details>
+
+<details>
+<summary><strong>Does network depth increase measurability complexity?</strong></summary>
+
+Neural network layers are compositions. Attention is a router (the `BorelRouterCode` structure in `Complexity/Interpolation.lean` formalizes this). Dropout is a random interpolation. If each composition step weakens measurability, the measurability complexity of a deep network would be a function of its depth and architecture. This is speculative.
+
+</details>
+
+---
 
 ## Part II: The Premise
 
 ## VI. The Typed Premise
 
-A typed premise for a field consists of: concept nodes organized into dependency layers, paradigm joints with obstruction tags, and structural hypotheses about type-theoretic fractures. The premise scopes what is provable. Proof search operates within it, not alongside it.
+A typed premise for a mathematical field consists of four components: concept nodes (the field's definitions and theorem statements, compiled with proof placeholders), dependency layers (a compilation order ensuring types are available before use), paradigm joints (binary obstruction tags predicting whether proof infrastructure transfers between subfields), and structural hypotheses (predictions about type-theoretic fractures). The premise scopes proof search. The AI searches within it, not alongside it.
 
-Before proof discovery began, a premise was derived for learning theory: 42 concept nodes across 8 layers (L0-L7), with 5 paradigm joints, 7 structural hypotheses, and 5 compilation constraints. This premise is recorded in `premise/origin.json`.
+### The layer structure
 
-The premise served as a grammar for the AI: instead of jointly discovering types and proofs (which produces trivially-true theorems, sorry-in-Prop, and type homogeneity), the AI searched for proofs within a well-scoped, pre-validated type structure. The grammar was complete. Not a single type category was added during 14,438 lines of proof.
+Every mathematical field, when typed for formalization, organizes into dependency layers. The specific contents are field-dependent. The ordering is not.
 
-### What the premise contains
+| Layer | Role | This kernel |
+|-------|------|-------------|
+| L0 | Computation infrastructure: automata, machines, formal languages | `Computation.lean` (241 lines) |
+| L1 | Base types: the field's atomic definitions | `Basic.lean` (169 lines): Concept, ConceptClass, HypothesisSpace, loss functions |
+| L2 | Data interfaces: how information enters the system | `Data.lean` (167 lines): IIDSample, DataStream, TextPresentation, oracles |
+| L3 | Agent types: the entities that act on data | `Learner/*.lean` (348 lines): BatchLearner, OnlineLearner, GoldLearner, BayesianLearner |
+| L4 | Success criteria: what counts as solving the problem | `Criterion/*.lean` (409 lines): PACLearnable, OnlineLearnable, EXLearnable, UniversalLearnable |
+| L5 | Complexity measures and proof infrastructure | `Complexity/*.lean` (9,454 lines): VCDim, LittlestoneDim, Rademacher, Symmetrization, Measurability |
+| L6 | Theorems | `Theorem/*.lean` (5,087 lines): characterizations, separations, PAC-Bayes, Borel-analytic |
+| L7 | Processes and applications | `Process.lean` (180 lines): grammar induction, CEGIS, scope boundaries |
 
-| Component | Count | Role |
-|-----------|-------|------|
-| Concept nodes | 42 | The typed vocabulary of learning theory |
-| Dependency layers | 8 (L0-L7) | Compilation order: types before criteria before complexity before theorems |
-| Paradigm joints | 5 | Binary obstruction tags between paradigm pairs |
-| Structural hypotheses | 7 | Predictions about type-theoretic fractures (3 confirmed, 4 resolved as design decisions) |
-| Compilation constraints | 5 | Lean4-specific type-level issues discovered during compilation (e.g., `def` vs `abbrev` for typeclass synthesis) |
+L5 accounts for 56% of the kernel (excluding PureMath/). This ratio is a consequence of the combinatorics-to-measure-theory crossing identified in Section I: bridging two mathematical domains requires extensive proof infrastructure.
 
-### The premise as independent variable
+### This kernel's premise
 
-The premise is the most non-trivial component to change. A bad premise produces a kernel that either does not compile, compiles but proves vacuous theorems, or compiles but misses the field's structure. The quality of the premise determines the quality of the kernel. The 264 sorry-free theorems, the 2 genuine sorrys at published-result frontiers, and the emergence of new mathematics (the Borel-analytic separation) are all outputs of this specific premise.
+The premise for learning theory was derived from the author's textbook before proof search began. It is recorded in [`premise/origin.json`](premise/origin.json).
 
-The premise was derived from informal learning theory (the author's textbook). It is not the only possible premise for this field. Alternative premises with different type choices would produce different kernels with different theorem landscapes. The structural hypotheses (Section I) and design decisions (Section I) document where the premise made specific, testable choices.
+| Component | Count | What it contains |
+|-----------|-------|-----------------|
+| Concept nodes | 42 | Every definition, structure, and theorem statement in L0-L7, compiled with `sorry` placeholders |
+| Paradigm joints | 5 | Binary obstruction tags for each paradigm pair (PAC/Online, PAC/Gold, Online/Gold, FiniteDim/OrdinalDim, Frequentist/Bayesian) |
+| Structural hypotheses | 7 | Predictions about type-theoretic fractures: 3 predicted as genuine (no common learner, no common data, five signatures), 4 predicted as design decisions (WithTop Nat, function-class bridge, ConceptClass variants, Bayesian prior) |
+| Compilation constraints | 5 | Lean4-specific type-level issues discovered during compilation (Sigma keyword conflict, NNReal import, def vs abbrev for typeclass synthesis, TextPresentation signature, Ordinal universe annotation) |
+
+### Premise invariance
+
+The premise is the most non-trivial component to change. A bad premise produces a kernel that either does not compile, compiles but proves vacuous theorems, or compiles but misses the field's structure. Two properties distinguish a productive premise from a brittle one.
+
+**Stability under task execution.** Under derivation of consequences (proof search closing sorry placeholders), does the premise hold still? Sixty-five of 67 sorry placeholders were closed. Five definitions were corrected (Section IV). But no layer was added, no paradigm was introduced, no structural category changed. The perturbations were local (definition-level), not global (architecture-level). This is a property of the premise alone: it can be tested by any agent running proof search within it.
+
+**Structured growth of the open frontier.** When the premise is modified, does the modification produce more precisely stated open questions than existed before?
+
+| Stage | Open proofs | Resolved hypotheses | Open frontier questions | Character of ignorance |
+|-------|------------|--------------------|-----------------------|----------------------|
+| Original premise | 67 | 0 of 7 | "Are the structural hypotheses correct? Will the proofs close?" | Broad, unstructured |
+| After proof search | 2 | 7 of 7 | "Can Moran-Yehudayoff and BHMZ be formalized?" | Narrow, specific (two published results) |
+| After measurability refactoring | 2 | 7 of 7 | 5 precisely stated questions (Section V) + 3 original theorems | Broad again, but articulate |
+
+The frontier grew from 67 vague placeholders to 2 specific blockers to 5 precise research questions. The volume of ignorance increased from the second stage to the third. But its structure sharpened at every step: each of the five frontier questions has specific evidence motivating it and a known mathematical approach or obstruction.
+
+The premise modification did not just produce theorems. It produced better ignorance. Before the measurability refactoring, the relationship between NullMeasurableSet and MeasurableSet was an unstructured gap. After: the gap is inhabited by a concrete witness, the witness is connected to composition operations, the composition connection is connected to RL policy validity, and each connection opens a specific further question.
+
+> A premise that produces theorems but leaves the open frontier vague has been consumed. A premise whose modifications articulate what is not yet known, and make that articulation more precise with each iteration, is productive beyond its original scope.
+
+The measurability typeclass hierarchy is the primary evidence. It was not in the original premise. It was introduced to solve an engineering problem (hypothesis threading). It generated both new theorems and new questions that the original premise could not have stated. The premise accommodated the extension. It did not initiate it.
+
+The premise files (`premise/origin.json` and `premise/final.json`) record the before and after. The trace between them (Sections VII and X) records what changed and what it produced.
+
+---
 
 ## VII. Premise Evolution
 
-Each unfolding of the premise records: what the premise predicted, what formalization confirmed, what formalization corrected, and what emerged unpredicted.
+Two unfoldings of the premise test the invariance properties defined in Section VI.
 
-### Unfolding 1: Origin to proof-discovery completion (March 18-25)
+### Unfolding 1: Stability under task execution
 
-The origin premise (`premise/origin.json`) contained 42 concept nodes with 69 sorry placeholders. Human-guided, AI-driven proof search closed 65 of 67 open proofs. The premise evolved as follows:
+The origin premise: a typed DAG with 8 dependency layers, 42 concept nodes, and 67 proof placeholders, compiled against Mathlib. Seven structural hypotheses were embedded as testable predictions.
 
-| Predicted | Outcome |
-|-----------|---------|
-| 7 structural hypotheses | 3 confirmed as genuine fractures (no common learner, no common data interface, five characterization signatures). 4 resolved as design decisions (WithTop Nat, function-class bridge, ConceptClass variants, Bayesian prior). |
-| `PACLearnable` with existential Dm | **Corrected**: existential Dm was trivially satisfiable. Fixed to `Measure.pi` (distribution-free). |
-| `NFL` for all X | **Corrected**: provably false for finite X. Fixed to require `[Infinite X]`. |
-| `LittlestoneDim` branch-wise | **Corrected**: the characterization theorem is false under branch-wise definition. Fixed to path-wise restriction. |
-| `HasUniformConvergence` with D-dependent m0 | **Corrected**: `mf(eps,delta)` must be distribution-free. Fixed quantifier ordering. |
-| `MindChangeCount : Nat` | **Corrected**: count does not encode convergence correctness. Replaced with `MindChangeOrdinal : Ordinal`. |
-| `VCDim : Nat` | **Forced by Mathlib**: `Finset.vcDim` uses `WithTop Nat`. Changed to match. |
-| `CompressionScheme` | **Blocked**: Moran-Yehudayoff 2016 requires infrastructure absent from Mathlib. Sorry. |
-| `ConceptClass`, `Bridge`, `BayesianLearner` | **Unchanged** |
+| Structural hypothesis | Prediction | Outcome |
+|----------------------|-----------|---------|
+| No common learner parent | BatchLearner, OnlineLearner, GoldLearner cannot share a parent type | **Confirmed** (fracture): each characterization quantifies over a signature-specific property |
+| No common data interface | IIDSample, DataStream, TextPresentation involve incompatible quantifiers | **Confirmed** (fracture): PAC over distributions, Online over adversaries, Gold over enumerations |
+| Five characterization signatures | The 5-way fundamental theorem requires five differently-typed objects | **Confirmed** (fracture): PAC, VC, compression, Rademacher, growth function span five domains |
+| WithTop Nat vs Ordinal | Two viable types for VC dimension | **Resolved** (design decision): WithTop Nat chosen, VCDim_embed_ordinal bridges |
+| Function-class vs set-family | ConceptClass X Bool vs Set (Set X) | **Resolved** (design decision): bridge proved lossless for Bool |
+| ConceptClass variants | Bare Set vs typeclass hierarchy | **Resolved** (design decision): typeclass hierarchy adopted in unfolding 2 |
+| Bayesian prior type | R-valued density vs ProbabilityMeasure | **Resolved** (design decision): R-valued chosen for proof ergonomics |
 
-Five corrections were mathematical discoveries (the premise was provably inadequate). One was an external constraint (Mathlib API). One is an open problem. Three types survived unchanged.
+Five definitions were corrected during proof search (Section IV). No layer was added. No paradigm was introduced. The premise held still: perturbations were definitional, not architectural.
 
 <div style="overflow-x: auto; overflow-y: auto; max-height: 1000px; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px;">
-  <img src="premise/evolution_dag.svg" alt="Premise Evolution DAG: origin types, interventions, and final types" />
+  <img src="premise/evolution_dag.svg" alt="Premise Evolution: origin types, interventions, and final types" />
 </div>
 
-### Unfolding 2: Measurability infrastructure (March 28-30)
+### Unfolding 2: Structured growth of the open frontier
 
-The proof-discovery kernel exposed a systematic gap: measurability hypotheses were threaded ad-hoc through 8 files as explicit parameters (`hmeas_C`, `hc_meas`, `hWB`). The premise was extended:
+The proof-discovery kernel exposed ad-hoc measurability hypothesis threading across 8 files. The premise was extended.
 
-| Addition | What it produced |
-|----------|-----------------|
-| `MeasurableHypotheses` typeclass (L1) | Per-hypothesis measurability extracted from explicit parameters |
-| `MeasurableConceptClass` typeclass (L3) | Class-wide measurability + `WellBehavedVC` bundled |
-| `KrappWirthWellBehaved` typeclass (L5) | Borel-level measurability (Krapp-Wirth 2024 conditions formalized) |
-| `MeasurableBatchLearner` typeclass (L3) | Joint learner measurability (new precondition) |
-| `WellBehavedVCMeasTarget` | NullMeasurableSet variant for the separation theorem |
+| Premise addition | What it produced | What question it opened |
+|-----------------|-----------------|------------------------|
+| `MeasurableConceptClass` (L3) | Borel-analytic separation theorem | Does the gap contain natural concept classes? |
+| `KrappWirthWellBehaved` (L5) | Strict hierarchy: KrappWirthWellBehaved implies MeasurableConceptClass but not conversely | Is there a measurability dimension? |
+| `MeasurableBatchLearner` (L3) | Version space measurability theorem (non-neural RL policy class) | Is the measurable learner class closed under composition? |
+| `BorelRouterCode` (L5) | Interpolation descent theorem | Does amalgamation also weaken measurability? |
+| Measurability refactoring (L1, L3, L5) | Typeclass hierarchy replacing 8-file hypothesis threading | Does network depth increase measurability complexity? |
+| PureMath/ extraction | 908 lines of field-independent pure math | (complete) |
+| GameInfra.lean extraction | 219 lines of explicit game infrastructure | Does the adversary-learner pattern connect to bandits or chosen-plaintext attacks? |
 
-This premise extension produced: the Borel-analytic separation theorem (new mathematics), the Choquet capacitability theorem (416 lines, Mathlib-contributable), the PAC-Bayes bound (525 lines, first Lean4 formalization), and the Baxter multi-task framework. The sorry count did not change. The extension was theorem-producing, not sorry-producing.
+Every premise addition produced theorems, extracted infrastructure, or opened precisely stated questions. The frontier grew from 2 specific blockers to 7 research questions, each with known mathematical approaches or specific obstructions.
+
+<details>
+<summary><strong>Engineering and proof steps behind the extensions</strong></summary>
+
+**Measurability typeclasses.** The original kernel threaded `hmeas_C`, `hc_meas`, `hWB` as explicit parameters through 8 files. Bundling these into `MeasurableConceptClass` at L3 was a refactoring step. Once bundled, `WellBehavedVC` became a named condition rather than an inline hypothesis, which made it possible to ask whether Krapp-Wirth's stronger condition (MeasurableSet) was equivalent. The singleton class construction showed it was not.
+
+**Version space measurability.** The boosting proof required integrating over the learner's output. Lean4 refused without a measurability witness for the joint map `(training_data, x) → L(training_data)(x)`. Formalizing this as `MeasurableBatchLearner` created a checkable gate. The version space proof decomposes the evaluation preimage into countable unions of measurable rectangles via `Nat.find` and `IsFirstConsistent`.
+
+**Interpolation descent.** The Borel-analytic separation established that the NullMeasurableSet level is inhabited. The interpolation theorem asked: what operation produces concept classes at that level? The `patchEval` construction combines two Borel-parameterized families via a measurable router. The Suslin projection over the combined parameter space produces analytic bad events.
+
+**Pure math extraction.** Concentration inequalities, exchangeability infrastructure, KL divergence, and Choquet capacitability were inlined in proof files. Extracting them to PureMath/ required verifying each module compiles independently of the learning theory theorems it serves.
+
+**Game infrastructure.** Version space, adversary strategy, SOA, and mistake counting were defined inside `Theorem/Online.lean`. Extracting them to `GameInfra.lean` required separating the game-theoretic definitions from the characterization proofs that use them.
+
+</details>
+
+### The pattern
+
+Unfolding 1 consumed the premise: proof search closed 65 of 67 placeholders within the fixed type architecture. Unfolding 2 extended it: each extension produced both results and questions more precise than those that preceded them. A premise that passes only the first test is adequate. A premise that passes both is generative.
 
 ---
 
@@ -551,378 +709,518 @@ This premise extension produced: the Borel-analytic separation theorem (new math
 
 ## VIII. The Proof World Model
 
-### Load-bearing vs routine
+A Lean4 proof is a sequence of tactic applications transforming goals. An `MVarId` holds the current goal; a `TacticM Unit` transformation replaces it with zero or more subgoals. Individual tactics (`simp`, `omega`, `exact`, `apply`) are the atoms. But proof *methods* -- the strategies that close theorems across hundreds of lines -- operate above individual tactics. They are compositions: sequential chains, parallel decompositions, guarded paradigm-specific branches, backtracking over alternatives.
 
-| Component | LOC | Load-bearing? | Why |
-|-----------|-----|---------------|-----|
-| Symmetrization infrastructure | 3,027 | **Yes** | Irreducible for infinite-X uniform convergence. Three layers: Hoeffding, ghost-sample symmetrization, growth function restriction. |
-| Rademacher infrastructure | 1,901 | **Yes** | Massart's lemma, MGF bounds, VCDim-Rademacher connection. Self-contained chain (does not need symmetrization). |
-| NFL core counting | ~200 | **Yes** | Per-sample adversarial construction + product measure positivity. Cannot be simplified. |
-| Littlestone characterization | 690 | **Yes** | Corrected tree definition + version space potential argument. Non-constructive at each decision step. |
-| Borel-analytic chain | 562 | **Yes** | Choquet capacitability + analytic measurability + Borel-analytic bridge + separation theorem. Connects descriptive set theory to learning theory. |
-| PAC-Bayes chain | 525 | **Yes** | Per-hypothesis Hoeffding, union bound, Jensen. The only cross-paradigm proof (frequentist-Bayesian). |
-| Measurability typeclasses | 408 | **Yes** | Three-level hierarchy replacing ad-hoc hypothesis threading. Strict separation proved. |
-| Sauer-Shelah bridge | ~100 | Routine | Connects to Mathlib's `Finset.vcDim`. |
-| Hoeffding bounds | ~300 | Routine | Concentration inequality infrastructure from Mathlib. |
-| Occam's algorithm | ~50 | Routine | Follows immediately from the VCDim gate. |
+This kernel's 278 theorems use 21 recurring proof methods. The methods are not annotations added after the fact. They were extracted from actual `by`-blocks by analyzing tactic sequences, identifying shared prefixes and suffixes, and abstracting over the varying middle. Each method is a metaprogram: a reusable DAG of `TacticM` transformations with typed inputs, typed outputs, paradigm locks, and failure diagnostics.
 
-### Critical path to the fundamental theorem
+The methods are encoded in three layers.
 
-```
-fundamental_theorem
-├── vc_characterization ←──── vcdim_finite_imp_pac
-│                                  └── vcdim_finite_imp_uc'  [3027 lines, sorry-free]
-│                                        ├── symmetrization_uc_bound
-│                                        │     ├── hoeffding_one_sided
-│                                        │     ├── symmetrization_step
-│                                        │     └── finite_exchangeability_bound
-│                                        └── growth_exp_le_delta
-│                                              └── sauer_shelah_exp_bound
-├── pac_imp_vcdim_finite ←──── vcdim_infinite_not_pac
-│                                  └── nfl_core [counting argument]
-├── fundamental_vc_compression
-│   ├── compression_imp_vcdim_finite ← [pigeonhole, proved]
-│   └── vcdim_finite_imp_compression ← [SORRY: Moran-Yehudayoff 2016]
-├── fundamental_rademacher ←── vcdim_finite_imp_rademacher_vanishing
-│                                  └── [self-contained chain, 1901 lines]
-└── growth_bounded_imp_vcdim_finite / vcdim_finite_imp_growth_bounded
-```
+<!-- FIGURE: world_model_layers.svg
+     Style: black/white, Times New Roman, old school academic
+     Three horizontal bands stacked vertically, connected by vertical arrows:
 
-### Quantitative profile
+     Top band (dashed border): "Layer 3: Planning (under construction)"
+       Contents: "bridge_search tactic"
+       Subtitle: "Classifies live MVarId goals by paradigm, searches environment"
+       Arrow down labeled "queries"
 
-| Metric | Count |
-|--------|-------|
-| Theorem/lemma statements | 264 (173 public, 91 private) |
-| Definitions | 190 |
-| Structures | 52 |
-| Total lines | 17,350 (16,824 excluding MathLib/) |
-| Sorry tactics | 2 |
-| Files | 37 |
-| Mathlib bridges | 5 (ConceptClass ↔ Set, Shatters ↔ Finset.Shatters, VCDim ↔ Finset.vcDim, IIDSample ↔ Measure.pi, WithTop Nat ↔ Ordinal) |
-| Paradigms formalized | 5 with proved theorems (PAC, Online, Gold, Universal, Bayesian); 1 with definitions only (Query) |
-| Break points | 7 |
-| Maximum dependency chain depth | 7 (Concept → VCDim → fundamental_theorem) |
-| Maximum fan-in node | ConceptClass (22 incoming edges) |
+     Middle band (solid border, thick): "Layer 2: Typed Proof Operad (1,170 LOC, 0 sorry)"
+       Contents: "Interface | Generator | Plan | HasType | FailureRule | GapSpec"
+       Left annotation: "17 generators (5 structural + 12 domain)"
+       Right annotation: "7 failure rules (negative typing)"
+       Arrow down labeled "formalizes"
 
-### Proof techniques
+     Bottom band (solid border, thin): "Layer 1: Empirical Taxonomy (proof_world_model.json)"
+       Contents: "21 metaprograms extracted from 278 theorems"
+       Left annotation: "Tactic patterns, instances, compositions"
+       Right annotation: "Goal profiles, failure diagnostics"
 
-The library uses 10 distinct proof methods. Their distribution across the codebase is not uniform.
+     Caption: "Three layers of proof method encoding. Layer 2 is the centerpiece."
+-->
 
-| Method | Paradigm | Where used | Frequency |
-|--------|----------|-----------|-----------|
-| **Contrapositive** | PAC | `pac_imp_vcdim_finite`, `nfl_theorem_infinite`, `rademacher_vanishing_imp_pac` | 12 theorems |
-| **Symmetrization** (ghost sample) | PAC | `symmetrization_step`, `symmetrization_uc_bound`, `vcdim_finite_imp_uc'` | 5 theorems, ~3000 LOC |
-| **Adversary construction** | PAC, Online | `pac_not_implies_online`, `adversary_threshold`, `nfl_core` | 6 theorems |
-| **Potential function** | Online | `backward_direction` (SOA, Standard Optimal Algorithm), `ldim_versionSpace_le` | 3 theorems |
-| **Pigeonhole** | PAC | `compression_imp_vcdim_finite`, `compress_injective_on_labelings` | 4 theorems |
-| **Concentration inequality** | PAC | `hoeffding_one_sided`, `chebyshev_seven_twelfths_bound`, `rademacher_mgf_bound` | 8 theorems |
-| **Induction on tree depth** | Online | `forward_direction`, `backward_direction`, `adversary_threshold` | 5 theorems |
-| **Locking sequence (an enumeration strategy that forces convergence)** | Gold | `gold_theorem` | 1 theorem |
-| **Descriptive set theory** (Suslin projection + Choquet capacity) | Cross-cutting | `planarWitnessEvent_analytic`, `analytic_nonborel_set_gives_measTarget_separation` | 2 theorems |
-| **KL-divergence / Jensen** | Bayesian | `pac_bayes_finite`, `jensen_sqrt_finpmf` | 3 theorems |
+### Layer 1: Empirical taxonomy
 
-No proof method is shared across the three classical paradigms. PAC theorems use concentration inequalities and symmetrization. Online theorems use potential functions and tree induction. Gold's theorem uses a locking sequence that appears nowhere else in the library. The shared mathematical axis (Section I) is answered by completely disjoint proof technologies. Two methods are cross-cutting: descriptive set theory (connecting the measurability hierarchy to the separation theorem) and KL-divergence/Jensen (bridging frequentist and Bayesian frameworks via PAC-Bayes). Both required infrastructure not present in the original premise.
+The 21 metaprograms, extracted from tactic sequences across 43 source files and stored in `proof_world_model.json`. Each has a typed signature: an input goal profile and output subgoals. Composition is sequential (`;`), parallel (`all_goals`), focused (`focus`), or backtracking (`try <|>`).
 
-### Formalization techniques
+<details>
+<summary><strong>Full metaprogram table (21 entries)</strong></summary>
 
-| Technique | Where used | What it solves |
-|-----------|-----------|---------------|
-| 7/12-fraction Chebyshev | `boost_two_thirds_to_pac` | Integer threshold in majority-vote boosting |
-| Doubled-count trick | Markov bounds in ℕ | Half-integer threshold avoidance |
-| Three-step pullback | Product-space transport | One map at a time, not full event |
-| Set-equality bridge | Binder-type gaps | Non-reducing functions in lambda terms |
-| Nat.pair encoding | Sample splitting | Avoids dependent types in learner signature |
-| finite_exchangeability_bound | Symmetrization | NullMeasurableSet Tonelli lemma |
+| ID | Name | Pattern | Paradigm | Instances |
+|----|------|---------|----------|-----------|
+| MP1 | M-Pipeline | `have` (extract instances) -> `exact` (delegate) | PAC | 4 |
+| MP2 | M-Contrapositive | `by_contra` -> `push_neg` -> witness -> `absurd` | PAC | 4 |
+| MP3 | M-Construction | `let`/`set` (build object) -> `have` (verify) -> `refine` | PAC, Online | 5 |
+| MP4 | M-Bridge | `have` (bridge lemma) -> `exact` (connect) | Cross-cutting | 3 |
+| MP5 | M-UnionBound | `calc` chain: per-element bound -> `Finset.sum` -> `div_le` | PAC | 3 |
+| MP6 | M-Complement | `have` := 1 - P(bad) -> `linarith` | PAC | 2 |
+| MP7 | M-IntegralBound | `lintegral_indicator` -> `mul_comm` -> `ENNReal.toReal` | PAC | 2 |
+| MP8 | M-Pigeonhole | `Finset.exists_lt_card_fiber_of_nsmul_lt_card` | PAC | 1 |
+| MP9 | M-Adversary | `induction` on tree -> `by_cases` predict -> `omega` | Online | 2 |
+| MP10 | M-Potential | `induction` on sequence -> version space shrinkage | Online | 2 |
+| MP11 | M-LatticeMinMax | `iSup`/`iInf` lattice operations -> `le_antisymm` | Online | 2 |
+| MP12 | M-Locking | `Nat.rec` chain -> `mod_arith` -> `List.ext_getElem` | Gold | 2 |
+| MP13 | M-DefinitionUnfolding | `simp [def1, def2]` -> `ext` -> case analysis | Structural | 6 |
+| MP14 | M-WitnessConstruction | `refine <..., ?_, ?_>` -> prove each conjunct | Structural | 5 |
+| MP15 | M-ComponentMeasurability | `Measurable.piecewise` + `measurableSet_singleton` | PAC, Separation | 3 |
+| MP16 | M-SetExtensionBridge | `Set.ext` or `Finset.ext` -> pointwise argument | Structural | 4 |
+| MP17 | M-AnalyticChain | `AnalyticSet.preimage` -> `.analyticSet` -> projection | DST | 2 |
+| MP18 | M-SurjectiveTransfer | `Function.Surjective` -> `map_eq` -> transfer property | Structural | 2 |
+| MP19 | M-RectangleDecomposition | preimage = `iUnion` (An xˢ Bn) -> `.iUnion` -> `.prod` | PAC, Separation | 1 |
+| MP20 | M-ChoquetCapacitability | `le_antisymm` -> `Nat.rec` compact seq -> capacity = measure | DST | 1 |
+| MP21 | M-JensenChain | per-hypothesis Hoeffding -> union bound -> Jensen `sqrt` -> `calc` | Bayesian | 1 |
 
-### Key Mathlib dependencies
+</details>
 
-| Mathlib component | Role in this library |
-|------------------|---------------------|
-| `MeasureTheory.Measure.pi` | i.i.d. product measure for PAC sample spaces |
-| `Finset.vcDim` + `card_le_card_shatterer` | Sauer-Shelah lemma (bridged via `Bridge.lean`) |
-| `SetTheory.Ordinal.Arithmetic` | Ordinal VC dimension and mind change ordinals |
-| `MeasureTheory.Integral.Bochner` | Expected values in Rademacher and generalization bounds |
-| `MeasureTheory.Constructions.Polish.Basic` | Polish spaces for Choquet capacity and analytic sets |
-| `MeasureTheory.AnalyticSet` | Suslin projection, analytic set closure properties |
-| `Computability.TuringMachine` | Computation infrastructure (L0 layer) |
+The distribution is not uniform. PAC methods dominate (MP1-MP8, 24 instances) because the PAC characterization has the deepest infrastructure chain. Online and Gold methods (MP9-MP12, 8 instances) are self-contained. The structural combinators (MP13-MP14, MP16, MP18) appear across paradigms. The cross-cutting methods (MP15, MP17, MP19-MP21) serve the measurability and separation infrastructure.
 
-### Contributions to Mathlib
+<details>
+<summary><strong>Lean4 metaprogramming model</strong></summary>
 
-The kernel required three results that Mathlib does not currently contain. These are formalized in `MathLib/` and are independent of learning theory.
+A Lean4 proof state is an `MVarId` -- a metavariable whose type is the current goal. A tactic is a `TacticM Unit` function that assigns the metavariable (closing the goal) or replaces it with new metavariables (subgoals). At the `MetaM` level, `MVarId.assign` closes a goal, `MVarId.getType` inspects the target, and `Lean.Meta.isDefEq` checks definitional equality.
 
-| Result | File | Lines | What it proves | Reference |
-|--------|------|-------|---------------|-----------|
-| Choquet capacitability | `ChoquetCapacity.lean` | 416 | Finite Borel measures on Polish spaces are Choquet capacities. Analytic sets are capacitable: their compact capacity equals their measure. | Kechris, *Classical Descriptive Set Theory*, Theorem 30.13 |
-| Analytic measurability | `AnalyticMeasurability.lean` | 110 | Analytic sets are universally measurable (NullMeasurableSet under any probability measure). Bridge from Choquet to learning theory. | Lusin (1925); Kechris Ch. 29 |
-| Baxter base case | `Theorem/Extended.lean` | ~40 | Any meta-learner's output on a new task is subject to the NFL lower bound. | Baxter (2000) |
+A metaprogram operates above this level. It is a *composition* of tactics that transforms a goal profile (not a single goal) into subgoal profiles. The composition types are:
 
-All three are sorry-free. The Choquet capacitability theorem is the most substantial and is a candidate for upstream contribution to Mathlib.
+| Composition | Lean4 construct | Effect |
+|-------------|----------------|--------|
+| Sequential | `p ; q` | Apply `p`, then `q` to each resulting subgoal |
+| Parallel | `all_goals p` | Apply `p` to every open subgoal simultaneously |
+| Focused | `focus p` | Apply `p` to the first subgoal only |
+| Backtracking | `try p <\|> q` | Attempt `p`, revert state and try `q` on failure |
+
+The metaprogram is the unit of proof method reuse. A human identifies the pattern; an agent can match goal profiles to metaprograms and execute the corresponding tactic sequence.
+
+</details>
+
+### Layer 2: Typed proof operad
+
+The 21 empirical metaprograms are reclassified into a typed calculus: `TPG_FLT`. 1,170 lines of Lean4. 0 sorry. 27/27 tests pass.
+
+The calculus has five components.
+
+> **Interface.** An abstract proof obligation carrying a name, paradigm locks, required premises, and target tag. 18 concrete interfaces defined across 7 paradigms.
+
+> **Generator.** A primitive proof step. 5 structural combinators (paradigm-unlocked) and 12 domain generators (paradigm-locked). Each has a typed input interface and typed output interfaces.
+
+> **Plan.** The syntax of proof generation: `atom(g) | seq(p,q) | par(ps) | guard(lock,p) | choose(alts) | extend(gapName)`.
+
+> **HasType.** The typing judgment: under theory Sigma, plan `p` transforms interface `I` into sub-obligations `Os`. Inductively defined with rules for atom, sequential composition, guarded execution, choice, and extension.
+
+> **FailureRule.** Negative typing. Failure is not the absence of a derivation. It is a derivation of rejection.
+
+<!-- FIGURE: operad_pipelines.svg
+     Style: black/white, Times New Roman, old school academic
+     Six horizontal pipeline diagrams, one per row, aligned left:
+
+     Row 1 (PAC): iFiniteVCDim -[GrowthConstruction]-> iGrowthBound -[MeasureBridge]-> iHasUC -[UCToPAC]-> iPACLearnable
+     Row 2 (DST): iBorelParam -[AnalyticProjection]-> iAnalyticBadEvent -[CompactApproximation]-> iNullMeasBadEvent
+     Row 3 (Online): iFiniteLDim -[TreePotential]-> iOnlineLearnable
+     Row 4 (Gold): iEXLearnable -[Locking]-> iContradiction
+     Row 5 (Separation): iMeasurableHyps -[WitnessSeparation]-> iWBVCMeasTarget + iNotKrappWirth
+     Row 6 (Bayesian): iPerHypBound -[JensenChain]-> iPACBayes
+
+     Interfaces as rounded rectangles. Generators as arrows with labels.
+     Each row labeled with paradigm name on left margin.
+     A red X between Row 3 output and Row 1 middle (iHasUC) labeled "NT1: ill-typed"
+
+     Caption: "Six pipelines, all well-typed. Cross-paradigm composition (red X) is provably ill-typed."
+-->
+
+#### Failure as negative typing
+
+Seven failure rules encode proof search pitfalls as first-class typing judgments:
+
+| Rule | Detects | Blocks | Prevents |
+|------|---------|--------|----------|
+| FD1 | `Fintype_X` in premises | MeasureBridge | Symmetrization on finite domains |
+| FD2 | C not finite/countable | UnionBound | Union bound on uncountable classes |
+| FD3 | `MeasurableConceptClass` absent | MeasureBridge | Measure-theoretic proof without measurability |
+| FD4 | Quantifier order `forall_D_exists_m0` | UCToPAC | Wrong quantifier ordering |
+| FD5 | Branchwise shattering target | Adversary | Wrong Littlestone definition |
+| FD6 | `PACLearnable_exists_Dm` target | UCToPAC | Existential Dm leak |
+| FD7 | Any context | ClassicalChooseUncountable | Non-constructive selection |
+
+These are the failure modes of Section IV, formalized. The theorem `failure_as_negative_typing` proves: if a failure rule matches an interface and blocks a generator, admissibility returns a typed error. The error carries a `RejectReason` -- paradigm mismatch, missing premise, forbidden instance, elaboration dead end, or missing bridge -- that an agent can use to diagnose and reroute.
+
+### Machine-checked structural results
+
+> [!IMPORTANT]
+> **Corpus-relative completeness.** All six major proof pipelines type-check under `fltTheory`. Each row in the pipeline diagram above is a proved theorem.
+
+**Paradigm lock.** No generator in `fltTheory` spans PAC, Online, and Gold simultaneously. Proved by exhaustive enumeration over 17 generators. This is Section I's paradigm-locking hypothesis, machine-checked.
+
+**Cross-paradigm impossibility (NT1).** `seq TreePotential UCToPAC` is provably ill-typed at the composition level. Not just inadmissible at the generator level: ill-typed at the *composition* level. The 65-line proof uses `HasType` inversion lemmas and double 17-way generator enumeration. The obstruction: `TreePotential` outputs `iOnlineLearnable`, but `UCToPAC` requires `iHasUC`. No generator bridges them.
+
+**Typed openness.** When the operad cannot type an interface, a `GapSpec` exists: a typed specification of what the theory needs but does not have. This is the formal version of Section VI's structured ignorance. The gap tells you what you don't know. Precisely.
+
+<details>
+<summary><strong>Extension mechanism</strong></summary>
+
+The `extension_sound` theorem proves that adding a generator solving a gap yields a well-typed plan. The operad grows by filling typed holes. Each `GapSpec` records the source interface, the needed interface, and the `RejectReason` that created the gap. Future kernel extensions (game theory typeclasses, topology infrastructure for Gold learning) would appear first as `GapSpec` entries before being resolved by new generators.
+
+</details>
+
+### Layer 3: Planning tactic (under construction)
+
+The `bridge_search` tactic is the operational layer above the operad. Given a live Lean4 goal, it classifies by paradigm (inspects `Expr` head before `whnf`), searches the environment for bridge lemmas, and applies or reports a structured `BridgeReport`.
+
+Current status: paradigm classifier works. Environment search does not yet find matches on real FLT goals. Root cause diagnosed: the kernel's theorems are at the top level (not namespaced), and `goal.apply` with `mkConstWithFreshMVarLevels` fails when typeclass arguments cannot be synthesized in the search context. Fix path: `Lean.Meta.DiscrTree` for O(1) lookup by head symbol.
+
+<details>
+<summary><strong>Quality funnel model</strong></summary>
+
+The operad includes a four-gate quality model calibrated against the First Proof Benchmark:
+
+| Gate | Measures | Benchmark rate |
+|------|----------|---------------|
+| Assumption compliance | Hypotheses match the interface | 100% |
+| Inference validity | Tactic applications are sound | 98% |
+| Goal completion | All subgoals closed | 76% |
+| Generalization robustness | Proof survives interface widening | 69% |
+
+The `StepQuality` structure enforces a monotonicity invariant: robustness implies completion implies validity implies compliance. The 29-point drop from validity to robustness reproduces the benchmark's fragility observation: structural generators are robust under interface widening; domain generators are not.
+
+</details>
+
+### Coverage and boundaries
+
+The 21 metaprograms account for approximately 50 of the kernel's 278 theorems directly. The remaining 228:
+
+<details>
+<summary><strong>Classification of uncovered theorems</strong></summary>
+
+- **Term-mode compositions** (~90): proved by `exact` or `rfl` delegating to a single lemma. Trivial MP1 instances with no metaprogram structure above the delegation.
+- **Private infrastructure lemmas** (~100): helper lemmas (`private lemma`, `have` blocks) serving as substeps *within* metaprograms. Already covered inside metaprogram instances.
+- **Unique proof structures** (~38): proof methods appearing exactly once. Candidates for new metaprograms if they recur in future kernel extensions.
+
+</details>
+
+The operad's 17 generators reclassify the 21 empirical metaprograms: structural combinators (MP13, MP14, MP16, MP18) collapse into 5 structural generators; domain methods are preserved as 12 domain generators. The reclassification loses finer tactic-level detail but gains compositionality. Plans built from generators have typed signatures that can be checked, composed, and extended.
 
 ---
 
-## IX. The Discovery DAG
+## IX. Pure Mathematics Contributions
 
-The following diagram renders the full theorem dependency structure of this library. Solid arrows are proved dependencies. Dashed arrows with **X** marks are **counterfactual branches**: dead-end proof routes that were explored and killed by specific discoveries during formalization. Each counterfactual branch records the intervention that killed it and what was discovered.
+Formalization projects consume mathematics. They import Mathlib, instantiate definitions, close goals. This kernel also produced mathematics. Five modules totaling 908 lines, all absent from Mathlib, all independent of learning theory, all forced into existence by type errors during proof construction.
 
-The counterfactual branches are the most informative part of this diagram. They show where the proof *could not* go, and why. Proving that a route is dead is a discovery of the same order as proving a theorem.
+| Module | Lines | What the type system demanded | What it enables |
+|--------|-------|------------------------------|-----------------|
+| `ChoquetCapacity.lean` | 416 | Abstract capacity axioms; capacitability theorem for analytic sets in Polish spaces | Analytic measurability bridge |
+| `AnalyticMeasurability.lean` | 110 | Analytic sets are NullMeasurableSet for finite Borel measures | Borel-analytic separation (Section III) |
+| `Concentration.lean` | 195 | `BoundedRandomVariable` typeclass; Chebyshev majority bound for independent events | PAC boost: probability 2/3 to probability 1-delta |
+| `Exchangeability.lean` | 128 | Double-sample measure, merge/split isomorphism, `ValidSplit`, `SplitMeasure` | Symmetrization argument (PAC characterization) |
+| `KLDivergence.lean` | 59 | `FinitePMF`, KL divergence, cross-entropy over finite types | PAC-Bayes bound |
 
-```mermaid
-flowchart TB
-    classDef typ fill:#1e293b,stroke:#475569,color:#e2e8f0
-    classDef meas fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
-    classDef infra fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
-    classDef bridge fill:#2563eb,stroke:#60a5fa,color:#fff
-    classDef thm fill:#1e3a5f,stroke:#3b82f6,color:#e2e8f0
-    classDef summit fill:#2563eb,stroke:#60a5fa,color:#fff
-    classDef sorry fill:#7f1d1d,stroke:#dc2626,color:#fca5a5
-    classDef dead fill:#374151,stroke:#6b7280,color:#9ca3af,stroke-dasharray:5 5
+None of these modules import from `FLT_Proofs`. Each compiles against Mathlib alone. Each is a candidate for upstream contribution.
 
-    %% L0: TYPES
-    CC["ConceptClass · 22 edges"]:::typ
-    BL[BatchLearner]:::typ
-    OL[OnlineLearner]:::typ
-    GL[GoldLearner]:::typ
-    Mpi[Measure.pi]:::bridge
-    BR[Bridge: Bool bij.]:::bridge
+### The dependency chain that produced new mathematics
 
-    %% L1: MEASURES
-    VCD["VCDim < ∞"]:::meas
-    LD["LittlestoneDim < ∞"]:::meas
-    MCO[MindChangeOrd.]:::meas
-    GF[GrowthFunction]:::meas
-    RAD["Rademacher → 0"]:::meas
+The two largest modules form a pipeline:
 
-    %% L2: INFRASTRUCTURE
-    SS[Sauer-Shelah]:::bridge
-    UC["Uniform Conv."]:::infra
-    WB[WellBehavedVC]:::bridge
-    SYM["Symmetrization · 3027 LOC"]:::infra
-    HOE[Hoeffding]:::infra
-    NFL[NFL core]:::infra
-    CS[CompressionScheme]:::infra
-    BST[boost_2/3]:::infra
-
-    %% L3: CHARACTERIZATIONS
-    VCC["vc_characterization"]:::thm
-    LC["littlestone_charact."]:::thm
-    GT[gold_theorem]:::thm
-
-    %% L4: SEPARATIONS + APPLICATIONS
-    OIP[online_imp_pac]:::thm
-    PNO["pac ⇏ online"]:::thm
-    ENP["ex ⇏ pac"]:::thm
-    NFLI[nfl_theorem_inf.]:::thm
-
-    %% L5: SUMMIT
-    FT["FUNDAMENTAL THM · 5-way equiv."]:::summit
-    UT["universal_trichotomy · 2/3"]:::sorry
-
-    %% L6: SORRY / FRONTIER
-    COMP["SORRY: compression · Moran-Yehudayoff 2016"]:::sorry
-    BHMZ["SORRY: bhmz_middle · BHMZ STOC 2021"]:::sorry
-
-    %% DEAD BRANCHES
-    CF1["✗ NFL finite X"]:::dead
-    CF2["✗ BranchWise LDim"]:::dead
-    CF3["✗ Direct union bound"]:::dead
-    CF4["✗ UC w/o regularity"]:::dead
-    CF5["✗ PAC ∃ Dm"]:::dead
-    CF6["✗ D-dep. m₀"]:::dead
-    CF7["✗ Bridge |Y|>2"]:::dead
-
-    %% ── L0 → L1 ──
-    CC --> VCD
-    CC --> LD
-    CC --> MCO
-    CC --> GF
-
-    %% ── L0/L1 → L2 ──
-    VCD --> SS
-    VCD --> UC
-    VCD --> RAD
-    VCD --> CS
-    BR --> SS
-    SS --> GF
-    Mpi --> NFL
-    Mpi --> UC
-    WB --> SYM
-    UC --> SYM
-    SYM --> HOE
-    SYM --> GF
-
-    %% ── L0/L1 → L3 ──
-    BL --> VCC
-    VCD --> VCC
-    OL --> LC
-    LD --> LC
-    GL --> GT
-    MCO --> GT
-
-    %% ── L3 → L4 ──
-    LC --> OIP
-    VCD --> PNO
-    LD --> PNO
-    NFL --> NFLI
-    VCC --> NFLI
-
-    %% ── L2-L4 → L5 ──
-    VCC --> FT
-    CS --> FT
-    RAD --> FT
-    GF --> FT
-    VCC --> UT
-    LC --> UT
-    BST --> UT
-    BHMZ --> UT
-
-    %% ── L6: SORRY deps ──
-    COMP --> CS
-    BHMZ --> UT
-
-    %% ── DEAD → targets ──
-    CF1 -.-> NFLI
-    CF2 -.-> LC
-    CF3 -.-> UC
-    CF4 -.-> SYM
-    CF5 -.-> VCC
-    CF6 -.-> UC
-    CF7 -.-> BR
+```
+ChoquetCapacity.lean (416 lines)
+  └── AnalyticMeasurability.lean (110 lines)
+        └── BorelAnalyticBridge.lean (kernel)
+              └── BorelAnalyticSeparation (Section III: new mathematics)
 ```
 
-### Reading the counterfactual branches
+`ChoquetCapacity.lean` exists because `AnalyticMeasurability.lean` needs it. `AnalyticMeasurability.lean` exists because the symmetrization bad event for uncountable concept classes is not Borel-measurable, and the kernel requires a path from `AnalyticSet` to `NullMeasurableSet`. Mathlib has Polish spaces, Borel spaces, and analytic sets. It does not have the theorem connecting them: that analytic sets are universally measurable.
 
-Each dashed node represents a proof route that was explored and killed. The annotation describes what was discovered:
+The path runs through Choquet's capacitability theorem (1954). A finite Borel measure on a Polish space satisfies the capacity axioms. An analytic set is capacitable: its measure equals the supremum of measures of compact subsets. A capacitable set with compact inner approximation is NullMeasurableSet. This is Kechris, Theorem 30.13 -- standard descriptive set theory, but absent from Mathlib and absent from every learning theory textbook that silently assumes the bad event is measurable.
 
-| # | Intervention | What was discovered | Effect on DAG |
-|---|-------------|---------------------|---------------|
-| 1 | **NFL for finite X** | Statement is provably false for finite domains | Killed: memorizer learns Set.univ when X is finite. Correct NFL requires infinite X. |
-| 2 | **BranchWise Littlestone** | Definition does not restrict C at recursive calls | Killed: characterization theorem is false under the branch-wise definition. Corrected to path-wise. |
-| 3 | **Direct union bound** | Bound gives 2^{2m}, not GrowthFunction(C,2m) | Killed: three separate proof attempts confirmed the route is dead. Symmetrization is necessary. |
-| 4 | **UC without regularity** | Bad event not measurable for uncountable C | Repaired: introduced WellBehavedVC as regularity gate. NullMeasurableSet suffices for integration. |
-| 5 | **PAC with existential Dm** | Existential Dm makes PACLearnable trivially true | Killed: Dm depends on target concept c via memorizer + point mass. Fixed to Measure.pi (distribution-free). |
-| 6 | **UC with D-dependent m0** | Sample complexity function cannot depend on D | Repaired: m0 must be distribution-free for PACLearnable's quantifier structure. Fixed quantifier ordering. |
-| 7 | **Bridge for general Y** | Bijection is Bool-specific | Boundary: for |Y| > 2, multiple functions map to the same level-set family. All results require Y = Bool. |
+The 526 lines of this pipeline were not planned. They were forced by a type error: `lintegral_indicator_one₀` requires `NullMeasurableSet`, and no existing Lean4 proof connects `AnalyticSet` to `NullMeasurableSet`. The resolution required building the Choquet capacity infrastructure from the axioms. That infrastructure, once built, made the Borel-analytic separation in Section III provable.
 
-Interventions 1, 3, and 5 killed provably false statements. Interventions 2, 4, and 6 repaired definitions or added hypotheses to rescue viable routes. Intervention 7 established a setting-specific boundary: the library's results hold for binary classification, and the restriction is mathematically necessary.
+### What each paradigm demanded
 
-The counterfactual branches collectively explain why the library has the shape it does. The NFL correction (1) explains why all NFL theorems require `[Infinite X]`. The Littlestone fix (2) explains why `Theorem/Online.lean` defines its own `LTree.isShattered` rather than using `Complexity/Littlestone.lean`. The symmetrization necessity (3) explains why 56% of the codebase is infrastructure. The WellBehavedVC introduction (4) explains the regularity hypothesis that appears in every measure-theoretic theorem. The PAC repair (5) explains why `Measure.pi` appears in the definition rather than an existential. The quantifier fix (6) explains the specific quantifier ordering in `HasUniformConvergence`. The Bool boundary (7) explains why the critical path theorems operate over `Bool`.
+The remaining three modules serve the three learning paradigms independently:
+
+**Concentration** (195 lines). The PAC characterization requires boosting: if k independent weak learners each succeed with probability at least 2/3, then majority vote succeeds with probability at least 1-delta when k >= 9/delta. The proof uses indicator random variables, Popoviciu's variance bound, independence for variance of sums, and Chebyshev's inequality. `BoundedRandomVariable` is formalized as a typeclass -- a random variable bounded in [a,b] almost everywhere with a measurability certificate. The typeclass pattern eliminates explicit bound-threading in downstream proofs.
+
+**Exchangeability** (128 lines). The symmetrization argument requires reasoning about double samples: `D^m x D^m` (training and ghost), their merge into `Fin (2*m) -> X`, and the uniform distribution over all `C(2m,m)` valid splits of 2m points into two groups of m. The `ValidSplit` structure, `SplitMeasure`, and the merge/split isomorphism formalize the combinatorial substrate that every symmetrization proof uses but no Mathlib file provides. The key type: `ValidSplit m` is a decidable subtype of `Fin (2*m) -> Bool` with a cardinality constraint, equipped with a discrete measurable space.
+
+**KL divergence** (59 lines). The PAC-Bayes bound requires KL divergence between finite probability mass functions. `FinitePMF` bundles a probability assignment `H -> R` with non-negativity and summation-to-one proofs. `klDivFinitePMF`, `crossEntropyFinitePMF`, and `expectFinitePMF` are the three operations. `HasPositivePrior` is a typeclass asserting strictly positive weights. This is the smallest module and the most straightforward: vocabulary that Mathlib lacks because Mathlib's `PMF` works over `ENNReal`, not `R`, and the PAC-Bayes bound needs real-valued arithmetic.
+
+### Why formalization produces pure mathematics
+
+The pattern across all five modules is the same. A learning theory proof requires a mathematical fact. The fact is "obvious" on paper: textbooks either state it without proof or silently assume it. Mathlib does not contain it. The type system rejects the proof until the fact is formalized. The formalization turns out to be non-trivial.
+
+The Choquet capacitability theorem is the strongest case. No learning theory paper cites it. No textbook mentions it in the context of PAC learning. The connection between analytic sets and the symmetrization bad event is invisible until the type system forces the question: given a set defined by an existential projection over an uncountable family, what is its measurability status? The answer requires 416 lines of capacity theory.
+
+This is the mechanism by which premise-driven formalization generates mathematics the premise did not predict. The type system acts as a completeness checker: it rejects proofs that skip steps. When the skipped step is a genuine mathematical theorem, the formalization must produce it. The resulting infrastructure is not a formalization artifact. It is mathematics, independent of the application that forced it, reusable in any context that needs Choquet capacities or analytic measurability.
+
+---
+
+## X. The Kernel at a Glance
+
+The full dependency structure of the kernel, with proof methods overlaid as shaded regions:
+
+![Kernel structure with proof method regions](assets/hypergraph_overview.png)
+
+The diagram encodes 35 modules across 8 layers (L0-L7), 278 theorems, and the 6 major proof pipelines from Section VIII. Each shaded region groups the modules that participate in a single proof method. The regions do not overlap across paradigm boundaries. No proof method spans PAC, Online, and Gold simultaneously.
+
+### Kernel summary
+
+**PAC dominates the infrastructure.** The PAC proof pipeline spans 4 layers (L3 through L6) and wraps 8 modules. The Online and Gold pipelines span 3 layers each with 3 modules. This asymmetry is not a design choice. It reflects the mathematical fact that PAC learning requires symmetrization, concentration, exchangeability, and measurability infrastructure that Online and Gold learning do not. 56% of the kernel's codebase serves the PAC characterization.
+
+**Measurability connects the paradigms.** The Measurability module (L4) appears inside three proof method regions: the PAC chain, the Borel-analytic bridge, and the Separation witness. It is the only module shared across regions. The measurability typeclasses (Section V) were introduced as engineering cleanup. They became the structural bridge between combinatorial learning theory and descriptive set theory.
+
+**Online and Gold are self-contained.** The Online potential region and Gold locking region are isolated. No shared infrastructure between them, and no shared infrastructure with PAC except through the foundation layers (L0-L1). The proof methods are disjoint at the module level, not just at the tactic level.
+
+### Per-paradigm structure
+
+<details>
+<summary><strong>PAC paradigm</strong></summary>
+
+![PAC detail](assets/hypergraph_pac.png)
+
+VCDimension -> Generalization -> Symmetrization -> Rademacher -> Concentration/Exchangeability -> Thm.PAC. Each step requires its own mathematical machinery (Sauer-Shelah, ghost samples, Hoeffding, NullMeasurableSet). The Separation witness region shares Measurability and Structures with the PAC chain.
+
+</details>
+
+<details>
+<summary><strong>Online + Gold paradigms</strong></summary>
+
+![Online + Gold detail](assets/hypergraph_online_gold.png)
+
+Two isolated regions. Online: Littlestone -> GameInfra -> Thm.Online. Gold: MindChange -> Ordinal -> Thm.Gold. GameInfra (219 lines) is the only Online-specific infrastructure module extracted during refactoring.
+
+</details>
+
+<details>
+<summary><strong>Descriptive set theory</strong></summary>
+
+![DST detail](assets/hypergraph_dst.png)
+
+The 526-line pipeline from Section IX: Choquet -> AnalyticMeas -> BorelBridge -> Thm.BorelAnalytic. Interpolation sits outside the pipeline -- a standalone result connecting to the measurability hub but not participating in any proof chain.
+
+</details>
+
+### Dead branches
+
+Five proof routes were explored and killed. Each killed route shaped the kernel that remains.
+
+| Dead branch | Discovery | Consequence |
+|------------|-----------|-------------|
+| NFL for finite X | VCDim(Set.univ) = \|X\|; memorizer learns Set.univ | All NFL theorems require `[Infinite X]` |
+| BranchWise Littlestone | const_true/const_false gives LDim = infinity for a 1-mistake class | Path-wise `LTree.isShattered` replaces branchwise |
+| Direct union bound | Produces 2^{2m}, not GrowthFunction(C, 2m) | Symmetrization infrastructure (3,027 lines) exists because this shortcut fails |
+| UC without regularity | Bad event not measurable for uncountable C | `WellBehavedVC` regularity hypothesis in every measure-theoretic theorem |
+| PAC with existential Dm | Existential Dm depends on target c via memorizer | `Measure.pi` (distribution-free) replaces existential construction |
+
+The direct union bound is the most consequential dead branch. Had it worked, the symmetrization infrastructure -- ghost samples, exchangeability, double-sample measure, Rademacher complexity -- would not exist. More than half the kernel's codebase exists because one obvious proof route was provably blocked.
+
+### Open boundary
+
+Two theorems carry sorry:
+
+- **Compression characterization** (forward direction): blocked by Moran-Yehudayoff 2016 construction absent from Mathlib.
+- **Universal trichotomy** (middle branch): blocked by BHMZ STOC 2021 construction absent from Mathlib.
+
+Both are extended results, not core. The PAC, Online, and Gold characterization theorems and all four separations are sorry-free.
+
+<details>
+<summary><strong>Regeneration</strong></summary>
+
+All figures are machine-generated:
+
+```bash
+python3 scripts/generate_hypergraph.py
+```
+
+Outputs to `assets/hypergraph_*.png`. Requires `matplotlib`, `numpy`, `scipy`.
+
+</details>
 
 ---
 
 ## Part IV: Apparatus
 
-## X. Methodology
+## XI. Methodology
 
-Built in **9 days** (March 18-25 for proof discovery, March 28-30 for measurability infrastructure and new mathematics) using **Claude Code (Opus 4.6)** as AI driver, guided by a human-derived typed premise. The public commit history begins March 26, 2026; the development phases are documented in `premise/origin.json`, `premise/final.json`, and the [companion discovery repository](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery). Subsequent additions (PAC-Bayes, Choquet capacity, Borel-analytic separation) followed the same methodology: premise extension first, then proof search within the extended premise.
+### The method at five levels
 
-**Without the premise**, the AI closed 8 of 67 open proofs correctly (and 12 more trivially/vacuously). The dominant failure mode was adding new sorrys faster than closing existing ones and attacking only the easiest proofs (trivial computation lemmas).
+This kernel was built in 9 days (March 18-25 for proof discovery, March 28-30 for measurability infrastructure and new mathematics) by a single human using Claude Opus 4.6 (Anthropic) via Claude Code. The method operates at five levels. Each level has a distinct function.
 
-**With the premise**, 65 of 67 were closed. The remaining 2 are blocked by results absent from Mathlib, not by AI capability. The measurability premise extension (unfolding 2) then produced 54 additional theorems including new mathematics, with 0 new sorrys.
+**Level 1: Premise design.** The human writes a typed premise: a hierarchical DAG of type definitions with placeholder proofs (`sorry`) organized across dependency layers (L0-L7). The premise encodes the mathematical structure of the target theory before any proof is attempted. The 42 concept nodes, 8 dependency layers, and 67 proof obligations of the learning theory premise were derived from an existing textbook and concept graph (`premise/origin.json`). The premise compiles. The types are checked. The proofs are empty.
 
-The full discovery process (10,000+ recorded tactics, 74 reasoning traces, error mode analysis) is documented in the [companion discovery repository](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery).
+<!-- FIGURE: methodology_process.svg
+     Style: black/white, Times New Roman, old school academic
+     Vertical flow diagram showing the 5 levels as stacked phases:
+     Level 1 (Premise Design) -> Level 2 (Proof Search) -> Level 3 (Failure Diagnosis)
+     -> Level 4 (Refactoring) -> Level 5 (World Model)
+     Left column: HUMAN actions at each level
+     Right column: AI actions at each level
+     Feedback arrows: Level 3 feeds back to Level 2, Level 4 feeds back to Level 1
+     The ablation split shown as a fork at Level 2: "with framework" vs "without"
+     Caption: "Five-level methodology. Human provides structure; AI provides execution."
+-->
+
+**Level 2: Proof search.** The AI operates in bypass mode: given a `sorry` and its type signature, it searches for tactic sequences that close the goal. The human does not write proofs. The human selects which `sorry` to attack, chooses the proof strategy when multiple routes exist, and redirects the AI when it enters a failure mode. The AI writes tactics, navigates Mathlib, and executes the mechanical work of elaboration and type-checking.
+
+**Level 3: Failure diagnosis.** When the AI fails, the failure is classified. Six failure modes were observed:
+
+| Failure mode | Description | Resolution |
+|-------------|-------------|------------|
+| Re-derivation waste | Agent re-derives a known dead end (e.g., direct union bound gives 2^{2m}) | Redirect with explicit prohibition |
+| Measurability spiral | AI hits unknown measurability requirement, proposes increasingly complex workarounds | Surface the mathematical question, provide evidence |
+| Content-dropping | AI proposes "simplifications" that weaken the mathematical result | Reject via completeness constraint |
+| Context exhaustion | Agent consumes token budget on deliberation before writing the proof | Split research agents from proof-writing agents |
+| Instance synthesis failure | AI patches symptoms (wrong API) instead of diagnosing root cause | Provide private evidence after N failed attempts |
+| Concurrent file conflict | Parallel agents overwrite each other's work | Git worktree isolation per agent |
+
+**Level 4: Refactoring for discovery.** After proof search closes the initial `sorry` count, the human refactors the kernel: extracts shared infrastructure into typeclasses, renames modules, reorganizes dependency layers. This is Phase 2 of the premise design blueprint (`assets/premise_blueprint.yaml`). The refactoring is engineering. The discovery is not. The measurability typeclass extraction (Section V) was an engineering cleanup that produced three original mathematical results and five precisely-stated open questions. The discovery was not planned. It emerged from the type obligations that refactoring exposed.
+
+**Level 5: World model construction.** The proof methods used during search are extracted, classified, and formalized into a typed proof operad (Section VIII). The operad is the method reflecting on itself: which proof strategies worked, which failed, and why the failures are paradigm-locked. The world model is both a record of this project and a routing table for future proof search in the same domain.
+
+### The ablation
+
+In an autonomous session without the framework, the AI was given the same type-checked premise (67 placeholder `sorry` statements) and instructed to close all proofs. The result: the `sorry` count grew from 67 to 187. The AI added 120 new `sorry` statements. Each plausible-looking tactic that failed to elaborate was replaced by a new `sorry`, and each `sorry` generated downstream obligations that themselves required `sorry`. The last errorless build state contained 8 correctly proved theorems and 12 vacuously true statements -- all in computation files, the easiest targets. After this point, no build succeeded.
+
+With the framework, 65 of 67 were closed. The remaining 2 are blocked by constructions absent from Mathlib (Moran-Yehudayoff 2016, BHMZ STOC 2021), not by AI capability. The measurability premise extension then produced 54 additional theorems including new mathematics, with 0 new `sorry`.
+
+Across 14 proof tasks in the framework-guided sessions, the correlation between pre-proof articulation of unknowns and first-attempt success is exact:
+
+| | Framework forces articulation of unknowns | No articulation |
+|---|---|---|
+| First-attempt success | 87.5% (7/8) | 0% (0/6) |
+
+Every task where the AI wrote code without first stating what it did not know produced at least one mistake. No exceptions.
+
+### What the human contributes
+
+The framework forces the AI to articulate what it does not know before writing any code. The human then intervenes to resolve the hard unknowns -- all the way from finding the right Mathlib API name to providing a complete proof sketch for the Borel-analytic separation. Three mechanisms:
+
+**1. Resolving unknowns before proof.** Before each proof task, the AI states what it needs but does not have. The human resolves these -- by Mathlib search, by mathematical argument, or by providing private evidence the AI cannot access. When the Interpolation proof was specified, three unknowns were identified (router parameter space, file location, patchEval framing) and resolved in advance. The agent closed the proof in one attempt. Without that resolution, the agent would have guessed wrong on at least one entry and spiraled.
+
+**2. Architectural corrections at type level.** The proof operad was initially designed with generators typed as `input -> output`. The correct typing is `input -> List output` because one goal maps to many subgoals -- this is an operad, not a category. The correction changed the entire `Generator` structure and prevented a type error that would have propagated through all four construction phases. These corrections operate at the type level. They cannot be made by an agent that does not understand the mathematical objects being formalized.
+
+**3. Directing discovery.** The instruction to build the `VersionSpaceLearner` came with a precise mathematical argument: Kuratowski-Ryll-Nardzewski is absent from Mathlib, therefore use countable enumeration via `Nat.find`. That framing made the proof tractable. Without it, the AI would have attempted the uncountable case, hit missing infrastructure, and either added a `sorry` or abandoned the direction.
+
+The human never writes a proof line. The human decides which proofs to write, in what order, via what strategy, and with what preconditions resolved.
+
+### The operational principle
+
+The method's core mechanism is a single ordering constraint: the AI must articulate what it does not know before writing any proof, and the human resolves the difficult unknowns before the AI proceeds.
+
+Without this ordering, the AI writes proofs against imagined infrastructure and retrofits when reality disagrees. Each retrofit generates a new `sorry`. Each `sorry` generates downstream obligations. The `sorry` count grows exponentially. This is the 67 -> 187 phenomenon.
+
+With this ordering, each proof begins only after its unknowns have been stated and resolved -- by the AI for routine queries (Mathlib API names, type signatures), by the human for hard ones (proof strategies, missing infrastructure, mathematical arguments). The AI writes only against verified preconditions. The `sorry` count monotonically decreases.
+
+### Comparison to existing approaches
+
+| System | Approach | Premise source | Scale |
+|--------|----------|---------------|-------|
+| AlphaProof (DeepMind) | RL + Lean verifier | None (autonomous) | 4/6 IMO 2024 |
+| Lean Copilot | LLM tactic suggestion | Interactive copilot | 74.2% of Mathlib steps |
+| COPRA | GPT-4 + backtracking | None (in-context) | miniF2F (244 problems) |
+| ReProver | Supervised + retrieval | Auto-retrieved | 51.2% Mathlib random split |
+| Draft-Sketch-Prove | Informal proof -> formal sketch | Informal proof as guide | 39.3% miniF2F-test |
+| **This work** | **Human premise + LLM execution** | **Typed premise (human)** | **278 theorems, 17,956 LOC** |
+
+The existing approaches assign proof strategy to the AI (via RL, beam search, or in-context reasoning). This method assigns proof strategy to the human and tactic execution to the AI. The inversion explains the scale: no existing system has produced a coherent theory-scale kernel because no existing system delegates the type structure to a human who understands the mathematics. The tradeoff is that this method requires a human who CAN design the typed premise.
+
+### Limitations
+
+The method requires a human who can write a type-checked premise for the target domain. For learning theory, this took one week of reading and one day of typing. For an unfamiliar domain, the cost is higher and the risk of structural errors in the premise is the dominant failure mode.
+
+The method has been tested across near-orthogonal domains: mathematical discovery (this kernel), empirical AI benchmarking ([First-Proof-Benchmark-Results](https://github.com/Zetetic-Dhruv/First-Proof-Benchmark-Results)), and production knowledge modeling. The premise design blueprint (`assets/premise_blueprint.yaml`) is abstracted from these applications. Whether domain-specific structural phenomena (paradigm locking, measurability bridges, definition sensitivity) recur in other mathematical domains is an open question; the method itself transfers.
+
+The AI driver is a frontier LLM, not a specialized prover. Its Mathlib navigation works by name-guessing and type-matching, not by indexed retrieval. A specialized tool (DiscrTree-based search, as prototyped in the bridge tactic of Section VIII) would improve tactic-level efficiency without changing the method's architecture.
 
 ---
 
-## XI. Theorem Index
+## XII. Theorem Index
 
-Machine-generated from the codebase. Grouped by role.
+Machine-generated by `scripts/generate_theorem_index.sh`. 278 theorems/lemmas (190 public, 88 private) across 43 files.
 
-### Characterization theorems (dependency roots)
+<details>
+<summary><strong>Full index (278 entries)</strong></summary>
+
+<!--
+Regenerate with:
+  bash scripts/generate_theorem_index.sh
+-->
+
+See `drafts/theorem_index.md` for the complete machine-generated table grouped by module: Foundation, Learner, Criterion, Complexity, Pure Mathematics, and Theorems.
+
+</details>
+
+### Characterization theorems
 
 | Theorem | File | Status |
 |---------|------|--------|
-| `fundamental_theorem` | Theorem/PAC.lean:293 | Proved (4/5 conjuncts) |
-| `vc_characterization` | Theorem/PAC.lean:126 | Proved |
-| `littlestone_characterization` | Theorem/Online.lean:608 | Proved |
-| `gold_theorem` | Theorem/Gold.lean:19 | Proved |
-| `mind_change_characterization` | Theorem/Gold.lean:206 | Proved |
-| `universal_trichotomy` | Theorem/Extended.lean:54 | 2/3 proved |
-| `pac_bayes_finite` | Theorem/PACBayes.lean | Proved (first Lean4 PAC-Bayes) |
+| `vc_characterization` | Theorem/PAC.lean | Proved |
+| `fundamental_theorem` | Theorem/PAC.lean | Proved (4/5 conjuncts) |
+| `littlestone_characterization` | Theorem/Online.lean | Proved |
+| `gold_theorem` | Theorem/Gold.lean | Proved |
+| `mind_change_characterization` | Theorem/Gold.lean | Proved |
+| `universal_trichotomy` | Theorem/Extended.lean | 2/3 proved |
+| `pac_bayes_finite` | Theorem/PACBayes.lean | Proved |
 
 ### Separation theorems
 
 | Theorem | File | Witness |
 |---------|------|---------|
-| `pac_not_implies_online` | Theorem/Separation.lean:1268 | Threshold class on N |
-| `ex_not_implies_pac` | Theorem/Separation.lean:1330 | Finite-subset indicators |
-| `online_imp_pac` | Theorem/Separation.lean:131 | (always: not a separation) |
-| `uc_does_not_imply_online` | Complexity/GeneralizationResults.lean:160 | (constructive) |
-| `online_pac_gold_separation` | Theorem/Separation.lean:1441 | (all three strict) |
-| `analytic_nonborel_set_gives_measTarget_separation` | Theorem/BorelAnalyticSeparation.lean:184 | Singleton class over analytic non-Borel A |
-| `exists_measTarget_separation` | Theorem/BorelAnalyticSeparation.lean:301 | (conditional on analytic non-Borel existence) |
+| `pac_not_implies_online` | Theorem/Separation.lean | Threshold class on N |
+| `ex_not_implies_pac` | Theorem/Separation.lean | Finite-subset indicators |
+| `online_imp_pac` | Theorem/Separation.lean | (unconditional implication) |
+| `online_pac_gold_separation` | Theorem/Separation.lean | (all three strict) |
+| `analytic_nonborel_set_gives_measTarget_separation` | Theorem/BorelAnalyticSeparation.lean | Singleton class over analytic non-Borel A |
+| `exists_measTarget_separation` | Theorem/BorelAnalyticSeparation.lean | (conditional on analytic non-Borel existence) |
 
-### NFL and lower bounds
+### New mathematics
 
-| Theorem | File | Status |
+| Theorem | File | Result |
 |---------|------|--------|
-| `nfl_theorem_infinite` | Theorem/PAC.lean:342 | Proved (requires `[Infinite X]`) |
-| `nfl_fixed_sample` | Theorem/PAC.lean:368 | Proved |
-| `vcdim_univ_infinite` | Theorem/PAC.lean:321 | Proved (NFL false for finite X) |
-| `pac_lower_bound` | Theorem/PAC.lean:160 | Proved |
-| `sample_complexity_lower_bound` | Complexity/GeneralizationResults.lean:204 | Proved |
-
-### Proof infrastructure (load-bearing)
-
-| Theorem | File | LOC context |
-|---------|------|-------------|
-| `vcdim_finite_imp_uc'` | Complexity/Symmetrization.lean:2745 | 3,027 LOC chain |
-| `symmetrization_uc_bound` | Complexity/Symmetrization.lean:2250 | Ghost-sample core |
-| `hoeffding_one_sided` | Complexity/Symmetrization.lean:188 | Concentration |
-| `finite_exchangeability_bound` | Complexity/Symmetrization.lean:1047 | NullMeasurableSet Tonelli |
-| `sauer_shelah_exp_bound` | Complexity/Rademacher.lean:905 | Growth function bound |
-| `vcdim_finite_imp_rademacher_vanishing` | Complexity/Rademacher.lean:1818 | Rademacher chain |
-| `finite_massart_lemma` | Complexity/Rademacher.lean:507 | Massart's lemma |
-| `advice_elimination` | Theorem/Extended.lean:514 | Advice-to-PAC reduction |
-| `borel_param_wellBehavedVCMeasTarget` | Complexity/BorelAnalyticBridge.lean | Borel parameterization implies WellBehavedVC |
-| `KrappWirthWellBehaved.toWellBehavedVC` | Complexity/Measurability.lean | Krapp-Wirth implies WellBehavedVC |
-| `AnalyticSet.compactCap_eq` | MathLib/ChoquetCapacity.lean | Choquet capacitability (Kechris 30.13) |
-| `pac_bayes_per_hypothesis` | Theorem/PACBayes.lean | Per-hypothesis Hoeffding with prior |
-| `pac_bayes_all_hypotheses` | Theorem/PACBayes.lean | Simultaneous bound via union |
-| `baxter_base_case` | Theorem/Extended.lean | Multi-task NFL base case |
-
-### Bridge theorems (Mathlib interface)
-
-| Theorem | File | Bridges |
-|---------|------|---------|
-| `conceptToFinset_injective` | Bridge.lean:97 | ConceptClass to Finset |
-| `shatters_iff_finset_shatters` | Bridge.lean:130 | Shatters equivalence |
-| `vcdim_eq_finset_vcdim` | Bridge.lean:217 | VCDim to Mathlib VCDim |
-| `growth_function_le_sauer_shelah` | Bridge.lean:465 | Sauer-Shelah via Mathlib |
-| `VCDim_embed_ordinal` | Complexity/Ordinal.lean:76 | WithTop Nat to Ordinal |
+| `AnalyticSet.cap_eq_iSup_isCompact` | PureMath/ChoquetCapacity.lean | Choquet capacitability theorem |
+| `analyticSet_nullMeasurableSet` | PureMath/AnalyticMeasurability.lean | Analytic sets are NullMeasurableSet |
+| `interpolation_descent` | Complexity/Interpolation.lean | Composition weakens measurability |
+| `versionSpaceLearner_measurableBatchLearner` | Learner/VersionSpace.lean | Version space learners satisfy MeasurableBatchLearner |
+| `chebyshev_majority_bound` | PureMath/Concentration.lean | Majority vote concentration bound |
 
 ### Remaining gaps (2 sorry)
 
-| Theorem | File | Blocked by | Required for |
-|---------|------|-----------|-------------|
-| `vcdim_finite_imp_compression` | Complexity/Generalization.lean:1903 | Moran-Yehudayoff 2016 | Fundamental theorem conjunct 2 (forward) |
-| `bhmz_middle_branch` | Theorem/Extended.lean:40 | BHMZ STOC 2021 | Universal trichotomy branch 2 |
+| Theorem | File | Blocked by |
+|---------|------|-----------|
+| `vcdim_finite_imp_compression` | Complexity/Generalization.lean | Moran-Yehudayoff 2016 |
+| `bhmz_middle_branch` | Theorem/Extended.lean | BHMZ STOC 2021 |
+
+Both are extended results. The core kernel is sorry-free.
 
 ---
 
-## XII. Building
+## XIII. Building
 
 ```bash
-lake build   # Requires elan. First build fetches Mathlib (~20 min).
+lake build              # Kernel (43 files, ~2 min cached, ~20 min clean)
+lake build WorldModel   # Proof operad (8 files, <2 min)
 ```
 
-Lean `v4.29.0-rc6` | Mathlib4 pinned to [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | See [`test/ARTIFACT_CHECKLIST.md`](test/ARTIFACT_CHECKLIST.md) for full reproducibility details.
+Lean `v4.29.0-rc6` | Mathlib4 from `master` | See [`test/ARTIFACT_CHECKLIST.md`](test/ARTIFACT_CHECKLIST.md) for full reproducibility details.
+
+Figures:
+
+```bash
+python3 scripts/generate_hypergraph.py   # Outputs to assets/hypergraph_*.png
+bash scripts/generate_theorem_index.sh   # Outputs to drafts/theorem_index.md
+bash scripts/metrics.sh                  # Canonical metrics (JSON)
+```
+
+Requires `elan` for Lean4. Figure generation requires Python 3 with `matplotlib`, `numpy`, `scipy`.
 
 ---
 
-## XIII. Companion Repositories
+## XIV. Companion Repositories
 
-This kernel is one component of a larger programme. The four public companion repositories:
-
-| Repository | Role | Relationship to this repo |
-|-----------|------|--------------------------|
-| [formal-learning-theory-discovery](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery) | Discovery process: 74 reasoning traces, metakernel, 10,000+ exploration paths | Documents *how* this kernel was built |
-| [formal-learning-theory-dataset](https://github.com/Zetetic-Dhruv/formal-learning-theory-dataset) | Structured concept graph (142 nodes, 260 edges) + fine-tuned SLM | The concept graph that informed the type architecture in `premise/origin.json` |
-| [formal-learning-theory-book](https://github.com/Zetetic-Dhruv/formal-learning-theory-book) | *A Textbook of Formal Learning Theory* (202 pages, 18 chapters) | Informal exposition of the same mathematical content |
-| [First-Proof-Benchmark-Results](https://github.com/Zetetic-Dhruv/First-Proof-Benchmark-Results) | Empirical analysis of AI-driven proof discovery across frontier models | Broader context: proof discovery benchmarks beyond this library |
+| Repository | Role | Relationship |
+|-----------|------|--------------|
+| [formal-learning-theory-discovery](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery) | 74 reasoning traces, 10,000+ exploration paths | Documents how this kernel was built |
+| [formal-learning-theory-dataset](https://github.com/Zetetic-Dhruv/formal-learning-theory-dataset) | Concept graph (142 nodes, 260 edges) + fine-tuned SLM | Informed the type architecture in `premise/origin.json` |
+| [formal-learning-theory-book](https://github.com/Zetetic-Dhruv/formal-learning-theory-book) | *A Textbook of Formal Learning Theory* (202 pages, 18 chapters) | Informal exposition of the same content |
+| [First-Proof-Benchmark-Results](https://github.com/Zetetic-Dhruv/First-Proof-Benchmark-Results) | AI-driven proof discovery benchmarks across frontier models | Broader context beyond this library |
 
 ---
 
-## XIV. Citation
+## XV. Citation
 
 ```bibtex
 @software{gupta2026flt_kernel,
@@ -931,8 +1229,8 @@ This kernel is one component of a larger programme. The four public companion re
                   of the Fundamental Theorem of Statistical Learning},
   year         = {2026},
   url          = {https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
-  note         = {37 files, 17{,}350 LOC, 2 sorry.
-                  Proof discovery via Claude Opus 4.6.}
+  note         = {43 files, 17{,}956 LOC, 278 theorems, 2 sorry.
+                  Human-guided, AI-driven proof search via Claude Opus 4.6.}
 }
 
 @software{gupta2026flt_discovery,
@@ -960,13 +1258,14 @@ This kernel is one component of a larger programme. The four public companion re
   eprint       = {2410.10243},
   archiveprefix= {arXiv},
   note         = {Independent concurrent work on the same
-                  measurability gap verified in this kernel.}
+                  measurability gap. This kernel corrects their
+                  MeasurableSet condition to NullMeasurableSet.}
 }
 ```
 
 ---
 
-## XV. Attribution
+## XVI. Attribution
 
 Copyright (c) 2026 Dhruv Gupta. Apache 2.0.
 
