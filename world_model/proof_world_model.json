@@ -2,8 +2,8 @@
   "metadata": {
     "name": "formal_learning_theory_proof_world_model",
     "description": "Operational knowledge base encoding 21 metaprograms extracted from actual tactic sequences in the kernel. Each metaprogram is a reusable proof composition pattern: a DAG of TacticM transformations on MVarId goals with typed inputs, outputs, and failure diagnostics.",
-    "generated": "2026-03-31",
-    "kernel_version": "v2.0.0",
+    "generated": "2026-04-02",
+    "kernel_version": "v3.0.0",
     "unit": "metaprogram (TacticM composition pattern)",
     "extraction_method": "grep + agent analysis of by-blocks across 43 Lean4 source files",
     "lean4_model": {

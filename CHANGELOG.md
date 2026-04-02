@@ -3,6 +3,40 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v3.0.0] - 2026-04-02
+
+### Added
+- **Interpolation descent** (`Complexity/Interpolation.lean`, 249 lines): composition of Borel concept classes weakens measurability from MeasurableSet to NullMeasurableSet. `BorelRouterCode` abstraction for conditional interpolation.
+- **Version space measurability** (`Learner/VersionSpace.lean`, 203 lines): version space learners satisfy `MeasurableBatchLearner` via rectangle decomposition + `Nat.find`. Non-neural RL policy class.
+- **Game infrastructure** (`Complexity/GameInfra.lean`, 219 lines): extracted game-theoretic infrastructure for online learning (adversary tree, version space potential).
+- **Concentration** (`PureMath/Concentration.lean`, 195 lines): `BoundedRandomVariable` typeclass, Chebyshev majority bound. Field-independent, Mathlib-contributable.
+- **Exchangeability** (`PureMath/Exchangeability.lean`, 128 lines): double-sample measure, merge/split isomorphism, `ValidSplit`, `SplitMeasure`. Field-independent, Mathlib-contributable.
+- **KL divergence** (`PureMath/KLDivergence.lean`, 59 lines): `FinitePMF`, KL divergence, cross-entropy over finite types. Field-independent, Mathlib-contributable.
+- **Typed proof operad** (`world_model/WorldModel/`, 1,170 lines, 0 sorry): `TPG_FLT` -- formalized proof world model with Interface, Generator, Plan, HasType judgment, negative typing via FailureRule, extension via GapSpec. 17 generators, 7 failure rules, 27/27 tests pass.
+- **Corpus-relative completeness theorem**: all 6 major pipelines (PAC, DST, Online, Gold, Separation, Bayes) type-check under `fltTheory`.
+- **Paradigm lock theorem**: no generator spans PAC + Online + Gold simultaneously.
+- **NT1 cross-paradigm impossibility**: `seq TreePotential UCToPAC` provably ill-typed at composition level.
+- **Machine-generated hypergraph** (`scripts/generate_hypergraph.py`): Sugiyama layout with barycenter ordering, 4 figures output to `assets/`.
+- **Machine-generated theorem index** (`scripts/generate_theorem_index.sh`): full 278-theorem index grouped by module.
+- **README rewritten as ArXiv-quality preprint**: 16 sections across 4 parts, URS-discovered structure.
+
+### Changed
+- **Folder rename**: `MathLib/` renamed to `PureMath/` (avoids confusion with upstream Mathlib)
+- **World model canonical**: `FLT_Proofs/Meta/` removed; `world_model/WorldModel/` is now the canonical build target (`lake build WorldModel`)
+- **Lakefile**: added `WorldModel` lean_lib with `srcDir := "world_model"`, removed stale `MetaKernel` lib, fixed `FLT_Proofs.MathLib` -> `FLT_Proofs.PureMath`
+- **Mathlib pinned**: re-pinned to `fde0cc508f` after lakefile restructuring
+
+### Metrics delta
+
+| Metric | v2.0.0 | v3.0.0 | Delta |
+|--------|--------|--------|-------|
+| Files | 37 | 43 | +6 |
+| Lines | 17,350 | 17,956 | +606 |
+| Theorems | 264 | 278 | +14 |
+| Definitions | 190 | 200 | +10 |
+| Structures | 52 | 54 | +2 |
+| Sorry | 2 | 2 | 0 |
+
 ## [v2.0.0] - 2026-03-30
 
 ### Added
@@ -65,5 +99,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `vcdim_finite_imp_compression` (Moran-Yehudayoff 2016)
   - `bhmz_middle_branch` (BHMZ STOC 2021)
 
+[v3.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/compare/v2.0.0...v3.0.0
 [v2.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/compare/v1.0.0...v2.0.0
 [v1.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0
