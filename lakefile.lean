@@ -18,8 +18,8 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Learner.Active,
     `FLT_Proofs.Learner.Bayesian,
     `FLT_Proofs.Learner.Closure,
+    `FLT_Proofs.Learner.Attention,
     `FLT_Proofs.Learner.Monad,
-    `FLT_Proofs.Learner.VersionSpace,
     `FLT_Proofs.Criterion,
     `FLT_Proofs.Criterion.Gold,
     `FLT_Proofs.Criterion.PAC,
@@ -35,15 +35,17 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.Symmetrization,
     `FLT_Proofs.Complexity.GeneralizationResults,
     `FLT_Proofs.Complexity.Structures,
-    `FLT_Proofs.Complexity.Amalgamation,
     `FLT_Proofs.Complexity.Measurability,
     `FLT_Proofs.Complexity.BorelAnalyticBridge,
+    `FLT_Proofs.Complexity.Amalgamation,
+    `FLT_Proofs.Complexity.Interpolation,
+    `FLT_Proofs.Complexity.Attention,
+    `FLT_Proofs.MathLib.ChoquetCapacity,
+    `FLT_Proofs.MathLib.AnalyticMeasurability,
+    `FLT_Proofs.MathLib.KLDivergence,
+    `FLT_Proofs.MathLib.Concentration,
+    `FLT_Proofs.MathLib.Exchangeability,
     `FLT_Proofs.MathLib.ReaderMonad,
-    `FLT_Proofs.PureMath.ChoquetCapacity,
-    `FLT_Proofs.PureMath.AnalyticMeasurability,
-    `FLT_Proofs.PureMath.KLDivergence,
-    `FLT_Proofs.PureMath.Concentration,
-    `FLT_Proofs.PureMath.Exchangeability,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,
@@ -54,20 +56,27 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
     `FLT_Proofs.Bridge,
+    `FLT_Proofs.Meta.ProofOperad,
+    `FLT_Proofs.Meta.ProofOperadInstances,
+    `FLT_Proofs.Meta.ProofOperadTheorems,
+    `FLT_Proofs.Meta.BridgeTactic,
+    `FLT_Proofs.Meta.BridgeTests,
+    `FLT_Proofs.Meta.NonTrivialTests,
+    `FLT_Proofs.Meta.BridgeRealTests
   ]
 
--- World model: typed proof operad (canonical source: world_model/WorldModel/)
-lean_lib WorldModel where
-  srcDir := "world_model"
+lean_lib MetaKernel where
   roots := #[
-    `WorldModel.ProofOperad,          -- Core calculus: Interface, Generator, Plan, HasType
-    `WorldModel.ProofOperadInstances, -- 17 generators, 7 failures, fltTheory
-    `WorldModel.ProofOperadTheorems,  -- Completeness, paradigm lock, normalization
-    `WorldModel.BridgeTactic,         -- bridge_search tactic (under construction)
-    `WorldModel.BridgeTests,          -- Smoke tests (27/27 pass)
-    `WorldModel.NonTrivialTests       -- Non-trivial tests (cross-paradigm, extension, cost)
+    `MetaKernel.Core,
+    `MetaKernel.Tactics,
+    `MetaKernel.Measure,
+    `MetaKernel.Phi,
+    `MetaKernel.Discovery,
+    `MetaKernel.WorldModel.PriorArt,
+    `MetaKernel.WorldModel.MeasuredTactic,
+    `MetaKernel.WorldModel.Feedback,
+    `MetaKernel.Test
   ]
-
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "fde0cc508f5375f278f515cb2f50a34a545a4c5c"
+  "https://github.com/leanprover-community/mathlib4" @ "master"
