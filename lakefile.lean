@@ -18,7 +18,6 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Learner.Active,
     `FLT_Proofs.Learner.Bayesian,
     `FLT_Proofs.Learner.Closure,
-    `FLT_Proofs.Learner.Attention,
     `FLT_Proofs.Learner.Monad,
     `FLT_Proofs.Criterion,
     `FLT_Proofs.Criterion.Gold,
@@ -39,13 +38,11 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.BorelAnalyticBridge,
     `FLT_Proofs.Complexity.Amalgamation,
     `FLT_Proofs.Complexity.Interpolation,
-    `FLT_Proofs.Complexity.Attention,
-    `FLT_Proofs.Complexity.FiniteRouting,
-    `FLT_Proofs.MathLib.ChoquetCapacity,
-    `FLT_Proofs.MathLib.AnalyticMeasurability,
-    `FLT_Proofs.MathLib.KLDivergence,
-    `FLT_Proofs.MathLib.Concentration,
-    `FLT_Proofs.MathLib.Exchangeability,
+    `FLT_Proofs.PureMath.ChoquetCapacity,
+    `FLT_Proofs.PureMath.AnalyticMeasurability,
+    `FLT_Proofs.PureMath.KLDivergence,
+    `FLT_Proofs.PureMath.Concentration,
+    `FLT_Proofs.PureMath.Exchangeability,
     `FLT_Proofs.MathLib.ReaderMonad,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
@@ -56,27 +53,7 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.BorelAnalyticSeparation,
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
-    `FLT_Proofs.Bridge,
-    `FLT_Proofs.Meta.ProofOperad,
-    `FLT_Proofs.Meta.ProofOperadInstances,
-    `FLT_Proofs.Meta.ProofOperadTheorems,
-    `FLT_Proofs.Meta.BridgeTactic,
-    `FLT_Proofs.Meta.BridgeTests,
-    `FLT_Proofs.Meta.NonTrivialTests,
-    `FLT_Proofs.Meta.BridgeRealTests
-  ]
-
-lean_lib MetaKernel where
-  roots := #[
-    `MetaKernel.Core,
-    `MetaKernel.Tactics,
-    `MetaKernel.Measure,
-    `MetaKernel.Phi,
-    `MetaKernel.Discovery,
-    `MetaKernel.WorldModel.PriorArt,
-    `MetaKernel.WorldModel.MeasuredTactic,
-    `MetaKernel.WorldModel.Feedback,
-    `MetaKernel.Test
+    `FLT_Proofs.Bridge
   ]
 
 require mathlib from git
