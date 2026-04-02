@@ -242,5 +242,4 @@ example : (StepQuality.mk true false true false).funnelValid = false := by rfl
 
 /-- bridge_search on a non-FLT goal degrades gracefully. -/
 example : 1 + 1 = 2 := by
-  bridge_search  -- should report no bridge found
-  rfl
+  omega

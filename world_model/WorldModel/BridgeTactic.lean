@@ -75,34 +75,36 @@ instance : ToString Paradigm where
 private def String.hasSubstring (s sub : String) : Bool :=
   (s.splitOn sub).length > 1
 
+private def matchParadigm (name : String) : Option Paradigm :=
+  if name.hasSubstring "Measure" || name.hasSubstring "ENNReal"
+     || name.hasSubstring "PACLearnable" || name.hasSubstring "WellBehavedVC"
+     || name.hasSubstring "HasUniformConvergence"
+     || name.hasSubstring "EmpiricalError" then some .pac
+  else if name.hasSubstring "OnlineLearner" || name.hasSubstring "LittlestoneDim"
+     || name.hasSubstring "LTree" || name.hasSubstring "versionSpace"
+     || name.hasSubstring "OnlineLearnable" then some .online
+  else if name.hasSubstring "DataStream" || name.hasSubstring "MindChange"
+     || name.hasSubstring "EXLearnable" then some .gold
+  else if name.hasSubstring "AnalyticSet" || name.hasSubstring "NullMeasurable"
+     || name.hasSubstring "PolishSpace" then some .dst
+  else if name.hasSubstring "FinitePMF" || name.hasSubstring "klDiv" then some .bayes
+  else if name.hasSubstring "KrappWirth" || name.hasSubstring "WellBehavedVCMeasTarget"
+     then some .separation
+  else none
+
 open Lean Meta Elab Tactic in
 def classifyExpr (e : Expr) : MetaM Paradigm := do
-  let e ← whnf e
-  let head := e.getAppFn
+  -- Check raw head BEFORE whnf
+  let rawHead := e.getAppFn
+  if rawHead.isConst then
+    let name := Name.toString rawHead.constName!
+    if let some p := matchParadigm name then return p
+  -- Fallback: whnf then check
+  let e' ← whnf e
+  let head := e'.getAppFn
   if head.isConst then
-    let name := head.constName!.toString
-    -- PAC
-    if name.hasSubstring "Measure" || name.hasSubstring "ENNReal"
-       || name.hasSubstring "PACLearnable" || name.hasSubstring "WellBehavedVC" then
-      return .pac
-    -- Online
-    if name.hasSubstring "OnlineLearner" || name.hasSubstring "LittlestoneDim"
-       || name.hasSubstring "LTree" then
-      return .online
-    -- Gold
-    if name.hasSubstring "DataStream" || name.hasSubstring "MindChange"
-       || name.hasSubstring "EXLearnable" then
-      return .gold
-    -- DST
-    if name.hasSubstring "AnalyticSet" || name.hasSubstring "NullMeasurable"
-       || name.hasSubstring "PolishSpace" then
-      return .dst
-    -- Bayes
-    if name.hasSubstring "FinitePMF" || name.hasSubstring "klDiv" then
-      return .bayes
-    -- Separation
-    if name.hasSubstring "KrappWirth" || name.hasSubstring "WellBehavedVCMeasTarget" then
-      return .separation
+    let name := Name.toString head.constName!
+    if let some p := matchParadigm name then return p
   return .structural
 
 -- ============================================================
@@ -111,21 +113,74 @@ def classifyExpr (e : Expr) : MetaM Paradigm := do
 
 open Lean Meta Elab Tactic in
 def searchBridgeLemmaRestricted (goal : MVarId) : MetaM (Option Name) := do
-  let target ← goal.getType
   let env ← getEnv
-  let entries := env.constants.fold (init := #[]) fun acc name info =>
-    if name.isInternal then acc
-    else if !(name.toString.hasSubstring "FLT_Proofs") then acc
-    else match info with
-    | .thmInfo _ => acc.push (name, info)
-    | _ => acc
-  for (name, info) in entries do
-    let found ← observing? do
-      forallTelescopeReducing info.type fun _ conclusion => do
-        if ← isDefEq conclusion target then return name
-        else throwError "no match"
-    if let some n := found then
-      return some n
+  let entries := env.constants.fold (init := (#[] : Array (Name × ConstantInfo)))
+    fun (acc : Array (Name × ConstantInfo)) (name : Name) info =>
+      if name.isInternal then acc
+      else
+        let ns := Name.toString name
+        -- Skip known library namespaces
+        if ns.hasSubstring "Mathlib." || ns.hasSubstring "Lean." || ns.hasSubstring "Init."
+           || ns.hasSubstring "Std." || ns.hasSubstring "Batteries." || ns.hasSubstring "Aesop."
+           || ns.hasSubstring "Qq." || ns.hasSubstring "ProofWidgets." || ns.hasSubstring "ImportGraph."
+           || ns.hasSubstring "LeanSearchClient." || ns.hasSubstring "Plausible."
+           || ns.hasSubstring "Option." || ns.hasSubstring "List." || ns.hasSubstring "Array."
+           || ns.hasSubstring "String." || ns.hasSubstring "Nat." || ns.hasSubstring "Int."
+           || ns.hasSubstring "Bool." || ns.hasSubstring "Fin." || ns.hasSubstring "UInt"
+           || ns.hasSubstring "Float." || ns.hasSubstring "IO." || ns.hasSubstring "System."
+           || ns.hasSubstring "Decidable." || ns.hasSubstring "Eq." || ns.hasSubstring "HEq."
+           || ns.hasSubstring "And." || ns.hasSubstring "Or." || ns.hasSubstring "Not."
+           || ns.hasSubstring "Iff." || ns.hasSubstring "True." || ns.hasSubstring "False."
+           || ns.hasSubstring "Exists." || ns.hasSubstring "Sigma." || ns.hasSubstring "PSigma."
+           || ns.hasSubstring "Subtype." || ns.hasSubstring "Prod." || ns.hasSubstring "Sum."
+           || ns.hasSubstring "Function." || ns.hasSubstring "Quot." || ns.hasSubstring "Quotient."
+           || ns.hasSubstring "WellFounded." || ns.hasSubstring "Acc." then acc
+        else match info with
+        | .thmInfo _ => acc.push (name, info)
+        | _ => acc
+  -- Two-pass search: prioritize FLT-specific theorems, then generic ones
+  let isFLTName (ns : String) : Bool :=
+    ns.hasSubstring "pac" || ns.hasSubstring "PAC" || ns.hasSubstring "uc_imp"
+    || ns.hasSubstring "vcdim" || ns.hasSubstring "VCDim" || ns.hasSubstring "vc_dim"
+    || ns.hasSubstring "versionSpace" || ns.hasSubstring "ldim" || ns.hasSubstring "Littlestone"
+    || ns.hasSubstring "learnable" || ns.hasSubstring "Learnable"
+    || ns.hasSubstring "online" || ns.hasSubstring "Online"
+    || ns.hasSubstring "bridge" || ns.hasSubstring "Bridge"
+    || ns.hasSubstring "erm" || ns.hasSubstring "ERM"
+    || ns.hasSubstring "analytic" || ns.hasSubstring "Analytic"
+    || ns.hasSubstring "separation" || ns.hasSubstring "Separation"
+    || ns.hasSubstring "mind_change" || ns.hasSubstring "MindChange"
+    || ns.hasSubstring "klDiv" || ns.hasSubstring "bayes" || ns.hasSubstring "Bayes"
+    || ns.hasSubstring "uniform_convergence" || ns.hasSubstring "UniformConvergence"
+    || ns.hasSubstring "empirical" || ns.hasSubstring "Empirical"
+    || ns.hasSubstring "measurable_concept" || ns.hasSubstring "MeasurableConcept"
+    || ns.hasSubstring "concept_class" || ns.hasSubstring "ConceptClass"
+  -- Pass 1: FLT-specific theorems
+  for (name, _info) in entries do
+    let ns := Name.toString name
+    if isFLTName ns then
+      let found ← withoutModifyingState do
+        try
+          let lemmaExpr ← mkConstWithFreshMVarLevels name
+          let _newGoals ← goal.apply lemmaExpr
+          return some name
+        catch _ =>
+          return none
+      if let some n := found then
+        return some n
+  -- Pass 2: all remaining theorems
+  for (name, _info) in entries do
+    let ns := Name.toString name
+    if !isFLTName ns then
+      let found ← withoutModifyingState do
+        try
+          let lemmaExpr ← mkConstWithFreshMVarLevels name
+          let _newGoals ← goal.apply lemmaExpr
+          return some name
+        catch _ =>
+          return none
+      if let some n := found then
+        return some n
   return none
 
 -- ============================================================
@@ -141,7 +196,7 @@ elab "bridge_search" : tactic => do
     let result ← searchBridgeLemmaRestricted goal
     match result with
     | some name =>
-      let lemmaExpr := mkConst name
+      let lemmaExpr ← mkConstWithFreshMVarLevels name
       let newGoals ← goal.apply lemmaExpr
       replaceMainGoal newGoals
       logInfo m!"bridge_search: applied {name}"
@@ -160,12 +215,15 @@ elab "bridge_search" : tactic => do
 -- Part 7: Soundness Lemmas
 -- ============================================================
 
-theorem bridge_failure_implies_gap
-    (_Sigma : Theory) (I : Interface)
-    (report : BridgeReport) (_hfail : report.quality.goalCompletion = false) :
-    ∃ gap : GapSpec, gap.source = I :=
-  ⟨⟨I, ⟨"bridge_target", I.locks, I.premises, "bridge_target"⟩,
-    .missingBridge I.name "bridge_target"⟩, rfl⟩
+/-- Construct a gap specification from a bridge report.
+    The gap records the paradigm and goal description from the report,
+    making the structured ignorance concrete. -/
+def BridgeReport.toGapSpec (report : BridgeReport) (I : Interface) : GapSpec :=
+  ⟨I, ⟨report.goalDescription, I.locks, I.premises, report.goalDescription⟩,
+    .missingBridge I.name report.goalDescription⟩
+
+theorem BridgeReport.toGapSpec_source (report : BridgeReport) (I : Interface) :
+    (report.toGapSpec I).source = I := rfl
 
 theorem quality_funnel_monotone (q : StepQuality) (h : q.funnelValid = true) :
     (q.generalizationRobustness = true → q.goalCompletion = true) ∧
@@ -194,4 +252,4 @@ theorem quality_funnel_monotone (q : StepQuality) (h : q.funnelValid = true) :
 
 example : True := by
   bridge_search
-  trivial
+  all_goals rfl

@@ -224,15 +224,17 @@ theorem failure_as_negative_typing
         simp [honInput, hblocks] at hne
 
 -- ============================================================
--- Theorem 2: typed_openness
+-- Gap construction
 -- ============================================================
 
-/-- If no plan can type an interface, a gap witness exists. -/
-theorem typed_openness
-    (Sigma : Theory) (I : Interface)
-    (_hno : ¬ ∃ p Os, HasType Sigma p I Os) :
-    ∃ gap : GapSpec, gap.source = I :=
-  ⟨⟨I, ⟨"unknown", I.locks, I.premises, "unknown"⟩, .missingBridge I.name "unknown"⟩, rfl⟩
+/-- For any interface, a gap specification can be constructed.
+    This is a CONSTRUCTION lemma (not a conditional): it builds a GapSpec
+    pointing at I as the source of a missing bridge. The gap serves as
+    structured ignorance — a typed placeholder for theory growth. -/
+def mkGap (I : Interface) : GapSpec :=
+  ⟨I, ⟨"unknown", I.locks, I.premises, "unknown"⟩, .missingBridge I.name "unknown"⟩
+
+theorem mkGap_source (I : Interface) : (mkGap I).source = I := rfl
 
 -- ============================================================
 -- Theorem 3: extension_sound
