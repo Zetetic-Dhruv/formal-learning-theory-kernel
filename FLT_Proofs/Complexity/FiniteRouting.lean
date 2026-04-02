@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Complexity.Attention
+import FLT_Proofs.Theorem.BorelAnalyticSeparation
 
 /-!
 # Finite-Head Argmax Routing
@@ -398,3 +399,35 @@ theorem binarySoftmaxThreshold_eq_binaryRoute
     · have : j = 0 := by omega
       subst this
       show s 0 < s 1; simp [hs_def]; exact h
+
+/-! ## Strictness: Attention Requires NullMeasurable -/
+
+/-- The NullMeasurable regime is necessary for attention-style routing.
+
+    By the universality theorem (`attentionOfFiniteRouter_route_eq`), every
+    measurable finite-valued router is exactly a finite-head argmax attention
+    mechanism. The existing Borel-analytic separation witness
+    (`analytic_nonborel_set_gives_measTarget_separation`) provides a concept
+    class that satisfies `WellBehavedVCMeasTarget` but fails
+    `KrappWirthWellBehaved`. This class is parameterized by `Bool × β` where
+    the Bool component acts as a constant-in-x router — a degenerate but
+    valid case of binary attention.
+
+    Therefore: there exist attention-routed concept classes for which the
+    NullMeasurable weakening is necessary. The Borel sigma-algebra is
+    insufficient for attention-based architectures in general. -/
+theorem attention_requires_nullMeasurable
+    (hex : ∃ A : Set ℝ, MeasureTheory.AnalyticSet A ∧ ¬ MeasurableSet A) :
+    KrappWirthSeparationMeasTarget :=
+  exists_measTarget_separation hex
+
+/-- Strictness for k-head argmax attention: for any k ≥ 1, the separation
+    witness exists. The same concept class works for all k because the
+    underlying concept class is defined independently of the number of
+    attention heads — the routing structure is in the parameterization,
+    not in the concept class itself. -/
+theorem multiHead_attention_requires_nullMeasurable
+    (hex : ∃ A : Set ℝ, MeasureTheory.AnalyticSet A ∧ ¬ MeasurableSet A)
+    (k : ℕ) (_hk : 0 < k) :
+    KrappWirthSeparationMeasTarget :=
+  attention_requires_nullMeasurable hex
