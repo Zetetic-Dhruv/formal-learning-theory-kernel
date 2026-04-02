@@ -6,7 +6,7 @@
   bridge lemmas, and reports structured gap information on failure.
 -/
 
-import FLT_Proofs.Meta.ProofOperadInstances
+import WorldModel.ProofOperadInstances
 import Lean
 
 -- ============================================================

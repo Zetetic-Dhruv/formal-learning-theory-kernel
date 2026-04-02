@@ -5,7 +5,7 @@
   difficulty model, and paradigm-lock theorem.
 -/
 
-import FLT_Proofs.Meta.ProofOperadInstances
+import WorldModel.ProofOperadInstances
 
 -- ============================================================
 -- Part 1: Normal Form Plans

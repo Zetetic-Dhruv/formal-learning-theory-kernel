@@ -6,7 +6,7 @@
   when the goal matches a known bridge interface.
 -/
 
-import FLT_Proofs.Meta.BridgeTactic
+import WorldModel.BridgeTactic
 -- Import real FLT infrastructure to have actual theorems in scope
 import FLT_Proofs.Theorem.PAC
 import FLT_Proofs.Complexity.GameInfra

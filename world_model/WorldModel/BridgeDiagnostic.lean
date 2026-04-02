@@ -1,7 +1,7 @@
 /-
   Diagnostic: what does bridge_search actually see?
 -/
-import FLT_Proofs.Meta.BridgeTactic
+import WorldModel.BridgeTactic
 import FLT_Proofs.Theorem.PAC
 import FLT_Proofs.Complexity.GameInfra
 

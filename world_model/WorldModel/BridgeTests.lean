@@ -6,8 +6,8 @@
   tactic behavior on real FLT goals, and the four-gate quality model.
 -/
 
-import FLT_Proofs.Meta.BridgeTactic
-import FLT_Proofs.Meta.ProofOperadTheorems
+import WorldModel.BridgeTactic
+import WorldModel.ProofOperadTheorems
 
 -- ============================================================
 -- Test 1: PAC pipeline types end-to-end

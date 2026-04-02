@@ -5,7 +5,7 @@
   generators, failure rules, and binding theorems for the FLT proof stack.
 -/
 
-import FLT_Proofs.Meta.ProofOperad
+import WorldModel.ProofOperad
 
 -- ============================================================
 -- Part 1: Concrete Interfaces

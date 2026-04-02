@@ -14,8 +14,8 @@
   - Completeness: structural properties of the theory
 -/
 
-import FLT_Proofs.Meta.BridgeTactic
-import FLT_Proofs.Meta.ProofOperadTheorems
+import WorldModel.BridgeTactic
+import WorldModel.ProofOperadTheorems
 
 -- ============================================================
 -- NT1: Cross-paradigm composition FAILS
