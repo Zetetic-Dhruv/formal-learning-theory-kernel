@@ -40,6 +40,7 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.Amalgamation,
     `FLT_Proofs.Complexity.Interpolation,
     `FLT_Proofs.Complexity.Attention,
+    `FLT_Proofs.Complexity.FiniteRouting,
     `FLT_Proofs.MathLib.ChoquetCapacity,
     `FLT_Proofs.MathLib.AnalyticMeasurability,
     `FLT_Proofs.MathLib.KLDivergence,

@@ -5,6 +5,7 @@ Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Learner.Closure
 import FLT_Proofs.Complexity.Attention
+import FLT_Proofs.Complexity.FiniteRouting
 
 /-!
 # Attention-Based Learners
@@ -136,3 +137,70 @@ instance ParametricBinaryAttentionLearner.instMBL
     (T : ParametricBinaryAttentionLearner X) :
     MeasurableBatchLearner X T.toParametricLearnerFamily.toBatchLearner :=
   ParametricLearnerFamily.instMeasurableBatchLearner T.toParametricLearnerFamily
+
+/-! ## Item 17: ParametricFiniteHeadAttentionLearner -/
+
+/-- A parametric learner that uses k-head attention routing to combine k experts.
+    All parameters (router scores, expert evaluations) come from a single parameter
+    space Params, with diagonal embedding into (Params, Params) for the
+    multiPatchEval interface. -/
+structure ParametricFiniteHeadAttentionLearner (X : Type u) [MeasurableSpace X] (k : ℕ) where
+  Params : Type u
+  instMeasParams : MeasurableSpace Params
+  instStdParams : @StandardBorelSpace Params instMeasParams
+  score : Params → X → Fin k → ℝ
+  score_meas : ∀ (i : Fin k), @Measurable (Params × X) ℝ
+    (instMeasParams.prod ‹MeasurableSpace X›) inferInstance (fun p => score p.1 p.2 i)
+  expert : Params → Fin k → Concept X Bool
+  expert_meas : ∀ (i : Fin k), @Measurable (Params × X) Bool
+    (instMeasParams.prod ‹MeasurableSpace X›) inferInstance (fun p => expert p.1 i p.2)
+  param_of_sample : {m : ℕ} → (Fin m → X × Bool) → Params
+  param_meas : ∀ m, @Measurable (Fin m → X × Bool) Params inferInstance instMeasParams
+    (fun S => @param_of_sample m S)
+
+attribute [instance] ParametricFiniteHeadAttentionLearner.instMeasParams
+attribute [instance] ParametricFiniteHeadAttentionLearner.instStdParams
+
+/-- Extract the FiniteScoreRouterCode from a ParametricFiniteHeadAttentionLearner. -/
+noncomputable def ParametricFiniteHeadAttentionLearner.routerCode
+    {X : Type u} [MeasurableSpace X] {k : ℕ}
+    (T : ParametricFiniteHeadAttentionLearner X k) : FiniteScoreRouterCode X k where
+  Ρ := T.Params
+  instMeasΡ := T.instMeasParams
+  instStdΡ := T.instStdParams
+  score := T.score
+  score_meas := T.score_meas
+
+/-! ## Item 18: Conversion to ParametricLearnerFamily + MeasurableBatchLearner -/
+
+/-- Convert a ParametricFiniteHeadAttentionLearner to a ParametricLearnerFamily.
+    Uses diagonal embedding θ ↦ (θ, θ) for multiPatchEval(expert, route)(θ, θ). -/
+noncomputable def ParametricFiniteHeadAttentionLearner.toParametricLearnerFamily
+    {X : Type u} [MeasurableSpace X] {k : ℕ}
+    (T : ParametricFiniteHeadAttentionLearner X k) (hk : 0 < k) :
+    ParametricLearnerFamily X where
+  Params := T.Params
+  instMeasParams := T.instMeasParams
+  eval := fun θ x => multiPatchEval T.expert (T.routerCode.route hk) (θ, θ) x
+  eval_meas := by
+    letI := T.instMeasParams
+    -- multiPatchEval_measurable gives: Measurable (fun p : (Params × Params) × X => ...)
+    -- We need: Measurable (fun p : Params × X => multiPatchEval expert route (p.1, p.1) p.2)
+    -- = (multiPatchEval_measurable ...).comp (diagonal embedding)
+    have hmulti := multiPatchEval_measurable T.expert (T.routerCode.route hk)
+      T.expert_meas (T.routerCode.route_measurable hk)
+    -- diagonal embedding: Params × X → (Params × Params) × X
+    -- (θ, x) ↦ ((θ, θ), x)
+    have hdiag : Measurable (fun p : T.Params × X => ((p.1, p.1), p.2) :
+        T.Params × X → (T.Params × T.Params) × X) :=
+      (measurable_fst.prodMk measurable_fst).prodMk measurable_snd
+    exact hmulti.comp hdiag
+  param_of_sample := T.param_of_sample
+  param_meas := T.param_meas
+
+/-- The finite-head attention-based learner satisfies MeasurableBatchLearner. -/
+instance ParametricFiniteHeadAttentionLearner.instMBL'
+    {X : Type u} [MeasurableSpace X] {k : ℕ}
+    (T : ParametricFiniteHeadAttentionLearner X k) (hk : 0 < k) :
+    MeasurableBatchLearner X (T.toParametricLearnerFamily hk).toBatchLearner :=
+  ParametricLearnerFamily.instMeasurableBatchLearner (T.toParametricLearnerFamily hk)
