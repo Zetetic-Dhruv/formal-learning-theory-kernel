@@ -6,3 +6,6 @@ build/
 *.ilean
 *.trace
 *.oleanmap
+
+# Private working drafts (integrated into README.md)
+drafts/
