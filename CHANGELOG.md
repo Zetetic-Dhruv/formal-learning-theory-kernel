@@ -3,9 +3,13 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [v3.0.0] - 2026-04-02
+## [v3.0.0] - 2026-04-03
 
 ### Added
+- **Amalgamation measurability** (`Complexity/Amalgamation.lean`, 124 lines): amalgamation of Borel-parameterized concept families preserves `WellBehavedVCMeasTarget`. Agreement relation is MeasurableSet via `measurableSet_eq_fun` + `upgradeStandardBorel`. Interpolation embeds as corollary (`interpClassFixed_subset_amalgClass`).
+- **MeasurableBatchLearner closure algebra** (`Learner/Closure.lean`, 134 lines): closed under Boolean combination (`combineLearner`), majority vote (`boostLearner`), piecewise interpolation (`interpLearner`), and countable selection (`concatLearner`). `UniformMeasurableBatchFamily` typeclass for indexed families.
+- **MeasLearner monad** (`Learner/Monad.lean`, 79 lines): bundles `BatchLearner` + `MeasurableBatchLearner`. `pure`/`bind` with definitional monad laws via `ReaderSel`.
+- **ReaderSel monad** (`MathLib/ReaderMonad.lean`, 63 lines): pure math reader monad with data-dependent indexing. Zero dependencies. Monad laws hold by `rfl`.
 - **Interpolation descent** (`Complexity/Interpolation.lean`, 249 lines): composition of Borel concept classes weakens measurability from MeasurableSet to NullMeasurableSet. `BorelRouterCode` abstraction for conditional interpolation.
 - **Version space measurability** (`Learner/VersionSpace.lean`, 203 lines): version space learners satisfy `MeasurableBatchLearner` via rectangle decomposition + `Nat.find`. Non-neural RL policy class.
 - **Game infrastructure** (`Complexity/GameInfra.lean`, 219 lines): extracted game-theoretic infrastructure for online learning (adversary tree, version space potential).
@@ -30,11 +34,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 | Metric | v2.0.0 | v3.0.0 | Delta |
 |--------|--------|--------|-------|
-| Files | 37 | 43 | +6 |
-| Lines | 17,350 | 17,956 | +606 |
-| Theorems | 264 | 278 | +14 |
-| Definitions | 190 | 200 | +10 |
-| Structures | 52 | 54 | +2 |
+| Files | 37 | 47 | +10 |
+| Lines | 17,350 | 18,356 | +1,006 |
+| Theorems | 264 | 292 | +28 |
+| Definitions | 190 | 212 | +22 |
+| Structures | 52 | 56 | +4 |
 | Sorry | 2 | 2 | 0 |
 
 ## [v2.0.0] - 2026-03-30

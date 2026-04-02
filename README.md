@@ -4,20 +4,20 @@
 
 | Lean | Mathlib | LOC | Theorems | Sorry (core) | Sorry (extended) |
 |------|---------|-----|----------|-------------|-----------------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 17,956 | 278 | **0** (core) | **2** (extended) |
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 18,356 | 292 | **0** (core) | **2** (extended) |
 
 <p align="center">
   <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning" width="820" />
 </p>
 
-A 42-node typed premise scoped human-guided, AI-driven proof search across three learning paradigms. The search formalized 278 machine-checked theorems in 17,956 lines of Lean 4. The infrastructure it required produced three results that had never been proved.
+A 42-node typed premise scoped human-guided, AI-driven proof search across three learning paradigms. The search formalized 292 machine-checked theorems in 18,356 lines of Lean 4. The infrastructure it required produced mathematics the premise did not predict.
 
 The type structure of a field's definitions determines the proof methods available to formalize it. A typed premise, derived before proof search, constrains the search space enough for AI-driven proof discovery to succeed where unconstrained search fails, and the infrastructure forced by the types can generate mathematics the premise did not predict.
 
 | | Contributions |
 |---|---|
-| **New proof methodology** | 1. Piecewise composition of Borel-parameterized families produces analytic suprema; transportable to optimization, game theory, and control theory beyond learning. 2. Bridge between descriptive set theory and statistical learning: Suslin projections and Choquet capacitability applied to uniform convergence bad events. 3. Rectangle decomposition for `Nat.find`-based measurable selection, bypassing Kuratowski-Ryll-Nardzewski for countable families. |
-| **New learning theory** | 1. Borel-analytic separation: `NullMeasurableSet` is strictly weaker than `MeasurableSet` for uniform convergence bad events (corrects Krapp-Wirth 2024). 2. Interpolation descent: composition of Borel concept classes weakens measurability to NullMeasurable. 3. `MeasurableBatchLearner`: new precondition isolating joint learner measurability; gates RL policy validity for non-neural architectures. 4. Version space measurability: first proof that non-neural learners satisfy `MeasurableBatchLearner`. 5. NullMeasurableSet correction: weakens the hypothesis for the entire fundamental theorem. |
+| **New proof methodology** | 1. Borel parameterization as universal measurability certificate: any concept class parameterized by a StandardBorelSpace with jointly measurable evaluation satisfies WellBehavedVCMeasTarget. Both interpolation and amalgamation are corollaries. 2. Bridge between descriptive set theory and statistical learning: Suslin projections and Choquet capacitability applied to uniform convergence bad events. 3. Rectangle decomposition for `Nat.find`-based measurable selection, bypassing Kuratowski-Ryll-Nardzewski for countable families. |
+| **New learning theory** | 1. Borel-analytic separation: `NullMeasurableSet` is strictly weaker than `MeasurableSet` for uniform convergence bad events (corrects Krapp-Wirth 2024). 2. Interpolation descent: composition of Borel concept classes weakens measurability to NullMeasurable. Amalgamation (evidential composition) produces the same descent; interpolation embeds as a special case. 3. `MeasurableBatchLearner`: new regularity axis isolating joint learner measurability; gates RL policy validity for non-neural architectures. Closed under Boolean combination, majority vote, piecewise interpolation, and countable selection; forms a monad with definitional laws. 4. Version space measurability: first proof that non-neural learners satisfy `MeasurableBatchLearner`. 5. NullMeasurableSet correction: weakens the hypothesis for the entire fundamental theorem. |
 | **First formalizations** | 1. Fundamental theorem of statistical learning (5-way equivalence, 4/5 conjuncts). 2. Choquet capacitability theorem (Kechris 30.13; Mathlib-contributable). 3. PAC-Bayes bound (McAllester; first frequentist-Bayesian bridge in Lean 4). 4. Littlestone characterization with corrected path-wise tree definition. 5. Gold's theorem and mind change characterization. 6. Baxter multi-task base case. 7. All paradigm separations with constructive witnesses. 8. Confidence boosting via 7/12-fraction Chebyshev concentration. 9. Measurability typeclass hierarchy with strict separation. |
 | **Proof engineering** | 1. Definition sensitivity taxonomy: wrong definition produces false theorems (Littlestone), vacuous theorems (PACLearnable), or wrong proof architecture (MindChangeOrdinal). 2. Measurable inner event metaprogram for non-measurable target events defined by uncountable selection. 3. `BorelRouterCode` abstraction for conditional interpolation (attention, routing, transfer). 4. Countable enumeration bypass of Kuratowski-Ryll-Nardzewski measurable selection. 5. Premise ablation: 67 to 187 sorrys without structured inquiry framework, 65/67 closed with it. 87.5% vs 0% first-attempt success on articulated unknowns. |
 
@@ -25,7 +25,7 @@ The type structure of a field's definitions determines the proof methods availab
 
 The kernel separates into a **fully checked core** (0 sorry) and an **extended frontier** (2 sorry):
 
-- **Core**: Every theorem whose proof tree contains no sorry. This includes `vc_characterization`, `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL theorems, the full symmetrization chain (3,027 LOC), the Rademacher bounds, the PAC-Bayes bound, the Borel-analytic separation, and the interpolation descent theorem.
+- **Core**: Every theorem whose proof tree contains no sorry. This includes `vc_characterization`, `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL theorems, the full symmetrization chain (3,027 LOC), the Rademacher bounds, the PAC-Bayes bound, the Borel-analytic separation, the interpolation descent theorem, amalgamation measurability, and the MeasurableBatchLearner closure algebra.
 - **Extended frontier**: Theorems whose proof trees pass through one of two sorry tactics. The individually proved conjuncts and branches are in the core; only the bundles that include all conjuncts/branches are tainted.
 
 | Sorry | File | Blocks | Citation |
@@ -531,21 +531,23 @@ Version space learners satisfy it. The proof (`versionSpaceLearner_measurableBat
 
 ### The measurability arc
 
-The four results form a progression:
+The results form a progression:
 
 | Step | Result | What it establishes |
 |------|--------|-------------------|
 | Correction | NullMeasurableSet suffices (corrects Krapp-Wirth 2024) | The hypothesis for the fundamental theorem can be weakened |
 | Separation | The gap is strict (singleton class witness) | The weakening is non-vacuous: concrete classes live in the gap |
 | Prediction | Version space learners satisfy `MeasurableBatchLearner` | Non-neural architectures pass the RL policy gate |
-| Descent | Interpolation of Borel classes weakens measurability | Composition is a measurability-weakening operation |
+| Descent | Interpolation of Borel classes weakens measurability | Spatial composition is a measurability-weakening operation |
+| Amalgamation | Amalgamation preserves WellBehavedVCMeasTarget; interpolation embeds as corollary | Evidential composition also weakens measurability. Both fundamental operations on concept classes drop from Borel to NullMeasurable |
+| Closure | `MeasurableBatchLearner` closed under combine, boost, interpolate, select | The class of measurable learners is an algebraic object: a monad with definitional laws |
 
-Each step emerged from the measurability typeclass infrastructure. The infrastructure was built for engineering (clean up hypothesis threading). It produced mathematics (four results, three of them original). This is the primary evidence for the thesis that refactoring for discovery works: the engineering cleanup was the discovery.
+Each step emerged from the measurability typeclass infrastructure. The infrastructure was built for engineering (clean up hypothesis threading). It produced mathematics. This is the primary evidence for the thesis that refactoring for discovery works: the engineering cleanup was the discovery.
 
 ---
 
 > [!IMPORTANT]
-> **Open frontier.** The measurability arc is closed through four proved results. The frontier it opens is not.
+> **Open frontier.** The measurability arc is closed through six proved results. The frontier it opens is not.
 
 <details>
 <summary><strong>Does the gap contain natural concept classes?</strong></summary>
@@ -555,16 +557,16 @@ The Borel-analytic separation uses a singleton class over an analytic non-Borel 
 </details>
 
 <details>
-<summary><strong>Does amalgamation also weaken measurability?</strong></summary>
+<summary><strong>Amalgamation preserves WellBehavedVCMeasTarget (proved)</strong></summary>
 
-Interpolation splits the domain spatially (region A vs complement). Amalgamation merges hypotheses by shared-type agreement (evidential composition). If amalgamation also produces analytic-but-not-Borel bad events, then BOTH fundamental operations on concept classes (spatial and evidential) drop measurability from Borel to NullMeasurable. The proof direction is known: amalgamation over a measurable shared type produces a restricted parameter space whose projection is analytic.
+Amalgamation merges hypotheses by shared-type agreement (evidential composition). The agreement relation `{(theta_1, theta_2) | pi_1 theta_1 = pi_2 theta_2}` is MeasurableSet in the product of StandardBorelSpaces (`measurableSet_agreementRel`). The subtype inherits StandardBorelSpace, reducing to the master bridge theorem. Fixed-region interpolation embeds in amalgamation with trivial projections (`interpClassFixed_subset_amalgClass`). Both fundamental operations on concept classes (spatial and evidential) preserve NullMeasurableSet. `Complexity/Amalgamation.lean`, 124 lines, sorry-free.
 
 </details>
 
 <details>
-<summary><strong>Is MeasurableBatchLearner closed under composition?</strong></summary>
+<summary><strong>MeasurableBatchLearner is closed under composition (proved)</strong></summary>
 
-If `MeasurableBatchLearner` is closed under the kernel's natural operations (boosting via majority vote, interpolation via piecewise learners, concatenation of enumerations), it is not just a technical gate but an algebraic object: the class of measurable learners would be a category closed under the operations that learning theory uses to build complex learners from simple ones. Closure would mean that any learner constructed from measurable components by standard operations is automatically measurable. The three closure properties (boosting, interpolation, version space concatenation) have been stated as Lean4 conjectures with known proof directions.
+The class of measurable learners is closed under: arbitrary Boolean combiners (`measurableBatchLearner_combine`), majority vote (`measurableBatchLearner_boost`), piecewise interpolation (`measurableBatchLearner_interp`), and countable selection with `UniformMeasurableBatchFamily` (`measurableBatchLearner_concat`). The bundle `MeasLearner` forms a monad with definitional laws (`rfl`) via the `ReaderSel` substrate. Any learner constructed from measurable components by standard operations is automatically measurable. `Learner/Closure.lean` (134 lines) + `Learner/Monad.lean` (79 lines), sorry-free.
 
 </details>
 
@@ -630,7 +632,7 @@ The premise is the most non-trivial component to change. A bad premise produces 
 |-------|------------|--------------------|-----------------------|----------------------|
 | Original premise | 67 | 0 of 7 | "Are the structural hypotheses correct? Will the proofs close?" | Broad, unstructured |
 | After proof search | 2 | 7 of 7 | "Can Moran-Yehudayoff and BHMZ be formalized?" | Narrow, specific (two published results) |
-| After measurability refactoring | 2 | 7 of 7 | 5 precisely stated questions (Section V) + 3 original theorems | Broad again, but articulate |
+| After measurability refactoring | 2 | 7 of 7 | 3 open questions (Section V) + 6 original theorems (2 formerly open questions now proved) | Broad again, but articulate |
 
 The frontier grew from 67 vague placeholders to 2 specific blockers to 5 precise research questions. The volume of ignorance increased from the second stage to the third. But its structure sharpened at every step: each of the five frontier questions has specific evidence motivating it and a known mathematical approach or obstruction.
 
@@ -676,13 +678,13 @@ The proof-discovery kernel exposed ad-hoc measurability hypothesis threading acr
 |-----------------|-----------------|------------------------|
 | `MeasurableConceptClass` (L3) | Borel-analytic separation theorem | Does the gap contain natural concept classes? |
 | `KrappWirthWellBehaved` (L5) | Strict hierarchy: KrappWirthWellBehaved implies MeasurableConceptClass but not conversely | Is there a measurability dimension? |
-| `MeasurableBatchLearner` (L3) | Version space measurability theorem (non-neural RL policy class) | Is the measurable learner class closed under composition? |
-| `BorelRouterCode` (L5) | Interpolation descent theorem | Does amalgamation also weaken measurability? |
+| `MeasurableBatchLearner` (L3) | Version space measurability theorem (non-neural RL policy class) | Closed under 4 operations; forms a monad (proved) |
+| `BorelRouterCode` (L5) | Interpolation descent theorem | Amalgamation preserves WellBehavedVCMeasTarget; interpolation embeds as corollary (proved) |
 | Measurability refactoring (L1, L3, L5) | Typeclass hierarchy replacing 8-file hypothesis threading | Does network depth increase measurability complexity? |
 | PureMath/ extraction | 908 lines of field-independent pure math | (complete) |
 | GameInfra.lean extraction | 219 lines of explicit game infrastructure | Does the adversary-learner pattern connect to bandits or chosen-plaintext attacks? |
 
-Every premise addition produced theorems, extracted infrastructure, or opened precisely stated questions. The frontier grew from 2 specific blockers to 7 research questions, each with known mathematical approaches or specific obstructions.
+Every premise addition produced theorems, extracted infrastructure, or opened precisely stated questions. The frontier grew from 2 specific blockers to 7 research questions. Two have since been resolved (amalgamation measurability, MBL closure). The remaining 5 have known mathematical approaches or specific obstructions.
 
 <details>
 <summary><strong>Engineering and proof steps behind the extensions</strong></summary>
@@ -711,7 +713,7 @@ Unfolding 1 consumed the premise: proof search closed 65 of 67 placeholders with
 
 A Lean4 proof is a sequence of tactic applications transforming goals. An `MVarId` holds the current goal; a `TacticM Unit` transformation replaces it with zero or more subgoals. Individual tactics (`simp`, `omega`, `exact`, `apply`) are the atoms. But proof *methods* -- the strategies that close theorems across hundreds of lines -- operate above individual tactics. They are compositions: sequential chains, parallel decompositions, guarded paradigm-specific branches, backtracking over alternatives.
 
-This kernel's 278 theorems use 21 recurring proof methods. The methods are not annotations added after the fact. They were extracted from actual `by`-blocks by analyzing tactic sequences, identifying shared prefixes and suffixes, and abstracting over the varying middle. Each method is a metaprogram: a reusable DAG of `TacticM` transformations with typed inputs, typed outputs, paradigm locks, and failure diagnostics.
+This kernel's 292 theorems use 21 recurring proof methods. The methods are not annotations added after the fact. They were extracted from actual `by`-blocks by analyzing tactic sequences, identifying shared prefixes and suffixes, and abstracting over the varying middle. Each method is a metaprogram: a reusable DAG of `TacticM` transformations with typed inputs, typed outputs, paradigm locks, and failure diagnostics.
 
 The methods are encoded in three layers.
 
@@ -731,7 +733,7 @@ The methods are encoded in three layers.
        Arrow down labeled "formalizes"
 
      Bottom band (solid border, thin): "Layer 1: Empirical Taxonomy (proof_world_model.json)"
-       Contents: "21 metaprograms extracted from 278 theorems"
+       Contents: "21 metaprograms extracted from 292 theorems"
        Left annotation: "Tactic patterns, instances, compositions"
        Right annotation: "Goal profiles, failure diagnostics"
 
@@ -883,7 +885,7 @@ The `StepQuality` structure enforces a monotonicity invariant: robustness implie
 
 ### Coverage and boundaries
 
-The 21 metaprograms account for approximately 50 of the kernel's 278 theorems directly. The remaining 228:
+The 21 metaprograms account for approximately 50 of the kernel's 292 theorems directly. The remaining 228:
 
 <details>
 <summary><strong>Classification of uncovered theorems</strong></summary>
@@ -955,7 +957,7 @@ The full dependency structure of the kernel, with proof methods overlaid as shad
 
 ![Kernel structure with proof method regions](assets/hypergraph_overview.png)
 
-The diagram encodes 35 modules across 8 layers (L0-L7), 278 theorems, and the 6 major proof pipelines from Section VIII. Each shaded region groups the modules that participate in a single proof method. The regions do not overlap across paradigm boundaries. No proof method spans PAC, Online, and Gold simultaneously.
+The diagram encodes the kernel's module structure across 8 layers (L0-L7), 292 theorems, and the 6 major proof pipelines from Section VIII. Each shaded region groups the modules that participate in a single proof method. The regions do not overlap across paradigm boundaries. No proof method spans PAC, Online, and Gold simultaneously.
 
 ### Kernel summary
 
@@ -1114,7 +1116,7 @@ With this ordering, each proof begins only after its unknowns have been stated a
 | COPRA | GPT-4 + backtracking | None (in-context) | miniF2F (244 problems) |
 | ReProver | Supervised + retrieval | Auto-retrieved | 51.2% Mathlib random split |
 | Draft-Sketch-Prove | Informal proof -> formal sketch | Informal proof as guide | 39.3% miniF2F-test |
-| **This work** | **Human premise + LLM execution** | **Typed premise (human)** | **278 theorems, 17,956 LOC** |
+| **This work** | **Human premise + LLM execution** | **Typed premise (human)** | **292 theorems, 18,356 LOC** |
 
 The existing approaches assign proof strategy to the AI (via RL, beam search, or in-context reasoning). This method assigns proof strategy to the human and tactic execution to the AI. The inversion explains the scale: no existing system has produced a coherent theory-scale kernel because no existing system delegates the type structure to a human who understands the mathematics. The tradeoff is that this method requires a human who CAN design the typed premise.
 
@@ -1130,7 +1132,7 @@ The AI driver is a frontier LLM, not a specialized prover. Its Mathlib navigatio
 
 ## XII. Theorem Index
 
-Machine-generated by `scripts/generate_theorem_index.sh`. 278 theorems/lemmas (190 public, 88 private) across 43 files.
+Machine-generated by `scripts/generate_theorem_index.sh`. 292 theorems/lemmas (204 public, 88 private) across 47 files.
 
 <details>
 <summary><strong>Full index (278 entries)</strong></summary>
@@ -1229,7 +1231,7 @@ Requires `elan` for Lean4. Figure generation requires Python 3 with `matplotlib`
                   of the Fundamental Theorem of Statistical Learning},
   year         = {2026},
   url          = {https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
-  note         = {43 files, 17{,}956 LOC, 278 theorems, 2 sorry.
+  note         = {47 files, 18{,}356 LOC, 292 theorems, 2 sorry.
                   Human-guided, AI-driven proof search via Claude Opus 4.6.}
 }
 

@@ -47,6 +47,8 @@ MODULES = {
     "Learner.Active":   (1, "pac", "Active"),
     "Learner.Bayesian": (1, "bayes", "Bayesian"),
     "Learner.VS":       (1, "pac", "VersionSpace"),
+    "Learner.Closure":  (1, "pac", "Closure"),
+    "Learner.Monad":    (1, "pac", "Monad"),
     # L2: Criterion
     "Criterion.PAC":    (2, "pac", "PAC Criterion"),
     "Criterion.Online": (2, "online", "Online Criterion"),
@@ -66,12 +68,14 @@ MODULES = {
     "GameInfra":        (4, "online", "GameInfra"),
     "BorelBridge":      (4, "dst", "BorelBridge"),
     "Interpolation":    (4, "dst", "Interpolation"),
+    "Amalgamation":     (4, "dst", "Amalgamation"),
     # L5: Pure Math
     "Choquet":          (5, "dst", "Choquet"),
     "AnalyticMeas":     (5, "dst", "AnalyticMeas"),
     "Concentration":    (5, "pac", "Concentration"),
     "Exchangeability":  (5, "pac", "Exchangeability"),
     "KLDivergence":     (5, "bayes", "KLDivergence"),
+    "ReaderMonad":      (5, "structural", "ReaderMonad"),
     # L6: Theorems
     "Thm.PAC":          (6, "pac", "PAC Thm"),
     "Thm.Online":       (6, "online", "Online Thm"),
@@ -110,6 +114,9 @@ EDGES = [
     ("Thm.BorelAnalytic", "BorelBridge"),
     ("Thm.PACBayes", "KLDivergence"),
     ("Thm.Extended", "Criterion.Ext"), ("Thm.Extended", "Generalization"),
+    ("Amalgamation", "Interpolation"),
+    ("Learner.Closure", "Learner.Core"), ("Learner.Closure", "Generalization"),
+    ("Learner.Monad", "Learner.Closure"), ("Learner.Monad", "ReaderMonad"),
     ("Process", "Thm.PAC"), ("Bridge", "Thm.PAC"),
 ]
 
@@ -142,6 +149,11 @@ HYPEREDGES = {
         "modules": ["Measurability", "Thm.Separation",
                      "Thm.BorelAnalytic", "Structures"],
         "grey": 0.87,
+    },
+    "Composition\nclosure": {
+        "modules": ["Interpolation", "Amalgamation", "Learner.Closure",
+                     "Learner.Monad", "Learner.VS", "ReaderMonad"],
+        "grey": 0.94,
     },
 }
 
