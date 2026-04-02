@@ -34,11 +34,11 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.Structures,
     `FLT_Proofs.Complexity.Measurability,
     `FLT_Proofs.Complexity.BorelAnalyticBridge,
-    `FLT_Proofs.MathLib.ChoquetCapacity,
-    `FLT_Proofs.MathLib.AnalyticMeasurability,
-    `FLT_Proofs.MathLib.KLDivergence,
-    `FLT_Proofs.MathLib.Concentration,
-    `FLT_Proofs.MathLib.Exchangeability,
+    `FLT_Proofs.PureMath.ChoquetCapacity,
+    `FLT_Proofs.PureMath.AnalyticMeasurability,
+    `FLT_Proofs.PureMath.KLDivergence,
+    `FLT_Proofs.PureMath.Concentration,
+    `FLT_Proofs.PureMath.Exchangeability,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,
@@ -49,27 +49,20 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
     `FLT_Proofs.Bridge,
-    -- World model: proof operad (see world_model/ for reference view)
-    `FLT_Proofs.Meta.ProofOperad,          -- Core calculus: Interface, Generator, Plan, HasType
-    `FLT_Proofs.Meta.ProofOperadInstances, -- 17 generators, 7 failures, fltTheory
-    `FLT_Proofs.Meta.ProofOperadTheorems,  -- Completeness, paradigm lock, normalization
-    `FLT_Proofs.Meta.BridgeTactic,         -- bridge_search tactic (RCA layer, under construction)
-    `FLT_Proofs.Meta.BridgeTests,          -- Smoke tests (27/27 pass)
-    `FLT_Proofs.Meta.NonTrivialTests       -- Non-trivial tests (cross-paradigm, extension, cost)
   ]
 
-lean_lib MetaKernel where
+-- World model: typed proof operad (canonical source: world_model/WorldModel/)
+lean_lib WorldModel where
+  srcDir := "world_model"
   roots := #[
-    `MetaKernel.Core,
-    `MetaKernel.Tactics,
-    `MetaKernel.Measure,
-    `MetaKernel.Phi,
-    `MetaKernel.Discovery,
-    `MetaKernel.WorldModel.PriorArt,
-    `MetaKernel.WorldModel.MeasuredTactic,
-    `MetaKernel.WorldModel.Feedback,
-    `MetaKernel.Test
+    `WorldModel.ProofOperad,          -- Core calculus: Interface, Generator, Plan, HasType
+    `WorldModel.ProofOperadInstances, -- 17 generators, 7 failures, fltTheory
+    `WorldModel.ProofOperadTheorems,  -- Completeness, paradigm lock, normalization
+    `WorldModel.BridgeTactic,         -- bridge_search tactic (under construction)
+    `WorldModel.BridgeTests,          -- Smoke tests (27/27 pass)
+    `WorldModel.NonTrivialTests       -- Non-trivial tests (cross-paradigm, extension, cost)
   ]
+
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4" @ "master"
+  "https://github.com/leanprover-community/mathlib4" @ "fde0cc508f5375f278f515cb2f50a34a545a4c5c"
