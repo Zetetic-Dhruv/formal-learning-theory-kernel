@@ -10,7 +10,7 @@ The full dependency structure of the kernel, with proof methods overlaid as shad
 
 The diagram encodes 35 modules across 8 layers (L0-L7), 278 theorems, and the 6 major proof pipelines from Section VIII. Each shaded region groups the modules that participate in a single proof method. The regions do not overlap across paradigm boundaries. No proof method spans PAC, Online, and Gold simultaneously.
 
-Three structural features are legible directly from the diagram.
+### Kernel summary
 
 **PAC dominates the infrastructure.** The PAC proof pipeline spans 4 layers (L3 through L6) and wraps 8 modules. The Online and Gold pipelines span 3 layers each with 3 modules. This asymmetry is not a design choice. It reflects the mathematical fact that PAC learning requires symmetrization, concentration, exchangeability, and measurability infrastructure that Online and Gold learning do not. 56% of the kernel's codebase serves the PAC characterization.
 
