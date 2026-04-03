@@ -1009,17 +1009,6 @@ This kernel was built in 9 days (March 18-25 for proof discovery, March 28-30 fo
 
 **Level 1: Premise design.** The human writes a typed premise: a hierarchical DAG of type definitions with placeholder proofs (`sorry`) organized across dependency layers (L0-L7). The premise encodes the mathematical structure of the target theory before any proof is attempted. The 42 concept nodes, 8 dependency layers, and 67 proof obligations of the learning theory premise were derived from an existing textbook and concept graph (`premise/origin.json`). The premise compiles. The types are checked. The proofs are empty.
 
-<!-- FIGURE: methodology_process.svg
-     Style: black/white, Times New Roman, old school academic
-     Vertical flow diagram showing the 5 levels as stacked phases:
-     Level 1 (Premise Design) -> Level 2 (Proof Search) -> Level 3 (Failure Diagnosis)
-     -> Level 4 (Refactoring) -> Level 5 (World Model)
-     Left column: HUMAN actions at each level
-     Right column: AI actions at each level
-     Feedback arrows: Level 3 feeds back to Level 2, Level 4 feeds back to Level 1
-     The ablation split shown as a fork at Level 2: "with framework" vs "without"
-     Caption: "Five-level methodology. Human provides structure; AI provides execution."
--->
 
 **Level 2: Proof search.** The AI operates in bypass mode: given a `sorry` and its type signature, it searches for tactic sequences that close the goal. The human does not write proofs. The human selects which `sorry` to attack, chooses the proof strategy when multiple routes exist, and redirects the AI when it enters a failure mode. The AI writes tactics, navigates Mathlib, and executes the mechanical work of elaboration and type-checking.
 
