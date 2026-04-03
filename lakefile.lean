@@ -48,6 +48,8 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.PureMath.Exchangeability,
     `FLT_Proofs.PureMath.ReaderMonad,
     `FLT_Proofs.PureMath.BinaryMatrix,
+    `FLT_Proofs.PureMath.ApproxMinimax,
+    `FLT_Proofs.PureMath.FiniteVCApprox,
     `FLT_Proofs.Theorem,
     `FLT_Proofs.Theorem.Gold,
     `FLT_Proofs.Theorem.PAC,
