@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
 import FLT_Proofs.Learner.Closure
-import FLT_Proofs.MathLib.ReaderMonad
+import FLT_Proofs.PureMath.ReaderMonad
 
 /-!
 # Measurable Batch Learner Monad
