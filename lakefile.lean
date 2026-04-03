@@ -40,6 +40,7 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.GameInfra,
     `FLT_Proofs.Complexity.Amalgamation,
     `FLT_Proofs.Complexity.Interpolation,
+    `FLT_Proofs.Complexity.DualVC,
     `FLT_Proofs.PureMath.ChoquetCapacity,
     `FLT_Proofs.PureMath.AnalyticMeasurability,
     `FLT_Proofs.PureMath.KLDivergence,
