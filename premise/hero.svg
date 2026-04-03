@@ -1,91 +1,83 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 440" font-family="'Times New Roman',serif">
-  <style>
-    text{font-family:'Times New Roman',serif}
-  </style>
-
-  <rect width="820" height="440" fill="#fff"/>
-
-  <!-- Title -->
-  <text x="270" y="36" font-size="22" font-weight="bold" fill="#000">The Fundamental Theorem of Statistical Learning</text>
-
-  <!-- Pentagon: center (270,210), radius 120 -->
-  <!-- v0=top(270,90) v1=UR(384,145) v2=LR(340,290) v3=LL(200,290) v4=UL(156,145) -->
-
-  <!-- Pentagon edges -->
-  <line x1="270" y1="90" x2="384" y2="145" stroke="#000" stroke-width="1.2"/>
-  <line x1="384" y1="145" x2="340" y2="290" stroke="#000" stroke-width="1.2"/>
-  <line x1="340" y1="290" x2="200" y2="290" stroke="#000" stroke-width="1.2"/>
-  <line x1="200" y1="290" x2="156" y2="145" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
-  <line x1="156" y1="145" x2="270" y2="90" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
-
-  <!-- Hub label (no spokes, just text at center) -->
-  <text x="270" y="200" font-size="15" font-weight="bold" fill="#000" text-anchor="middle">VCDim(C) &lt; &#x221E;</text>
-
-  <!-- Vertex dots -->
-  <circle cx="270" cy="90" r="3.5" fill="#000"/>
-  <circle cx="384" cy="145" r="3.5" fill="#000"/>
-  <circle cx="340" cy="290" r="3.5" fill="#000"/>
-  <circle cx="200" cy="290" r="3.5" fill="#000"/>
-  <circle cx="156" cy="145" r="3" fill="none" stroke="#000" stroke-width="1"/>
-
-  <!-- Vertex labels (radially outward) -->
-  <text x="270" y="72" font-size="13" font-weight="bold" fill="#000" text-anchor="middle">PAC Learnable  &#x2713;</text>
-
-  <text x="430" y="125" font-size="12" fill="#000" text-anchor="start">Rademacher</text>
-  <text x="430" y="140" font-size="12" fill="#000" text-anchor="start">vanishes  &#x2713;</text>
-
-  <text x="380" y="320" font-size="12" fill="#000" text-anchor="start">Growth &#x2264;</text>
-  <text x="380" y="335" font-size="12" fill="#000" text-anchor="start">Sauer-Shelah  &#x2713;</text>
-
-  <text x="160" y="320" font-size="12" fill="#000" text-anchor="end">Sample</text>
-  <text x="160" y="335" font-size="12" fill="#000" text-anchor="end">complexity  &#x2713;</text>
-
-  <text x="110" y="125" font-size="12" fill="#000" text-anchor="end">Compression</text>
-  <text x="110" y="140" font-size="12" fill="#000" text-anchor="end">scheme  &#x25CA;</text>
-
-  <!-- Equivalence note -->
-  <text x="270" y="355" font-size="11" fill="#000" text-anchor="middle" font-style="italic">all five &#x21D4; VCDim(C) &lt; &#x221E;</text>
-
-  <!-- Vertical rule -->
-  <line x1="535" y1="75" x2="535" y2="410" stroke="#000" stroke-width="0.4"/>
-
-  <!-- Side list -->
-  <text x="560" y="96" font-size="13" font-weight="bold" fill="#000">Original proofs</text>
-
-  <text x="560" y="124" font-size="12" fill="#000">Littlestone characterization</text>
-  <text x="560" y="139" font-size="11" fill="#000" font-style="italic">Online learnable &#x21D4; LittlestoneDim &lt; &#x221E;</text>
-
-  <line x1="560" y1="151" x2="795" y2="151" stroke="#000" stroke-width="0.3"/>
-
-  <text x="560" y="169" font-size="12" fill="#000">Gold's theorem</text>
-  <text x="560" y="184" font-size="11" fill="#000" font-style="italic">Locking sequence on infinite languages</text>
-
-  <line x1="560" y1="196" x2="795" y2="196" stroke="#000" stroke-width="0.3"/>
-
-  <text x="560" y="214" font-size="12" fill="#000">Paradigm separations</text>
-  <text x="560" y="229" font-size="11" fill="#000" font-style="italic">PAC &#x21CF; Online  (thresholds on &#x2115;)</text>
-  <text x="560" y="244" font-size="11" fill="#000" font-style="italic">Gold &#x21CF; PAC  (finite-subset indicators)</text>
-  <text x="560" y="259" font-size="11" fill="#000" font-style="italic">Online &#x2192; PAC  (always)</text>
-
-  <line x1="560" y1="271" x2="795" y2="271" stroke="#000" stroke-width="0.3"/>
-
-  <text x="560" y="289" font-size="12" fill="#000">Universal trichotomy  (2/3 branches)</text>
-  <text x="560" y="304" font-size="11" fill="#000" font-style="italic">BHMZ middle branch: sorry</text>
-
-  <line x1="560" y1="316" x2="795" y2="316" stroke="#000" stroke-width="0.3"/>
-
-  <text x="560" y="334" font-size="12" fill="#000">Symmetrization + uniform convergence</text>
-  <text x="560" y="349" font-size="11" fill="#000" font-style="italic">3,027 lines, sorry-free</text>
-
-  <line x1="560" y1="361" x2="795" y2="361" stroke="#000" stroke-width="0.3"/>
-
-  <text x="560" y="379" font-size="12" fill="#000">No-Free-Lunch  (infinite domains only)</text>
-  <text x="560" y="394" font-size="11" fill="#000" font-style="italic">Provably false for finite X  (textbook correction)</text>
-
-  <!-- Bottom rule + stats -->
-  <line x1="20" y1="418" x2="800" y2="418" stroke="#000" stroke-width="0.4"/>
-  <text x="410" y="435" font-size="12" fill="#000" font-style="italic" text-anchor="middle">47 files  |  18,356 lines  |  2 sorry  |  Lean 4 + Mathlib4</text>
-
-  <!-- Footnote -->
-  <text x="20" y="435" font-size="11.5" fill="#000" font-style="italic">&#x25CA; = forward direction blocked (Moran-Yehudayoff 2016)</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 580" font-family="'Times New Roman',serif">
+  <style>text{font-family:'Times New Roman',serif}</style>
+  <rect width="1100" height="580" fill="#fff"/>
+  <text x="220" y="42" font-size="17" font-weight="bold" fill="#000" text-anchor="middle">Known Theory, Machine-Checked</text>
+  <line x1="220" y1="100" x2="334" y2="183" stroke="#000" stroke-width="1.2"/>
+  <line x1="334" y1="183" x2="291" y2="317" stroke="#000" stroke-width="1.2"/>
+  <line x1="291" y1="317" x2="149" y2="317" stroke="#000" stroke-width="1.2"/>
+  <line x1="149" y1="317" x2="106" y2="183" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
+  <line x1="106" y1="183" x2="220" y2="100" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
+  <circle cx="220" cy="100" r="3.5" fill="#000"/>
+  <circle cx="334" cy="183" r="3.5" fill="#000"/>
+  <circle cx="291" cy="317" r="3.5" fill="#000"/>
+  <circle cx="149" cy="317" r="3.5" fill="#000"/>
+  <circle cx="106" cy="183" r="3" fill="none" stroke="#000" stroke-width="1"/>
+  <text x="220" y="225" font-size="14" font-weight="bold" fill="#000" text-anchor="middle">VCDim(C) &lt; &#x221E;</text>
+  <text x="220" y="80" font-size="11" fill="#000" text-anchor="middle">PAC Learnable  ✓</text>
+  <text x="364" y="178" font-size="11" fill="#000" text-anchor="start">Rademacher</text>
+  <text x="364" y="192" font-size="11" fill="#000" text-anchor="start">vanishes  ✓</text>
+  <text x="311" y="337" font-size="11" fill="#000" text-anchor="start">Growth ≤</text>
+  <text x="311" y="351" font-size="11" fill="#000" text-anchor="start">Sauer-Shelah  ✓</text>
+  <text x="129" y="337" font-size="11" fill="#000" text-anchor="end">Sample</text>
+  <text x="129" y="351" font-size="11" fill="#000" text-anchor="end">complexity  ✓</text>
+  <text x="76" y="178" font-size="11" fill="#000" text-anchor="end">Compression</text>
+  <text x="76" y="192" font-size="11" fill="#000" text-anchor="end">scheme  ◊</text>
+  <text x="220" y="370" font-size="11" fill="#000" text-anchor="middle" font-style="italic">4/5 conjuncts proved, sorry-free</text>
+  <text x="220" y="400" font-size="12" font-weight="bold" fill="#000" text-anchor="middle">First Formalizations</text>
+  <text x="780" y="42" font-size="17" font-weight="bold" fill="#000" text-anchor="middle">New Mathematics, Machine-Checked</text>
+  <rect x="15" y="415" width="122" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="76" y="429" font-size="9" fill="#000" text-anchor="middle">Littlestone char.</text>
+  <rect x="142" y="415" width="103" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="194" y="429" font-size="9" fill="#000" text-anchor="middle">Gold's theorem</text>
+  <rect x="250" y="415" width="122" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="312" y="429" font-size="9" fill="#000" text-anchor="middle">Mind change char.</text>
+  <rect x="378" y="415" width="70" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="413" y="429" font-size="9" fill="#000" text-anchor="middle">PAC-Bayes</text>
+  <rect x="15" y="439" width="122" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="76" y="453" font-size="9" fill="#000" text-anchor="middle">Baxter multi-task</text>
+  <rect x="142" y="439" width="116" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="200" y="453" font-size="9" fill="#000" text-anchor="middle">Choquet capacity</text>
+  <rect x="264" y="439" width="155" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="341" y="453" font-size="9" fill="#000" text-anchor="middle">Analytic measurability</text>
+  <rect x="15" y="463" width="142" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="86" y="477" font-size="9" fill="#000" text-anchor="middle">Paradigm separations</text>
+  <rect x="162" y="463" width="116" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="220" y="477" font-size="9" fill="#000" text-anchor="middle">NFL (infinite X)</text>
+  <rect x="283" y="463" width="142" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
+  <text x="354" y="477" font-size="9" fill="#000" text-anchor="middle">Symmetrization chain</text>
+  <line x1="480" y1="60" x2="480" y2="530" stroke="#000" stroke-width="0.4"/>
+  <rect x="520" y="80.0" width="520" height="30" fill="#fff" stroke="#000" stroke-width="0.8"/>
+  <line x1="640" y1="80.0" x2="640" y2="110.0" stroke="#000" stroke-width="0.4"/>
+  <text x="580" y="99.0" font-size="11" font-weight="bold" fill="#000" text-anchor="middle">Correction</text>
+  <text x="650" y="99.0" font-size="11" fill="#000">NullMeasurableSet suffices</text>
+  <text x="1030" y="99.0" font-size="10" fill="#444" font-style="italic" text-anchor="end">Weakens FTSL hypothesis</text>
+  <rect x="520" y="152.0" width="520" height="30" fill="#fff" stroke="#000" stroke-width="0.8"/>
+  <line x1="640" y1="152.0" x2="640" y2="182.0" stroke="#000" stroke-width="0.4"/>
+  <text x="580" y="171.0" font-size="11" font-weight="bold" fill="#000" text-anchor="middle">Separation</text>
+  <text x="650" y="171.0" font-size="11" fill="#000">Borel-analytic gap is strict</text>
+  <text x="1030" y="171.0" font-size="10" fill="#444" font-style="italic" text-anchor="end">Witness: singleton class</text>
+  <rect x="520" y="224.0" width="520" height="30" fill="#fff" stroke="#000" stroke-width="0.8"/>
+  <line x1="640" y1="224.0" x2="640" y2="254.0" stroke="#000" stroke-width="0.4"/>
+  <text x="580" y="243.0" font-size="11" font-weight="bold" fill="#000" text-anchor="middle">Prediction</text>
+  <text x="650" y="243.0" font-size="11" fill="#000">VersionSpace is MBL</text>
+  <text x="1030" y="243.0" font-size="10" fill="#444" font-style="italic" text-anchor="end">Non-neural RL policy gate</text>
+  <rect x="520" y="296.0" width="520" height="30" fill="#fff" stroke="#000" stroke-width="0.8"/>
+  <line x1="640" y1="296.0" x2="640" y2="326.0" stroke="#000" stroke-width="0.4"/>
+  <text x="580" y="315.0" font-size="11" font-weight="bold" fill="#000" text-anchor="middle">Descent</text>
+  <text x="650" y="315.0" font-size="11" fill="#000">Interpolation weakens to NullMeas</text>
+  <text x="1030" y="315.0" font-size="10" fill="#444" font-style="italic" text-anchor="end">Spatial composition</text>
+  <rect x="520" y="368.0" width="520" height="30" fill="#fff" stroke="#000" stroke-width="0.8"/>
+  <line x1="640" y1="368.0" x2="640" y2="398.0" stroke="#000" stroke-width="0.4"/>
+  <text x="580" y="387.0" font-size="11" font-weight="bold" fill="#000" text-anchor="middle">Amalgamation</text>
+  <text x="650" y="387.0" font-size="11" fill="#000">Evidential composition preserves</text>
+  <text x="1030" y="387.0" font-size="10" fill="#444" font-style="italic" text-anchor="end">Interpolation as corollary</text>
+  <rect x="520" y="440.0" width="520" height="30" fill="#fff" stroke="#000" stroke-width="0.8"/>
+  <line x1="640" y1="440.0" x2="640" y2="470.0" stroke="#000" stroke-width="0.4"/>
+  <text x="580" y="459.0" font-size="11" font-weight="bold" fill="#000" text-anchor="middle">Closure</text>
+  <text x="650" y="459.0" font-size="11" fill="#000">MBL closed under 4 operations</text>
+  <text x="1030" y="459.0" font-size="10" fill="#444" font-style="italic" text-anchor="end">Measurable learner monad</text>
+  <text x="780" y="520" font-size="11" fill="#000" text-anchor="middle" font-style="italic">Infrastructure built for engineering. Produced mathematics. 3 open frontier questions remain.</text>
+  <line x1="20" y1="550" x2="1080" y2="550" stroke="#000" stroke-width="0.4"/>
+  <text x="550" y="570" font-size="12" fill="#000" font-style="italic" text-anchor="middle">47 files  |  18,356 lines  |  292 theorems  |  2 sorry  |  Lean 4 + Mathlib4</text>
+  <text x="20" y="570" font-size="10" fill="#000" font-style="italic">&#x25CA; = Moran-Yehudayoff 2016</text>
 </svg>
