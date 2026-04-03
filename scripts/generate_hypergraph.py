@@ -293,6 +293,9 @@ def compute_coords(layers, x_spacing=6.5, y_spacing=4.5):
 # 5. Drawing
 # ============================================================
 
+# Font sizing: 0.36 pt per inch of figure height (shared constant across all diagrams)
+FONT_RATIO = 0.36
+
 # Fixed node width; height grows for long labels
 NODE_W = 3.8
 NODE_H = 0.9

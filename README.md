@@ -717,28 +717,7 @@ This kernel's 292 theorems use 21 recurring proof methods. The methods are not a
 
 The methods are encoded in three layers.
 
-<!-- FIGURE: world_model_layers.svg
-     Style: black/white, Times New Roman, old school academic
-     Three horizontal bands stacked vertically, connected by vertical arrows:
-
-     Top band (dashed border): "Layer 3: Planning (under construction)"
-       Contents: "bridge_search tactic"
-       Subtitle: "Classifies live MVarId goals by paradigm, searches environment"
-       Arrow down labeled "queries"
-
-     Middle band (solid border, thick): "Layer 2: Typed Proof Operad (1,170 LOC, 0 sorry)"
-       Contents: "Interface | Generator | Plan | HasType | FailureRule | GapSpec"
-       Left annotation: "17 generators (5 structural + 12 domain)"
-       Right annotation: "7 failure rules (negative typing)"
-       Arrow down labeled "formalizes"
-
-     Bottom band (solid border, thin): "Layer 1: Empirical Taxonomy (proof_world_model.json)"
-       Contents: "21 metaprograms extracted from 292 theorems"
-       Left annotation: "Tactic patterns, instances, compositions"
-       Right annotation: "Goal profiles, failure diagnostics"
-
-     Caption: "Three layers of proof method encoding. Layer 2 is the centerpiece."
--->
+![TPG_FLT: Typed Proof Operad](assets/world_model_layers.png)
 
 ### Layer 1: Empirical taxonomy
 
@@ -882,6 +861,8 @@ The operad includes a four-gate quality model calibrated against the First Proof
 The `StepQuality` structure enforces a monotonicity invariant: robustness implies completion implies validity implies compliance. The 29-point drop from validity to robustness reproduces the benchmark's fragility observation: structural generators are robust under interface widening; domain generators are not.
 
 </details>
+
+![Planning Layer: From World Model to Closed Proofs](assets/planning_layer.png)
 
 ### Coverage and boundaries
 
