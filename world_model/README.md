@@ -2,30 +2,33 @@
 
 A stratified, open, typed proof operad with negative typing and extension objects.
 
+This is a **reference copy** of the proof operad from the [companion discovery repository](https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery). To build and use the world model, use the discovery repo's lakefile.
+
 ## Architecture
 
 ```
 world_model/
-├── proof_world_model.json          Machine-extracted 21 MP taxonomy (v1, empirical)
-├── WorldModel/                     Lean4 formalization (canonical build target)
+├── proof_world_model.json          Machine-extracted 21 MP taxonomy (empirical)
+├── WorldModel/                     Lean4 formalization (reference copy)
 │   ├── ProofOperad.lean            Core calculus: Interface, Generator, Plan, HasType, Theory
 │   ├── ProofOperadInstances.lean   17 generators, 7 failure rules, fltTheory, binding theorems
 │   ├── ProofOperadTheorems.lean    Corpus-relative completeness, paradigm lock, normalization
-│   ├── BridgeTactic.lean           bridge_search tactic (under construction)
-│   ├── BridgeTests.lean            Smoke tests (27/27 pass)
-│   ├── NonTrivialTests.lean        Non-trivial tests (cross-paradigm, extension, cost)
-│   ├── BridgeRealTests.lean        5 real FLT goals (search fails -- under construction)
-│   └── BridgeDiagnostic.lean       Diagnostic tactic for debugging the search
+│   └── NonTrivialTests.lean        Non-trivial tests (cross-paradigm, extension, cost)
 ├── dag/                            Machine-generated premise DAG
 │   ├── generator_dag.json          17 generators, 18 interfaces, 66 edges, 6 pipelines
 │   └── generate_dag.py             Generation script
+├── future_work/                    Planning layer (not part of the kernel)
+│   ├── BridgeTactic.lean           bridge_search tactic (future direction)
+│   ├── BridgeTests.lean            Smoke tests for bridge_search
+│   ├── BridgeRealTests.lean        5 real FLT goals (search does not yet match)
+│   └── BridgeDiagnostic.lean       Diagnostic tactic for debugging
 └── README.md
 ```
 
 ## Layers
 
-1. **proof_world_model.json** -- Empirical layer (SCM): 21 metaprograms extracted from
-   tactic sequences across 278 kernel theorems. Each MP is a reusable DAG of TacticM
+1. **proof_world_model.json** -- Empirical layer: 21 metaprograms extracted from
+   tactic sequences across 292 kernel theorems. Each MP is a reusable DAG of TacticM
    transformations with typed inputs, outputs, paradigm locks, and failure diagnostics.
 
 2. **WorldModel/** -- Formalized theory: The 21 empirical MPs reclassified into a three-level
@@ -37,10 +40,10 @@ world_model/
    - **Failure rules** (7): FD1-FD7 as negative typing judgments
    - **Extension objects**: GapSpec for typed theory growth
 
-3. **bridge_search tactic** -- Planning layer (RCA above the SCM): classifies live Lean4
-   goals by paradigm, searches the environment for bridge lemmas, and produces structured
-   BridgeReports on failure. **Under construction**: paradigm classifier works, environment
-   search does not yet find matches on real FLT goals. See BridgeRealTests.lean.
+3. **future_work/** -- Planning layer: `bridge_search` tactic that would classify live
+   Lean4 goals by paradigm, search the environment for bridge lemmas, and produce
+   structured BridgeReports on failure. This is a future direction, not part of the
+   current kernel. See the planning layer diagram in Section VIII of the README.
 
 ## Key Results
 
@@ -49,34 +52,25 @@ world_model/
 - **Paradigm lock theorem**: No generator spans PAC + Online + Gold simultaneously.
 - **NT1 cross-paradigm impossibility**: `seq TreePotential UCToPAC` is provably ill-typed
   at the composition level (65-line proof via HasType inversion + generator enumeration).
-- **Four-gate quality model**: Calibrated against First Proof Benchmark funnel
-  (100% -> 98% -> 76% -> 69%). StepQuality structure with funnelValid invariant.
-- **Robustness model**: Structural generators are robust under interface widening;
-  domain generators are not (reproduces the benchmark's 29-point validity-to-robustness gap).
 
 ## Metrics
 
 | Component | LOC | Sorrys | Status |
 |-----------|-----|--------|--------|
-| ProofOperad.lean | 232 | 0 | Complete |
+| ProofOperad.lean | 253 | 0 | Complete |
 | ProofOperadInstances.lean | 252 | 0 | Complete |
 | ProofOperadTheorems.lean | 207 | 0 | Complete |
-| BridgeTactic.lean | 197 | 0 | Under construction (search) |
-| BridgeTests + NonTrivialTests | 282 | 0 | All pass |
-| **Total** | **1170** | **0** | |
+| NonTrivialTests.lean | 228 | 0 | All pass |
+| **Total (core)** | **940** | **0** | |
+| BridgeTactic.lean | 197 | 0 | Future work |
 
-## Build
+## Building
+
+This is a reference copy. To build, use the discovery repo:
 
 ```bash
+# Clone the discovery repo which has the lakefile for WorldModel
+git clone https://github.com/Zetetic-Dhruv/formal-learning-theory-discovery
+cd formal-learning-theory-discovery
 lake build WorldModel
-```
-
-Or build individual targets:
-```bash
-lake build WorldModel.ProofOperad
-lake build WorldModel.ProofOperadInstances
-lake build WorldModel.ProofOperadTheorems
-lake build WorldModel.BridgeTactic
-lake build WorldModel.BridgeTests
-lake build WorldModel.NonTrivialTests
 ```

@@ -840,27 +840,11 @@ The `extension_sound` theorem proves that adding a generator solving a gap yield
 
 </details>
 
-### Layer 3: Planning tactic (under construction)
+### Future direction: Planning tactic
 
-The `bridge_search` tactic is the operational layer above the operad. Given a live Lean4 goal, it classifies by paradigm (inspects `Expr` head before `whnf`), searches the environment for bridge lemmas, and applies or reports a structured `BridgeReport`.
+The diagram below shows the intended operational flow. A `bridge_search` tactic would sit above the operad: classify a live goal by paradigm, match it against interfaces, select a generator pipeline, check failure rules, and either apply a bridge lemma or return a typed `GapSpec`. The world model provides the routing; LLM reasoning and Mathlib API search provide the evidence to close each step.
 
-Current status: paradigm classifier works. Environment search does not yet find matches on real FLT goals. Root cause diagnosed: the kernel's theorems are at the top level (not namespaced), and `goal.apply` with `mkConstWithFreshMVarLevels` fails when typeclass arguments cannot be synthesized in the search context. Fix path: `Lean.Meta.DiscrTree` for O(1) lookup by head symbol.
-
-<details>
-<summary><strong>Quality funnel model</strong></summary>
-
-The operad includes a four-gate quality model calibrated against the First Proof Benchmark:
-
-| Gate | Measures | Benchmark rate |
-|------|----------|---------------|
-| Assumption compliance | Hypotheses match the interface | 100% |
-| Inference validity | Tactic applications are sound | 98% |
-| Goal completion | All subgoals closed | 76% |
-| Generalization robustness | Proof survives interface widening | 69% |
-
-The `StepQuality` structure enforces a monotonicity invariant: robustness implies completion implies validity implies compliance. The 29-point drop from validity to robustness reproduces the benchmark's fragility observation: structural generators are robust under interface widening; domain generators are not.
-
-</details>
+This layer is future work. The world model (Layers 1-2) and its theorems are complete. The planning layer that consumes them programmatically is a natural next step.
 
 ![Planning Layer: From World Model to Closed Proofs](assets/planning_layer.png)
 

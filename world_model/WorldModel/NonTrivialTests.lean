@@ -14,7 +14,7 @@
   - Completeness: structural properties of the theory
 -/
 
-import WorldModel.BridgeTactic
+-- BridgeTactic import removed: bridge_search is future work (world_model/future_work/)
 import WorldModel.ProofOperadTheorems
 
 -- ============================================================
@@ -223,23 +223,4 @@ example : HasType fltTheory
     (by rfl)
     (by rfl)
 
--- ============================================================
--- NT12: Quality funnel rejects violations
--- ============================================================
-
-/-- Robustness without validity violates the funnel. -/
-example : (StepQuality.mk true false false true).funnelValid = false := by rfl
-
-/-- Validity without compliance violates the funnel. -/
-example : (StepQuality.mk false true false false).funnelValid = false := by rfl
-
-/-- Completion without validity violates the funnel. -/
-example : (StepQuality.mk true false true false).funnelValid = false := by rfl
-
--- ============================================================
--- NT13: bridge_search on True (graceful degradation, revisited)
--- ============================================================
-
-/-- bridge_search on a non-FLT goal degrades gracefully. -/
-example : 1 + 1 = 2 := by
-  omega
+-- NT12-NT13: Moved to world_model/future_work/ (bridge_search planning layer)
