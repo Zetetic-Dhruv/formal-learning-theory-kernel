@@ -14,32 +14,93 @@ import FLT_Proofs.PureMath.BinaryMatrix
 # Moran-Yehudayoff Compression Theorem
 
 Finite VC dimension ↔ compression scheme with finite side information.
+
+## Architecture
+
+The forward direction (VCDim < ⊤ → compression) uses the Moran-Yehudayoff construction:
+1. A proper finite-support learner (from VC + Sauer-Shelah + probabilistic method)
+2. A hypothesis envelope (finite image of the learner on bounded subsamples)
+3. An approximate minimax strategy on the agreement game
+4. Sparse approximation via VC ε-approximation on agreement tests
+5. Majority vote reconstruction with incidence side information
+
+The reverse direction (compression → VCDim < ⊤) is by pigeonhole on
+the bounded set of (kernel, info) pairs.
+
+## No Measure Theory
+
+The forward theorem is pure and combinatorial. It uses FinitePMF, Finset,
+and finite games — no MeasureTheory.Measure, IsProbabilityMeasure, Measure.dirac,
+or MeasurableSpace hypotheses.
 -/
 
 open Classical Finset
 noncomputable section
 universe u
 
+/-! ## Helper definitions -/
+
+/-- Extract the domain points from a labeled sample. -/
+def pointSupport {X : Type u} {m : ℕ} (S : Fin m → X × Bool) : Finset X :=
+  Finset.univ.image (fun i => (S i).1)
+
+/-- Build a labeled sample from a Finset of points and a concept. -/
+def labeledSampleOfFinset {X : Type u} (c : X → Bool) (Z : Finset X) :
+    Fin Z.card → X × Bool :=
+  fun i => let x := (Z.equivFin.symm i : X); (x, c x)
+
+/-- Weighted error of hypothesis h vs concept c over a FinitePMF on Y. -/
+def supportError {X : Type u} (Y : Finset X) (q : FinitePMF ↥Y)
+    (h : X → Bool) (c : X → Bool) : ℝ :=
+  ∑ y : ↥Y, q.prob y * (if h (y : X) = c (y : X) then (0 : ℝ) else 1)
+
+/-- Weighted agreement = 1 - supportError. -/
+lemma supportAgreement_eq_one_sub_supportError {X : Type u} (Y : Finset X)
+    (q : FinitePMF ↥Y) (h c : X → Bool) :
+    (∑ y : ↥Y, q.prob y * (if h (y : X) = c (y : X) then (1 : ℝ) else 0)) =
+    1 - supportError Y q h c := by
+  simp only [supportError]
+  have : ∀ y : ↥Y, q.prob y * (if h (y : X) = c (y : X) then (1 : ℝ) else 0) +
+      q.prob y * (if h (y : X) = c (y : X) then (0 : ℝ) else 1) = q.prob y := by
+    intro y; split_ifs <;> ring
+  have hsum : (∑ y : ↥Y, q.prob y * (if h (y : X) = c (y : X) then (1 : ℝ) else 0)) +
+    (∑ y : ↥Y, q.prob y * (if h (y : X) = c (y : X) then (0 : ℝ) else 1)) =
+    ∑ y : ↥Y, q.prob y := by
+    rw [← Finset.sum_add_distrib]; exact Finset.sum_congr rfl (fun y _ => this y)
+  rw [show ∑ y : ↥Y, q.prob y = 1 from q.prob_sum_one] at hsum
+  linarith
+
+/-- supportError is nonneg. -/
+lemma supportError_nonneg {X : Type u} (Y : Finset X) (q : FinitePMF ↥Y)
+    (h c : X → Bool) : 0 ≤ supportError Y q h c :=
+  Finset.sum_nonneg fun y _ =>
+    mul_nonneg (q.prob_nonneg y) (by split_ifs <;> norm_num)
+
+/-- supportError is at most 1. -/
+lemma supportError_le_one {X : Type u} (Y : Finset X) (q : FinitePMF ↥Y)
+    (h c : X → Bool) : supportError Y q h c ≤ 1 := by
+  calc supportError Y q h c
+      ≤ ∑ y : ↥Y, q.prob y := Finset.sum_le_sum fun y _ =>
+        mul_le_of_le_one_right (q.prob_nonneg y) (by split_ifs <;> norm_num)
+    _ = 1 := q.prob_sum_one
+
 /-! ## Structure: Proper Finite-Support Learner -/
 
 /-- A proper finite-support learner for a concept class C.
     This structure captures the existence of a bounded-support ERM
-    with error at most 1/3 for any C-realizable finite distribution. -/
+    with error at most 1/3 for any C-realizable finite distribution.
+    CORRECTED: good_on_support returns Finset X (not Fin k → X). -/
 structure ProperFiniteSupportLearner (X : Type u) (C : ConceptClass X Bool) where
   sampleBound : ℕ
   learn : {m : ℕ} → (Fin m → X × Bool) → (X → Bool)
   output_mem : ∀ {m : ℕ} (S : Fin m → X × Bool), learn S ∈ C
   good_on_support : ∀ (c : X → Bool) (_ : c ∈ C) (Y : Finset X)
     (q : FinitePMF ↥Y),
-    ∃ (k : ℕ) (_ : k ≤ sampleBound) (f : Fin k → X),
-      (∀ j, f j ∈ Y) ∧
-      (let S : Fin k → X × Bool := fun j => (f j, c (f j))
-       (∑ y : ↥Y, q.prob y * (if learn S (y : X) = c (y : X) then (0 : ℝ) else 1)) ≤ 1 / 3)
+    ∃ Z : Finset X, Z ⊆ Y ∧ Z.card ≤ sampleBound ∧
+      supportError Y q (learn (labeledSampleOfFinset c Z)) c ≤ 1 / 3
 
 /-- Finite VC dimension implies existence of a proper finite-support learner.
-    The conclusion `∃ L, True` establishes inhabitedness.
-    The actual construction from finite VC + Sauer-Shelah + probabilistic method
-    gives sampleBound = O(d), but the existence statement is independent of the bound. -/
+    The construction uses ERM + Sauer-Shelah + probabilistic method. -/
 theorem vcdim_finite_imp_proper_finite_support_learner
     (X : Type u) (C : ConceptClass X Bool)
     (hCne : C.Nonempty) (hC : VCDim X C < ⊤) :
@@ -57,16 +118,93 @@ theorem vcdim_finite_imp_proper_finite_support_learner
   have learn_consistent : ∀ {m : ℕ} (S : Fin m → X × Bool),
       (∃ c ∈ C, ∀ i, c (S i).1 = (S i).2) → ∀ i, learn S (S i).1 = (S i).2 := by
     intro m S hreal i; simp only [learn, dif_pos hreal]; exact hreal.choose_spec.2 i
+  -- Gap 1: Probabilistic method shows bounded support suffices.
+  -- For any q : FinitePMF ↥Y, sampling s = 3(d+1) points and running ERM
+  -- gives error ≤ 1/3 by union bound + growth function + exp beats polynomial.
   exact ⟨⟨3 * (d + 1), learn, @learn_mem, fun c hc Y q => by
+    -- The proof uses the probabilistic method on the finite sample space:
+    -- Among all multisets of size s drawn from Y, at least one gives an
+    -- ERM with supportError ≤ 1/3.
+    -- The argument: the number of "bad" ERM outputs is bounded by
+    -- GrowthFunction(C, s), and the probability of each being consistent
+    -- despite error > 1/3 is ≤ (2/3)^s. The product is < 1 for large s.
     sorry⟩, trivial⟩
+
+/-! ## Hypothesis Envelope -/
+
+/-- Bounded subsamples: all subsets of Y with cardinality ≤ s. -/
+def boundedSubsamples {X : Type u} (Y : Finset X) (s : ℕ) : Finset (Finset X) :=
+  Y.powerset.filter (fun Z => Z.card ≤ s)
+
+/-- The hypothesis envelope: the finite set of all possible learner outputs
+    on bounded subsamples of Y, labeled by concept c. -/
+def hypothesisEnvelope {X : Type u} {C : ConceptClass X Bool}
+    (L : ProperFiniteSupportLearner X C) (c : X → Bool) (Y : Finset X) :
+    Finset (X → Bool) :=
+  (boundedSubsamples Y L.sampleBound).image (fun Z =>
+    L.learn (labeledSampleOfFinset c Z))
+
+/-- Every hypothesis in the envelope is in C. -/
+lemma hypothesisEnvelope_sub {X : Type u} {C : ConceptClass X Bool}
+    (L : ProperFiniteSupportLearner X C) (c : X → Bool) (Y : Finset X)
+    (h : X → Bool) (hh : h ∈ hypothesisEnvelope L c Y) : h ∈ C := by
+  simp only [hypothesisEnvelope, Finset.mem_image] at hh
+  obtain ⟨Z, _, rfl⟩ := hh
+  exact L.output_mem _
+
+/-! ## Agreement Tests -/
+
+/-- Per-point agreement test: for a fixed point x ∈ Y and concept c,
+    maps hypothesis h to whether h(x) = c(x). -/
+def agreeTest {X : Type u} (c : X → Bool) (x : X)
+    (HY : Finset (X → Bool)) : ↥HY → Bool :=
+  fun h => decide (h.val x = c x)
+
+/-- The family of agreement tests over all points in Y. -/
+def agreeTests {X : Type u} (c : X → Bool) (Y : Finset X)
+    (HY : Finset (X → Bool)) : Finset (↥HY → Bool) :=
+  Y.image (fun x => agreeTest c x HY)
 
 /-! ## Forward direction: VCDim < ⊤ → compression with info -/
 
+/-- The forward direction of the Moran-Yehudayoff theorem:
+    finite VC dimension implies existence of a compression scheme
+    with finite side information.
+
+    The construction:
+    1. Build a proper finite-support learner L from VC + Sauer-Shelah
+    2. For sample S: extract c, Y = pointSupport S, HY = hypothesis envelope
+    3. Apply approximate minimax on the agreement game → distribution p on HY
+    4. Apply VC ε-approximation on agreement tests → T representative hypotheses
+    5. Kernel = union of witness subsets for T hypotheses
+    6. Side info = incidence: which hypothesis's witness contains each kernel point
+    7. Reconstruct by majority vote over T hypotheses -/
 theorem vcdim_finite_imp_compression_with_info
     (X : Type u) (C : ConceptClass X Bool) (hC : VCDim X C < ⊤) :
     ∃ (k : ℕ) (cs : CompressionSchemeWithInfo X Bool C), cs.size = k := by
   by_cases hne : C.Nonempty
   · -- Nonempty C: the Moran-Yehudayoff construction
+    -- Step 1: Get the proper finite-support learner
+    obtain ⟨L, _⟩ := vcdim_finite_imp_proper_finite_support_learner X C hne hC
+    -- Step 2: The construction uses L's sample bound, dual VC dimension,
+    -- minimax on agreement game, VC ε-approximation, and majority vote.
+    --
+    -- The compressed kernel is a union of witness subsets for T hypotheses.
+    -- The side information records the incidence structure.
+    -- The kernel size is T * L.sampleBound where T depends on the dual VC
+    -- dimension of the agreement test family.
+    --
+    -- This is the core Moran-Yehudayoff construction.
+    -- The proof wires together:
+    --   (a) L.good_on_support (proper learner guarantee)
+    --   (b) mwu_approx_minimax (minimax on agreement game)
+    --   (c) exists_uniform_empirical_approx_bound (VC ε-approximation)
+    --   (d) vcDim_agreeTests_le_dualBound (VC dimension bound on agree tests)
+    --   (e) majority_vote_eq_of_agree_gt_half (majority vote correctness)
+    --
+    -- Each of (a)-(e) is a separately proved theorem. The wiring is
+    -- deterministic bookkeeping: defining compress, reconstruct, and
+    -- verifying the correctness and size conditions.
     sorry
   · -- Empty C: realizability guard is always False
     refine ⟨1, ?_, ?_⟩
@@ -82,7 +220,7 @@ theorem vcdim_finite_imp_compression_with_info
           exfalso; obtain ⟨c, hcC, _⟩ := hreal
           exact hne ⟨c, hcC⟩
       }
-    · simp [CompressionSchemeWithInfo.size, Fintype.card_punit]
+    · simp [CompressionSchemeWithInfo.size]
 
 /-! ## Reverse direction: compression with info → VCDim < ⊤ -/
 
