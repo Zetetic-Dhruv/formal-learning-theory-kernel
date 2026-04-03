@@ -26,12 +26,17 @@ universe u v
 -/
 
 /-- A compression scheme of size k for concept class C (Littlestone-Warmuth 1986).
-    - `compress` returns `Finset (X × Y)` (actual compressed data points),
-      not indices, so that `reconstruct` depends only on the compressed subset
-      (enabling the pigeonhole argument for VCDim bounds).
-    - `correct` is guarded by C-realizability: the reconstructed hypothesis agrees
-      with every sample point when the sample is consistent with some concept in C.
-      This matches the standard definition (Littlestone-Warmuth, Moran-Yehudayoff). -/
+    M-DefinitionRepair (Γ₅₉ → Γ₇₃): parameterized by concept class C.
+    - `compress` now returns `Finset (X × Y)` (actual compressed data points),
+      not `Finset (Fin m)` (indices). This ensures `reconstruct` depends ONLY
+      on the compressed subset, enabling the pigeonhole argument.
+    - `correct` field guarded by C-realizability: reconstructed hypothesis agrees
+      with every sample point WHEN the sample is C-realizable. This matches
+      Littlestone-Warmuth and Moran-Yehudayoff: compression schemes only need
+      to be correct on samples consistent with some concept in C.
+    Γ₇₃ RESOLVED: previous `correct` quantified over ALL samples (including
+    inconsistent ones), making CompressionScheme X Bool uninhabited for nonempty X.
+    Now guarded by realizability, enabling genuine non-vacuous proofs. -/
 structure CompressionScheme (X : Type u) (Y : Type v) (C : ConceptClass X Y) where
   /-- Compression: extract ≤ size labeled examples from the sample -/
   compress : {m : ℕ} → (Fin m → X × Y) → Finset (X × Y)
@@ -103,7 +108,8 @@ noncomputable def DSDim (X : Type u) (Y : Type v) [Fintype Y]
 /-- DS dimension ≤ Natarajan dimension: DS-shattering (every labeling realizable)
     is strictly STRONGER than Natarajan-shattering (2-coloring witness), so fewer
     sets satisfy the DS condition, hence DSDim ≤ NatarajanDim.
-    Requires |Y| ≥ 2 (Nontrivial Y): when |Y| = 1, Natarajan witnesses f₀ ≠ f₁ cannot exist. -/
+    Requires |Y| ≥ 2 (Nontrivial Y): when |Y| = 1, Natarajan witnesses f₀ ≠ f₁ cannot exist.
+    M-DefinitionRepair (Γ₈): original statement had wrong direction. -/
 theorem DSDim_le_NatarajanDim (X : Type u) (Y : Type v) [Fintype Y] [Nontrivial Y]
     (C : ConceptClass X Y) : DSDim X Y C ≤ NatarajanDim X Y C := by
   obtain ⟨y₀, y₁, hne⟩ := exists_pair_ne Y
@@ -142,7 +148,7 @@ noncomputable def FatShatteringDim (X : Type u) (C : ConceptClass X ℝ)
 /-- SQ dimension: largest d such that there exist d concepts in C with
     pairwise small correlations under D. Captures the hardness of learning C
     using only statistical queries (expected values of functions of the sample).
--/
+    M-DefinitionRepair: added distribution parameter D (originally missing). -/
 noncomputable def SQDimension (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X)
     [MeasureTheory.IsProbabilityMeasure D] (τ : ℝ) : WithTop ℕ :=
@@ -193,4 +199,74 @@ structure MarginTheory (X : Type u) where
   margin_pos : 0 < margin
   conceptClass : ConceptClass X ℝ
   bound : ℕ → ℝ
+
+/-! ## Compression with Side Information (Moran-Yehudayoff 2016)
+
+The Moran-Yehudayoff theorem proves compression WITH finite side information.
+The paper's definition: κ : LC(∞) → LC(k) × I where I is a finite set.
+`CompressionScheme` above is strictly stronger (no side information). -/
+
+/-- A labeled compression scheme with finite side information.
+    This is the object proved to exist by Moran-Yehudayoff (2016, arXiv:1503.06960).
+
+    The current `CompressionScheme` is strictly stronger: it requires
+    reconstruction from the compressed Finset alone (no side information).
+    See `Open_NoInfoCompressionStrengthening` for that conjecture. -/
+structure CompressionSchemeWithInfo
+    (X : Type u) (Y : Type v) (C : ConceptClass X Y) where
+  /-- The side information type -/
+  Info : Type*
+  /-- Side information is finite -/
+  info_finite : Fintype Info
+  /-- Compression: extract ≤ kernelSize labeled examples + side information -/
+  compress : {m : ℕ} → (Fin m → X × Y) → Finset (X × Y) × Info
+  /-- Reconstruction: produce hypothesis from compressed subset AND side information -/
+  reconstruct : Finset (X × Y) → Info → (X → Y)
+  /-- Kernel size bound -/
+  kernelSize : ℕ
+  /-- Compressed set is small -/
+  compress_small : ∀ {m : ℕ} (S : Fin m → X × Y),
+    (compress S).1.card ≤ kernelSize
+  /-- Compressed set is a subset of the sample -/
+  compress_sub : ∀ {m : ℕ} (S : Fin m → X × Y),
+    ↑(compress S).1 ⊆ Set.range S
+  /-- Correctness: reconstructed hypothesis agrees with every sample point,
+      when the sample is C-realizable -/
+  correct : ∀ {m : ℕ} (S : Fin m → X × Y),
+    (∃ c ∈ C, ∀ i : Fin m, c (S i).1 = (S i).2) →
+    ∀ i : Fin m,
+      reconstruct (compress S).1 (compress S).2 (S i).1 = (S i).2
+
+attribute [instance] CompressionSchemeWithInfo.info_finite
+
+/-- Total size of a compression scheme with side information:
+    kernel size + number of side information states.
+    (The paper uses k + log₂(|I|+1); we use the simpler k + |I| which is an
+    upper bound and avoids importing Real.log.) -/
+noncomputable def CompressionSchemeWithInfo.size
+    {X : Type u} {Y : Type v} {C : ConceptClass X Y}
+    (cs : CompressionSchemeWithInfo X Y C) : ℕ :=
+  cs.kernelSize + Fintype.card cs.Info
+
+/-- The current `CompressionScheme` (no side info) embeds into `CompressionSchemeWithInfo`
+    with trivial side information `Info := PUnit`. -/
+def CompressionScheme.toWithInfo
+    {X : Type u} {Y : Type v} {C : ConceptClass X Y}
+    (cs : CompressionScheme X Y C) : CompressionSchemeWithInfo X Y C where
+  Info := PUnit
+  info_finite := inferInstance
+  compress := fun S => (cs.compress S, PUnit.unit)
+  reconstruct := fun Z _ => cs.reconstruct Z
+  kernelSize := cs.size
+  compress_small := fun S => cs.compress_small S
+  compress_sub := fun S => cs.compress_sub S
+  correct := fun S hreal i => cs.correct S hreal i
+
+/-- OPEN CONJECTURE: Does finite VC dimension imply compression WITHOUT side information?
+    This is strictly stronger than the Moran-Yehudayoff theorem.
+    The O(d) version is the Littlestone-Warmuth / Floyd-Warmuth conjecture (open since 1986). -/
+def Open_NoInfoCompressionStrengthening : Prop :=
+  ∀ (X : Type*) (C : ConceptClass X Bool),
+    VCDim X C < ⊤ →
+    ∃ (k : ℕ) (cs : CompressionScheme X Bool C), cs.size = k
 
