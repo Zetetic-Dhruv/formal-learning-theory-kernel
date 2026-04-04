@@ -26,12 +26,21 @@ meta-PAC bound, and separation results for compression and SQ dimension.
 
 universe u v
 
-/-- BHMZ middle branch: infinite Littlestone but finite VC implies universally learnable.
-    This is the deep content of Bousquet-Hanneke-Moran-Zhivotovskiy (STOC 2021, Theorem 3.1).
-    The construction uses one-inclusion graph learners at each depth of the Littlestone tree,
-    combined with a doubling aggregation scheme. The finite VC dimension ensures uniform
-    convergence at each depth, while the infinite Littlestone dimension provides the
-    tree structure needed for the universal learning rate. -/
+/-! ## TODO: Universal Learning Trichotomy (BHMZ 2021)
+
+The universal learning trichotomy (Bousquet-Hanneke-Moran-Zhivotovskiy, STOC 2021)
+states that every concept class falls into exactly one of three regimes:
+(1) Finite Littlestone dimension: online-learnable
+(2) Infinite Littlestone but finite VC dimension: universally learnable but NOT online-learnable
+(3) Infinite VC dimension: not universally learnable
+
+Branches 1 and 3 are sorry-free (littlestone_characterization, vcdim_infinite_not_pac).
+Branch 2 requires the deep BHMZ one-inclusion graph construction — not yet formalized.
+
+The following declarations are commented out pending formalization of the BHMZ construction.
+-/
+
+/-
 private theorem bhmz_middle_branch (X : Type) [MeasurableSpace X]
     (C : ConceptClass X Bool)
     (hldim : LittlestoneDim X C = ⊤)
@@ -39,18 +48,6 @@ private theorem bhmz_middle_branch (X : Type) [MeasurableSpace X]
     UniversalLearnable X C := by
   sorry
 
-/-- Universal learning trichotomy (Bousquet-Hanneke-Moran-Zhivotovskiy 2021).
-    Every concept class falls into exactly one of three regimes:
-    (1) Finite Littlestone dimension: online-learnable (optimal mistake bound = LittlestoneDim).
-    (2) Infinite Littlestone but finite VC dimension: universally learnable but NOT online-learnable.
-    (3) Infinite VC dimension: not universally learnable (and not PAC-learnable).
-
-    Branch 1 is proved via littlestone_characterization (backward direction).
-    Branch 2 requires the deep BHMZ construction (sorry'd in bhmz_middle_branch).
-    Branch 3 chains universal_imp_pac + vcdim_infinite_not_pac (both proved).
-
-    Note: X : Type (not Type u) due to OnlineLearner.State : Type forcing universe 0.
-    MeasurableSingletonClass required by vcdim_infinite_not_pac in Branch 3. -/
 theorem universal_trichotomy (X : Type) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool)
@@ -62,19 +59,16 @@ theorem universal_trichotomy (X : Type) [MeasurableSpace X]
     (VCDim X C = ⊤ ∧ ¬ UniversalLearnable X C) := by
   have hc_meas := MeasurableHypotheses.mem_measurable (C := C)
   rcases lt_or_eq_of_le (le_top : LittlestoneDim X C ≤ ⊤) with hldim | hldim
-  · -- Branch 1: LittlestoneDim < ⊤ ⟹ OnlineLearnable
-    exact Or.inl ⟨hldim, (littlestone_characterization X C).mpr hldim⟩
-  · -- LittlestoneDim = ⊤
-    rcases lt_or_eq_of_le (le_top : VCDim X C ≤ ⊤) with hvcdim | hvcdim
-    · -- Branch 2: LittlestoneDim = ⊤, VCDim < ⊤ ⟹ UniversalLearnable ∧ ¬OnlineLearnable
-      refine Or.inr (Or.inl ⟨hldim, hvcdim, bhmz_middle_branch X C hldim hvcdim, ?_⟩)
+  · exact Or.inl ⟨hldim, (littlestone_characterization X C).mpr hldim⟩
+  · rcases lt_or_eq_of_le (le_top : VCDim X C ≤ ⊤) with hvcdim | hvcdim
+    · refine Or.inr (Or.inl ⟨hldim, hvcdim, bhmz_middle_branch X C hldim hvcdim, ?_⟩)
       intro hol
       have := (littlestone_characterization X C).mp hol
       rw [hldim] at this
       exact lt_irrefl _ this
-    · -- Branch 3: VCDim = ⊤ ⟹ ¬UniversalLearnable
-      exact Or.inr (Or.inr ⟨hvcdim, fun huniv =>
+    · exact Or.inr (Or.inr ⟨hvcdim, fun huniv =>
         vcdim_infinite_not_pac X C hvcdim (universal_imp_pac X C hL_meas huniv)⟩)
+-/
 
 -- computational_hardness_pac MOVED to Benchmarks/CryptoHardness.lean.
 -- Requires cryptographic assumptions (one-way functions, pseudorandom generators)
