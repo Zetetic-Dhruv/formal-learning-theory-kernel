@@ -30,22 +30,21 @@ jobs:
       - name: Build
         run: lake build
 
-      - name: Count sorrys
+      - name: Zero sorry enforcement
         run: |
-          echo "=== Sorry check ==="
-          # Match only sorry as a standalone tactic: lines where sorry is the
-          # entire statement (possibly indented), not in comments or substrings
-          SORRY_COUNT=$(grep -rn --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/ | wc -l | tr -d ' ')
-          echo "Found $SORRY_COUNT sorry tactics in .lean files"
-          if [ "$SORRY_COUNT" -gt 2 ]; then
-            echo "::error::Sorry count ($SORRY_COUNT) exceeds the 2 known sorrys. New sorrys introduced."
+          echo "=== Sorry check (must be exactly 0) ==="
+          SORRY_COUNT=$(grep -rn --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/ 2>/dev/null | wc -l | tr -d ' ')
+          echo "Found $SORRY_COUNT sorry tactics"
+          if [ "$SORRY_COUNT" -gt 0 ]; then
+            echo "::error::Sorry detected ($SORRY_COUNT). This kernel is sorry-free. No sorry allowed."
+            grep -rn --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/
             exit 1
           fi
-          echo "Sorry count within expected range (2 known: vcdim_finite_imp_compression, bhmz_middle_branch)"
+          echo "Confirmed: 0 sorry tactics."
 
       - name: Verify metrics
         run: |
-          echo "=== Metrics check ==="
+          echo "=== Metrics ==="
           LINES=$(find FLT_Proofs -name "*.lean" | xargs wc -l | tail -1 | awk '{print $1}')
           PUB_THM=$(grep -rn --include="*.lean" -E '^(theorem|lemma) ' FLT_Proofs/ | wc -l | tr -d ' ')
           PRIV_THM=$(grep -rn --include="*.lean" -E '^private (theorem|lemma) ' FLT_Proofs/ | wc -l | tr -d ' ')
