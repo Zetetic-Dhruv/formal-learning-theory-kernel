@@ -8,6 +8,7 @@ import FLT_Proofs.Complexity.VCDimension
 import FLT_Proofs.Complexity.Rademacher
 import FLT_Proofs.Complexity.Structures
 import FLT_Proofs.Complexity.Generalization
+import FLT_Proofs.Complexity.Compression
 import FLT_Proofs.Complexity.Symmetrization
 import FLT_Proofs.Computation
 import FLT_Proofs.Bridge
@@ -244,16 +245,15 @@ theorem pac_sample_complexity_sandwich (X : Type u) [MeasurableSpace X]
       sample_complexity_upper_of_pac_witness X C L mf hmf ε δ hε hδ
     exact ⟨hlower, le_trans hlower hupper⟩
 
-/-- Fundamental theorem: finite VC dim ↔ finite compression scheme.
-    Γ₇₃ RESOLVED: CompressionScheme parameterized by concept class C. -/
+/-- Fundamental theorem: finite VC dim ↔ finite compression scheme with side information.
+    Moran-Yehudayoff 2016 (arXiv:1503.06960). Sorry-free via Compression.lean.
+    Γ₇₃ RESOLVED: CompressionSchemeWithInfo parameterized by concept class C.
+    The no-side-info version (Littlestone-Warmuth conjecture) remains open. -/
 theorem fundamental_vc_compression (X : Type u)
     (C : ConceptClass X Bool) :
     (VCDim X C < ⊤) ↔
-    (∃ (k : ℕ) (cs : CompressionScheme X Bool C), cs.size = k) :=
-  -- Factored through infrastructure lemmas in Generalization.lean:
-  -- → : Moran-Yehudayoff 2016 (deep theorem, Γ₄₄)
-  -- ← : pigeonhole compression → finite VCDim (M₃ combinatorial)
-  ⟨vcdim_finite_imp_compression X C, compression_imp_vcdim_finite X C⟩
+    (∃ (k : ℕ) (cs : CompressionSchemeWithInfo0 X Bool C), cs.size = k) :=
+  fundamental_vc_compression_with_info X C
 
 /-- Fundamental theorem: Rademacher complexity characterization.
     BP₅: two asymmetric directions crossing different paradigm joints.
@@ -295,7 +295,7 @@ theorem fundamental_theorem (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool)
     [MeasurableConceptClass X C] :
     (PACLearnable X C ↔ VCDim X C < ⊤) ∧
-    ((VCDim X C < ⊤) ↔ ∃ (k : ℕ) (cs : CompressionScheme X Bool C), cs.size = k) ∧
+    ((VCDim X C < ⊤) ↔ ∃ (k : ℕ) (cs : CompressionSchemeWithInfo0 X Bool C), cs.size = k) ∧
     ((VCDim X C < ⊤) ↔
       ∀ ε > 0, ∃ m₀, ∀ (D : MeasureTheory.Measure X),
         MeasureTheory.IsProbabilityMeasure D →

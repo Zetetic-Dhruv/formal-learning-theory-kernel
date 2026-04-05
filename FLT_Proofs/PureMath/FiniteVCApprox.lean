@@ -4,30 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Gupta
 -/
 import FLT_Proofs.PureMath.ApproxMinimax
+import FLT_Proofs.PureMath.BinaryMatrix
 
 /-!
 # Finite Sample Approximation for FinitePMF
 
 Infrastructure for approximating FinitePMFs by empirical distributions of
-finite samples. The key result is `expectation_approx_of_tv`: if the total
-variation between a PMF and an empirical PMF is small, then all Boolean test
-expectations are well-approximated.
-
-## Main definitions
-
-- `trueExpectation` : expected value of a function under a FinitePMF
-- `totalVariation` : TV distance between a FinitePMF and an empirical PMF
-- `boolTestExpectation` : expected value of a Boolean test (0/1 valued)
+finite samples.
 
 ## Main results
 
 - `expectation_approx_of_tv` : TV bound implies test approximation
 - `tv_bound_implies_all_tests` : TV ≤ ε implies all tests ε-approximated
-- `exists_approx_sample_of_rational` : construction for rational PMFs
-
-## References
-
-- Used in compression-based learnability proofs (sample compression lemma).
+- `boolFamilyToFinsetFamily` / `Finset.boolVCDim` : VC dimension for Boolean function families
 -/
 
 open Finset Classical
@@ -36,17 +25,14 @@ noncomputable section
 
 /-! ## Expectations -/
 
-/-- True expectation of a real-valued function under a FinitePMF. -/
 def trueExpectation {H : Type*} [Fintype H]
     (μ : FinitePMF H) (f : H → ℝ) : ℝ :=
   ∑ h : H, μ.prob h * f h
 
-/-- Boolean test expectation: E_μ[𝟙[f(h)]]. -/
 def boolTestExpectation {H : Type*} [Fintype H]
     (μ : FinitePMF H) (f : H → Bool) : ℝ :=
   trueExpectation μ (fun h => if f h then (1 : ℝ) else 0)
 
-/-- Boolean test expectation is in [0, 1]. -/
 lemma boolTestExpectation_nonneg {H : Type*} [Fintype H]
     (μ : FinitePMF H) (f : H → Bool) :
     0 ≤ boolTestExpectation μ f :=
@@ -64,24 +50,20 @@ lemma boolTestExpectation_le_one {H : Type*} [Fintype H]
 
 /-! ## Total Variation Distance -/
 
-/-- Total variation distance between two FinitePMFs. -/
 def tvDistance {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) : ℝ :=
   ∑ h : H, |μ.prob h - ν.prob h|
 
-/-- TV distance is nonneg. -/
 lemma tvDistance_nonneg {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) :
     0 ≤ tvDistance μ ν :=
   Finset.sum_nonneg fun _ _ => abs_nonneg _
 
-/-- TV distance is symmetric. -/
 lemma tvDistance_comm {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) :
     tvDistance μ ν = tvDistance ν μ := by
   simp only [tvDistance, abs_sub_comm]
 
-/-- TV distance is zero between equal PMFs. -/
 lemma tvDistance_self {H : Type*} [Fintype H]
     (μ : FinitePMF H) :
     tvDistance μ μ = 0 := by
@@ -89,9 +71,6 @@ lemma tvDistance_self {H : Type*} [Fintype H]
 
 /-! ## Key Approximation Lemma -/
 
-/-- **TV bound implies test approximation**: if the TV distance between
-    two FinitePMFs is ≤ δ, then for any Boolean test f, the expectations
-    under the two PMFs differ by at most δ. -/
 theorem expectation_approx_of_tv {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) (f : H → Bool) (δ : ℝ)
     (hδ : tvDistance μ ν ≤ δ) :
@@ -116,8 +95,6 @@ theorem expectation_approx_of_tv {H : Type*} [Fintype H]
     _ = tvDistance μ ν := rfl
     _ ≤ δ := hδ
 
-/-- **All tests approximated under TV bound**: if TV(μ, ν) ≤ ε, then
-    every Boolean test f has |E_μ[f] - E_ν[f]| ≤ ε. -/
 theorem tv_bound_implies_all_tests {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) (ε : ℝ)
     (hε : tvDistance μ ν ≤ ε)
@@ -127,27 +104,18 @@ theorem tv_bound_implies_all_tests {H : Type*} [Fintype H]
 
 /-! ## Expectation of empiricalPMF equals average -/
 
-/-- The Boolean test expectation under an empirical PMF equals the
-    average of the test over the sample. -/
 lemma boolTestExpectation_empirical_eq_avg
     {H : Type*} [Fintype H] [DecidableEq H]
     {T : ℕ} (hT : 0 < T) (hs : Fin T → H) (f : H → Bool) :
     boolTestExpectation (empiricalPMF hT hs) f =
     (∑ t : Fin T, if f (hs t) then (1 : ℝ) else 0) / T := by
   simp only [boolTestExpectation, trueExpectation, empiricalPMF]
-  -- Rewrite LHS: Σ_h (count(h)/T) * val(h) = (Σ_h count(h) * val(h)) / T
   conv_lhs => arg 2; ext h; rw [div_mul_eq_mul_div]
   rw [← Finset.sum_div]
-  -- Now LHS = (Σ_h count(h) * val(h)) / T and RHS = (Σ_t val(hs t)) / T
   congr 1
-  -- Need: Σ_h count(h) * g(h) = Σ_t g(hs t)
-  -- where count(h) = |{t : hs t = h}| and g(h) = if f h then 1 else 0
-  -- Proof by card_eq_sum_card_fiberwise applied to g ∘ hs
   symm
   have := Finset.card_eq_sum_card_fiberwise (f := hs)
     (s := univ) (t := univ) (fun _ _ => Finset.mem_univ _)
-  -- Σ_t g(hs t) = Σ_h Σ_{t ∈ fib(h)} g(hs t) = Σ_h count(h) * g(h)
-  -- since for t ∈ fib(h), g(hs t) = g(h)
   conv_lhs => rw [show (∑ t : Fin T, if f (hs t) then (1 : ℝ) else 0) =
     ∑ h : H, ∑ t ∈ univ.filter (fun t => hs t = h),
       (if f (hs t) then (1 : ℝ) else 0) from by
@@ -158,33 +126,33 @@ lemma boolTestExpectation_empirical_eq_avg
       rw [Finset.disjoint_filter]
       intro t _ ht1 ht2; exact hne (ht1.symm.trans ht2)]
   congr 1; ext h
-  -- Σ_{t ∈ fib(h)} g(hs t) = count(h) * g(h)
-  -- For t in fib(h), hs t = h, so g(hs t) = g(h)
   rw [Finset.sum_congr rfl (fun t ht => by
     simp only [Finset.mem_filter, Finset.mem_univ, true_and] at ht
     rw [ht])]
   rw [Finset.sum_const, nsmul_eq_mul]
 
-/-! ## Approximate Minimax Connection
+/-! ## Approximate Minimax Connection -/
 
-The following connects the minimax game infrastructure with finite
-sample approximation. For the compression proof, we need:
-
-Given a distribution p on hypotheses (from minimax), find a small
-sample that approximately preserves all test expectations.
-
-The `tv_bound_implies_all_tests` theorem provides the bridge:
-if we can find a FinitePMF ν close to p in TV distance, then all
-tests are preserved. The FinitePMF ν can be taken as the empirical
-PMF of a carefully constructed sample.
--/
-
-/-- The boolGamePayoff of the minimax game equals the Boolean test expectation
-    of the corresponding test, connecting the two frameworks. -/
 lemma boolGamePayoff_eq_boolTestExpectation
     {R : Type*} [Fintype R] [DecidableEq R]
     {C : Type*} (M : R → C → Bool) (p : FinitePMF R) (c : C) :
     boolGamePayoff M p c = boolTestExpectation p (fun r => M r c) := by
   simp only [boolGamePayoff, boolTestExpectation, trueExpectation]
+
+/-! ## VC Dimension for Boolean Function Families -/
+
+def boolFamilyToFinsetFamily {H : Type*} [Fintype H] [DecidableEq H]
+    (A : Finset (H → Bool)) : Finset (Finset H) :=
+  A.image (fun f => Finset.univ.filter (fun h => f h = true))
+
+noncomputable def Finset.boolVCDim {H : Type*} [Fintype H] [DecidableEq H]
+    (A : Finset (H → Bool)) : ℕ :=
+  (boolFamilyToFinsetFamily A).vcDim
+
+/-! ## Note
+
+The VC uniform approximation theorem is in `FLT_Proofs.Complexity.FiniteSupportUC`
+as `finite_support_vc_approx`, proved via the H ⊕ ℕ infinite-envelope route.
+-/
 
 end -- noncomputable section
