@@ -23,7 +23,7 @@ def DataStream.prefix {X : Type u} {Y : Type v} (T : DataStream X Y) (t : ℕ) :
 /-- Mind change count: the number of times a Gold learner changes its conjecture.
     Counts time steps t where L's conjecture on the first t examples differs from
     its conjecture on the first t+1 examples.
-    Note: parameter c (target concept) is not used in the definition — it is carried
+    Note: parameter c (target concept) is not used in the definition  -  it is carried
     for the type-level specification (theorems bounding mind changes reference c). -/
 noncomputable def MindChangeCount (X : Type u) (L : GoldLearner X Bool)
     (_c : Concept X Bool) (T : DataStream X Bool) : ℕ :=
@@ -34,11 +34,11 @@ open Classical in
     and correctness. Returns a finite ordinal (< ω) when the learner converges correctly
     to concept c with finitely many mind changes. Returns ω otherwise (non-convergent,
     or convergent to wrong concept). This encoding makes `MindChangeOrdinal < ω` equivalent
-    to correct convergence with finite mind changes — the key property for the mind change
+    to correct convergence with finite mind changes  -  the key property for the mind change
     characterization theorem.
 
     Design rationale: encoding correctness at the definition level makes the backward
-    direction of mind_change_characterization provable — `MindChangeOrdinal < ω` directly
+    direction of mind_change_characterization provable  -  `MindChangeOrdinal < ω` directly
     entails both convergence and correctness without needing to extract them separately. -/
 noncomputable def MindChangeOrdinal (X : Type u) (L : GoldLearner X Bool)
     (c : Concept X Bool) (T : DataStream X Bool) : Ordinal :=

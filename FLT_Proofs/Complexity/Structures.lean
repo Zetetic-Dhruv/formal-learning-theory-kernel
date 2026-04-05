@@ -26,7 +26,7 @@ universe u v
 -/
 
 /-- A compression scheme of size k for concept class C (Littlestone-Warmuth 1986).
-    M-DefinitionRepair (Γ₅₉ → Γ₇₃): parameterized by concept class C.
+    Parameterized by concept class C.
     - `compress` now returns `Finset (X × Y)` (actual compressed data points),
       not `Finset (Fin m)` (indices). This ensures `reconstruct` depends ONLY
       on the compressed subset, enabling the pigeonhole argument.
@@ -34,9 +34,9 @@ universe u v
       with every sample point WHEN the sample is C-realizable. This matches
       Littlestone-Warmuth and Moran-Yehudayoff: compression schemes only need
       to be correct on samples consistent with some concept in C.
-    Γ₇₃ RESOLVED: previous `correct` quantified over ALL samples (including
-    inconsistent ones), making CompressionScheme X Bool uninhabited for nonempty X.
-    Now guarded by realizability, enabling genuine non-vacuous proofs. -/
+    Previous `correct` quantified over ALL samples (including inconsistent ones),
+    making CompressionScheme X Bool uninhabited for nonempty X. Now guarded by
+    realizability, enabling genuine non-vacuous proofs. -/
 structure CompressionScheme (X : Type u) (Y : Type v) (C : ConceptClass X Y) where
   /-- Compression: extract ≤ size labeled examples from the sample -/
   compress : {m : ℕ} → (Fin m → X × Y) → Finset (X × Y)
@@ -109,7 +109,7 @@ noncomputable def DSDim (X : Type u) (Y : Type v) [Fintype Y]
     is strictly STRONGER than Natarajan-shattering (2-coloring witness), so fewer
     sets satisfy the DS condition, hence DSDim ≤ NatarajanDim.
     Requires |Y| ≥ 2 (Nontrivial Y): when |Y| = 1, Natarajan witnesses f₀ ≠ f₁ cannot exist.
-    M-DefinitionRepair (Γ₈): original statement had wrong direction. -/
+    Original statement had wrong direction; corrected. -/
 theorem DSDim_le_NatarajanDim (X : Type u) (Y : Type v) [Fintype Y] [Nontrivial Y]
     (C : ConceptClass X Y) : DSDim X Y C ≤ NatarajanDim X Y C := by
   obtain ⟨y₀, y₁, hne⟩ := exists_pair_ne Y
@@ -148,7 +148,7 @@ noncomputable def FatShatteringDim (X : Type u) (C : ConceptClass X ℝ)
 /-- SQ dimension: largest d such that there exist d concepts in C with
     pairwise small correlations under D. Captures the hardness of learning C
     using only statistical queries (expected values of functions of the sample).
-    M-DefinitionRepair: added distribution parameter D (originally missing). -/
+    Added distribution parameter D (originally missing). -/
 noncomputable def SQDimension (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X)
     [MeasureTheory.IsProbabilityMeasure D] (τ : ℝ) : WithTop ℕ :=

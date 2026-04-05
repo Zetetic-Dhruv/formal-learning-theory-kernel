@@ -21,7 +21,7 @@ structure BayesianInference (X : Type u) (Y : Type v) [MeasurableSpace X] where
   prior : Concept X Y → ℝ
   /-- Likelihood: probability of data given hypothesis -/
   likelihood : Concept X Y → X × Y → ℝ
-  /-- Posterior: prior(h) × ∏ likelihood(h, dᵢ). Unnormalized — the normalization
+  /-- Posterior: prior(h) × ∏ likelihood(h, dᵢ). Unnormalized; the normalization
       constant Z = Σ_h' prior(h') × ∏ likelihood(h', dᵢ) is omitted because
       computing it requires summing over all hypotheses (which may be uncountable).
       Downstream definitions that need a proper probability must normalize explicitly.

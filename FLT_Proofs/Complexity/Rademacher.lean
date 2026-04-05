@@ -1378,7 +1378,7 @@ theorem rademacher_lower_bound_on_shattered (X : Type u) [MeasurableSpace X]
   -- D-collision = Σ_x D({x})² = |T| · (1/|T|)² = 1/|T|.
   -- μ(¬injective) ≤ m(m-1)/(2|T|) < 1/8 (since |T| ≥ 4m²+1).
   -- μ(A) = μ(injective ∧ range ⊆ T) = 1 - μ(¬injective) - μ(∃ i, xs i ∉ T) ≥ 7/8 ≥ 1/2.
-  -- === Phase 1: Transfer μ(A) = μ_sub(B) ===
+  -- === Transfer μ(A) = μ_sub(B) ===
   set B := {ys : Fin m → ↥T | Function.Injective ys}
   have hB_meas : MeasurableSet B := Set.Finite.measurableSet (Set.toFinite B)
   -- Both directions: φ⁻¹'A = B
@@ -1390,7 +1390,7 @@ theorem rademacher_lower_bound_on_shattered (X : Type u) [MeasurableSpace X]
   have hμA_eq_B : μ A = μ_sub B := by
     rw [hμ_eq, MeasureTheory.Measure.map_apply hφ_emb.measurable hA_meas, hpre_eq]
   rw [hμA_eq_B]
-  -- === Phase 2: μ_sub(Bᶜ) ≤ 1/2 ===
+  -- === μ_sub(Bᶜ) ≤ 1/2 ===
   set n := Fintype.card ↥T with hn_def
   have hn_eq : n = T.card := Fintype.card_coe T
   have hn_pos : 0 < n := by rw [hn_eq]; exact hT_card_pos
@@ -1550,7 +1550,7 @@ theorem rademacher_lower_bound_on_shattered (X : Type u) [MeasurableSpace X]
                 ← mul_assoc, ENNReal.mul_inv_cancel hn_ne hn_nt, one_mul, inv_eq_one_div]
     exact (hBc_le.trans (mul_le_mul_of_nonneg_right
       (Nat.cast_le.mpr hpairs_card) (zero_le _))).trans hmm_le
-  -- === Phase 3: Transfer to ℝ ===
+  -- === Transfer to ℝ ===
   have hB_le_one : μ_sub B ≤ 1 :=
     (MeasureTheory.measure_mono (Set.subset_univ B)).trans (le_of_eq MeasureTheory.measure_univ)
   have hcompl := MeasureTheory.prob_compl_eq_one_sub hB_meas (μ := μ_sub)

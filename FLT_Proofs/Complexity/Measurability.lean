@@ -30,7 +30,7 @@ Condition 3 is the non-trivial one. For countable concept classes, it holds
 automatically. For uncountable classes, the existential quantifier in the UC event
 {∃ h ∈ C, |TrueErr - EmpErr| ≥ ε} does not preserve MeasurableSet, and the
 NullMeasurableSet weakening is needed. This was discovered during the Lean4
-formalization (Session 7) and is a genuine measure-theoretic subtlety absent
+formalization and is a genuine measure-theoretic subtlety absent
 from standard textbook presentations.
 
 ## Relationship to ad hoc predicates

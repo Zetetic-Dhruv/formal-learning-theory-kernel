@@ -122,7 +122,7 @@ private lemma compactCap_eq_iSup_isCompact
     · exact ⟨μ Set.univ, fun _ ⟨_, _, _, hr⟩ => hr ▸ measure_mono (Set.subset_univ _)⟩
     · exact ⟨K, hKc, hKs, rfl⟩
 
-/-! ## Choquet capacitability — infrastructure -/
+/-! ## Choquet capacitability - infrastructure -/
 
 /-- Cylinder set: `{g : ℕ → ℕ | ∀ i ≤ n, g i ≤ N i}`. -/
 private abbrev Cyl (N : ℕ → ℕ) (n : ℕ) : Set (ℕ → ℕ) :=

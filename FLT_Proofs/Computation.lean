@@ -29,7 +29,6 @@ universe u v
 -/
 
 /-- An alphabet for formal language theory. Finite type with decidable equality. -/
--- 7 incoming edges (dfa, nfa, cfg, cfl, tm, pda, regular_language all defined_using alphabet)
 class Alphabet (Sym : Type*) where
   [toFintype : Fintype Sym]
   [toDecidableEq : DecidableEq Sym]
@@ -44,12 +43,10 @@ def FormalLanguage (Sym : Type*) := Set (Word Sym)
 ## Automata
 
 These are wrappers providing the learning-theoretic interface.
-Mathlib has DFA/NFA — we bridge to those where possible.
+Mathlib has DFA/NFA; we bridge to those where possible.
 -/
 
-/-- Deterministic finite automaton.
-    4 incoming edges (nfa restricts, regular_language, lstar, pushdown_automaton).
-    Bridge to Mathlib's `DFA`. -/
+/-- Deterministic finite automaton. Bridge to Mathlib's `DFA`. -/
 structure DFA' (Sym : Type*) (Q : Type*) [Fintype Q] [DecidableEq Q] where
   /-- Transition function -/
   step : Q → Sym → Q
@@ -104,7 +101,7 @@ def CFG.Language {Sym : Type*} (G : CFG Sym) : FormalLanguage Sym :=
 def IsContextFree (Sym : Type*) (L : FormalLanguage Sym) : Prop :=
   ∃ (G : CFG Sym), G.Language = L
 
-/-- Pushdown automaton — extends DFA with a stack. -/
+/-- Pushdown automaton - extends DFA with a stack. -/
 structure PDA (Sym : Type*) (Q : Type*) (Γ : Type*) where
   step : Q → Option Sym → Γ → Set (Q × List Γ)
   start : Q
@@ -119,9 +116,8 @@ Critical for Gold-style learning: EX-learnability connects to the arithmetic hie
 
 /-- A Turing machine (abstract). We use this as an opaque type representing
     effective computability. Bridges to Mathlib's computability library. -/
--- 4 incoming: partial_computable, godel_numbering, kolmogorov_complexity, re_set all defined_using
 structure TuringMachine where
-  /-- Opaque representation — we work with the computability predicate, not the machine. -/
+  /-- Opaque representation; we work with the computability predicate, not the machine. -/
   index : ℕ
 
 /-- Gödel numbering: an effective encoding of objects as natural numbers. -/
@@ -167,7 +163,7 @@ def DescriptionLength (α : Type*) := α → ℕ
 
 /-- Minimum Description Length principle: choose the hypothesis that minimizes
     description_length(H) + description_length(data | H).
-    Analogous to Kolmogorov complexity (analogy edge). Analogous to Bayesian MAP. -/
+    Analogous to Kolmogorov complexity. Analogous to Bayesian MAP. -/
 structure MDLPrinciple (X : Type u) (Y : Type v) [Inhabited (Concept X Y)] where
   /-- Description language for hypotheses -/
   hypothesisLength : Concept X Y → ℕ
@@ -205,12 +201,10 @@ noncomputable def AlgorithmicProbability (α : Type*) [Encodable α] (x : α) : 
 
 -- BayesianInference has been moved to Learner.lean (conceptually correct placement:
 -- it's a learning-theory primitive, not a computability primitive).
--- Retained in this comment for the concept graph edge documentation:
--- 4 incoming: posterior_consistency, kl_complexity, bayesian_learner, mml
 
 /-- Structural Risk Minimization: choose hypothesis from the complexity level
-    that minimizes bound on generalization error. Connects VC dimension (defined_using)
-    to inductive bias (analogy). -/
+    that minimizes bound on generalization error. Connects VC dimension
+    to inductive bias. -/
 structure SRM (X : Type u) (Y : Type v) [DecidableEq Y] [Inhabited (Concept X Y)] where
   /-- Nested hypothesis classes of increasing complexity -/
   levels : ℕ → Set (Concept X Y)

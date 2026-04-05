@@ -20,10 +20,10 @@ on the domain `↥C` where each point `x : X` induces a concept `c ↦ c x`.
 
 ## Main results
 
-* `DualClass` — the dual concept class
-* `dual_shatters_imp_original_shatters` — coding lemma: if the dual shatters
+* `DualClass`  -  the dual concept class
+* `dual_shatters_imp_original_shatters`  -  coding lemma: if the dual shatters
   `2^(d+1)` concepts, then the original class shatters `d+1` points
-* `dual_vcdim_le_pow` — Assouad's bound: `VCDim*(C) ≤ 2^(VCDim(C)+1) - 1`
+* `dual_vcdim_le_pow`  -  Assouad's bound: `VCDim*(C) ≤ 2^(VCDim(C)+1) - 1`
 -/
 
 open Classical Finset

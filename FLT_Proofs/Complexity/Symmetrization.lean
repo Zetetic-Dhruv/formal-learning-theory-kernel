@@ -93,7 +93,7 @@ open MeasureTheory ENNReal
 
     **CAST ISSUES to watch:**
     - `m : ℕ` needs cast to `ℝ` in the exponent: `(m : ℝ)`
-    - `EmpiricalError` returns `ℝ`, `TrueErrorReal` returns `ℝ`, good — no ENNReal gap
+    - `EmpiricalError` returns `ℝ`, `TrueErrorReal` returns `ℝ`; no ENNReal gap
     - The measure value is `ENNReal`, the bound `exp(-2mt²)` is `ℝ≥0∞` via `ENNReal.ofReal`
 
     **References:** SSBD Lemma B.3, Hoeffding (1963) -/
@@ -544,7 +544,7 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
   -- Step 2: The slice function f(xs) = μ(Prod.mk xs ⁻¹' B') is measurable
   set f : (Fin m → X) → ℝ≥0∞ := fun xs => μ (Prod.mk xs ⁻¹' B') with hf_def
   have hf_meas : Measurable f := measurable_measure_prodMk_left hB'_meas
-  -- Step 3: Conditional bound — for xs ∈ A, f(xs) ≥ 1/2
+  -- Step 3: Conditional bound; for xs ∈ A, f(xs) ≥ 1/2
   -- This is the heart: for xs in the bad event, the ghost sample witnesses
   -- the double event with probability ≥ 1/2.
   have h_cond : ∀ xs ∈ A, (1 : ℝ≥0∞) / 2 ≤ f xs := by
@@ -697,7 +697,7 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
     _ = (μ.prod μ) B' := h_prod.symm
     _ = (μ.prod μ) B := MeasureTheory.measure_toMeasurable B
 
-/-! ## T3: Double Sample Pattern Bound (Approach A — Standard Exchangeability) -/
+/-! ## T3: Double Sample Pattern Bound (Standard Exchangeability Approach) -/
 
 /-- Per-hypothesis Hoeffding on the double sample: for a FIXED hypothesis h,
     the probability that EmpErr(h,S') - EmpErr(h,S) ≥ ε/2 under D^m ⊗ D^m
@@ -903,7 +903,7 @@ theorem restriction_pattern_count {X : Type u} [MeasurableSpace X] [Infinite X]
     Set.ncard {p : Fin n → Bool | ∃ h ∈ C, ∀ i, p i = decide (h (z i) ≠ c (z i))} ≤
       GrowthFunction X C n := by
   classical
-  -- Phase 1: XOR bijection showing |P| = |R|
+  -- XOR bijection showing |P| = |R|
   let R : Set (Fin n → Bool) := {f | ∃ h ∈ C, ∀ i, f i = h (z i)}
   let ψ : (Fin n → Bool) → (Fin n → Bool) := fun f i => Bool.xor (f i) (c (z i))
   have hψ_inj : Function.Injective ψ := by
@@ -921,12 +921,12 @@ theorem restriction_pattern_count {X : Type u} [MeasurableSpace X] [Infinite X]
       exact ⟨h, hC, fun i => by simp only [hf i]; cases h (z i) <;> cases c (z i) <;> rfl⟩
   rw [hP_eq, Set.ncard_image_of_injective R hψ_inj]
   -- Now goal: R.ncard ≤ GrowthFunction X C n
-  -- Phase 2: Build witness Finset S ⊇ image(z) with |S| = n
+  -- Build witness Finset S ⊇ image(z) with |S| = n
   let S₀ : Finset X := Finset.univ.image z
   have hS₀_card : S₀.card ≤ n :=
     (Finset.card_image_le).trans (by simp [Fintype.card_fin])
   obtain ⟨S, hS₀_sub, hS_card⟩ := Infinite.exists_superset_card_eq S₀ n hS₀_card
-  -- Phase 3: Show R.ncard ≤ R_S.ncard
+  -- Show R.ncard ≤ R_S.ncard
   have hz_mem : ∀ i : Fin n, z i ∈ S :=
     fun i => hS₀_sub (Finset.mem_image_of_mem z (Finset.mem_univ i))
   let R_S : Set (↥S → Bool) := {g | ∃ h ∈ C, ∀ x : ↥S, g x = h ↑x}
@@ -936,7 +936,7 @@ theorem restriction_pattern_count {X : Type u} [MeasurableSpace X] [Infinite X]
     exact ⟨fun x => h ↑x, ⟨h, hC, fun x => rfl⟩, funext fun i => by simp only [ρ, hf i]⟩
   have hR_le_RS : R.ncard ≤ R_S.ncard :=
     (Set.ncard_le_ncard hR_sub (Set.toFinite _)).trans (Set.ncard_image_le (Set.toFinite R_S))
-  -- Phase 4: Show R_S.ncard ≤ GrowthFunction X C n
+  -- Show R_S.ncard ≤ GrowthFunction X C n
   have hR_S_eq : R_S.ncard =
       ({f : ↥S → Bool | ∃ c_1 ∈ C, ∀ x : ↥S, c_1 ↑x = f x} : Set _).ncard := by
     congr 1; ext f; exact ⟨fun ⟨h, hC, hf⟩ => ⟨h, hC, fun x => (hf x).symm⟩,
@@ -1014,7 +1014,7 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
        (MeasureTheory.Measure.pi (fun _ : Fin m => D)))
 
 /- The exchangeability + union bound + Hoeffding chain.
-   ORPHANED — contains 2 sorrys (swap→signed avg + Tonelli).
+   ORPHANED: contains 2 sorrys (swap-to-signed avg + Tonelli).
    The critical path now uses `uc_bad_event_le_delta_proved` (below) which
    composes `symmetrization_uc_bound` + `growth_exp_le_delta` via the
    `finite_exchangeability_bound` + NullMeasurableSet architecture.
@@ -1022,11 +1022,11 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
    `symmetrization_uc_bound` (unprimed) call it, and those are called by
    the unprimed `vcdim_finite_imp_uc` in Generalization.lean.
 
-   γ₁₈ (Session 7 discovery): The 2 sorrys here represent the original
-   attempt to close the exchangeability chain via direct Tonelli interchange.
-   Sorry A (swap→signed avg) needed connecting swap_fun to a Rademacher sum.
-   Sorry B (Tonelli) was blocked by MeasurableSet requirements for uncountable C.
-   Resolution: NullMeasurableSet + finite_exchangeability_bound (above). -/
+   The 2 sorrys here represent the original attempt to close the exchangeability
+   chain via direct Tonelli interchange. Sorry A (swap-to-signed avg) needed
+   connecting swap_fun to a Rademacher sum. Sorry B (Tonelli) was blocked by
+   MeasurableSet requirements for uncountable C. Resolution:
+   NullMeasurableSet + finite_exchangeability_bound (above). -/
 
 theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -1403,7 +1403,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
               congr 1; rw [Real.exp_sub]
           _ = (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
               congr 1; rw [ht₀_def]; field_simp; ring
-      -- Step A4: Connect swap_fun σ z ∈ S to the signed average condition
+      -- Connect swap_fun σ z ∈ S to the signed average condition
       -- For each σ, swap_fun σ z ∈ S iff ∃h ∈ C with gap under swap ≥ ε/2.
       -- The gap under swap = (1/m)∑ sign(σ_i) · a_i(h,z).
       -- Two h's with the same pattern on merged have the same gap.
@@ -1576,7 +1576,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
 /-- On the double sample, the probability that any hypothesis has
     EmpErr' - EmpErr ≥ ε/2 is bounded by GF(C,2m) · exp(-mε²/8).
 
-    **Proof strategy (Approach A — standard exchangeability, 5 steps):**
+    **Proof strategy (standard exchangeability, 5 steps):**
 
     1. **EXCHANGEABILITY:** Under D^m ⊗ D^m, the 2m draws z₁,...,z_{2m} are iid from D.
        The joint distribution is invariant under permutations of {1,...,2m}.
@@ -2215,7 +2215,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     -- Step 1: symmetrization_step_lower gives μ(lower) ≤ 2*(μ.prod μ)(B_lower)
     -- where B_lower = {p | ∃ h ∈ C, EmpErr(p.1) - EmpErr(p.2) ≥ ε/2}
     have h1 := symmetrization_step_lower D C c hmeas_C hc_meas m hm ε hε hm_large
-    -- Step 2: Swap symmetry — (μ.prod μ)(B_lower) = (μ.prod μ)(B_upper)
+    -- Step 2: Swap symmetry; (μ.prod μ)(B_lower) = (μ.prod μ)(B_upper)
     -- where B_upper = {p | ∃ h ∈ C, EmpErr(p.2) - EmpErr(p.1) ≥ ε/2}
     -- This uses Measure.prod_swap: (μ.prod μ).map Prod.swap = μ.prod μ
     have h_swap : (μ.prod μ)
@@ -2285,7 +2285,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     _ = ENNReal.ofReal (4 * ↑(GrowthFunction X C (2 * m)) *
           Real.exp (-(↑m * ε ^ 2 / 8))) := by rw [hgf_exp_def]; ring_nf
 
-/-! ## T5: Arithmetic — Growth Function × Exponential ≤ δ -/
+/-! ## T5: Arithmetic - Growth Function times Exponential ≤ δ -/
 
 -- Arithmetic: 4*GF(C,2m)*exp(-m*eps^2/8) <= delta and 2*ln2 <= m*eps^2.
 -- Uses: Sauer-Shelah + pow_mul_exp_neg_le_factorial_div + hm_bound.
@@ -2357,7 +2357,7 @@ theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
   · -- Part 1: 4 * GF(C, 2m) * exp(-mε²/8) ≤ δ
     -- Case split: v ≤ 2m (Sauer-Shelah applies) vs v > 2m (use trivial GF bound)
     by_cases hvm : v ≤ 2 * m
-    · -- Case A: v ≤ 2m — use Sauer-Shelah + sum_choose_le_exp_pow
+    · -- Case A: v ≤ 2m; use Sauer-Shelah + sum_choose_le_exp_pow
       have hgf_exp : (GrowthFunction X C (2 * m) : ℝ) ≤
           (Real.exp 1 * ↑(2 * m) / ↑v) ^ v := by
         have h1 : (GrowthFunction X C (2 * m) : ℝ) ≤
@@ -2430,7 +2430,7 @@ theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
         _ ≤ 4 * K ^ v * (↑((v + 1).factorial) / t) := by
             nlinarith [h_pow_exp, pow_pos hK_pos v]
         _ ≤ δ := hfinal
-    · -- Case B: v > 2m — use trivial bound GF(C, 2m) ≤ 2^{2m}
+    · -- Case B: v > 2m; use trivial bound GF(C, 2m) ≤ 2^{2m}
       push_neg at hvm
       -- v ≥ 2m + 1
       have hvm' : 2 * m + 1 ≤ v := by omega

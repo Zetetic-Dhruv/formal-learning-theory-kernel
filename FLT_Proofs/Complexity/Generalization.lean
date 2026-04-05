@@ -73,7 +73,7 @@ noncomputable def OptimalMistakeBound (X : Type u) (C : ConceptClass X Bool) : W
   ⨅ (M : ℕ) (_ : MistakeBounded X Bool C M), (M : WithTop ℕ)
 
 /-- Generalization error (true risk): expected loss under distribution D. -/
--- BP₅: This is where five different bound types converge.
+-- This is where five different bound types converge.
 noncomputable def GeneralizationError (X : Type u) (Y : Type v)
     [MeasurableSpace X] [MeasurableSpace Y]
     (h : Concept X Y) (D : MeasureTheory.Measure (X × Y))
@@ -109,7 +109,7 @@ theorem ermLearn_in_H (X : Type u) (Y : Type v) [DecidableEq Y]
 /-- Empirical Risk Minimization (ERM): the canonical PAC learner.
     Selects h ∈ H minimizing EmpiricalError on the sample when a minimizer exists;
     falls back to an arbitrary h ∈ H otherwise.
-    M-DefinitionRepair: added (hne : H.Nonempty) to resolve Nonempty witness. -/
+    Added (hne : H.Nonempty) to resolve Nonempty witness. -/
 noncomputable def ERM (X : Type u) (Y : Type v) [DecidableEq Y]
     (H : HypothesisSpace X Y) (loss : LossFunction Y)
     (hne : H.Nonempty) : BatchLearner X Y where
@@ -126,18 +126,17 @@ of infrastructure sitting BETWEEN the combinatorial side (VCDim, Shatters, Growt
 and the measure-theoretic side (PACLearnable, Measure.pi):
 
   P₁ (combinatorial):  VCDim, Shatters, GrowthFunction, Sauer-Shelah
-        ↓ [HC > 0 joint — TrueError bridges these]
+        ↓ [TrueError bridges these]
   BRIDGE: TrueError, EmpiricalMeasureError, IsConsistentWith, UniformConvergence
-        ↓ [HC > 0 joint — concentration inequalities]
+        ↓ [concentration inequalities]
   P₂ (measure-theoretic): PACLearnable, Measure.pi, IsProbabilityMeasure
 
 The hidden channel at the first joint: TrueError is a MEASURE (ENNReal) in PACLearnable
 but GeneralizationError is an INTEGRAL (ℝ). These are not interchangeable without
-measurability hypotheses. The bridge between them is genuinely at HC > 0.
+measurability hypotheses.
 
-K4 was originally "Hoeffding blocks PAC proofs." K4 dissolves: Mathlib has
-`Real.one_sub_le_exp_neg` and `Real.one_sub_div_pow_le_exp_neg`. The ACTUAL obstruction
-is the missing definitions below.
+Mathlib has `Real.one_sub_le_exp_neg` and `Real.one_sub_div_pow_le_exp_neg`.
+The actual obstruction is the missing definitions below.
 -/
 
 section TrueError
@@ -147,7 +146,7 @@ section TrueError
 PACLearnable uses `D { x | h x ≠ c x }` (ENNReal), not `∫ loss(h(x), c(x)) dD` (ℝ).
 This is the 0-1 loss specialized to the realizable case with set-measure semantics.
 
-**HC at ENNReal/ℝ joint:** GeneralizationError (ℝ-valued integral) and TrueError
+**ENNReal/ℝ joint:** GeneralizationError (ℝ-valued integral) and TrueError
 (ENNReal-valued measure) coincide ONLY when:
   1. D is a probability measure
   2. The loss is 0-1
@@ -180,8 +179,8 @@ noncomputable def TrueErrorReal (X : Type u) [MeasurableSpace X]
 
 /-- Bridge: TrueError equals GeneralizationError under 0-1 loss when
     the disagreement set is measurable.
-    This theorem sits at the HC > 0 joint between ENNReal and ℝ error worlds.
-    KU₁: requires MeasurableSet {x | h x ≠ c x} — which needs [DecidableEq Bool]
+    This theorem sits at the joint between ENNReal and ℝ error worlds.
+    Requires MeasurableSet {x | h x ≠ c x}, which needs [DecidableEq Bool]
     and measurability of h and c. What are the minimal measurability hypotheses?
     UK₁: For concept classes where membership is undecidable, this bridge may
     not have a clean computational witness. -/
@@ -226,9 +225,9 @@ EmpiricalError (in ℝ) counts training mistakes as an average.
 But PACLearnable compares TrueError (ENNReal) against ENNReal.ofReal ε.
 To connect ERM to PACLearnable, we need the empirical analogue in ENNReal.
 
-**HC at this joint:** The empirical distribution is a discrete measure (sum of Dirac deltas).
+The empirical distribution is a discrete measure (sum of Dirac deltas).
 The true distribution is an arbitrary probability measure. Uniform convergence is the
-claim that these converge uniformly over H. The empirical measure IS a Measure —
+claim that these converge uniformly over H. The empirical measure IS a Measure;
 Mathlib has `MeasureTheory.Measure.sum` and `Finset.sum` for constructing it. -/
 
 /-- Empirical measure: the uniform distribution over a finite sample.
@@ -254,7 +253,7 @@ noncomputable def EmpiricalMeasureError (X : Type u) [MeasurableSpace X]
     under 0-1 loss (up to ENNReal ↔ ℝ conversion).
     KU₄: The division by m creates a rational, not necessarily a real.
     Does ENNReal.ofReal (k/m) = (k : ENNReal) / (m : ENNReal)? -/
--- A5 ENRICHMENT: Added [MeasurableSingletonClass X] to enable Measure.dirac_apply
+-- Added [MeasurableSingletonClass X] to enable Measure.dirac_apply
 -- without requiring MeasurableSet on the disagreement set. This is structurally
 -- necessary: Dirac evaluation on arbitrary sets requires singletons to be measurable.
 -- Without it, we would need an explicit MeasurableSet hypothesis on {x | h x ≠ c x},
@@ -615,7 +614,7 @@ theorem growth_function_cover {X : Type u} [MeasurableSpace X]
   exact ⟨1, hGF, fun _ => c, fun _ => hcC,
     fun _ _ _ _ => ⟨⟨0, Nat.one_pos⟩, fun _ => rfl⟩⟩
 
--- Gamma_92 dead code removed (bad_consistent_covering + union_bound_consistent +
+-- Dead code removed (bad_consistent_covering + union_bound_consistent +
 -- vcdim_finite_imp_pac_direct). All consumers route through vcdim_finite_imp_uc + uc_imp_pac.
 
 /-- Key arithmetic lemma for PAC bound: for t > 0, t^d * exp(-t) ≤ (d+1)!/t.
@@ -688,7 +687,7 @@ theorem vcdim_finite_imp_growth_bounded (X : Type u)
     (Finset.card_image_of_injective _ h_toSub_inj).symm
   have h2 : 𝒜.card ≤ 𝒜.shatterer.card := Finset.card_le_card_shatterer 𝒜
   have h3 := @Finset.card_shatterer_le_sum_vcDim ↥S _ 𝒜
-  -- Key: vcDim(𝒜) ≤ v — if 𝒜 shatters T then C shatters T.map val, so |T| ≤ v
+  -- Key: vcDim(A) ≤ v; if A shatters T then C shatters T.map val, so |T| ≤ v
   have h_vcdim_le : 𝒜.vcDim ≤ v := by
     simp only [Finset.vcDim]
     apply Finset.sup_le
@@ -765,7 +764,7 @@ theorem vcdim_finite_imp_growth_bounded (X : Type u)
         congr 1; ext x; simp [Finset.mem_Iic, Finset.mem_range, Nat.lt_succ_iff]
     _ = ∑ k ∈ Finset.range (v + 1), m.choose k := by rw [hSm]
 
--- vcdim_finite_imp_pac_direct dead code removed (depended on Gamma_92 path).
+-- vcdim_finite_imp_pac_direct dead code removed (depended on removed path).
 
 end ConcentrationInfrastructure
 
@@ -784,7 +783,7 @@ This is STRONGER than PAC learnability (which only needs the ERM hypothesis to b
 Uniform convergence → PAC learnability (via ERM).
 The converse fails in general (agnostic PAC ≠ uniform convergence).
 
-**HC at this joint:** The quantifier structure is critical. PACLearnable has
+The quantifier structure is critical. PACLearnable has
 ∃ L, ∀ D, ∀ c ∈ C, while UniformConvergence has ∀ D, ∀ h ∈ H.
 The universal quantifier over h IN the probability event (inside the measure)
 makes uniform convergence strictly stronger.
@@ -796,19 +795,19 @@ makes uniform convergence strictly stronger.
 **KU₈:** The definition below uses TrueError (ENNReal) and requires converting
 to ℝ for the absolute value. Is there a cleaner formulation in pure ENNReal?
 **UK₃:** Uniform convergence over UNCOUNTABLE hypothesis classes requires
-measurability of the supremum — a deep issue in empirical process theory.
+measurability of the supremum, a deep issue in empirical process theory.
 What is the Lean4 type-theoretic status of this? -/
 
 /-- Uniform convergence of empirical error to true error over a hypothesis class.
     This is the property that makes finite VCDim → PAC learnability work.
-    BP₅ connects here: this is ONE of the five characterizations.
+    This is one of the five characterizations of learnability.
 
-    M-DefinitionRepair (Γ₃₅ → Γ₄₁): The m₀ must be INDEPENDENT of D and c.
-    That's what "uniform" means — convergence is uniform over all distributions
+    The m₀ must be INDEPENDENT of D and c.
+    That is what "uniform" means; convergence is uniform over all distributions
     and all target concepts. The original definition had m₀ depending on D and c,
     making uc_imp_pac unprovable (PACLearnable's mf must be independent of D, c).
     Repaired: ∃ m₀ is now BEFORE ∀ D, ∀ c. This STRENGTHENS the definition
-    (A5-valid: adds content, doesn't simplify). -/
+    This strengthens the definition. -/
 def HasUniformConvergence (X : Type u) [MeasurableSpace X]
     (H : HypothesisSpace X Bool) : Prop :=
   ∀ (ε δ : ℝ), 0 < ε → 0 < δ →
@@ -958,7 +957,7 @@ Mathlib provides the exponential inequality chain:
   - `Real.one_sub_le_exp_neg`: (1 - x) ≤ exp(-x)
   - `Real.one_sub_div_pow_le_exp_neg`: (1 - t/n)^n ≤ exp(-t)
 
-These dissolve the K4 obstruction. The infrastructure below connects
+The infrastructure below connects
 these Mathlib lemmas to the PAC proof's sample complexity bounds.
 
 **KU₁₃:** Hoeffding's inequality for sums of bounded random variables
@@ -1010,7 +1009,7 @@ end ConcentrationBridge
     but not PAC-learnable (no finite sample suffices for (ε,δ) bounds).
     Example: the class of all computable functions is EX-learnable but has
     VCDim = ∞ (hence not PAC-learnable).
-    This is the PAC/Gold paradigm separation — HC > 0 at this joint. -/
+    This is the PAC/Gold paradigm separation. -/
 theorem gold_does_not_imply_pac : True := by
   trivial
   -- PLACEHOLDER: proper statement requires EXLearnable definition
@@ -1529,7 +1528,7 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
   have hprob : MeasureTheory.IsProbabilityMeasure D :=
     uniformMeasure_isProbability X hne hpos
   refine ⟨D, hprob, ?_⟩
-  -- PROOF (H₆ — per-sample counting + product measure positivity):
+  -- PROOF (per-sample counting + product measure positivity):
   -- (A) For ANY fixed xs, counting over c : X → Bool via pairing argument:
   --     ∃ c₀ with D{x | h(x) ≠ c₀(x)} > 1/8.
   -- (B) For c₀: {xs | error > 1/8} ∋ xs₀, so nonempty.
@@ -1968,7 +1967,7 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
 /-- Pigeonhole core: compress is injective on C-realizable labelings.
     If two C-realizable samples over the same points with different labelings
     produce the same compressed set, correctness forces the labelings to agree.
-    Γ₇₃: now requires realizability hypotheses for both samples. -/
+    Now requires realizability hypotheses for both samples. -/
 theorem compress_injective_on_labelings {X : Type u} {n : ℕ}
     {C : ConceptClass X Bool}
     (cs : CompressionScheme X Bool C)
@@ -2061,7 +2060,7 @@ private lemma exp_beats_poly_at (k : ℕ) :
     but compressed subsets of an n-point sample are bounded. Shatters X C T
     guarantees ALL labelings are C-realizable, so injectivity holds on all 2^n
     labelings. Contradiction for large n.
-    Γ₇₃ RESOLVED: CompressionScheme parameterized by C with realizability guard.
+    CompressionScheme is parameterized by C with realizability guard.
     Shattered sets guarantee C-realizability of every labeling, so the
     pigeonhole argument is genuinely non-vacuous. -/
 theorem compression_imp_vcdim_finite (X : Type u)
@@ -2082,7 +2081,7 @@ theorem compression_imp_vcdim_finite (X : Type u)
       apply iSup₂_le; intro S hS
       exact_mod_cast Nat.le_of_lt_succ (Nat.lt_succ_of_lt (h_neg S hS))
     exact absurd h_top (ne_of_lt (lt_of_le_of_lt this (WithTop.coe_lt_top _)))
-  -- Set N = 2(k+1)² — the exact size we'll use
+  -- Set N = 2(k+1)^2, the exact size we'll use
   set N := 2 * (k + 1) * (k + 1) with hN_def
   -- Get shattered T₀ with |T₀| ≥ N
   obtain ⟨T₀, hT₀_shatt, hT₀_card⟩ := h_large N

@@ -31,7 +31,7 @@ the bounded set of (kernel, info) pairs.
 ## No Measure Theory
 
 The forward theorem is pure and combinatorial. It uses FinitePMF, Finset,
-and finite games — no MeasureTheory.Measure, IsProbabilityMeasure, Measure.dirac,
+and finite games; no MeasureTheory.Measure, IsProbabilityMeasure, Measure.dirac,
 or MeasurableSpace hypotheses.
 -/
 
@@ -617,7 +617,7 @@ private lemma agreeTests_boolVCDim_le
   exact absurd this (by
     push_neg; exact_mod_cast Nat.lt_succ_of_le le_rfl)
 
-/-! ## Moran-Yehudayoff forward construction — universe-fixed closure helpers -/
+/-! ## Moran-Yehudayoff forward construction: universe-fixed closure helpers -/
 
 /-- Fix the hidden `Info` universe parameter of `CompressionSchemeWithInfo` to `0`.
     This resolves the universe elaboration obstruction: `Fin T → Finset (Fin K)` is
@@ -863,7 +863,7 @@ private theorem moran_yehudayoff_forward_construction
           let getWitness : Fin Tvc → Finset X := fun t =>
             let hmem : (reps t).val ∈ hypothesisEnvelope L c Y := (reps t).property
             (Finset.mem_image.mp hmem).choose
-          -- Step 8: Build kernel — union of all witness samples, labeled by c
+          -- Step 8: Build kernel - union of all witness samples, labeled by c
           let kernel : Finset (X × Bool) :=
             Finset.univ.biUnion (fun t =>
               (getWitness t).image (fun x => (x, c x)))
@@ -958,7 +958,7 @@ private theorem moran_yehudayoff_forward_construction
         (1 / 2 : ℝ) := by
     intro m S hreal i
     have hm : 0 < m := Fin.pos i
-    -- Phase 1: Roundtrip — decoded block hyp = raw representative
+    -- Roundtrip: decoded block hyp = raw representative
     -- Key insight: dsimp only [localLet] works on GOALS but NOT hypotheses.
     -- So unfold in the goal FIRST, then intro.
     -- Step A: All pairs in kernel have label c.
@@ -1028,7 +1028,7 @@ private theorem moran_yehudayoff_forward_construction
         simp only [dif_pos hreal, dif_pos hm]
       rw [hinfo_eq]
       exact hrt
-    -- Phase 2: Rewrite sum via if_congr (handles Decidable instance mismatch)
+    -- Rewrite sum via if_congr (handles Decidable instance mismatch)
     have hlabel : (S i).2 = hreal.choose (S i).1 := (hreal.choose_spec.2 i).symm
     have hsum_eq : (∑ t : Fin Tvc,
         if rowHyp S hreal t (S i).1 = (S i).2 then (1 : ℝ) else 0) =
@@ -1038,7 +1038,7 @@ private theorem moran_yehudayoff_forward_construction
       Finset.sum_congr rfl (fun t _ =>
         if_congr (by rw [hround t, hlabel]) rfl rfl)
     rw [hsum_eq]
-    -- Phase 3: MWU + VC-approx chain gives ≥ 13/24 > 1/2
+    -- MWU + VC-approx chain gives ≥ 13/24 > 1/2
     suffices h_ge : (∑ t : Fin Tvc,
         if (mkReps S hreal hm t).val (S i).1 = hreal.choose (S i).1
         then (1 : ℝ) else 0) / ↑Tvc ≥ 13 / 24 by linarith
@@ -1059,7 +1059,7 @@ private theorem moran_yehudayoff_forward_construction
     let hvc_bound := agreeTests_boolVCDim_le C c' Y' HY'
       (fun h hh => hypothesisEnvelope_sub L c' Y' h hh) (le_of_eq hd.symm)
     let vc_result := hVCApprox (agreeTests c' Y' HY') hvc_bound p
-    -- reps = mkReps S hreal hm (definitionally — same pipeline)
+    -- reps = mkReps S hreal hm (definitionally, same pipeline)
     -- hreps: approximation guarantee
     have hreps : ∀ a ∈ agreeTests c' Y' HY',
         |boolTestExpectation p a -

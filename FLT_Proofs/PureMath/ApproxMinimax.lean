@@ -498,7 +498,7 @@ private lemma boolGamePayoff_empirical_eq_hitCount
 
 /-- Arithmetic core: from the potential bound and sufficiently small η /
     large T, deduce a per-column hit-rate lower bound.
-    Uses Real.log — exactly 4 Mathlib lemmas. -/
+    Uses Real.log  -  exactly 4 Mathlib lemmas. -/
 private lemma hitRate_from_potential
     {N H T : ℕ} {η v ε : ℝ}
     (hNpos : 0 < (N : ℝ))

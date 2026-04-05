@@ -452,7 +452,7 @@ private lemma nat_pair_sample_marginal
   have hSuccessSub_meas : MeasurableSet SuccessSub :=
     measurableSet_preimage (measurable_pi_lambda _ (fun j => measurable_pi_apply (e₁ j))) hSuccess
   rw [h_eq, pi_cylinder_set_eq D p SuccessSub hSuccessSub_meas]
-  -- Now D^{p}(SuccessSub) and need D^{Fin n}(Success) — reindex via e₁
+  -- Now D^{p}(SuccessSub) and need D^{Fin n}(Success) - reindex via e₁
   have h_mp : MeasureTheory.MeasurePreserving
       (MeasurableEquiv.piCongrLeft (fun _ => X) e₁)
       (MeasureTheory.Measure.pi (fun _ : Fin n => D))
@@ -1043,9 +1043,9 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
     (which follows from `VCDim C < ⊤` via `vc_characterization`), not from a
     meta-learner's structure. The deep version (Baxter 2000) should show that a
     meta-learner's per-task sample complexity DECREASES with the number of training tasks:
-    m ≥ Ω(d/(ε²·numTasks)). That requires TaskEnvironment infrastructure — see EG₂.
+    m ≥ Ω(d/(ε²·numTasks)). That requires TaskEnvironment infrastructure.
 
-    TODO(EG₂): Replace with Baxter's multi-task lower bound once TaskEnvironment is defined.
+    TODO: Replace with Baxter's multi-task lower bound once TaskEnvironment is defined.
     The statement should become: ∀ meta-learner, ∃ bad environment, per-task m ≥ d/(ε²·n). -/
 theorem meta_pac_bound (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]

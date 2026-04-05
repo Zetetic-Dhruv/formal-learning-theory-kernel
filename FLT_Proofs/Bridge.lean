@@ -487,7 +487,7 @@ theorem growth_function_le_sauer_shelah {X : Type u} [Fintype X] [DecidableEq X]
 -/
 
 /-- Extract the probability measure from an IID sample.
-    Direct bridge — no information loss. -/
+    Direct bridge  -  no information loss. -/
 def iidSampleToProbMeasure (X : Type u) (Y : Type v)
     [MeasurableSpace X] [MeasurableSpace Y]
     (S : IIDSample X Y) : MeasureTheory.Measure (X × Y) :=

@@ -16,7 +16,7 @@ measurable selector.
 ## Main Result
 
 `versionSpaceLearner_measurableBatchLearner`: the version space learner
-satisfies `MeasurableBatchLearner` — it is a valid RL policy class.
+satisfies `MeasurableBatchLearner`  -  it is a valid RL policy class.
 
 ## Proof Architecture
 
@@ -30,7 +30,7 @@ Measurability follows from `measurable_to_countable'` (Mathlib).
 ## References
 
 - Mitchell (1982): version spaces in computational learning theory
-- Kuratowski-Ryll-Nardzewski: measurable selection (NOT in Mathlib — motivates
+- Kuratowski-Ryll-Nardzewski: measurable selection (NOT in Mathlib  -  motivates
   the countable restriction)
 -/
 

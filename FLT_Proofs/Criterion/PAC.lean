@@ -40,7 +40,7 @@ Instead, Dm = Measure.pi (fun _ : Fin m => D), which:
 
 The set { xs | D { x | L.learn (labeled xs) x ≠ c x } ≤ ε } is measured by
 Measure.pi via outer measure. Full measurability of this set requires the error
-function xs ↦ D{x | L(S(xs)) x ≠ c x} to be measurable — a deep technical
+function xs ↦ D{x | L(S(xs)) x ≠ c x} to be measurable  -  a deep technical
 condition that specific proofs (Hoeffding, Sauer-Shelah) will establish.
 -/
 
@@ -92,8 +92,8 @@ def AgnosticPACLearnable (X : Type u) [MeasurableSpace X]
           ≥ ENNReal.ofReal (1 - δ)
 
 /-- Exact learning (Angluin model): learn using membership + equivalence queries.
-    This is a deterministic, query-based paradigm — no distributional assumptions.
-    This is a genuinely different paradigm from PAC — deterministic, query-based,
+    This is a deterministic, query-based paradigm  -  no distributional assumptions.
+    This is a genuinely different paradigm from PAC  -  deterministic, query-based,
     with no distributional assumptions. -/
 def ExactLearnable (X : Type u) [DecidableEq X] [Fintype X]
     (C : ConceptClass X Bool) : Prop :=

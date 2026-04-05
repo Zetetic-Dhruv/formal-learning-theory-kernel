@@ -34,7 +34,7 @@ abbrev TimeStep := ℕ
 
 /-- A data stream: an infinite sequence of labeled examples.
     Primary data interface for Gold-style learning.
-    The stream is an enumeration — it must eventually cover the relevant domain. -/
+    The stream is an enumeration  -  it must eventually cover the relevant domain. -/
 -- 6 incoming: learner, ex_learning, version_space, text, informant, noisy_input
 structure DataStream (X : Type u) (Y : Type v) where
   /-- The stream of examples at each time step -/
@@ -81,7 +81,7 @@ IID samples are irrelevant in the online setting (adversarial).
 
 /-- An i.i.d. sample from a distribution over X.
     This is the data interface for PAC and statistical learning.
-    Requires measure theory — MeasurableSpace on X. -/
+    Requires measure theory  -  MeasurableSpace on X. -/
 structure IIDSample (X : Type u) (Y : Type v) [MeasurableSpace X] [MeasurableSpace Y] where
   /-- The underlying distribution over labeled examples -/
   distribution : MeasureTheory.Measure (X × Y)
@@ -131,7 +131,7 @@ noncomputable def IIDSample.marginalX {X : Type u} {Y : Type v}
 ## Query Learning Interfaces
 
 Active learning paradigm: the learner ASKS questions rather than
-passively receiving data. These are function types — the oracle is
+passively receiving data. These are function types  -  the oracle is
 a callable interface.
 -/
 

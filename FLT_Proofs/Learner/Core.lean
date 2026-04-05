@@ -11,7 +11,7 @@ import FLT_Proofs.Computation
 # Core Learner Types
 
 The three paradigm-specific learner types with incompatible signatures.
-There is no common parent type — the type system cannot express "learner"
+There is no common parent type; the type system cannot express "learner"
 without choosing a paradigm, because the three signatures are fundamentally
 different:
 

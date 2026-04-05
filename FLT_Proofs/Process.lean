@@ -18,7 +18,7 @@ Concrete learning processes, algorithms, and scope boundaries:
 - CEGIS (counterexample-guided inductive synthesis)
 - Concept drift, lifelong learning, meta-learning applications
 - Inductive logic programming
-- Scope boundaries (bandits, RL, quantum — markers only)
+- Scope boundaries (bandits, RL, quantum - markers only)
 - Granger causality (causal inference connection)
 -/
 
@@ -30,7 +30,6 @@ universe u v
 
 /-- Grammar induction: learning a formal grammar (regular, CFG) from examples.
     A Gold-style learning process applied to the formal language hierarchy. -/
--- 0 incoming, 3 outgoing (regular_language, cfg, gold_theorem analogy)
 structure GrammarInduction (Sym : Type*) where
   /-- The class of grammars to learn (regular, CFG, etc.) -/
   grammarClass : Set (FormalLanguage Sym)
@@ -44,11 +43,10 @@ structure GrammarInduction (Sym : Type*) where
 /-- L* algorithm (Angluin 1987): learns DFAs using membership and
     equivalence queries in polynomial time.
     The canonical exact learning algorithm. -/
--- 0 incoming, 2 outgoing (minimally_adequate_teacher, dfa)
 structure LStar (Sym : Type*) [DecidableEq Sym] [Fintype Sym] where
   /-- The MAT providing queries -/
   teacher : MinimallyAdequateTeacher (Word Sym) Bool
-  -- The observation table (implementation detail — the structure tracks the algorithm's state)
+  -- The observation table (implementation detail; the structure tracks the algorithm's state)
   /-- Number of states in the learned DFA -/
   numStates : ℕ
   /-- The learned DFA (after termination) -/
@@ -61,7 +59,6 @@ structure LStar (Sym : Type*) [DecidableEq Sym] [Fintype Sym] where
 /-- CEGIS: a loop between a synthesizer and a verifier.
     The synthesizer proposes candidates, the verifier checks them and
     returns counterexamples. Terminates when the verifier accepts. -/
--- 0 incoming, 3 outgoing (synthesizer, verifier, counterexample)
 structure CEGIS (X : Type u) (Y : Type v) where
   /-- The synthesizer: produces candidate concepts -/
   synth : Synthesizer X Y
@@ -78,8 +75,6 @@ structure CEGIS (X : Type u) (Y : Type v) where
 /-- Concept drift: the target concept changes over time.
     Extends the standard (stationary) learning framework.
     The drift model specifies how the target evolves. -/
--- 3 incoming (granger_causality analogy, lifelong analogy, drift_rate measures)
--- 2 outgoing (ex_under_drift analogy, online_learning analogy)
 structure ConceptDrift (X : Type u) (Y : Type v) where
   /-- The concept class (stationary) -/
   conceptClass : ConceptClass X Y
@@ -94,7 +89,6 @@ structure ConceptDrift (X : Type u) (Y : Type v) where
 
 /-- Lifelong learning: learning a sequence of tasks, leveraging
     shared structure across tasks. Meta-learning over time. -/
--- 0 incoming, 2 outgoing (meta_learner analogy, concept_drift analogy)
 structure LifelongLearning (X : Type u) (Y : Type v) where
   /-- The sequence of tasks (each task is a concept class) -/
   tasks : ℕ → ConceptClass X Y
@@ -109,13 +103,11 @@ structure LifelongLearning (X : Type u) (Y : Type v) where
 
 /-- Background knowledge: domain-specific information that guides learning.
     In ILP: a set of known rules/facts that constrain the hypothesis space.
-    Analogous to advice (background_knowledge analogy advice edge). -/
--- 1 incoming (ilp), 1 outgoing (advice analogy)
+    Analogous to advice. -/
 def BackgroundKnowledge (B : Type*) := B
 
 /-- Inductive Logic Programming: learning first-order logic programs
     from examples and background knowledge. -/
--- 0 incoming, 1 outgoing (background_knowledge)
 structure ILP (X : Type u) (Y : Type v) (B : Type*) where
   /-- Background knowledge -/
   background : BackgroundKnowledge B
@@ -129,7 +121,6 @@ structure ILP (X : Type u) (Y : Type v) (B : Type*) where
 /-- Granger causality: X Granger-causes Y if past values of X improve
     prediction of Y beyond past values of Y alone.
     Analogy to online learning (sequential, predictive). -/
--- 0 incoming, 2 outgoing (online_learning analogy, concept_drift analogy)
 def GrangerCauses (X Y : ℕ → ℝ) : Prop :=
   -- Prediction error using (past X, past Y) < Prediction error using (past Y only)
   -- For every linear predictor of Y from its own past, there exists a strictly
@@ -143,8 +134,7 @@ def GrangerCauses (X Y : ℕ → ℝ) : Prop :=
 -/
 
 /-- Program synthesis: learning programs from input-output examples.
-    Scope boundary — connects to formal verification. -/
--- 0 incoming, 0 outgoing (isolated node)
+    Scope boundary - connects to formal verification. -/
 structure ProgramSynthesis (Input Output : Type*) where
   /-- Specification: desired input-output behavior -/
   spec : Input → Output
@@ -157,24 +147,21 @@ structure ProgramSynthesis (Input Output : Type*) where
 ## Scope Boundaries
 
 These concepts mark the BOUNDARY of formal learning theory as covered
-in this formalization. They are NOT formally developed — they exist as
+in this formalization. They are NOT formally developed; they exist as
 markers for potential future extension.
 -/
 
 /-- Scope boundary: Multi-armed bandits.
     Related to online learning but with partial feedback (only see reward
     for chosen action, not counterfactual rewards). -/
--- 0 incoming, 0 outgoing (isolated)
 def ScopeBoundary.Bandits : Prop := True -- marker
 
 /-- Scope boundary: Reinforcement learning.
     Sequential decision-making with state transitions.
     Beyond the concept-learning framework. -/
--- 0 incoming, 0 outgoing (isolated)
 def ScopeBoundary.RL : Prop := True -- marker
 
 /-- Scope boundary: Quantum learning theory.
     Learning with quantum examples or quantum computation.
     Requires quantum information theory infrastructure. -/
--- 0 incoming, 0 outgoing (isolated)
 def ScopeBoundary.Quantum : Prop := True -- marker

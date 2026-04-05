@@ -55,7 +55,7 @@ noncomputable def gibbsEmpError {X : Type u} [MeasurableSpace X]
     EmpiricalError X Bool (hs h) (fun i => (S i, c (S i))) (zeroOneLoss Bool))
 
 -- ============================================================================
--- Phase 2: Per-hypothesis Hoeffding with prior-weighted tail
+-- Per-hypothesis Hoeffding with prior-weighted tail
 -- ============================================================================
 
 /-- Per-hypothesis Hoeffding with prior-weighted tail.
@@ -169,7 +169,7 @@ theorem pac_bayes_per_hypothesis {X : Type u} [MeasurableSpace X]
       _ = ENNReal.ofReal (P.prob h₀ * δ) := by rw [h_exp_eq]
 
 -- ============================================================================
--- Phase 3: Simultaneous bound via union bound
+-- Simultaneous bound via union bound
 -- ============================================================================
 
 /-- For a probability measure, μ(S) ≥ 1 - μ(Sᶜ), and hence μ(S) ≥ 1 - δ if μ(Sᶜ) ≤ δ. -/
@@ -291,7 +291,7 @@ theorem pac_bayes_all_hypotheses {X : Type u} [MeasurableSpace X]
     _ ≤ μ Good := h_result
 
 -- ============================================================================
--- Phase 4: The PAC-Bayes bound (Jensen)
+-- The PAC-Bayes bound (Jensen)
 -- ============================================================================
 
 /-- Jensen's inequality for √ over a finite PMF: ∑ q_h · √(f_h) ≤ √(∑ q_h · f_h).

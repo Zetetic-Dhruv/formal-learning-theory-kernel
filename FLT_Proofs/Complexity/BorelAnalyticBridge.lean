@@ -31,7 +31,7 @@ but KrappWirthWellBehaved fails. See Theorem/BorelAnalyticSeparation.lean.
 - Suslin (1917): projections of Borel sets are analytic
 - Lusin (1925): analytic sets are universally measurable
 - Krapp & Wirth (2024, arXiv:2410.10243): MeasurableSet conditions for FTSL
-- This kernel: NullMeasurableSet weakening discovered during Lean4 formalization (Session 7)
+- This kernel: NullMeasurableSet weakening discovered during Lean4 formalization
 -/
 
 universe u
@@ -177,7 +177,7 @@ theorem analyticSet_nullMeasurableSet_ghostPairs
   haveI : MeasureTheory.IsFiniteMeasure (GhostPairMeasure D m) := inferInstance
   exact analyticSet_nullMeasurableSet hs
 
-/-! ## Theorem D (F5): Positive bridge — bad event is NullMeasurableSet -/
+/-! ## Theorem D: Positive bridge - bad event is NullMeasurableSet -/
 
 theorem borel_param_nullMeasurableSet_bad_event
     {X : Type u} [MeasurableSpace X] [TopologicalSpace X] [PolishSpace X] [BorelSpace X]

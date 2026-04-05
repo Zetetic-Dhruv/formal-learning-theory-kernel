@@ -10,8 +10,8 @@ import FLT_Proofs.Complexity.Interpolation
 
 Given two Borel-parameterized concept families e₁ : Θ₁ → Concept X Bool and
 e₂ : Θ₂ → Concept X Bool, with projection maps π₁ : Θ₁ → S and π₂ : Θ₂ → S
-into a common StandardBorelSpace S, the **amalgamation class** — the set of
-concepts merge(θ₁, θ₂) for (θ₁, θ₂) satisfying π₁ θ₁ = π₂ θ₂ — satisfies
+into a common StandardBorelSpace S, the **amalgamation class**  -  the set of
+concepts merge(θ₁, θ₂) for (θ₁, θ₂) satisfying π₁ θ₁ = π₂ θ₂  -  satisfies
 `WellBehavedVCMeasTarget`.
 
 The proof proceeds by:

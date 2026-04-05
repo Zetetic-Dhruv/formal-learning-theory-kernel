@@ -23,12 +23,12 @@ multiclass, Bayesian).
 universe u v
 
 /-!
-## Layer 1: Atomic Types
+## Atomic Types
 -/
 
 
 -- Domain (X : Type u) and Label (Y : Type v) are universe-polymorphic type parameters.
--- They are not defined as defs — they appear as parameters to every subsequent type.
+-- They are not defined as defs; they appear as parameters to every subsequent type.
 -- Domain: the instance space (ℝⁿ, {0,1}ⁿ, or any type)
 -- Label: the output space (Bool for binary, Fin k for multiclass, ℝ for regression)
 
@@ -36,8 +36,8 @@ universe u v
     concept classes collect and learners try to approximate. -/
 def Concept (X : Type u) (Y : Type v) := X → Y
 
-/-- A concept class is a set of concepts. This is the most referenced type in
-    the architecture — used by every paradigm, complexity measure, and criterion.
+/-- A concept class is a set of concepts. Used by every paradigm, complexity
+    measure, and criterion.
 
     Primary definition: Set of functions. Used for PAC/agnostic PAC where
     concept classes are sets over which VC dimension, Rademacher complexity,
@@ -69,13 +69,13 @@ class MeasurableHypotheses (X : Type u) [MeasurableSpace X]
 
 /-- A hypothesis space is a set of candidate concepts that the learner searches over.
     When H = C (the realizable case), every concept in the target class is available.
-    When H ⊂ C or H ⊃ C, we're in the improper/agnostic regime.
+    When H ⊂ C or H ⊃ C, we are in the improper/agnostic regime.
 
     Structurally identical to ConceptClass but semantically distinct: ConceptClass is
     the ground truth collection; HypothesisSpace is what the learner has access to. -/
 abbrev HypothesisSpace (X : Type u) (Y : Type v) := Set (Concept X Y)
 
-/-- A single hypothesis — an element of the hypothesis space.
+/-- A single hypothesis - an element of the hypothesis space.
     Just a Concept by another name, but the semantic distinction matters:
     a hypothesis is a learner's GUESS, a concept is a ground truth. -/
 abbrev Hypothesis (X : Type u) (Y : Type v) := Concept X Y
@@ -91,17 +91,14 @@ def IsProper (X : Type u) (Y : Type v) (C : ConceptClass X Y) (H : HypothesisSpa
   (H : Set (Concept X Y)) = (C : Set (Concept X Y))
 
 /-!
-## Layer 1: Structured Types
+## Structured Types
 -/
 
 /-- Inductive bias: a preference ordering or scoring over hypotheses.
-    This is NOT just a set — it bundles a hypothesis space with a way to RANK hypotheses.
+    This is NOT just a set; it bundles a hypothesis space with a way to RANK hypotheses.
     In Bayesian learning: the prior distribution.
     In SRM: the complexity hierarchy.
-    In NFL theorem: the object whose absence makes learning impossible.
-
-    4 incoming edges: nfl_theorem (used_in_proof), srm (analogy),
-    bayesian_inference (analogy), computational_hardness (requires_assumption). -/
+    In NFL theorem: the object whose absence makes learning impossible. -/
 structure InductiveBias (X : Type u) (Y : Type v) where
   /-- The hypothesis space the bias operates over -/
   hypotheses : HypothesisSpace X Y
@@ -120,7 +117,7 @@ structure InductiveBias (X : Type u) (Y : Type v) where
 --   supported : prior.toMeasure (hypotheses)ᶜ = 0 -/
 
 /-- Version space: the set of hypotheses consistent with all data seen so far.
-    Central to Gold-style learning — the learner narrows the version space as
+    Central to Gold-style learning; the learner narrows the version space as
     data arrives, and convergence = version space shrinks to the target.
 
     Defined using HypothesisSpace and a consistency predicate over data. -/
@@ -129,14 +126,14 @@ structure VersionSpace (X : Type u) (Y : Type v) where
   hypotheses : HypothesisSpace X Y
   /-- Data seen so far: list of (input, label) pairs -/
   data : List (X × Y)
-  /-- The consistent subset — hypotheses that agree with all data -/
+  /-- The consistent subset - hypotheses that agree with all data -/
   consistent : Set (Concept X Y)
   /-- Consistency condition: every consistent hypothesis is in H and agrees with data -/
   consistent_sub : consistent ⊆ hypotheses
   consistent_agrees : ∀ h ∈ consistent, ∀ p ∈ data, h p.1 = p.2
 
 /-!
-## Layer 1: Realizability Flags
+## Realizability Flags
 -/
 
 /-- Realizability assumption: the target concept is in the hypothesis space.

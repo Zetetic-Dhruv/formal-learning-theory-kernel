@@ -179,7 +179,7 @@ theorem singleton_badEvent_not_measurable
   have hplanar := (hmeas.measurableSet_preimage_iff_of_surjective hsurj).mp hbad
   exact planarWitnessEvent_not_measurable A hA_non hplanar
 
-/-! ## Theorem L (F8): Relative separation theorem -/
+/-! ## Theorem L: Relative separation theorem -/
 
 theorem analytic_nonborel_set_gives_measTarget_separation
     (A : Set ℝ)
@@ -241,7 +241,7 @@ theorem analytic_nonborel_set_gives_measTarget_separation
     · rintro (rfl | ⟨a, ⟨θ, rfl⟩, rfl⟩)
       · exact ⟨(false, θ0), by funext x; simp [e, zeroConcept]⟩
       · exact ⟨(true, θ), by funext x; simp [e, singletonConcept]⟩
-  -- Step 8: Separation — construct the witness
+  -- Step 8: Separation - construct the witness
   refine ⟨C, hC_meas, hWB, ?_⟩
   intro hKW
   have hA_non' : ¬ MeasurableSet (Set.range g) := hg_range ▸ hA_non
