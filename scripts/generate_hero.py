@@ -65,19 +65,15 @@ def generate_svg(metrics):
     # Title
     lines.append('  <text x="220" y="42" font-size="17" font-weight="bold" fill="#000" text-anchor="middle">Known Theory, Machine-Checked</text>')
 
-    # Pentagon edges (solid except compression edge which is dashed)
+    # Pentagon edges (all solid -- compression proved)
     for i in range(5):
         x1, y1 = verts[i]
         x2, y2 = verts[(i+1) % 5]
-        dash = ' stroke-dasharray="5 3"' if i == 3 or i == 4 else ''
-        lines.append(f'  <line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" stroke="#000" stroke-width="1.2"{dash}/>')
+        lines.append(f'  <line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" stroke="#000" stroke-width="1.2"/>')
 
-    # Vertex dots
+    # Vertex dots (all filled -- all proved)
     for i, (vx, vy) in enumerate(verts):
-        if i == 4:  # compression: open circle
-            lines.append(f'  <circle cx="{vx:.0f}" cy="{vy:.0f}" r="3" fill="none" stroke="#000" stroke-width="1"/>')
-        else:
-            lines.append(f'  <circle cx="{vx:.0f}" cy="{vy:.0f}" r="3.5" fill="#000"/>')
+        lines.append(f'  <circle cx="{vx:.0f}" cy="{vy:.0f}" r="3.5" fill="#000"/>')
 
     # Center label
     lines.append(f'  <text x="{cx}" y="{cy+5}" font-size="14" font-weight="bold" fill="#000" text-anchor="middle">VCDim(C) &lt; &#x221E;</text>')
@@ -88,7 +84,7 @@ def generate_svg(metrics):
         ("Rademacher\nvanishes  \u2713", 30, -5, "start"),
         ("Growth \u2264\nSauer-Shelah  \u2713", 20, 20, "start"),
         ("Sample\ncomplexity  \u2713", -20, 20, "end"),
-        ("Compression\nscheme  \u25CA", -30, -5, "end"),
+        ("Compression\nscheme  \u2713", -30, -5, "end"),
     ]
     for i, (label, dx, dy, anchor) in enumerate(labels):
         vx, vy = verts[i]
@@ -97,7 +93,7 @@ def generate_svg(metrics):
             lines.append(f'  <text x="{vx+dx:.0f}" y="{vy+dy+j*14:.0f}" font-size="11" fill="#000" text-anchor="{anchor}">{sub}</text>')
 
     # Equivalence note
-    lines.append(f'  <text x="{cx}" y="370" font-size="11" fill="#000" text-anchor="middle" font-style="italic">4/5 conjuncts proved, sorry-free</text>')
+    lines.append(f'  <text x="{cx}" y="370" font-size="11" fill="#000" text-anchor="middle" font-style="italic">5/5 equivalence, sorry-free</text>')
 
     # ============================================================
     # FIRST FORMALIZATIONS: flowing box list below pentagon

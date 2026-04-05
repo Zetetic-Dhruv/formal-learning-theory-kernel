@@ -26,7 +26,8 @@ echo "  \"definitions\": $DEFS,"
 STRUCTS=$(grep -rn --include="*.lean" -E '^structure ' FLT_Proofs/ | wc -l | tr -d ' ')
 echo "  \"structures\": $STRUCTS,"
 
-SORRY=$(grep -rn --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/ | wc -l | tr -d ' ')
+SORRY_LINES=$(grep -rn --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/ 2>/dev/null || true)
+if [ -z "$SORRY_LINES" ]; then SORRY=0; else SORRY=$(echo "$SORRY_LINES" | wc -l | tr -d ' '); fi
 echo "  \"sorry_tactics\": $SORRY"
 
 echo "}"

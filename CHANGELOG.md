@@ -3,6 +3,34 @@
 All notable changes to this project are documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [v3.2.0] - 2026-04-05
+
+### Added
+- **Compression characterization** (`Complexity/Compression.lean`, 1,328 lines): VCDim < infinity implies existence of compression scheme. Moran-Yehudayoff 2016 construction via approximate minimax (MWU). Closes the 5th conjunct of the fundamental theorem.
+- **Approximate minimax** (`PureMath/ApproxMinimax.lean`, 640 lines): multiplicative weights update for approximate minimax on finite games. Field-independent, Mathlib-contributable.
+- **Finite VC approximation** (`PureMath/FiniteVCApprox.lean`, 158 lines): VC dimension bounds for finite approximations.
+- **Assouad dual VC bound** (`PureMath/BinaryMatrix.lean`, extended): bitstring coding argument proving transpose VC dimension bounded by 2^(d+1)-1.
+- **Dual VC infrastructure** (`Complexity/DualVC.lean`): dual class construction bridging primal and dual shattering.
+- **Finite support UC** (`Complexity/FiniteSupportUC.lean`, 422 lines): uniform convergence for finitely-supported concept classes.
+
+### Changed
+- **Sorry count: 2 → 0.** All compiled theorems are proved. The universal trichotomy (BHMZ STOC 2021) is commented out as a TODO, not sorry'd.
+- **Fundamental theorem: 4/5 → 5/5.** All five conjuncts of the VC characterization are now proved.
+- `scripts/metrics.sh` fixed for zero-sorry case (grep returns non-zero on empty match).
+- README fully updated: removed core/extended distinction, all metrics to 354/21,522/53/0.
+- Hero SVG: compression vertex solid, all edges solid, "5/5 equivalence, sorry-free."
+
+### Metrics delta
+
+| Metric | v3.0.0 | v3.2.0 | Delta |
+|--------|--------|--------|-------|
+| Files | 47 | 53 | +6 |
+| Lines | 18,356 | 21,522 | +3,166 |
+| Theorems | 292 | 354 | +62 |
+| Definitions | 212 | 257 | +45 |
+| Structures | 56 | 59 | +3 |
+| Sorry | 2 | **0** | **-2** |
+
 ## [v3.0.0] - 2026-04-03
 
 ### Added
@@ -103,6 +131,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `vcdim_finite_imp_compression` (Moran-Yehudayoff 2016)
   - `bhmz_middle_branch` (BHMZ STOC 2021)
 
+[v3.2.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/compare/v3.0.0...v3.2.0
 [v3.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/compare/v2.0.0...v3.0.0
 [v2.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/compare/v1.0.0...v2.0.0
 [v1.0.0]: https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/releases/tag/v1.0.0

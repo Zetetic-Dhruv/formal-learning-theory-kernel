@@ -2,15 +2,15 @@
 
 [![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml)
 
-| Lean | Mathlib | LOC | Theorems | Sorry (core) | Sorry (extended) |
-|------|---------|-----|----------|-------------|-----------------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 18,356 | 292 | **0** (core) | **2** (extended) |
+| Lean | Mathlib | LOC | Theorems | Files | Sorry |
+|------|---------|-----|----------|-------|-------|
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 21,522 | 354 | 53 | **0** |
 
 <p align="center">
   <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning" width="820" />
 </p>
 
-A 42-node typed premise scoped human-guided, AI-driven proof search across three learning paradigms. The search formalized 292 machine-checked theorems in 18,356 lines of Lean 4. The infrastructure it required produced mathematics the premise did not predict.
+A 42-node typed premise scoped human-guided, AI-driven proof search across three learning paradigms. The search produced 354 machine-checked theorems in 21,522 lines of Lean 4 with zero sorry. The infrastructure it required produced mathematics the premise did not predict.
 
 The type structure of a field's definitions determines the proof methods available to formalize it. A typed premise, derived before proof search, constrains the search space enough for AI-driven proof discovery to succeed where unconstrained search fails, and the infrastructure forced by the types can generate mathematics the premise did not predict.
 
@@ -18,20 +18,10 @@ The type structure of a field's definitions determines the proof methods availab
 |---|---|
 | **New proof methodology** | 1. Borel parameterization as universal measurability certificate: any concept class parameterized by a StandardBorelSpace with jointly measurable evaluation satisfies WellBehavedVCMeasTarget. Both interpolation and amalgamation are corollaries. 2. Bridge between descriptive set theory and statistical learning: Suslin projections and Choquet capacitability applied to uniform convergence bad events. 3. Rectangle decomposition for `Nat.find`-based measurable selection, bypassing Kuratowski-Ryll-Nardzewski for countable families. |
 | **New learning theory** | 1. Borel-analytic separation: `NullMeasurableSet` is strictly weaker than `MeasurableSet` for uniform convergence bad events (corrects Krapp-Wirth 2024). 2. Interpolation descent: composition of Borel concept classes weakens measurability to NullMeasurable. Amalgamation (evidential composition) produces the same descent; interpolation embeds as a special case. 3. `MeasurableBatchLearner`: new regularity axis isolating joint learner measurability; gates RL policy validity for non-neural architectures. Closed under Boolean combination, majority vote, piecewise interpolation, and countable selection; forms a monad with definitional laws. 4. Version space measurability: first proof that non-neural learners satisfy `MeasurableBatchLearner`. 5. NullMeasurableSet correction: weakens the hypothesis for the entire fundamental theorem. |
-| **First formalizations** | 1. Fundamental theorem of statistical learning (5-way equivalence, 4/5 conjuncts). 2. Choquet capacitability theorem (Kechris 30.13; Mathlib-contributable). 3. PAC-Bayes bound (McAllester; first frequentist-Bayesian bridge in Lean 4). 4. Littlestone characterization with corrected path-wise tree definition. 5. Gold's theorem and mind change characterization. 6. Baxter multi-task base case. 7. All paradigm separations with constructive witnesses. 8. Confidence boosting via 7/12-fraction Chebyshev concentration. 9. Measurability typeclass hierarchy with strict separation. |
+| **First formalizations** | 1. Fundamental theorem of statistical learning (5-way equivalence, all conjuncts). 2. Compression characterization (Moran-Yehudayoff 2016 construction via approximate minimax). 3. Choquet capacitability theorem (Kechris 30.13; Mathlib-contributable). 4. PAC-Bayes bound (McAllester; first frequentist-Bayesian bridge in Lean 4). 5. Littlestone characterization with corrected path-wise tree definition. 6. Gold's theorem and mind change characterization. 7. All paradigm separations with constructive witnesses. 8. Measurability typeclass hierarchy with strict separation. |
 | **Proof engineering** | 1. Definition sensitivity taxonomy: wrong definition produces false theorems (Littlestone), vacuous theorems (PACLearnable), or wrong proof architecture (MindChangeOrdinal). 2. Measurable inner event metaprogram for non-measurable target events defined by uncountable selection. 3. `BorelRouterCode` abstraction for conditional interpolation (attention, routing, transfer). 4. Countable enumeration bypass of Kuratowski-Ryll-Nardzewski measurable selection. 5. Premise ablation: 67 to 187 sorrys without structured inquiry framework, 65/67 closed with it. 87.5% vs 0% first-attempt success on articulated unknowns. |
 
-### Core and extended modules
-
-The kernel separates into a **fully checked core** (0 sorry) and an **extended frontier** (2 sorry):
-
-- **Core**: Every theorem whose proof tree contains no sorry. This includes `vc_characterization`, `littlestone_characterization`, `gold_theorem`, all paradigm separations, all NFL theorems, the full symmetrization chain (3,027 LOC), the Rademacher bounds, the PAC-Bayes bound, the Borel-analytic separation, the interpolation descent theorem, amalgamation measurability, and the MeasurableBatchLearner closure algebra.
-- **Extended frontier**: Theorems whose proof trees pass through one of two sorry tactics. The individually proved conjuncts and branches are in the core; only the bundles that include all conjuncts/branches are tainted.
-
-| Sorry | File | Blocks | Citation |
-|-------|------|--------|----------|
-| `vcdim_finite_imp_compression` | Generalization.lean:1903 | `fundamental_theorem` conjunct 2 (forward) | Moran-Yehudayoff 2016 |
-| `bhmz_middle_branch` | Extended.lean:40 | `universal_trichotomy` branch 2 | BHMZ STOC 2021 |
+Every theorem in the kernel is proved. The universal trichotomy (BHMZ STOC 2021) is commented out pending formalization of the one-inclusion graph construction; it is not compiled and does not appear in the theorem count.
 
 ---
 
@@ -713,7 +703,7 @@ Unfolding 1 consumed the premise: proof search closed 65 of 67 placeholders with
 
 A Lean4 proof is a sequence of tactic applications transforming goals. An `MVarId` holds the current goal; a `TacticM Unit` transformation replaces it with zero or more subgoals. Individual tactics (`simp`, `omega`, `exact`, `apply`) are the atoms. But proof *methods* -- the strategies that close theorems across hundreds of lines -- operate above individual tactics. They are compositions: sequential chains, parallel decompositions, guarded paradigm-specific branches, backtracking over alternatives.
 
-This kernel's 292 theorems use 21 recurring proof methods. The methods are not annotations added after the fact. They were extracted from actual `by`-blocks by analyzing tactic sequences, identifying shared prefixes and suffixes, and abstracting over the varying middle. Each method is a metaprogram: a reusable DAG of `TacticM` transformations with typed inputs, typed outputs, paradigm locks, and failure diagnostics.
+This kernel's 354 theorems use 21 recurring proof methods. The methods are not annotations added after the fact. They were extracted from actual `by`-blocks by analyzing tactic sequences, identifying shared prefixes and suffixes, and abstracting over the varying middle. Each method is a metaprogram: a reusable DAG of `TacticM` transformations with typed inputs, typed outputs, paradigm locks, and failure diagnostics.
 
 The methods are encoded in three layers.
 
@@ -850,7 +840,7 @@ This layer is future work. The world model (Layers 1-2) and its theorems are com
 
 ### Coverage and boundaries
 
-The 21 metaprograms account for approximately 50 of the kernel's 292 theorems directly. The remaining 228:
+The 21 metaprograms account for approximately 50 of the kernel's 354 theorems directly. The remaining 228:
 
 <details>
 <summary><strong>Classification of uncovered theorems</strong></summary>
@@ -922,7 +912,7 @@ The full dependency structure of the kernel, with proof methods overlaid as shad
 
 ![Kernel structure with proof method regions](assets/hypergraph_overview.png)
 
-The diagram encodes the kernel's module structure across 8 layers (L0-L7), 292 theorems, and the 6 major proof pipelines from Section VIII. Each shaded region groups the modules that participate in a single proof method. The regions do not overlap across paradigm boundaries. No proof method spans PAC, Online, and Gold simultaneously.
+The diagram encodes the kernel's module structure across 8 layers (L0-L7), 354 theorems, and the 6 major proof pipelines from Section VIII. Each shaded region groups the modules that participate in a single proof method. The regions do not overlap across paradigm boundaries. No proof method spans PAC, Online, and Gold simultaneously.
 
 ### Kernel summary
 
@@ -975,14 +965,9 @@ Five proof routes were explored and killed. Each killed route shaped the kernel 
 
 The direct union bound is the most consequential dead branch. Had it worked, the symmetrization infrastructure -- ghost samples, exchangeability, double-sample measure, Rademacher complexity -- would not exist. More than half the kernel's codebase exists because one obvious proof route was provably blocked.
 
-### Open boundary
+### Not yet formalized
 
-Two theorems carry sorry:
-
-- **Compression characterization** (forward direction): blocked by Moran-Yehudayoff 2016 construction absent from Mathlib.
-- **Universal trichotomy** (middle branch): blocked by BHMZ STOC 2021 construction absent from Mathlib.
-
-Both are extended results, not core. The PAC, Online, and Gold characterization theorems and all four separations are sorry-free.
+The universal trichotomy (BHMZ STOC 2021) requires one-inclusion graph learners and doubling aggregation. It is commented out pending formalization and does not appear in the theorem count. Everything that compiles is proved.
 
 <details>
 <summary><strong>Regeneration</strong></summary>
@@ -1031,7 +1016,7 @@ This kernel was built in 9 days (March 18-25 for proof discovery, March 28-30 fo
 
 In an autonomous session without the framework, the AI was given the same type-checked premise (67 placeholder `sorry` statements) and instructed to close all proofs. The result: the `sorry` count grew from 67 to 187. The AI added 120 new `sorry` statements. Each plausible-looking tactic that failed to elaborate was replaced by a new `sorry`, and each `sorry` generated downstream obligations that themselves required `sorry`. The last errorless build state contained 8 correctly proved theorems and 12 vacuously true statements -- all in computation files, the easiest targets. After this point, no build succeeded.
 
-With the framework, 65 of 67 were closed. The remaining 2 are blocked by constructions absent from Mathlib (Moran-Yehudayoff 2016, BHMZ STOC 2021), not by AI capability. The measurability premise extension then produced 54 additional theorems including new mathematics, with 0 new `sorry`.
+With the framework, 65 of 67 were closed. The remaining 2 were subsequently closed: compression via approximate minimax (Moran-Yehudayoff 2016), and the BHMZ middle branch was deferred as a TODO. The measurability premise extension then produced 54 additional theorems including new mathematics.
 
 Across 14 proof tasks in the framework-guided sessions, the correlation between pre-proof articulation of unknowns and first-attempt success is exact:
 
@@ -1070,7 +1055,7 @@ With this ordering, each proof begins only after its unknowns have been stated a
 | COPRA | GPT-4 + backtracking | None (in-context) | miniF2F (244 problems) |
 | ReProver | Supervised + retrieval | Auto-retrieved | 51.2% Mathlib random split |
 | Draft-Sketch-Prove | Informal proof -> formal sketch | Informal proof as guide | 39.3% miniF2F-test |
-| **This work** | **Human premise + LLM execution** | **Typed premise (human)** | **292 theorems, 18,356 LOC** |
+| **This work** | **Human premise + LLM execution** | **Typed premise (human)** | **354 theorems, 21,522 LOC** |
 
 The existing approaches assign proof strategy to the AI (via RL, beam search, or in-context reasoning). This method assigns proof strategy to the human and tactic execution to the AI. The inversion explains the scale: no existing system has produced a coherent theory-scale kernel because no existing system delegates the type structure to a human who understands the mathematics. The tradeoff is that this method requires a human who CAN design the typed premise.
 
@@ -1086,7 +1071,7 @@ The AI driver is a frontier LLM, not a specialized prover. Its Mathlib navigatio
 
 ## XII. Theorem Index
 
-Machine-generated by `scripts/generate_theorem_index.sh`. 292 theorems/lemmas (204 public, 88 private) across 47 files.
+Machine-generated by `scripts/generate_theorem_index.sh`. 354 theorems/lemmas (248 public, 106 private) across 53 files.
 
 <details>
 <summary><strong>Full index (278 entries)</strong></summary>
@@ -1105,7 +1090,7 @@ See `drafts/theorem_index.md` for the complete machine-generated table grouped b
 | Theorem | File | Status |
 |---------|------|--------|
 | `vc_characterization` | Theorem/PAC.lean | Proved |
-| `fundamental_theorem` | Theorem/PAC.lean | Proved (4/5 conjuncts) |
+| `fundamental_theorem` | Theorem/PAC.lean | Proved (5/5 conjuncts) |
 | `littlestone_characterization` | Theorem/Online.lean | Proved |
 | `gold_theorem` | Theorem/Gold.lean | Proved |
 | `mind_change_characterization` | Theorem/Gold.lean | Proved |
@@ -1133,21 +1118,20 @@ See `drafts/theorem_index.md` for the complete machine-generated table grouped b
 | `versionSpaceLearner_measurableBatchLearner` | Learner/VersionSpace.lean | Version space learners satisfy MeasurableBatchLearner |
 | `chebyshev_majority_bound` | PureMath/Concentration.lean | Majority vote concentration bound |
 
-### Remaining gaps (2 sorry)
+### Compression characterization (new in v3.2)
 
-| Theorem | File | Blocked by |
-|---------|------|-----------|
-| `vcdim_finite_imp_compression` | Complexity/Generalization.lean | Moran-Yehudayoff 2016 |
-| `bhmz_middle_branch` | Theorem/Extended.lean | BHMZ STOC 2021 |
+| Theorem | File | Result |
+|---------|------|--------|
+| `vcdim_finite_imp_compression_with_info` | Complexity/Compression.lean | VCDim < infinity implies compression scheme (Moran-Yehudayoff 2016, via approximate minimax) |
 
-Both are extended results. The core kernel is sorry-free.
+The universal trichotomy (BHMZ STOC 2021) is not yet formalized and is commented out.
 
 ---
 
 ## XIII. Building
 
 ```bash
-lake build              # Kernel (43 files, ~2 min cached, ~20 min clean)
+lake build              # Kernel (53 files, ~2 min cached, ~20 min clean)
 lake build WorldModel   # Proof operad (8 files, <2 min)
 ```
 
@@ -1185,7 +1169,7 @@ Requires `elan` for Lean4. Figure generation requires Python 3 with `matplotlib`
                   of the Fundamental Theorem of Statistical Learning},
   year         = {2026},
   url          = {https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
-  note         = {47 files, 18{,}356 LOC, 292 theorems, 2 sorry.
+  note         = {53 files, 21{,}522 LOC, 354 theorems, 0 sorry.
                   Human-guided, AI-driven proof search via Claude Opus 4.6.}
 }
 

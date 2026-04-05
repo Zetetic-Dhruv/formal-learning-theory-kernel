@@ -5,13 +5,13 @@
   <line x1="220" y1="100" x2="334" y2="183" stroke="#000" stroke-width="1.2"/>
   <line x1="334" y1="183" x2="291" y2="317" stroke="#000" stroke-width="1.2"/>
   <line x1="291" y1="317" x2="149" y2="317" stroke="#000" stroke-width="1.2"/>
-  <line x1="149" y1="317" x2="106" y2="183" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
-  <line x1="106" y1="183" x2="220" y2="100" stroke="#000" stroke-width="1.2" stroke-dasharray="5 3"/>
+  <line x1="149" y1="317" x2="106" y2="183" stroke="#000" stroke-width="1.2"/>
+  <line x1="106" y1="183" x2="220" y2="100" stroke="#000" stroke-width="1.2"/>
   <circle cx="220" cy="100" r="3.5" fill="#000"/>
   <circle cx="334" cy="183" r="3.5" fill="#000"/>
   <circle cx="291" cy="317" r="3.5" fill="#000"/>
   <circle cx="149" cy="317" r="3.5" fill="#000"/>
-  <circle cx="106" cy="183" r="3" fill="none" stroke="#000" stroke-width="1"/>
+  <circle cx="106" cy="183" r="3.5" fill="#000"/>
   <text x="220" y="225" font-size="14" font-weight="bold" fill="#000" text-anchor="middle">VCDim(C) &lt; &#x221E;</text>
   <text x="220" y="80" font-size="11" fill="#000" text-anchor="middle">PAC Learnable  ✓</text>
   <text x="364" y="178" font-size="11" fill="#000" text-anchor="start">Rademacher</text>
@@ -21,8 +21,8 @@
   <text x="129" y="337" font-size="11" fill="#000" text-anchor="end">Sample</text>
   <text x="129" y="351" font-size="11" fill="#000" text-anchor="end">complexity  ✓</text>
   <text x="76" y="178" font-size="11" fill="#000" text-anchor="end">Compression</text>
-  <text x="76" y="192" font-size="11" fill="#000" text-anchor="end">scheme  ◊</text>
-  <text x="220" y="370" font-size="11" fill="#000" text-anchor="middle" font-style="italic">4/5 conjuncts proved, sorry-free</text>
+  <text x="76" y="192" font-size="11" fill="#000" text-anchor="end">scheme  ✓</text>
+  <text x="220" y="370" font-size="11" fill="#000" text-anchor="middle" font-style="italic">5/5 equivalence, sorry-free</text>
   <text x="220" y="400" font-size="12" font-weight="bold" fill="#000" text-anchor="middle">First Formalizations</text>
   <text x="780" y="42" font-size="17" font-weight="bold" fill="#000" text-anchor="middle">New Mathematics, Machine-Checked</text>
   <rect x="15" y="415" width="122" height="20" fill="#fff" stroke="#000" stroke-width="0.5"/>
@@ -78,6 +78,6 @@
   <text x="1030" y="459.0" font-size="10" fill="#444" font-style="italic" text-anchor="end">Measurable learner monad</text>
   <text x="780" y="520" font-size="11" fill="#000" text-anchor="middle" font-style="italic">Infrastructure built for engineering. Produced mathematics. 3 open frontier questions remain.</text>
   <line x1="20" y1="550" x2="1080" y2="550" stroke="#000" stroke-width="0.4"/>
-  <text x="550" y="570" font-size="12" fill="#000" font-style="italic" text-anchor="middle">47 files  |  18,356 lines  |  292 theorems  |  2 sorry  |  Lean 4 + Mathlib4</text>
+  <text x="550" y="570" font-size="12" fill="#000" font-style="italic" text-anchor="middle">53 files  |  21,522 lines  |  354 theorems  |  0 sorry  |  Lean 4 + Mathlib4</text>
   <text x="20" y="570" font-size="10" fill="#000" font-style="italic">&#x25CA; = Moran-Yehudayoff 2016</text>
 </svg>
