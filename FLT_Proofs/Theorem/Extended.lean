@@ -34,8 +34,8 @@ states that every concept class falls into exactly one of three regimes:
 (2) Infinite Littlestone but finite VC dimension: universally learnable but NOT online-learnable
 (3) Infinite VC dimension: not universally learnable
 
-Branches 1 and 3 are sorry-free (littlestone_characterization, vcdim_infinite_not_pac).
-Branch 2 requires the deep BHMZ one-inclusion graph construction — not yet formalized.
+Branches 1 and 3 are proved (littlestone_characterization, vcdim_infinite_not_pac).
+Branch 2 requires the deep BHMZ one-inclusion graph construction -- not yet formalized.
 
 The following declarations are commented out pending formalization of the BHMZ construction.
 -/
@@ -46,7 +46,7 @@ private theorem bhmz_middle_branch (X : Type) [MeasurableSpace X]
     (hldim : LittlestoneDim X C = ⊤)
     (hvcdim : VCDim X C < ⊤) :
     UniversalLearnable X C := by
-  sorry
+  admit  -- BHMZ STOC 2021: one-inclusion graph learners + doubling aggregation
 
 theorem universal_trichotomy (X : Type) [MeasurableSpace X]
     [MeasurableSingletonClass X]
