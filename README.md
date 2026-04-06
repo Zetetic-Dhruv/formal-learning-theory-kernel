@@ -30,7 +30,6 @@ The only prior attempt at formalizing PAC learning theory with VC dimension is G
 | | formal-ml (Google) | **This kernel** |
 |---|---|---|
 | Lean | 3 (obsolete) | 4 (v4.29) |
-| LOC | 36,221 | 21,522 |
 | Sorry | 1 | **0** |
 | Scope | Sauer-Shelah + finite-class PAC bounds | 5-way fundamental theorem + 4 separations + compression + PAC-Bayes + measurability hierarchy |
 | Status | Incomplete (TODOs for VC-to-PAC connection) | Complete (5/5 conjuncts, 0 sorry) |
