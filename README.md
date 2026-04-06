@@ -23,33 +23,33 @@ The type structure of a field's definitions determines the proof methods availab
 
 Every theorem in the kernel is proved. The universal trichotomy (BHMZ STOC 2021) is commented out pending formalization of the one-inclusion graph construction; it is not compiled and does not appear in the theorem count.
 
-### Prior work comparison
+### Prior work
 
-| | [formal-ml](https://github.com/google/formal-ml) (Google) | [lean-stat-learning-theory](https://github.com/jtristan/lean-stat-learning-theory) (Zhang et al.) | **This kernel** |
-|---|---|---|---|
-| Lean | 3 (obsolete) | 4 (v4.27) | 4 (v4.29) |
-| LOC | 36,221 | 34,629 | 21,522 |
-| Sorry | 1 | 0 | **0** |
-| Novel mathematics | None | None | **Yes** |
-| Characterization theorems | None | None | **5** (PAC, Online, Gold, mind change, compression) |
-| Paradigm separations | None | None | **4** (all constructive witnesses) |
-| Fundamental theorem | Not attempted | Not attempted | **5/5 conjuncts** |
-| Measurability analysis | None | None | **Strict Borel-analytic separation** |
+The only prior attempt at formalizing PAC learning theory with VC dimension is Google's [formal-ml](https://github.com/google/formal-ml):
 
-The existing formalizations cover adjacent territory: Google's repo proves Sauer-Shelah and basic PAC bounds for finite hypothesis classes (Lean 3, incomplete, left with TODOs). Zhang et al. prove concentration inequalities, covering numbers, and Dudley's entropy integral (no learning theory characterizations). Neither attempts any characterization theorem, paradigm separation, or measurability analysis. The mathematical content is complementary with near-zero overlap.
-
-The difficulty gap is structural, not just scope:
-
-| | Zhang et al. | This kernel |
+| | formal-ml (Google) | **This kernel** |
 |---|---|---|
-| Infrastructure ratio | ~30% | **~65%** |
-| Domain crossings per theorem | 1 (within analysis) | 3-5 (combinatorics x measure theory x DST x game theory) |
-| Longest proof chain | ~2,000 lines | **~5,800 lines** (compression: MWU + Assouad + VC-approx + symmetrization) |
-| Dead branches (proof routes tried and killed) | 0 | 5 (each shaped the kernel architecture) |
-| Definition repairs (formalization-forced corrections) | 0 | 8 (quantifier ordering, realizability guards, cardinality splits) |
-| Measurability obstructions | None (all MeasurableSet) | Critical (NullMeasurableSet discovery, 526-line Choquet bridge) |
+| Lean | 3 (obsolete) | 4 (v4.29) |
+| LOC | 36,221 | 21,522 |
+| Sorry | 1 | **0** |
+| Scope | Sauer-Shelah + finite-class PAC bounds | 5-way fundamental theorem + 4 separations + compression + PAC-Bayes + measurability hierarchy |
+| Status | Incomplete (TODOs for VC-to-PAC connection) | Complete (5/5 conjuncts, 0 sorry) |
+| Novel mathematics | None | Borel-analytic separation, MWU compression, MBL monad |
 
-The 65% infrastructure ratio is not engineering overhead. It is the mathematical cost of paradigm crossing: when a theorem connects combinatorics to measure theory, the proof must build the bridge between them. That bridge is the infrastructure. Theorems that stay within a single domain (concentration inequalities, covering number bounds) do not incur this cost.
+Zhang et al. ([lean-stat-learning-theory](https://github.com/jtristan/lean-stat-learning-theory)) formalize concentration inequalities, covering numbers, and Dudley's entropy integral in Lean 4. Their work is complementary: it covers the analytic infrastructure (sub-Gaussian tails, log-Sobolev, regression rates) that this kernel does not, while this kernel covers the characterization theorems, paradigm separations, and measurability theory that theirs does not. See Section XIV for the full related work landscape.
+
+### Proof difficulty
+
+Characterization theorems are structurally harder to formalize than concentration inequalities or covering number bounds because they cross mathematical domains. The VC characterization connects combinatorics (shattering) to measure theory (product measures) to descriptive set theory (Choquet capacity) in a single proof chain. Each crossing requires dedicated infrastructure.
+
+| Property | This kernel |
+|----------|------------|
+| Infrastructure ratio | ~65% of LOC is proof infrastructure, not theorem statements |
+| Longest proof chain | ~5,800 lines (compression: MWU + Assouad + VC-approx + symmetrization) |
+| Domain crossings per characterization theorem | 3-5 (combinatorics x measure theory x DST x game theory) |
+| Dead branches (proof routes tried and killed) | 5 (each shaped the kernel architecture) |
+| Definition repairs (formalization-forced corrections) | 8 (quantifier ordering, realizability guards, cardinality splits) |
+| Measurability obstructions | NullMeasurableSet discovery required 526-line Choquet bridge |
 
 ---
 
@@ -1189,6 +1189,14 @@ Requires `elan` for Lean4. Figure generation requires Python 3 with `matplotlib`
 | [formal-learning-theory-dataset](https://github.com/Zetetic-Dhruv/formal-learning-theory-dataset) | Concept graph (142 nodes, 260 edges) + fine-tuned SLM | Informed the type architecture in `premise/origin.json` |
 | [formal-learning-theory-book](https://github.com/Zetetic-Dhruv/formal-learning-theory-book) | *A Textbook of Formal Learning Theory* (202 pages, 18 chapters) | Informal exposition of the same content |
 | [First-Proof-Benchmark-Results](https://github.com/Zetetic-Dhruv/First-Proof-Benchmark-Results) | AI-driven proof discovery benchmarks across frontier models | Broader context beyond this library |
+
+### Related formalizations
+
+| Repository | Content | Relationship to this kernel |
+|-----------|---------|----------------------------|
+| [formal-ml](https://github.com/google/formal-ml) (Google) | PAC + VC dimension + Sauer-Shelah in Lean 3 | Only prior attempt at PAC formalization. Lean 3 (obsolete), incomplete (TODOs for VC-to-PAC). |
+| [lean-stat-learning-theory](https://github.com/jtristan/lean-stat-learning-theory) (Zhang et al.) | Concentration inequalities, covering numbers, Dudley integral, regression rates in Lean 4 | Complementary: covers analytic infrastructure (sub-Gaussian, log-Sobolev, epsilon-nets) that this kernel does not. No characterization theorems, paradigm separations, or measurability analysis. |
+| [transformer-learning-theory](https://github.com/Zetetic-Dhruv/transformer-learning-theory) | Attention routing measurability, softmax-argmax equivalence in Lean 4 | Downstream: imports this kernel and applies its measurability framework to transformer architectures. |
 
 ---
 
