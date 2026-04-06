@@ -203,7 +203,12 @@ HYPEREDGES = {
     "Composition\nclosure": {
         "modules": ["Complexity.Interpolation", "Complexity.Amalgamation",
                      "Learner.Closure", "Learner.Monad",
-                     "Learner.VersionSpace", "MathLib.ReaderMonad"],
+                     "Learner.VersionSpace", "PureMath.ReaderMonad"],
+    },
+    "Compression": {
+        "modules": ["Complexity.Compression", "Complexity.FiniteSupportUC",
+                     "Complexity.DualVC", "PureMath.ApproxMinimax",
+                     "PureMath.FiniteVCApprox", "PureMath.BinaryMatrix"],
     },
 }
 
