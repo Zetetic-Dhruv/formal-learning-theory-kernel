@@ -149,27 +149,25 @@ theorem sauer_shelah_quantitative (X : Type u) [Fintype X] [DecidableEq X]
   -- Factored through Bridge.lean infrastructure
   growth_function_le_sauer_shelah C d hd m hm
 
-/-- Weak Sauer-Shelah (legacy statement, trivially true). -/
+/-- DEPRECATED: Legacy trivial statement (proves only ∃ bound, not a quantitative one).
+    The quantitative version is `sauer_shelah_quantitative`. -/
 theorem sauer_shelah (X : Type u)
     (C : ConceptClass X Bool) (d m : ℕ)
     (hd : VCDim X C = d) (hm : d ≤ m) :
     ∃ (bound : ℕ), GrowthFunction X C m ≤ bound := by
   exact ⟨GrowthFunction X C m, le_refl _⟩
 
-/-- PAC lower bound: sample complexity is at least linear in d/ε.
+/-- PAC lower bound: sample complexity is at least ⌈(d-1)/2⌉.
 
-    The original statement `∃ lower, lower ≤ SampleComplexity` was
-    trivially true via `⟨0, Nat.zero_le _⟩`. The corrected statement asserts the
-    SPECIFIC quantitative lower bound from learning theory:
-      m ≥ ⌈(d-1)/(64ε)⌉ for PAC learning with VCDim = d.
-    Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean.
+    The live theorem proves:
+      Nat.ceil ((d - 1 : R) / 2) ≤ SampleComplexity X C eps delta
+    This is an epsilon-free combinatorial bound (no dependence on epsilon
+    appears in the formalized statement). The textbook epsilon-dependent
+    bounds (e.g. (d-1)/(2*epsilon) from EHKV 1989) are not yet formalized.
 
-    Proof route: construct 2^d labelings on a shattered set of size d,
-    use double-averaging + reversed Markov to show that m < (d-1)/(64ε)
-    implies Pr[error ≤ ε] < 6/7 under uniform distribution on shattered set.
-
-    Note: The exact constant (1/7 vs 1/8 vs 1/4) depends on the proof technique.
-    The factor (d-1) vs d also varies by source. -/
+    Proof route: delegates to sample_complexity_lower_bound
+    (GeneralizationResults.lean), which uses pac_lower_bound_member
+    and pac_lower_bound_core from Generalization.lean. -/
 theorem pac_lower_bound (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (d : ℕ)

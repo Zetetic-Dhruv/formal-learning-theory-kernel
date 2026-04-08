@@ -32,24 +32,18 @@ lake build
 
 ## Sorry Inventory
 
-Exactly 2 `sorry` tactics exist in the kernel. Both are blocked by published results absent from Mathlib.
+Zero `sorry` tactics exist in the kernel. Every compiled theorem is proved.
 
-| # | File | Theorem | Blocked by | Citation |
-|---|------|---------|-----------|----------|
-| 1 | `FLT_Proofs/Complexity/Generalization.lean:1903` | `vcdim_finite_imp_compression` | Approximate minimax on bounded-VC binary matrices | Moran-Yehudayoff 2016 (arXiv:1503.06960) |
-| 2 | `FLT_Proofs/Theorem/Extended.lean:40` | `bhmz_middle_branch` | One-inclusion graph learners + doubling aggregation | Bousquet-Hanneke-Moran-Zhivotovskiy, STOC 2021 |
+The universal trichotomy (BHMZ STOC 2021) is commented out as a TODO in `Theorem/Extended.lean`; it is not compiled and does not appear in the theorem count.
 
-**CI enforcement:** The GitHub Actions workflow fails if the sorry count exceeds 2. The check matches only standalone `sorry` tactics (`^\s*sorry\s*$`), not comment mentions.
+**CI enforcement:** The GitHub Actions workflow fails if any `sorry` tactic is found. The check matches only standalone `sorry` tactics (`^\s*sorry\s*$`), not comment mentions.
 
 ## Verification Commands
 
 ```bash
-# Count sorrys (should print exactly 2 lines)
+# Count sorrys (should print 0 lines)
 grep -rn --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/
-
-# Verify no new files with sorry
-grep -rl --include="*.lean" -E '^[[:space:]]*sorry[[:space:]]*$' FLT_Proofs/
-# Expected: Complexity/Generalization.lean, Theorem/Extended.lean
+# Expected: no output
 
 # Generate canonical metrics (should match README and premise/final.json)
 ./scripts/metrics.sh

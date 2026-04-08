@@ -1640,14 +1640,15 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
         exact Set.singleton_subset_iff.mpr hc₀
 
 set_option maxHeartbeats 800000 in
-/-- PAC lower bound core: sample complexity is at least (d-1)/2.
-    For any PAC learner with VCDim = d, at least ⌈(d-1)/2⌉ samples needed.
+/-- PAC lower bound core: any PAC learner with VCDim = d needs at least
+    ⌈(d-1)/2⌉ samples (epsilon-free combinatorial bound).
     Proof: construct d shattered points, uniform distribution, counting argument.
-    Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean. -/
+    Note: the textbook epsilon-dependent bound (d-1)/(2*epsilon) (EHKV 1989)
+    is not yet formalized. -/
 theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (d : ℕ) (hd_pos : 1 ≤ d)
     (hd : VCDim X C = d) (ε : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1/4) :
-    -- Any PAC learner needs at least ⌈(d-1)/(64ε)⌉ samples
+    -- Any PAC learner needs at least ⌈(d-1)/2⌉ samples
     ∀ (L : BatchLearner X Bool) (mf : ℝ → ℝ → ℕ),
       (∀ (δ : ℝ), 0 < δ → δ ≤ 1 →
         ∀ (D : MeasureTheory.Measure X), MeasureTheory.IsProbabilityMeasure D →
@@ -1658,12 +1659,12 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
                 ≤ ENNReal.ofReal ε }
             ≥ ENNReal.ofReal (1 - δ)) →
       Nat.ceil ((d - 1 : ℝ) / 2) ≤ mf ε (1/7) := by
-  -- Proof by contradiction: assume mf ε (1/7) < ⌈(d-1)/(2ε)⌉, derive violation
+  -- Proof by contradiction: assume mf ε (1/7) < ⌈(d-1)/2⌉, derive violation
   -- of the PAC guarantee using NFL counting on the shattered set.
   intro L mf hpac
   by_contra h_lt
   push_neg at h_lt
-  -- h_lt : mf ε (1/7) < ⌈(d-1)/(2ε)⌉
+  -- h_lt : mf ε (1/7) < ⌈(d-1)/2⌉
   set m := mf ε (1/7) with hm_def
   -- Step 1: Extract shattered set T with |T| = d from VCDim X C = d.
   have ⟨T, hTshat, hTcard⟩ : ∃ T : Finset X, Shatters X C T ∧ T.card = d := by
@@ -2260,17 +2261,16 @@ theorem growth_bounded_imp_vcdim_finite (X : Type u)
 
 set_option maxHeartbeats 800000 in
 /-- PAC lower bound membership: if m achieves PAC for C with VCDim = d,
-    then m ≥ ⌈(d-1)/(64ε)⌉.
+    then m ≥ ⌈(d-1)/2⌉.
     This is the core adversarial counting argument factored for PAC.lean assembly.
-    Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean.
+    Note: the textbook epsilon-dependent bound (d-1)/(2*epsilon) (EHKV 1989)
+    is not yet formalized.
 
-    Proof route (double-averaging on shattered set):
-    1. VCDim = d → ∃ shattered S with |S| = d
-    2. D = uniform on S (probability measure, each point has weight 1/d)
-    3. m < ⌈(d-1)/(64ε)⌉ → 2m < d → NFL counting applies
-    4. Double-averaging over 2^d labelings: E_f[E_xs[error]] ≥ (d-m)/(2d) > 1/4
-    5. Reversed Markov: ∃ c₀ ∈ C with Pr[error ≤ 1/8] ≤ 6/7
-    6. For ε ≤ 1/8: Pr[error ≤ ε] ≤ 6/7 = 1 - 1/7, contradicting PAC -/
+    Proof route (counting on shattered set):
+    1. VCDim = d -> exists shattered S with |S| = d
+    2. D = uniform on S
+    3. m < ⌈(d-1)/2⌉ -> 2m < d -> NFL counting applies
+    4. Counting argument derives contradiction with PAC guarantee -/
 theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (d : ℕ)
     (hd : VCDim X C = d) (ε δ : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1/4)
@@ -2284,11 +2284,11 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
                 ≤ ENNReal.ofReal ε }
             ≥ ENNReal.ofReal (1 - δ) }) :
     Nat.ceil ((d - 1 : ℝ) / 2) ≤ m := by
-  -- Proof by contradiction: assume m < ⌈(d-1)/(64ε)⌉ and derive a violation
+  -- Proof by contradiction: assume m < ⌈(d-1)/2⌉ and derive a violation
   -- of the PAC guarantee using the NFL counting argument on the shattered set.
   by_contra h_lt
   push_neg at h_lt
-  -- h_lt : m < ⌈(d-1)/(64ε)⌉
+  -- h_lt : m < ⌈(d-1)/2⌉
   -- Step 1: Extract shattered set T with |T| = d from VCDim X C = d.
   have ⟨T, hTshat, hTcard⟩ : ∃ T : Finset X, Shatters X C T ∧ T.card = d := by
     -- VCDim = d with d ≥ 1 → ∃ witness achieving the sup
@@ -2322,7 +2322,7 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
   -- D is (1/d) · ∑_{x ∈ T} δ_x, a probability measure on X supported on T.
   --
   -- Step 5: The NFL double-averaging argument on the shattered set T.
-  -- With 1/(64ε) constant, m < ⌈(d-1)/(64ε)⌉ → 2m < d = |T|.
+  -- With the current bound, m < ⌈(d-1)/2⌉ implies 2m < d = |T|.
   --
   -- PROOF ROUTE (same as pac_lower_bound_core):
   -- (1) 2m < d from h_lt and ε ≤ 1.
