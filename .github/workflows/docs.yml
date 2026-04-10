@@ -1,0 +1,42 @@
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Required for GitHub Pages deployment via the leanprover-community/docgen-action
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deploy at a time; don't cancel in-flight deploys
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+
+      # This composite action handles everything end-to-end:
+      #   1. Installs elan / lake matching lean-toolchain
+      #   2. Fetches the mathlib docs cache
+      #   3. Creates an on-the-fly docbuild/lakefile.toml that pins
+      #      doc-gen4 to the tag matching lean-toolchain (v4.29.0-rc6)
+      #   4. Runs `lake build FLT_Proofs:docs` and copies output to docs/docs
+      #   5. Uploads the docs/ folder and deploys it to GitHub Pages
+      #
+      # blueprint: false -- enable once leanblueprint is set up
+      # build-page: false -- we use docs/index.html as a plain redirect,
+      #                     not a Jekyll site
+      - name: Build and deploy Lean API documentation
+        uses: leanprover-community/docgen-action@main
+        with:
+          blueprint: false
+          build-page: false
