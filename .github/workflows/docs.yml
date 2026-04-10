@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Required for GitHub Pages deployment via the leanprover-community/docgen-action
+# Required for GitHub Pages deployment
 permissions:
   contents: read
   pages: write
@@ -22,21 +22,97 @@ jobs:
     environment:
       name: github-pages
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # This composite action handles everything end-to-end:
-      #   1. Installs elan / lake matching lean-toolchain
-      #   2. Fetches the mathlib docs cache
-      #   3. Creates an on-the-fly docbuild/lakefile.toml that pins
-      #      doc-gen4 to the tag matching lean-toolchain (v4.29.0-rc6)
-      #   4. Runs `lake build FLT_Proofs:docs` and copies output to docs/docs
-      #   5. Uploads the docs/ folder and deploys it to GitHub Pages
-      #
-      # blueprint: false -- enable once leanblueprint is set up
-      # build-page: false -- we use docs/index.html as a plain redirect,
-      #                     not a Jekyll site
-      - name: Build and deploy Lean API documentation
-        uses: leanprover-community/docgen-action@main
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Set toolchain from lean-toolchain
+        run: elan default "$(cat lean-toolchain)"
+
+      - name: Cache .lake
+        uses: actions/cache@v4
         with:
-          blueprint: false
-          build-page: false
+          path: |
+            ~/.elan
+            .lake
+          key: lean-docs-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+          restore-keys: |
+            lean-docs-
+            lean-
+
+      - name: Fetch mathlib olean cache
+        run: lake exe cache get
+
+      - name: Build FLT_Proofs
+        run: lake build
+
+      # Determine the doc-gen4 revision from lean-toolchain. For a toolchain
+      # like `leanprover/lean4:v4.29.0-rc6`, doc-gen4 publishes a matching tag.
+      - name: Determine doc-gen4 revision
+        id: docgen
+        run: |
+          TOOLCHAIN="$(cut -f2 -d: lean-toolchain)"
+          echo "rev=$TOOLCHAIN" >> "$GITHUB_OUTPUT"
+          echo "Using doc-gen4 rev: $TOOLCHAIN"
+
+      # docgen-action's index.js hard-requires lakefile.toml, but the kernel
+      # uses lakefile.lean. We replicate docgen-action/scripts/build_docs.sh
+      # by hand: create a tiny `docbuild` sibling package with its own
+      # lakefile.toml that requires the parent kernel by local path and
+      # doc-gen4 by git tag, reusing the parent's .lake/packages so mathlib
+      # is not re-fetched.
+      - name: Create docbuild subpackage
+        run: |
+          mkdir -p docbuild
+          cat > docbuild/lakefile.toml <<EOF
+          name = "docbuild"
+          reservoir = false
+          packagesDir = "../.lake/packages"
+
+          [[require]]
+          name = "LimitsOfLearning"
+          path = "../"
+
+          [[require]]
+          scope = "leanprover"
+          name = "doc-gen4"
+          rev = "${{ steps.docgen.outputs.rev }}"
+          EOF
+          cat docbuild/lakefile.toml
+
+      - name: Resolve docbuild dependencies
+        working-directory: docbuild
+        env:
+          MATHLIB_NO_CACHE_ON_UPDATE: "1"
+        run: lake update
+
+      - name: Build API documentation
+        working-directory: docbuild
+        run: lake build FLT_Proofs:docs
+
+      # The repo already ships docs/index.html as a redirect from the
+      # Pages root to docs/docs/ . We only need to populate docs/docs/
+      # with the doc-gen4 output here.
+      - name: Assemble Pages artifact
+        run: |
+          mkdir -p docs/docs
+          cp -r docbuild/.lake/build/doc/. docs/docs/
+          ls -la docs/
+          ls -la docs/docs/ | head -20
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
