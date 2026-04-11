@@ -1,6 +1,8 @@
 # Formal(ized) Learning Theory
 
-[![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml)
+[![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml) [![Docs](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/docs.yml/badge.svg)](https://zetetic-dhruv.github.io/formal-learning-theory-kernel/)
+
+**Live docs:** <https://zetetic-dhruv.github.io/formal-learning-theory-kernel/>
 
 | Lean | Mathlib | LOC | Theorems | Files | Sorry |
 |------|---------|-----|----------|-------|-------|
