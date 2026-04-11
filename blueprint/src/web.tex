@@ -3,8 +3,17 @@
 
 \documentclass{report}
 
-\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage{amsmath, amsfonts, amsthm, amssymb, mathtools}
+\usepackage{stmaryrd}
+\usepackage{bm}
+\usepackage{thmtools}
 \usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
 \usepackage[capitalize]{cleveref}
 \usepackage[showmore, dep_graph, project=../../]{blueprint}
 
@@ -16,9 +25,13 @@
 \dochome{https://zetetic-dhruv.github.io/formal-learning-theory-kernel/docs}
 
 \title{Formal Learning Theory Kernel: Blueprint v1}
-\author{Dhruv Gupta}
+\author{Dhruv Gupta, Indian Institute of Science}
 
 \begin{document}
 \maketitle
 \input{content}
+
+\bibliographystyle{alpha}
+\bibliography{references}
+
 \end{document}

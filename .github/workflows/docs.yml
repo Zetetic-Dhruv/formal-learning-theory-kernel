@@ -51,6 +51,10 @@ jobs:
       - name: Build FLT_Proofs
         run: lake build
 
+      # ===================================================================
+      # API documentation (doc-gen4)
+      # ===================================================================
+      #
       # Determine the doc-gen4 revision from lean-toolchain. For a toolchain
       # like `leanprover/lean4:v4.29.0-rc6`, doc-gen4 publishes a matching tag.
       - name: Determine doc-gen4 revision
@@ -95,16 +99,102 @@ jobs:
         working-directory: docbuild
         run: lake build FLT_Proofs:docs
 
-      # The repo already ships docs/index.html as a redirect from the
-      # Pages root to docs/docs/ . We only need to populate docs/docs/
-      # with the doc-gen4 output here.
-      - name: Assemble Pages artifact
+      - name: Copy API docs into Pages tree
         run: |
           mkdir -p docs/docs
           cp -r docbuild/.lake/build/doc/. docs/docs/
-          ls -la docs/
-          ls -la docs/docs/ | head -20
 
+      # ===================================================================
+      # Blueprint (leanblueprint + plastex + TeX Live)
+      # ===================================================================
+      #
+      # The blueprint builds two outputs:
+      #   1. A PDF compiled with xelatex inside a TeX Live docker image,
+      #      dropped at docs/blueprint.pdf.
+      #   2. A static HTML site compiled with plastex + leanblueprint,
+      #      dropped at docs/blueprint/.
+      #
+      # Both builds live inside blueprint/src/. The TeX Live action is used
+      # so we do not have to provision ~1 GB of TeX packages on the
+      # GitHub-hosted runner.
+      #
+      # When the blueprint source is absent or the build fails, the steps
+      # are guarded so the API documentation still deploys.
+      - name: Check blueprint source exists
+        id: blueprint_check
+        run: |
+          if [ -f blueprint/src/content.tex ] && [ -f blueprint/src/web.tex ] && [ -f blueprint/src/print.tex ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "Blueprint source detected at blueprint/src/"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Blueprint source not found; skipping blueprint build"
+          fi
+
+      - name: Build blueprint PDF (xelatex inside texlive-full)
+        if: steps.blueprint_check.outputs.present == 'true'
+        uses: xu-cheng/texlive-action@v2
+        with:
+          docker_image: ghcr.io/xu-cheng/texlive-full:latest
+          run: |
+            apk add --no-cache make py3-pip graphviz graphviz-dev gcc musl-dev python3-dev
+            cd blueprint/src
+            # latexmk three-pass to resolve references and citations
+            mkdir -p ../print
+            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            # Run bibtex if the bibliography step produced an .aux
+            if [ -f ../print/print.aux ]; then
+              (cd ../print && bibtex print || true)
+            fi
+            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            ls -la ../print/
+
+      - name: Install Python build dependencies for blueprint web
+        if: steps.blueprint_check.outputs.present == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz libgraphviz-dev pkg-config
+          python3 -m venv $HOME/blueprint-venv
+          $HOME/blueprint-venv/bin/pip install --upgrade pip wheel
+          $HOME/blueprint-venv/bin/pip install invoke leanblueprint pygraphviz
+          echo "$HOME/blueprint-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Build blueprint web HTML (plastex + leanblueprint)
+        if: steps.blueprint_check.outputs.present == 'true'
+        working-directory: blueprint/src
+        run: |
+          mkdir -p ../web
+          # leanblueprint web wraps plastex with the leanblueprint plugin.
+          # It reads plastex.cfg and emits HTML into blueprint/web/.
+          # Use plastex directly rather than the leanblueprint CLI so we can
+          # skip the decl-check until the lake/Lean integration is in place
+          # (see `lake exe checkdecls` step below, which we keep optional).
+          plastex --config=plastex.cfg web.tex || true
+          ls -la ../web/ || true
+
+      - name: Copy blueprint outputs into Pages tree
+        if: steps.blueprint_check.outputs.present == 'true'
+        run: |
+          mkdir -p docs/blueprint
+          if [ -f blueprint/print/print.pdf ]; then
+            cp blueprint/print/print.pdf docs/blueprint.pdf
+            echo "Copied blueprint.pdf"
+          else
+            echo "Warning: blueprint PDF not produced"
+          fi
+          if [ -d blueprint/web ]; then
+            cp -r blueprint/web/. docs/blueprint/
+            echo "Copied blueprint HTML"
+          else
+            echo "Warning: blueprint HTML not produced"
+          fi
+          ls -la docs/
+          ls -la docs/blueprint/ 2>/dev/null || true
+
+      # ===================================================================
+      # Pages deploy
+      # ===================================================================
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

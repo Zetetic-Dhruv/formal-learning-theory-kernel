@@ -1,0 +1,56 @@
+% Chapter 7: Closing notes and pointers to v2
+
+\chapter{Closing Notes and Forward Pointers}\label{chap:closing}
+
+This document covers the core story of the kernel plus the
+Borel-analytic separation that was discovered during formalization.
+Three strands of the kernel are deferred to a successor blueprint.
+
+\begin{itemize}[leftmargin=*,itemsep=4pt]
+  \item \textbf{Compression.} The kernel formalizes a compression
+    scheme for concept classes via an approximate minimax argument
+    using multiplicative weights, giving a constructive route to
+    compression schemes where the classical Moran--Yehudayoff
+    argument~\cite{MoranYehudayoff2016} uses the exact minimax
+    theorem. This material belongs to a dedicated v2 chapter that
+    will import the textbook's Chapter~11 on compression and add the
+    kernel-specific MWU formalization on top.
+
+  \item \textbf{The measurable batch learner monad.} The kernel
+    introduces \texttt{MeasurableBatchLearner}, a regularity axis
+    isolating joint learner measurability, and proves that it forms a
+    monad closed under Boolean combination, majority vote, piecewise
+    interpolation, and countable selection. The first proof that
+    non-neural learners (version spaces) satisfy
+    \texttt{MeasurableBatchLearner} uses a rectangle decomposition
+    that bypasses the Kuratowski--Ryll-Nardzewski measurable
+    selection theorem for countable families. This material belongs
+    to a dedicated v2 chapter on learner regularity.
+
+  \item \textbf{PAC-Bayes, extended criteria, and the Baxter
+    multi-task base case.} These are additional characterization
+    results the kernel formalizes but which sit outside the core
+    story of v1. They will be covered as separate strands in v2
+    (PAC-Bayes as a frequentist--Bayesian bridge following
+    McAllester~\cite{McAllester1999}, the extended criteria as a
+    refinement of the measurability hierarchy, and the Baxter base
+    case~\cite{Baxter2000} as a multi-task analogue of the
+    fundamental theorem).
+\end{itemize}
+
+The kernel also contributes a proof engineering layer, the typed
+proof operad \texttt{TPG\_FLT} together with the measurable inner
+event metaprogram, that sits orthogonal to the mathematical content.
+That layer is documented in a companion artifact at
+\url{https://zetetic-dhruv.github.io/formal-learning-theory-kernel/methodology/}
+(in preparation) which reuses the same leanblueprint infrastructure
+and is cross-linked with this blueprint on the case study of the
+measurable inner event pattern used by the symmetrization step of
+Chapter~\ref{chap:measurability}.
+
+For the full mathematical exposition of every strand deferred above,
+together with the six paradigms not covered by the kernel (Ch~8
+exact learning, Ch~9 universal learning, Ch~12 generalization
+bounds, Ch~13 mind-change ordinals, Ch~15 analogies, Ch~17 extensions,
+Ch~18 frontiers), see the companion textbook whose chapters this
+blueprint reuses.

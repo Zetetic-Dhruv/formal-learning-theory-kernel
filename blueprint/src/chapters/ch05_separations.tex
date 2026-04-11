@@ -1,0 +1,629 @@
+% Chapter imported from the companion textbook
+% (formal-learning-theory-book) with lean annotations added
+% as remark-wrapped hyperlinks after each separation block.
+% Separation prose is unchanged; annotations are additive.
+
+% Chapter 14: What Does Not Imply What
+% This chapter is witness-centered: each separation lives or dies by
+% the construction that demonstrates it.
+% Content: ALL 9 does_not_imply edges, ALL 4 strictly_stronger edges.
+
+\chapter{What Does Not Imply What}
+\label{ch:separations}
+
+Most textbooks in learning theory treat separation results as scattered
+remarks---brief asides after a characterization theorem, noting that
+some plausible implication fails. This chapter reverses that convention.
+Here, the separations are first-class citizens: each one receives a
+formal statement, a witness construction, and an analysis of what
+structural feature the witness exploits.
+
+A separation result has two components. The \emph{statement} asserts
+that some implication $A \Rightarrow B$ does not hold. The
+\emph{witness} is a concrete mathematical object---a concept class,
+a dimension pair, a computational reduction---that demonstrates the
+failure. The witness is the mathematics; the statement is merely its
+summary. Throughout this chapter, we privilege the construction over the
+claim.
+
+We organize the chapter's 13 edges into two groups: 9
+\rel{does\_not\_imply} edges, where the non-implication is the content,
+and 4 \rel{strictly\_stronger} edges, where an implication does hold but
+is provably non-reversible. Together they form the \emph{separation
+lattice} of formal learning theory.
+
+% ================================================================
+% SECTION 1: THE SEPARATION LATTICE
+% ================================================================
+
+\section{The Separation Lattice}
+\label{sec:sep-lattice}
+
+\Cref{fig:separation-lattice} displays all 13 edges as a single
+diagram. Dashed red arrows denote \rel{does\_not\_imply} edges: the
+source does \emph{not} entail the target, and the label names the
+witness. Solid blue arrows denote \rel{strictly\_stronger} edges: the
+source strictly contains the target as a special case, with the witness
+demonstrating the gap.
+
+The first observation is structural: the lattice is \emph{sparse}.
+Thirteen edges connect concepts drawn from six paradigms and a dozen
+complexity measures. Most paradigm pairs are simply incomparable---they
+neither imply nor contradict each other, because they operate on
+different mathematical objects. The sparsity is itself informative:
+learning theory is not a linear hierarchy from weak to strong, but a
+partially ordered collection of largely independent formalisms.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  node distance=1.8cm and 2.4cm,
+  concept/.style={
+    rectangle, rounded corners=3pt, draw, thick,
+    fill=layergray, font=\small\sffamily,
+    minimum width=2.2cm, minimum height=0.7cm,
+    align=center
+  },
+  dni/.style={-{Stealth[length=5pt]}, dashed, thmred, thick},
+  ss/.style={-{Stealth[length=5pt]}, defblue, thick},
+  witness/.style={font=\tiny\itshape, text=notegray, align=center}
+]
+
+% --- Nodes ---
+\node[concept] (ul) {Universal\\Learning};
+\node[concept, below left=2.0cm and 1.2cm of ul] (ol) {Online\\Learning};
+\node[concept, below right=2.0cm and 1.2cm of ul] (pac) {PAC\\Learning};
+\node[concept, right=2.8cm of pac] (exact) {Exact\\Learning};
+\node[concept, below=1.8cm of ol] (mb) {Mistake\\Bounded};
+\node[concept, below=1.8cm of pac] (ex) {Ex-\\Learning};
+\node[concept, below=1.8cm of ex] (fin) {FIN-\\Learning};
+
+\node[concept, left=2.5cm of ol] (vc) {VC\\Dimension};
+\node[concept, below=1.8cm of vc] (sq) {SQ\\Dimension};
+\node[concept, below left=1.8cm and 0.0cm of vc] (comp) {Comput.\\Hardness};
+
+\node[concept, right=2.8cm of exact] (nd) {Natarajan\\Dimension};
+\node[concept, above=1.8cm of nd] (ds) {DS\\Dimension};
+
+\node[concept, below=1.8cm of mb] (ft) {Fundamental\\Theorem};
+\node[concept, right=2.8cm of ft] (stab) {Algorithmic\\Stability};
+
+\node[concept, below left=1.4cm and 0.5cm of pac] (pi) {Proper/Improper\\Separation};
+\node[concept, below right=1.8cm and 0.0cm of exact] (uc) {Unlabeled\\Compression};
+\node[concept, below=1.5cm of uc] (cs) {Compression\\Scheme};
+
+% --- does_not_imply edges (dashed red) ---
+\draw[dni] (pac) -- node[witness, above, sloped] {thresholds} (mb);
+\draw[dni] (nd) -- node[witness, above, sloped] {$d_N{=}1$, not learnable} (pac);
+\draw[dni] (pac) -- node[witness, above, sloped] {approx.\ vs.\ exact} (exact);
+\draw[dni] (vc) -- node[witness, left, pos=0.4] {crypto} (comp);
+\draw[dni] (vc) -- node[witness, left] {parities} (sq);
+\draw[dni] (ex) -- node[witness, above, sloped] {$\VC = \infty$} (pac);
+\draw[dni] (pi) -- node[witness, below, sloped] {3-DNF} (pac);
+\draw[dni] (uc) -- node[witness, right, pos=0.4] {P\'alv\"olgyi--Tardos} (cs);
+\draw[dni] (ft) -- node[witness, above, sloped] {beyond binary} (stab);
+
+% --- strictly_stronger edges (solid blue) ---
+\draw[ss] (ul) -- node[witness, above left, sloped] {removes uniformity} (pac);
+\draw[ss] (ol) -- node[witness, above, sloped] {$\Ldim \Rightarrow \VC$} (pac);
+\draw[ss] (ex) -- node[witness, right] {unbounded mind changes} (fin);
+\draw[ss] (ds) -- node[witness, right] {pseudo-manifold} (nd);
+
+\end{tikzpicture}
+
+\caption{The separation lattice. Dashed red:
+\rel{does\_not\_imply} (9~edges). Solid blue:
+\rel{strictly\_stronger} (4~edges). Each label names the witness.}
+\label{fig:separation-lattice}
+\end{figure}
+
+
+% ================================================================
+% SECTION 2: SEPARATIONS BETWEEN PARADIGMS
+% ================================================================
+
+\section{Separations Between Paradigms}
+\label{sec:separations}
+
+We now present the 9 \rel{does\_not\_imply} edges in the graph, each
+with its witness construction. The order moves from the most elementary
+witness (a one-parameter family on $\R$) to the most conceptually
+involved (the breakdown of the fundamental theorem beyond binary
+classification).
+
+% --- Separation 1 ---
+
+\begin{separation}
+\textbf{PAC learning $\not\Rightarrow$ mistake-bounded learning.}
+
+\medskip\noindent
+\emph{Witness.}
+Let $\mathcal{H} = \{h_\theta : \theta \in \R\}$ be the class of
+thresholds on $\R$, where $h_\theta(x) = \ind[x \geq \theta]$.
+
+This class has $\VC(\mathcal{H}) = 1$: a single point $x$ is shattered
+(choose $\theta < x$ or $\theta > x$), but no two points can be
+simultaneously shattered. By the fundamental theorem of statistical
+learning, $\mathcal{H}$ is PAC learnable with sample complexity
+$O(1/\varepsilon)$.
+
+However, $\Ldim(\mathcal{H}) = \infty$. An adaptive adversary can force
+arbitrarily many mistakes by binary search: maintain an interval
+$(a, b)$ of uncertainty, present the midpoint, and whichever label the
+learner predicts, place the true threshold on the opposite side. Each
+round forces a mistake and halves the interval, but the reals admit
+no finite termination.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The gap between VC and Littlestone dimension: batch learnability
+(distribution-free, i.i.d.\ samples) does not imply sequential
+learnability (adversarial, adaptive instances). The reals are
+``too dense'' for any online strategy to pin down the threshold,
+but a random sample reveals it with high probability.
+
+\hfill\cite{Littlestone1988}
+\end{separation}
+
+% Formalization hyperlink (added for blueprint)
+\begin{remark}\label{sep:pac-not-online}
+  \lean{pac_not_implies_online}
+  \leanok
+  \uses{def:pac,def:ldim,thm:vc-char,thm:littlestone-characterization}
+  Formalized in the kernel; see the source link.
+\end{remark}
+
+% --- Separation 2 ---
+
+\begin{separation}
+\textbf{Ex-learning $\not\Rightarrow$ PAC learning.}
+
+\medskip\noindent
+\emph{Witness.}
+Let $\mathcal{C} = \{ S \subseteq \N : S \text{ is finite} \}$, the
+class of all finite subsets of $\N$. A Gold-style learner can identify
+any finite $S$ in the limit from positive data: enumerate elements as
+they appear, and at each stage conjecture the set of elements seen so
+far. After the last new element arrives, the conjecture stabilizes on
+$S$.
+
+However, $\VC(\mathcal{C}) = \infty$: for any $n$ points
+$\{x_1, \ldots, x_n\} \subset \N$, every subset is itself a finite set
+in $\mathcal{C}$, so the class shatters every finite set. The
+fundamental theorem then implies $\mathcal{C}$ is not PAC learnable.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The data models are incompatible. Gold-style identification receives an
+infinite enumeration of the target's elements and succeeds in the limit;
+PAC learning receives a finite i.i.d.\ sample and must generalize
+immediately. A class can be identifiable from exhaustive enumeration yet
+have no finite VC dimension.
+
+\hfill\cite{Gold1967}
+\end{separation}
+
+% Formalization hyperlink (added for blueprint)
+\begin{remark}\label{sep:gold-not-pac}
+  \lean{ex_not_implies_pac}
+  \leanok
+  \uses{def:ex-learning,def:vc-dim,thm:vc-char}
+  Formalized in the kernel; see the source link.
+\end{remark}
+
+% --- Separation 3 ---
+
+\begin{separation}
+\textbf{PAC learning $\not\Rightarrow$ exact learning.}
+
+\medskip\noindent
+\emph{Witness.}
+PAC learning requires only $\varepsilon$-approximate identification
+under an unknown distribution; exact learning requires zero-error
+identification via query access. These are different success criteria on
+different data models, and neither subsumes the other.
+
+More concretely, consider any concept class $\mathcal{C}$ that is PAC
+learnable (finite VC dimension) but for which proper hypothesis
+selection is NP-hard---for instance, intersections of halfspaces in
+$\R^d$ for sufficiently large $d$. An improper PAC learner can achieve
+low error using a surrogate hypothesis class, but the exact learning
+model requires the learner to output a hypothesis \emph{exactly equal}
+to the target. When the class is rich enough that finding the exact
+target is computationally intractable, PAC learnability does not deliver
+exact learnability.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The gap between approximate and exact success criteria. PAC tolerates
+$\varepsilon$ error; exact learning tolerates none. This is a
+criterion mismatch, not a data mismatch.
+
+\hfill\cite{Valiant1984}
+\end{separation}
+
+% --- Separation 4 ---
+
+\begin{separation}
+\textbf{Finite VC dimension $\not\Rightarrow$ computational
+tractability.}
+
+\medskip\noindent
+\emph{Witness.}
+Kearns and Valiant~\cite{KearnsValiant1994} constructed concept classes
+based on polynomial-size Boolean circuits whose VC dimension is
+polynomial in the circuit size, yet for which PAC learning is
+computationally intractable under the assumption that the
+\emph{decisional Diffie--Hellman} (or related cryptographic) assumption
+holds.
+
+The construction proceeds as follows. Fix a one-way function family.
+Define $\mathcal{C}$ to be the class of functions computed by circuits
+of size $s$. This class has $\VC(\mathcal{C}) \leq O(s \log s)$, so it
+is information-theoretically PAC learnable with $\mathrm{poly}(s)$
+samples. But any polynomial-time PAC learner for $\mathcal{C}$ could be
+used to invert the one-way function, contradicting the cryptographic
+assumption.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The fundamental theorem is \emph{information-theoretic}: it
+characterizes learnability in terms of sample complexity, not
+computational complexity. Cryptographic hardness lives in a different
+layer entirely. Finite VC dimension guarantees that enough data suffices;
+it says nothing about whether a polynomial-time algorithm can find a
+good hypothesis from that data.
+
+\hfill\cite{KearnsValiant1994}
+\end{separation}
+
+% --- Separation 5 ---
+
+\begin{separation}
+\textbf{Finite VC dimension $\not\Rightarrow$ low SQ dimension.}
+
+\medskip\noindent
+\emph{Witness.}
+The class of parities over $\{0,1\}^n$. Each parity function $\chi_S$,
+for $S \subseteq [n]$, maps $x \mapsto \bigoplus_{i \in S} x_i$. The
+parity class has $\VC = n$ (it shatters the standard basis). But any
+statistical query algorithm requires queries of tolerance
+$\tau = O(2^{-n/2})$ or uses $2^{\Omega(n)}$ queries of polynomial
+tolerance, because distinct parities are pairwise uncorrelated under the
+uniform distribution.
+
+Formally, $\SQdim(\text{Parities}_n) = 2^n$, which is exponential in
+$\VC = n$.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+VC dimension measures combinatorial shattering capacity
+(distribution-free). SQ dimension measures pairwise correlation
+structure under a specific distribution. Parities are maximally
+uncorrelated under the uniform distribution, forcing any SQ learner to
+make exponentially many queries, even though the class is small in the
+VC sense.
+
+\hfill\cite{BlumFurstJacksonKearnsMansourRudich1994}
+\end{separation}
+
+% --- Separation 6 ---
+
+\begin{separation}
+\textbf{Natarajan dimension $\not\Rightarrow$ multiclass PAC
+learnability.}
+
+\medskip\noindent
+\emph{Witness.}
+Brukhim et al.~\cite{BrukhimCarmonDinurMoranYehudayoff2022}
+constructed a concept class $\mathcal{C}$ with label space
+$Y$ of infinite cardinality, Natarajan dimension $\Ndim(\mathcal{C})=1$,
+yet $\mathcal{C}$ is not PAC learnable.
+
+The Natarajan dimension, which
+generalizes VC dimension to multiclass settings by requiring two
+distinct labelings of shattered points, is too coarse when $|Y|$ is
+infinite. The construction builds a class in which every pair of points
+can be 2-colored in only one way (so $\Ndim = 1$), but the global
+combinatorial structure is rich enough to prevent uniform convergence.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The Natarajan dimension captures pairwise shattering. When the label
+space is infinite, pairwise structure does not determine global
+learnability. The DS dimension, which accounts for higher-order
+combinatorial structure via oriented hypergraphs, is the correct
+characterization.
+
+\hfill\cite{BrukhimCarmonDinurMoranYehudayoff2022}
+\end{separation}
+
+% --- Separation 7 ---
+
+\begin{separation}
+\textbf{Proper learnability $\not\Rightarrow$ efficient proper PAC
+learning.}
+
+\medskip\noindent
+\emph{Witness.}
+The class of 3-term DNF formulas over $\{0,1\}^n$. Pitt and
+Valiant~\cite{PittValiant1988} showed that \emph{proper} PAC
+learning---where the hypothesis must itself be a 3-term DNF---is
+NP-hard, assuming $\mathrm{RP} \neq \mathrm{NP}$. Yet the same class
+is efficiently PAC learnable \emph{improperly}: every 3-term DNF can be
+represented as a 3-CNF, and 3-CNFs are efficiently PAC learnable.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The gap between proper and improper learning is purely
+computational: the information-theoretic sample complexity is
+identical, but the representation constraint of proper learning
+introduces NP-hardness. The concept class is simple enough to learn
+with the right representation, but finding a hypothesis in the
+\emph{same} representation class is intractable.
+
+\hfill\cite{PittValiant1988}
+\end{separation}
+
+% --- Separation 8 ---
+
+\begin{separation}
+\textbf{Labeled compression $\not\Rightarrow$ unlabeled compression.}
+
+\medskip\noindent
+\emph{Witness.}
+P\'alv\"olgyi and Tardos~\cite{PalvolgyiTardos2020} exhibited a
+concept class with $\VC = 2$ that admits a labeled sample compression
+scheme of size~2 but does \emph{not} admit an unlabeled compression
+scheme of size~2.
+
+In an unlabeled compression scheme, the compression function stores only
+the \emph{points} (not their labels) from the training sample; the
+reconstruction function must infer both the hypothesis and the labels
+from the point set alone. The witness class is constructed so that the
+label information is essential for reconstruction: two subsets of the
+same size can correspond to different concepts, and only the labels
+disambiguate them.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The label information carries entropy that cannot always be recovered
+from the geometry of the point set alone. Unlabeled compression demands
+that the point configuration determines the concept, which is a strictly
+stronger requirement than labeled compression.
+
+\hfill\cite{PalvolgyiTardos2020}
+\end{separation}
+
+% --- Separation 9 ---
+
+\begin{separation}
+\textbf{The fundamental theorem $\not\Rightarrow$ stability
+characterization.}
+
+\medskip\noindent
+\emph{Witness.}
+The Fundamental Theorem of Statistical Learning (\Cref{ch:pac}) ties
+together VC dimension, uniform convergence, and PAC learnability into a
+single equivalence.  Nine conditions, all the same condition.  That
+theorem is the crown jewel of binary classification.
+
+It does not survive contact with real-valued loss.
+
+Shalev-Shwartz et al.~\cite{ShalevShwartzShamir2010} construct a
+learning problem---arbitrary loss, multi-valued output---that is
+learnable, yet for which uniform convergence fails outright.  The
+nine-way equivalence collapses.  In its place, a different quantity
+takes over: algorithmic stability, measuring how much a learner's output
+changes when a single training point is perturbed.
+
+\medskip\noindent
+\emph{What the witness exploits.}
+The symmetrization argument at the heart of the Fundamental Theorem's
+proof requires the loss to take finitely many values.  Specifically:
+two.  That assumption is invisible in the binary setting---it looks like
+a harmless feature of the problem.  Make the loss real-valued and
+symmetrization breaks.  Uniform convergence stops characterizing
+learnability.  Stability, indifferent to loss cardinality, remains.
+
+The Fundamental Theorem is not wrong.  It is \emph{local}---an artifact
+of the 0-1 loss that does not announce itself as such.
+
+\hfill\cite{ShalevShwartzShamir2010}
+\end{separation}
+
+
+% ================================================================
+% SECTION 3: THE STRICT STRENGTH HIERARCHY
+% ================================================================
+
+\section{Strict Strength Hierarchy}
+\label{sec:strict-hierarchy}
+
+The 4 \rel{strictly\_stronger} edges assert that one concept
+\emph{does} imply another, but the reverse fails: the stronger concept
+is a proper generalization. Each edge requires two proofs: one for the
+forward implication, and one---the witness---for the strictness of the
+gap.
+
+% --- Strict 1 ---
+
+\begin{separation}
+\textbf{Ex-learning $\supsetneq$ FIN-learning.}
+
+\medskip\noindent
+\emph{Forward implication.} Every FIN-learnable class is trivially
+Ex-learnable: a learner that outputs its final hypothesis after finitely
+many data points and never changes it again is, a fortiori, a learner
+that converges in the limit.
+
+\medskip\noindent
+\emph{Witness for strictness.}
+FIN-learning requires zero mind changes: the learner must output its
+final, correct hypothesis at some point and never retract it. Ex-learning
+allows unbounded mind changes before convergence. The gap is witnessed
+by any class requiring unbounded mind changes for identification.
+
+Consider the class of pattern languages with growing structural
+complexity. A Gold-style learner can identify any member in the limit
+(Ex-learn it) by successively refining its conjecture as new data
+arrives, but no learner can commit to a correct hypothesis after seeing
+only finitely many initial elements without ever revising. The revision
+process is essential, and FIN-learning forbids it.
+
+In the Gold identification hierarchy, this separation is the first step:
+$\FIN \subsetneq \Ex$, and the gap is measured by the mind-change
+ordinal. FIN corresponds to $0$ mind changes; Ex allows $< \omega$ mind
+changes (any finite number, not bounded in advance).
+
+\hfill\cite{Gold1967}
+\end{separation}
+
+% --- Strict 2 ---
+
+\begin{separation}
+\textbf{Online learning $\supsetneq$ PAC learning.}
+
+\medskip\noindent
+\emph{Forward implication.}
+If $\mathcal{H}$ has finite Littlestone dimension $\Ldim(\mathcal{H})
+= d$, then in particular $\VC(\mathcal{H}) \leq d$ (every shattered
+set in the VC sense is a path in a Littlestone tree). By the fundamental
+theorem, $\mathcal{H}$ is PAC learnable.
+
+\medskip\noindent
+\emph{Witness for strictness.}
+Thresholds on finite domains provide the simplest witness. Fix
+$X = \{1, 2, \ldots, n\}$ and let $\mathcal{H}_n = \{h_\theta :
+\theta \in \{0, 1, \ldots, n\}\}$ where $h_\theta(x) = \ind[x >
+\theta]$. Then $\VC(\mathcal{H}_n) = 1$ for every $n$, but
+$\Ldim(\mathcal{H}_n) = \lfloor \log_2(n+1) \rfloor$, which grows
+without bound as $n \to \infty$.
+
+More dramatically, thresholds on $\R$ (the witness from Separation~1)
+have $\VC = 1$ but $\Ldim = \infty$: PAC learnable but not online
+learnable with any finite mistake bound. The containment is strict at
+every level of the hierarchy.
+
+\hfill\cite{Littlestone1988}
+\end{separation}
+
+% --- Strict 3 ---
+
+\begin{separation}
+\textbf{Universal learning $\supsetneq$ PAC learning.}
+
+\medskip\noindent
+\emph{Forward implication.}
+Every PAC learnable class (finite VC dimension) is universally learnable
+with exponential learning rates. Universal learning requires learning
+under \emph{every} distribution individually, whereas PAC learning
+requires a single learner that works uniformly over all distributions.
+The PAC guarantee is a special case.
+
+\medskip\noindent
+\emph{Witness for strictness.}
+Bousquet et al.~\cite{BousquetHannekeMoranVanHandelYehudayoff2021}
+established a trichotomy for universal learning rates: every concept
+class has either an exponential rate, an arbitrarily slow rate, or is
+not universally learnable at all. The trichotomy theorem shows that
+classes with $\VC(\mathcal{H}) = \infty$ but containing no infinite
+Littlestone tree achieve exponential universal learning rates---they
+are universally learnable but \emph{not} PAC learnable (since PAC
+requires finite VC dimension).
+
+The critical structural difference is the quantifier order.
+PAC learning demands: $\exists$ learner $\forall$ distributions
+$\forall \varepsilon, \delta$, the learner succeeds. Universal learning
+demands: $\forall$ distributions $\exists$ rate at which \emph{some}
+learner succeeds. By removing the uniformity requirement over
+distributions, universal learning captures a strictly larger class
+of learning problems.
+
+\hfill\cite{BousquetHannekeMoranVanHandelYehudayoff2021}
+\end{separation}
+
+% --- Strict 4 ---
+
+\begin{separation}
+\textbf{DS dimension $\supsetneq$ Natarajan dimension.}
+
+\medskip\noindent
+\emph{Forward implication.}
+The DS dimension refines the Natarajan dimension: $\Ndim(\mathcal{H})
+\leq \DSdim(\mathcal{H})$ for every hypothesis class $\mathcal{H}$.
+Both measure the combinatorial complexity of multiclass concept classes,
+but the DS dimension accounts for the full oriented hypergraph structure,
+not just pairwise shattering.
+
+\medskip\noindent
+\emph{Witness for strictness.}
+Brukhim et al.~\cite{BrukhimCarmonDinurMoranYehudayoff2022} constructed
+a concept class using a hyperbolic pseudo-manifold with $\Ndim = 1$
+but $\DSdim = \infty$. The construction builds a concept class over an
+infinite label space where every pair of points admits only one
+non-trivial two-coloring (giving $\Ndim = 1$), but the global
+combinatorial structure---encoded in the oriented faces of the
+pseudo-manifold---is rich enough to drive the DS dimension to infinity.
+
+This is the witness that simultaneously demonstrates the separation
+$\Ndim \not\Rightarrow \text{PAC learnable}$ from \Cref{sec:separations}:
+the same class has $\Ndim = 1$ but is not learnable, because learnability
+is characterized by the DS dimension, not the Natarajan dimension.
+
+\hfill\cite{BrukhimCarmonDinurMoranYehudayoff2022}
+\end{separation}
+
+
+% ================================================================
+% SECTION 4: WHAT THE NEGATIVE LAYER REVEALS
+% ================================================================
+
+\section{What the Negative Layer Reveals}
+\label{sec:neg-layer-summary}
+
+The separation lattice of \Cref{fig:separation-lattice} carries a
+meta-theorem about the structure of formal learning theory, which we
+can now state explicitly.
+
+\begin{thm}[Sparsity of the separation lattice]
+\label{thm:sparsity}
+Of the $\binom{k}{2}$ potential pairwise implications among the $k$
+major learning paradigms and complexity measures in the graph, only
+13 have been either established or refuted with witnesses. The
+remaining pairs are either unrelated (operating on different
+mathematical types) or connected by non-implicational relations
+(analogy, measurement, assumption).
+\end{thm}
+
+This sparsity is not an artifact of incomplete knowledge. It reflects a
+genuine structural fact: the major paradigms of learning theory are
+\emph{largely incomparable}. PAC learning and Gold-style identification
+operate on different data models (i.i.d.\ samples vs.\ infinite
+enumerations). Online learning and exact learning use different
+interaction protocols (adversarial instances vs.\ query access).
+VC dimension and SQ dimension measure different properties
+(combinatorial shattering vs.\ correlation structure).
+
+The witnesses in this chapter make the incomparability concrete.
+Thresholds on $\R$ separate PAC from online learning. All finite subsets
+of $\N$ separate Gold identification from PAC learning. Parities
+separate VC dimension from SQ dimension. Each witness exploits a specific
+structural mismatch---in the data model, the success criterion, the
+adversarial model, or the computational model---and these mismatches are
+not removable by clever proof techniques. They are features of the
+mathematical landscape.
+
+The four strict strength edges, taken together, form two chains:
+\[
+\text{Universal} \supsetneq \text{Online} \supsetneq \text{PAC}
+\qquad \text{and} \qquad
+\DSdim \supsetneq \Ndim.
+\]
+The first chain orders three paradigms by the stringency of their
+learnability requirements. The second orders two dimensions by their
+sensitivity to multiclass structure. In both cases, the strict
+containment is proved by a single, explicit construction.
+
+These are the theorems that textbooks usually omit. They deserve
+their chapter.

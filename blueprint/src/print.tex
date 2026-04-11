@@ -1,23 +1,67 @@
 % PDF master for the Formal Learning Theory Kernel blueprint.
-% Builds a standalone print-version PDF via pdflatex or xelatex.
+% Builds a standalone print-version PDF.
 
-\documentclass[a4paper]{report}
+\documentclass[11pt,a4paper,twoside,openright]{book}
 
-\usepackage[textwidth=14cm]{geometry}
-\usepackage{amsmath, amssymb, amsthm}
-\usepackage{mathtools}
-\usepackage{hyperref}
-\usepackage[capitalize]{cleveref}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{thmtools}
+\usepackage{stmaryrd}
+\usepackage{bm}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+
+\usepackage[margin=1in]{geometry}
 \usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{titlesec}
+
+\usepackage[
+  colorlinks=true,
+  linkcolor=defblue,
+  citecolor=thmred,
+  urlcolor=edgeorange,
+  bookmarksdepth=3
+]{hyperref}
+\usepackage[capitalize]{cleveref}
 
 \input{preamble/common}
 \input{preamble/print}
 
-\title{Formal Learning Theory Kernel: Blueprint v1}
-\author{Dhruv Gupta \\ Indian Institute of Science}
+\title{%
+  \textbf{\Huge Formal Learning Theory Kernel: Blueprint v1}\\[0.8em]
+  \Large A Lean 4 formalization of the fundamental theorem of statistical learning\\[0.4em]
+  \large with paradigm separations and a measurability refinement
+}
+\author{%
+  Dhruv Gupta\\
+  Indian Institute of Science
+}
+\date{April 2026}
 
 \begin{document}
+\frontmatter
 \maketitle
 \tableofcontents
+
+\mainmatter
 \input{content}
+
+\backmatter
+\bibliographystyle{alpha}
+\bibliography{references}
+
 \end{document}

@@ -1,6 +1,10 @@
 % Shared preamble for print and web versions of the blueprint.
+% Matches conventions from the companion textbook (formal-learning-theory-book)
+% so that prose imported from the book renders identically here.
 
-% Fallback definitions for the blueprint package commands.
+% ---------------------------------------------------------------
+% Blueprint package fallbacks
+% ---------------------------------------------------------------
 % In the web build, these are overridden by the `blueprint` package.
 % In the print build, they are no-ops so \lean, \uses, \leanok render nothing.
 \providecommand{\lean}[1]{}
@@ -13,25 +17,125 @@
 \providecommand{\github}[1]{}
 \providecommand{\dochome}[1]{}
 
-% Theorem environments.
-\newtheorem{theorem}{Theorem}[chapter]
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
+% ---------------------------------------------------------------
+% Colors (from the companion textbook's main.tex)
+% ---------------------------------------------------------------
+\usepackage{xcolor}
+\definecolor{defblue}{RGB}{31,78,121}
+\definecolor{thmred}{RGB}{153,0,0}
+\definecolor{sepgreen}{RGB}{0,100,0}
+\definecolor{layergray}{RGB}{245,245,245}
+\definecolor{edgeorange}{RGB}{204,102,0}
+\definecolor{notegray}{RGB}{100,100,100}
+\definecolor{boundbrown}{RGB}{139,90,43}
+\definecolor{analogypurple}{RGB}{102,0,153}
+\definecolor{goldcolor}{RGB}{184,134,11}
+\definecolor{onlineblue}{RGB}{0,51,153}
 
+% ---------------------------------------------------------------
+% TikZ libraries used by book figures
+% ---------------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{
+  arrows.meta, positioning, shapes.geometric, fit, calc,
+  backgrounds, decorations.pathmorphing, decorations.markings,
+  trees, matrix, chains, patterns, shadows
+}
+
+% ---------------------------------------------------------------
+% Colored boxes (subset of book environments, sufficient for blueprint v1)
+% ---------------------------------------------------------------
+\usepackage{tcolorbox}
+\tcbuselibrary{theorems,skins,breakable}
+
+\newtcolorbox{separation}{
+  colback=sepgreen!5, colframe=sepgreen!50!black,
+  title=Separation Result, fonttitle=\bfseries\small,
+  breakable
+}
+\newtcolorbox{historical}{
+  colback=goldcolor!5, colframe=goldcolor!50!black,
+  title=Historical Note, fonttitle=\bfseries\small,
+  breakable
+}
+\newtcolorbox{obstbox}{
+  colback=edgeorange!5, colframe=edgeorange!50!black,
+  title=Obstruction, fonttitle=\bfseries\small,
+  breakable
+}
+
+% ---------------------------------------------------------------
+% Theorem environments (matching book: defn numbering is chapter-wide shared)
+% ---------------------------------------------------------------
 \theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{remark}[theorem]{Remark}
+\newtheorem{defn}{Definition}[chapter]
+\newtheorem{example}[defn]{Example}
+\newtheorem{notation}[defn]{Notation}
+\newtheorem{convention}[defn]{Convention}
 
-% Math macros.
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\eps}{\varepsilon}
-\newcommand{\VCdim}{\operatorname{VCdim}}
-\newcommand{\LDim}{\operatorname{LDim}}
-\newcommand{\MCDim}{\operatorname{MCDim}}
-\newcommand{\err}{\operatorname{err}}
+\theoremstyle{plain}
+\newtheorem{thm}[defn]{Theorem}
+\newtheorem{prop}[defn]{Proposition}
+\newtheorem{cor}[defn]{Corollary}
+\newtheorem{lemma}[defn]{Lemma}
+\newtheorem{claim}[defn]{Claim}
+
+\theoremstyle{remark}
+\newtheorem{remark}[defn]{Remark}
+\newtheorem{openprob}[defn]{Open Problem}
+\newtheorem{warning}[defn]{Warning}
+
+% Legacy blueprint-style env names used by session 1 and 2 content:
+% alias them onto the book environments so the earlier text still compiles.
+\let\olddefinition\relax
+\newenvironment{definition}[1][]{\begin{defn}[#1]}{\end{defn}}
+\newenvironment{theorem}[1][]{\begin{thm}[#1]}{\end{thm}}
+\newenvironment{proposition}[1][]{\begin{prop}[#1]}{\end{prop}}
+\newenvironment{corollary}[1][]{\begin{cor}[#1]}{\end{cor}}
+
+% ---------------------------------------------------------------
+% Math macros (matching book)
+% ---------------------------------------------------------------
+% Dimensions
+\newcommand{\VC}{\ensuremath{\mathrm{VCdim}}}
+\newcommand{\VCdim}{\ensuremath{\mathrm{VCdim}}}
+\newcommand{\Ldim}{\ensuremath{\mathrm{Ldim}}}
+\newcommand{\LDim}{\ensuremath{\mathrm{Ldim}}}
+\newcommand{\MCDim}{\ensuremath{\mathrm{MCdim}}}
+\newcommand{\DSdim}{\ensuremath{\mathrm{DSdim}}}
+\newcommand{\Ndim}{\ensuremath{d_{\mathrm{N}}}}
+\newcommand{\Pdim}{\ensuremath{\mathrm{Pdim}}}
+
+% Complexities and algorithms
+\newcommand{\Rad}{\ensuremath{\widehat{\mathcal{R}}}}
+\newcommand{\KL}{\ensuremath{\mathrm{KL}}}
 \DeclareMathOperator{\ERM}{ERM}
+\DeclareMathOperator{\SOA}{SOA}
+
+% Learning criteria
+\newcommand{\Ex}{\ensuremath{\mathbf{Ex}}}
+\newcommand{\BC}{\ensuremath{\mathbf{BC}}}
+\newcommand{\FIN}{\ensuremath{\mathbf{FIN}}}
+
+% Probability and expectation
+\newcommand{\E}{\ensuremath{\mathbb{E}}}
+\providecommand{\Pr}{}
+\renewcommand{\Pr}{\ensuremath{\mathbb{P}}}
+\newcommand{\ind}{\ensuremath{\mathbf{1}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
+
+% Risk
+\newcommand{\risk}{\ensuremath{R}}
+\newcommand{\emprisk}{\ensuremath{\hat{R}}}
+\newcommand{\err}{\operatorname{err}}
+\newcommand{\eps}{\varepsilon}
+
+% Graph relations (for cross-references to the book's knowledge-graph edges)
+\newcommand{\rel}[1]{\texttt{\small #1}}
+\newcommand{\nde}[1]{\textsf{\small #1}}
+
+% Growth function
+\newcommand{\growth}{\ensuremath{\Pi}}

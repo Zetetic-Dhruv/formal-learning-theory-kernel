@@ -1,0 +1,105 @@
+% Chapter 1: Primitives
+% Abridged from book ch01_objects.tex, keeping only the vocabulary used by
+% the characterization chapters (Ch 2-6). Full hub-node exposition of the
+% concept class and the MDL/MML/Bayesian analogies is deferred to the book.
+
+\chapter{Primitives}\label{chap:primitives}
+
+Every learning problem begins with the same question: given data drawn
+from an unknown source, find a rule that predicts well on future data.
+This chapter introduces the mathematical vocabulary for making that
+question precise. The definitions are unremarkable individually.  The
+mathematical content begins when we ask how they compose.
+
+\section{Atomic vocabulary}\label{sec:atoms}
+
+\begin{defn}[Domain, Label, Concept]
+\label{def:domain-label-concept}
+  \lean{Concept}
+  \leanok
+A \emph{domain} $X$ is a set whose elements are called \emph{instances}.
+A \emph{label set} $Y$ is a set of possible outputs; in binary
+classification, $Y = \{0, 1\}$. A \emph{concept} is a function
+$c : X \to Y$.
+
+Equivalently, when $Y = \{0,1\}$, a concept $c$ can be identified with
+the subset $\{x \in X : c(x) = 1\} \subseteq X$. Both perspectives are
+used throughout the literature. We adopt the function view as primary
+and the set view when it simplifies combinatorial arguments (as in
+shattering, \Cref{chap:pac}).
+\end{defn}
+
+\begin{defn}[Hypothesis, Target Concept, Proper vs.\ Improper]
+\label{def:hypothesis-target}
+A \emph{hypothesis} $h : X \to Y$ is a candidate prediction rule that a
+learning algorithm might output. The \emph{target concept}
+$c^* \in \mathcal{C}$ is the specific concept that generated the
+training data. Learning is \emph{proper} if the algorithm's output is
+constrained to lie in $\mathcal{C}$, and \emph{improper} if it may use
+a larger hypothesis space $\mathcal{H} \supseteq \mathcal{C}$.
+\end{defn}
+
+\section{The concept class}\label{sec:concept-class}
+
+\begin{defn}[Concept Class]
+\label{def:concept-class}
+  \lean{ConceptClass}
+  \leanok
+A \emph{concept class} $\mathcal{C} \subseteq Y^X$ is a collection of
+concepts over a common domain. The class is the primary object of
+study: every major question in learning theory is a question about
+concept classes.
+\end{defn}
+
+The concept class is the node every complexity measure in the book
+connects to: VC dimension, Littlestone dimension, Rademacher
+complexity, covering number, growth function, mind-change dimension.
+It is the object whose structure determines what is learnable.
+
+\section{Batch learner}\label{sec:batch-learner}
+
+\begin{defn}[Batch Learner]
+\label{def:batch-learner}
+  \lean{BatchLearner}
+  \leanok
+A \emph{batch learner} over $(X, Y)$ is a bundled structure carrying a
+hypothesis set $\mathcal{H} \subseteq Y^X$, a learning function
+$\mathcal{A}$ that takes a finite training sample
+$S : \mathrm{Fin}\,m \to X \times Y$ and returns a hypothesis in
+$\mathcal{H}$, and a proof that the output lies in $\mathcal{H}$.
+\end{defn}
+
+The kernel formalizes the batch learner as a structure rather than as
+a bare function so that the constraint ``output lies in the hypothesis
+set'' travels with the algorithm. Chapter~\ref{chap:online} will
+introduce a sequential learner with its own bundled type; the contrast
+between batch and sequential learning is the subject of
+Chapters~\ref{chap:pac} and~\ref{chap:online}.
+
+\section{Sample, loss, and error}\label{sec:sample-loss}
+
+\begin{defn}[I.i.d.\ sample]
+\label{def:iid-sample}
+For a distribution $D$ on $X$ and a target concept $c$, an
+\emph{i.i.d.\ sample} of size $m$ is a tuple
+$S = ((x_1, c(x_1)), \dots, (x_m, c(x_m)))$ with each $x_i \sim D$
+drawn independently.
+\end{defn}
+
+\begin{defn}[Zero-one loss]
+\label{def:zero-one-loss}
+For $h, c : X \to \{0,1\}$ and $x \in X$, the \emph{zero-one loss} is
+$\ell(h, c, x) = \mathbf{1}[h(x) \neq c(x)]$.
+\end{defn}
+
+\begin{defn}[Empirical and true error]
+\label{def:errors}
+For a hypothesis $h$, a target $c$, a distribution $D$, and a sample
+$S$ of size $m$:
+\begin{align*}
+  \emprisk_S(h) &= \frac{1}{m} \sum_{i=1}^{m} \mathbf{1}[h(x_i) \neq c(x_i)]
+    && \text{(empirical error)}, \\
+  \risk_D(h) &= \Pr_{x \sim D}\!\left[ h(x) \neq c(x) \right]
+    && \text{(true error)}.
+\end{align*}
+\end{defn}

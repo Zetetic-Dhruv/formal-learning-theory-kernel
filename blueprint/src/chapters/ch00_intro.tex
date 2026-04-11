@@ -1,0 +1,86 @@
+% Chapter 0: Introduction and scope
+% Written in the voice of the kernel README, oriented toward the blueprint
+% audience (learning theorists who do not read Lean 4).
+
+\chapter{Introduction}\label{chap:intro}
+
+This is the mathematical blueprint for a Lean 4 formalization of the
+fundamental theorem of statistical learning. It sits between two other
+artifacts: the kernel source code at
+\url{https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
+which contains 354 machine-checked theorems in 21{,}522 lines with zero
+\texttt{sorry}, and a companion textbook on formal learning theory from
+which most of the exposition in Chapters~\ref{chap:pac}
+through~\ref{chap:separations} is imported directly. The blueprint's
+role is to annotate informal mathematical statements with hyperlinks
+into the formal declarations that prove them, so that a reader can
+click from a theorem in prose to the corresponding
+\texttt{theorem} or \texttt{def} in the Lean kernel and back.
+
+Every statement carrying a \texttt{\textbackslash lean\{\}} annotation
+in this document resolves to a proved declaration in the kernel.
+The formalization targets Lean 4 \texttt{v4.29.0-rc6} against mathlib4
+pinned at commit \texttt{fde0cc5}. The per-module API reference is at
+\url{https://zetetic-dhruv.github.io/formal-learning-theory-kernel/}.
+
+\section*{Scope}
+
+Blueprint v1 covers the core story of the kernel:
+
+\begin{itemize}[leftmargin=*,itemsep=3pt]
+  \item \textbf{PAC characterization} (Chapter~\ref{chap:pac}): the
+    five-way equivalence for PAC learning, with the
+    \texttt{NullMeasurableSet} refinement of the standard Borel
+    hypothesis used in the literature.
+  \item \textbf{Online characterization} (Chapter~\ref{chap:online}):
+    the Littlestone characterization theorem with the Standard Optimal
+    Algorithm as the constructive witness.
+  \item \textbf{Gold-style learning} (Chapter~\ref{chap:gold}): Gold's
+    theorem with the diagonalization proof and the mind-change
+    characterization with ordinal bounds.
+  \item \textbf{Three-paradigm separation}
+    (Chapter~\ref{chap:separations}): the 13-edge separation lattice
+    between PAC, online, and Gold-style learning.
+  \item \textbf{Measurability layer} (Chapter~\ref{chap:measurability}):
+    the Borel-parameterized setting, the analytic measurability bridge
+    via Choquet capacitability, and the Borel-analytic separation
+    theorem. This chapter is net-new: it does not exist in the
+    companion textbook because the Borel-analytic separation was
+    discovered during the formalization effort.
+\end{itemize}
+
+Deferred to v2: compression via approximate minimax, the measurable
+batch learner monad, PAC-Bayes bounds, extended criteria (robust PAC,
+RKHS), and the Baxter multi-task base case. Compression and the MBL
+monad rely on infrastructure whose mathematical exposition is not yet
+stable enough to import from the textbook, and their blueprint
+treatment will ship once that stabilizes.
+
+\section*{Relationship to the companion textbook}
+
+Chapters~\ref{chap:primitives} through \ref{chap:separations} of this
+blueprint are imported verbatim from the companion textbook with
+\texttt{\textbackslash lean\{\}} annotations added at each theorem or
+definition whose informal statement corresponds to a formal
+declaration. The prose is otherwise unchanged. Figures are reused from
+the textbook.
+
+Chapter~\ref{chap:measurability} is the one chapter whose content does
+not appear in the textbook, because the Borel-analytic separation and
+the \texttt{WellBehavedVCMeasTarget} refinement of the fundamental
+theorem were discovered during the formalization work and are outside
+the textbook's scope. The prose in that chapter is therefore written
+from scratch in the voice of the kernel rather than imported.
+
+\section*{How to read this document}
+
+A reader interested in the mathematical content can read the chapters
+linearly and ignore the hyperlink annotations. A reader interested in
+the formalization can click any
+\texttt{\textbackslash lean\{\}}-annotated statement to open the
+corresponding Lean declaration page in the doc-gen4 API reference. A
+reader interested in the dependency structure of the theorems can
+consult the automatically generated dependency graph at
+\texttt{dep\_graph\_document.html}, which renders the
+\texttt{\textbackslash uses\{\}} edges declared throughout the
+document.

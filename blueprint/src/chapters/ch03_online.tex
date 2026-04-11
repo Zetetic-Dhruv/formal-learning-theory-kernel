@@ -1,0 +1,456 @@
+% Chapter imported from the companion textbook
+% (formal-learning-theory-book) with lean annotations added
+% to cross-link each formalized statement to its kernel declaration.
+% Prose is unchanged; annotations are additive.
+
+% Chapter 6: Online Learning and the Littlestone Dimension
+% mistake_bounded = Profile B-light, regret_bounded = Profile C (Revelation),
+% littlestone_characterization = Profile B (Load-Bearing).
+% Centerpiece: the SOA algorithm and mistake tree diagram.
+% Style: combinatorial and algorithmic, in contrast to Ch5's probabilistic flavor.
+
+\chapter{Online Learning and the Littlestone Dimension}
+\label{ch:online}
+
+In PAC learning, nature is indifferent: training data arrives as a random sample from a fixed distribution, and the learner's task is to generalize from this benign source. In online learning, nature is replaced by an adversary. There is no distribution. There is no training phase followed by a test phase. Instead, learning unfolds as a \emph{game}: at each round, the adversary presents an instance, the learner predicts a label, the adversary reveals the true label, and the game continues. The learner's goal is to bound the total number of mistakes, no matter what the adversary does.
+
+This change---from distribution to adversary, from batch to sequential, from probabilistic to combinatorial---transforms the mathematics entirely. PAC learning is characterized by a number (the VC dimension) through a probabilistic argument (concentration inequalities). Online learning is characterized by a \emph{tree} (the mistake tree) through a combinatorial argument (an explicit algorithm). The key theorem of this chapter---that the optimal mistake bound equals the Littlestone dimension---is proved not by bounding tail probabilities but by \emph{constructing an algorithm} that plays the game optimally.
+
+% ================================================================
+% SECTION 1: THE ONLINE LEARNING GAME
+% Profile G (Framework Bridge). Presented as a GAME, not a definition.
+% ================================================================
+
+\section{The Online Learning Game}
+\label{sec:online-game}
+
+Online learning is best understood as a protocol between two players: a \emph{learner} and an \emph{adversary}. The game is played over a domain $X$, a label set $Y = \{0,1\}$, and a hypothesis class $\mathcal{H} \subseteq \{0,1\}^X$. The adversary is constrained to be \emph{realizable}: there must exist some $h^* \in \mathcal{H}$ consistent with all of the adversary's labels. Beyond this, the adversary is unconstrained---in particular, the adversary may be \emph{adaptive}, choosing $x_t$ based on the learner's previous predictions.
+
+\begin{defn}[Online Learning Protocol]
+\label{def:online-protocol}
+  \lean{OnlineLearnable}
+  \leanok
+The online learning game proceeds in rounds $t = 1, 2, 3, \ldots$\,:
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item The adversary selects an instance $x_t \in X$.
+\item The learner observes $x_t$ and predicts a label $\hat{y}_t \in \{0,1\}$.
+\item The adversary reveals the true label $y_t \in \{0,1\}$.
+\item If $\hat{y}_t \neq y_t$, the learner incurs a \emph{mistake}.
+\end{enumerate}
+The game continues for as many rounds as the adversary chooses. The adversary must ensure that there exists $h^* \in \mathcal{H}$ with $h^*(x_t) = y_t$ for all $t$ (realizability).
+\end{defn}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    player/.style={draw, thick, rounded corners, minimum width=2.4cm, minimum height=0.8cm, font=\small\bfseries},
+    action/.style={font=\small, align=center},
+    arr/.style={-{Stealth[length=2.5mm]}, thick},
+    node distance=1.2cm
+]
+% Players
+\node[player, fill=thmred!10] (adv) {Adversary};
+\node[player, fill=defblue!10, right=5cm of adv] (lrn) {Learner};
+
+% Round structure
+\draw[arr, thmred!70!black] (adv.east) -- ++(1.2,0) |- node[action, above, pos=0.25] {presents $x_t$} ($(lrn.west)+(0,0.25)$);
+\draw[arr, defblue!70!black] (lrn.west) ++(-0.0,0.0) -- ++(-1.2,0) |- node[action, below, pos=0.25] {predicts $\hat{y}_t$} ($(adv.east)+(0,-0.25)$);
+
+% Reveal
+\node[action, below=1.8cm of $(adv.south east)!0.5!(lrn.south west)$, font=\small] (reveal) {Adversary reveals $y_t$. \quad Mistake if $\hat{y}_t \neq y_t$.};
+\draw[arr, notegray, dashed] ($(adv.south)!0.5!(lrn.south)+(0,-0.3)$) -- (reveal);
+
+% Constraint
+\node[below=0.6cm of reveal, font=\scriptsize\itshape, text=notegray, align=center] {Constraint: $\exists\, h^* \in \mathcal{H}$ such that $h^*(x_t) = y_t$ for all $t$.};
+\end{tikzpicture}
+\caption{The online learning game. The adversary and learner interact sequentially; the adversary is constrained only by realizability. There is no distribution, no random sampling, and no distinction between training and test phases.}
+\label{fig:online-protocol}
+\end{figure}
+
+Three features distinguish this game from the PAC framework of \Cref{ch:pac}:
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+\item \textbf{No distribution.} In PAC learning, performance is measured with respect to an unknown but fixed distribution $D$. In online learning, there is no distribution at all. The adversary's choices need not be drawn from any probability measure.
+
+\item \textbf{The adversary is adaptive.} The adversary sees the learner's predictions and can choose future instances to exploit the learner's weaknesses. This is strictly harder than random sampling: an adaptive adversary can do everything that a random distribution can, and more.
+
+\item \textbf{Performance is worst-case over sequences.} The mistake bound must hold for \emph{every} sequence of instances and labels the adversary might produce, subject to realizability. There is no averaging.
+\end{enumerate}
+
+\begin{defn}[Mistake Bound]
+\label{def:mistake-bound}
+  \lean{OnlineLearnable}
+  \leanok
+A learner $A$ is \emph{mistake-bounded} with bound $M$ on $\mathcal{H}$ if, for every adversary strategy consistent with some $h^* \in \mathcal{H}$, the total number of mistakes made by $A$ is at most $M$. The \emph{optimal mistake bound} of $\mathcal{H}$ is $\mathrm{Opt}(\mathcal{H}) = \min_A \max_{\mathrm{adversary}} \#\{\text{mistakes of } A\}$.
+\end{defn}
+
+The central question of online learning theory is: what determines $\mathrm{Opt}(\mathcal{H})$? The answer is a combinatorial object called the Littlestone dimension.
+
+% ================================================================
+% SECTION 2: MISTAKE TREES AND THE LITTLESTONE DIMENSION
+% The key combinatorial object. TikZ diagram essential.
+% ================================================================
+
+\section{Mistake Trees and the Littlestone Dimension}
+\label{sec:mistake-trees}
+
+The VC dimension counts the size of the largest \emph{set} that $\mathcal{H}$ can shatter. The Littlestone dimension counts the depth of the largest \emph{tree} that $\mathcal{H}$ can shatter. This shift---from sets to trees---is what captures the adversary's adaptive power.
+
+\begin{defn}[Mistake Tree]
+\label{def:mistake-tree}
+  \lean{LTree.isShattered}
+  \leanok
+A \emph{mistake tree} for $\mathcal{H}$ over $X$ is a complete binary tree $T$ in which:
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+\item Each internal node $v$ is labeled with an instance $x_v \in X$.
+\item The left child of $v$ corresponds to the label $y = 0$ and the right child to $y = 1$.
+\item For every root-to-leaf path $(v_1, y_1), (v_2, y_2), \ldots, (v_d, y_d)$, there exists a hypothesis $h \in \mathcal{H}$ consistent with all labels along the path: $h(x_{v_i}) = y_i$ for all $i$.
+\end{itemize}
+The \emph{depth} of the tree is the number of internal nodes on any root-to-leaf path (all paths have the same length since the tree is complete).
+\end{defn}
+
+The key idea is that a mistake tree encodes an adversary strategy. Starting at the root, the adversary presents $x_{v_1}$. Whatever the learner predicts, the adversary can label $x_{v_1}$ to make the prediction wrong and descend to the corresponding child. Realizability is maintained because every root-to-leaf path is consistent with some $h \in \mathcal{H}$. Thus a mistake tree of depth $d$ represents an adversary strategy that forces \emph{any} learner to make at least $d$ mistakes.
+
+\begin{defn}[Littlestone Dimension {\cite{Littlestone1988}}]
+\label{def:ldim}
+  \lean{LittlestoneDim}
+  \leanok
+The \emph{Littlestone dimension} of a hypothesis class $\mathcal{H}$, denoted $\Ldim(\mathcal{H})$, is the maximum depth of a complete mistake tree for $\mathcal{H}$. If arbitrarily deep mistake trees exist, $\Ldim(\mathcal{H}) = \infty$.
+\end{defn}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    level distance=1.6cm,
+    sibling distance=1.2cm,
+    every node/.style={font=\small},
+    treenode/.style={draw, circle, thick, minimum size=0.7cm, fill=onlineblue!10, font=\small\bfseries},
+    leafnode/.style={draw, rectangle, rounded corners, thick, minimum width=0.6cm, minimum height=0.45cm, fill=sepgreen!15, font=\scriptsize},
+    edgelabel/.style={font=\scriptsize, midway},
+    level 1/.style={sibling distance=5.6cm},
+    level 2/.style={sibling distance=2.8cm},
+    level 3/.style={sibling distance=1.4cm},
+]
+\node[treenode] (root) {$4$}
+    child { node[treenode] {$2$}
+        child { node[treenode] {$1$}
+            child { node[leafnode] {$h_{\leq 0}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 1}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, left] {$0$}
+        }
+        child { node[treenode] {$3$}
+            child { node[leafnode] {$h_{\leq 2}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 3}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, right] {$1$}
+        }
+        edge from parent node[edgelabel, left] {$0$}
+    }
+    child { node[treenode] {$6$}
+        child { node[treenode] {$5$}
+            child { node[leafnode] {$h_{\leq 4}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 5}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, left] {$0$}
+        }
+        child { node[treenode] {$7$}
+            child { node[leafnode] {$h_{\leq 6}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 7}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, right] {$1$}
+        }
+        edge from parent node[edgelabel, right] {$1$}
+    };
+
+% Annotation
+\node[right=0.3cm of root, font=\scriptsize\itshape, text=notegray, align=left, anchor=west, xshift=3.5cm] {
+    Domain: $X = \{1,2,\ldots,8\}$\\[2pt]
+    Class: thresholds $h_{\leq \theta}(x) = \ind[x \leq \theta]$\\[2pt]
+    Each internal node presents an instance.\\[2pt]
+    Each leaf witnesses a consistent $h \in \mathcal{H}$.\\[2pt]
+    Depth $= 3 = \lceil \log_2 8 \rceil$.
+};
+\end{tikzpicture}
+\caption{A complete mistake tree of depth $3$ for the threshold class on $\{1,\ldots,8\}$. Each internal node is labeled with an instance; the left and right children correspond to labels $0$ and $1$. Every root-to-leaf path is consistent with the threshold hypothesis shown at the leaf. The adversary can traverse this tree from root to any leaf, forcing $3$ mistakes.}
+\label{fig:mistake-tree}
+\end{figure}
+
+\begin{example}[Littlestone dimension of fundamental classes]
+\label{ex:ldim-examples}
+\begin{enumerate}[label=(\alph*), leftmargin=*, itemsep=4pt]
+\item \textbf{Finite classes.} If $|\mathcal{H}| < \infty$, then $\Ldim(\mathcal{H}) \leq \lfloor \log_2 |\mathcal{H}| \rfloor$, since a complete binary tree of depth $d$ has $2^d$ leaves and each leaf requires a distinct consistent hypothesis. This bound is tight for classes that are ``richly structured enough'' (e.g., all functions on a domain of size $\log_2 |\mathcal{H}|$).
+
+\item \textbf{Thresholds on $\{1, \ldots, n\}$.} The class $\{h_{\leq \theta} : \theta \in \{0, 1, \ldots, n\}\}$ has $\Ldim = \lceil \log_2(n+1) \rceil$. The mistake tree in \Cref{fig:mistake-tree} illustrates the case $n = 8$. The adversary performs binary search on the threshold.
+
+\item \textbf{Thresholds on $\R$.} Now $\Ldim = \infty$. The key point: the domain is dense, so the adversary can always find a point between any two previous thresholds. At each round, the adversary presents a point that bisects the current interval of uncertainty, forcing a mistake no matter what the learner predicts. This produces mistake trees of unbounded depth.
+
+\item \textbf{Intervals on $\R$.} The class $\{x \mapsto \ind[a \leq x \leq b] : a, b \in \R\}$ also has $\Ldim = \infty$. The adversary can adaptively narrow down both endpoints.
+
+\item \textbf{Linear classifiers in $\R^d$.} The class of halfspaces has $\Ldim = d$, matching the VC dimension. This is one of the rare cases where the two dimensions coincide.
+\end{enumerate}
+\end{example}
+
+\begin{remark}[Sets vs.\ trees]
+\label{rmk:sets-vs-trees}
+Shattering a \emph{set} $\{x_1, \ldots, x_d\}$ means $\mathcal{H}$ can produce all $2^d$ labelings of these \emph{fixed} points. Shattering a \emph{tree} of depth $d$ means $\mathcal{H}$ can produce a consistent labeling along every root-to-leaf path, but the points themselves may \emph{depend on previous labels}. The tree structure captures adaptivity: the adversary's choice at depth $k$ depends on the learner's responses at depths $1, \ldots, k-1$. A shattered set is a special case of a mistake tree (one in which every node at the same depth is labeled with the same instance), so $\VC(\mathcal{H}) \leq \Ldim(\mathcal{H})$ always holds. The converse fails spectacularly: thresholds on $\R$ have $\VC = 1$ but $\Ldim = \infty$.
+\end{remark}
+
+% ================================================================
+% SECTION 3: THE STANDARD OPTIMAL ALGORITHM (SOA)
+% The constructive heart of online learning. Read like describing an algorithm.
+% ================================================================
+
+\section{The Standard Optimal Algorithm}
+\label{sec:soa}
+
+The Halving algorithm is the simplest reasonable strategy for online learning: maintain the version space (the set of hypotheses consistent with all observations so far), and predict the majority vote of the version space. Each mistake eliminates at least half of the surviving hypotheses, so Halving makes at most $\lfloor \log_2 |\mathcal{H}| \rfloor$ mistakes when $\mathcal{H}$ is finite.
+
+But Halving is not optimal for infinite hypothesis classes. The Standard Optimal Algorithm (SOA), due to Littlestone~\cite{Littlestone1988}, refines the Halving idea by replacing ``majority vote'' with a more subtle criterion: predict the label whose version space has the larger \emph{Littlestone dimension}.
+
+\begin{defn}[Standard Optimal Algorithm (\SOA)]
+\label{def:soa}
+  \lean{SOA_predict_eq}
+  \leanok
+Given a hypothesis class $\mathcal{H}$, the $\SOA$ maintains a version space $V_t \subseteq \mathcal{H}$, initially $V_1 = \mathcal{H}$. At round $t$, upon receiving instance $x_t$:
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item Partition $V_t$ into $V_t^0 = \{h \in V_t : h(x_t) = 0\}$ and $V_t^1 = \{h \in V_t : h(x_t) = 1\}$.
+\item Predict $\hat{y}_t = \arg\max_{b \in \{0,1\}} \Ldim(V_t^b)$.
+\item After observing the true label $y_t$, update $V_{t+1} = V_t^{y_t}$.
+\end{enumerate}
+Ties in step 2 are broken arbitrarily.
+\end{defn}
+
+The intuition behind the $\SOA$ is a tree-based version of binary search. At each round, the algorithm asks: ``If I predict $0$ and am wrong, what is the worst the adversary can do to $V_t^1$? And if I predict $1$ and am wrong, what can the adversary do to $V_t^0$?'' By choosing the side with the larger Littlestone dimension, the $\SOA$ ensures that every mistake reduces the Littlestone dimension of the version space by at least one.
+
+\begin{thm}[Upper Bound: $\SOA$ achieves $\Ldim(\mathcal{H})$ mistakes {\cite{Littlestone1988}}]
+\label{thm:soa-upper}
+  \lean{backward_direction}
+  \leanok
+  \uses{def:soa,def:ldim}
+For any hypothesis class $\mathcal{H}$ with $\Ldim(\mathcal{H}) = d < \infty$, the $\SOA$ makes at most $d$ mistakes against any adversary.
+\end{thm}
+
+\begin{proof}
+We show that the Littlestone dimension of the version space drops by at least one at each mistake. Define $d_t = \Ldim(V_t)$. We claim:
+\begin{equation}
+\label{eq:ldim-drop}
+\text{If the $\SOA$ makes a mistake at round } t, \text{ then } d_{t+1} \leq d_t - 1.
+\end{equation}
+
+\emph{Proof of the claim.} Suppose the $\SOA$ makes a mistake at round $t$. This means $\hat{y}_t \neq y_t$. By the algorithm's rule, $\hat{y}_t$ was chosen so that $\Ldim(V_t^{\hat{y}_t}) \geq \Ldim(V_t^{y_t})$, i.e., the $\SOA$ predicted the side with the \emph{larger} (or equal) Littlestone dimension. After the mistake, the version space updates to $V_{t+1} = V_t^{y_t}$, the side with the \emph{smaller} (or equal) Littlestone dimension.
+
+Now we must show that $\Ldim(V_t^{y_t}) \leq d_t - 1$. Suppose for contradiction that $\Ldim(V_t^0) \geq d_t$ and $\Ldim(V_t^1) \geq d_t$. Then there exists a complete mistake tree $T_0$ of depth $d_t$ for $V_t^0$ and a complete mistake tree $T_1$ of depth $d_t$ for $V_t^1$. We can construct a complete mistake tree of depth $d_t + 1$ for $V_t$: the root is labeled $x_t$, its left subtree (corresponding to label $0$) is $T_0$, and its right subtree (corresponding to label $1$) is $T_1$. Every root-to-leaf path through the left subtree is consistent with some $h \in V_t^0 \subseteq V_t$ (and $h(x_t) = 0$), and similarly for the right subtree. This yields $\Ldim(V_t) \geq d_t + 1$, contradicting $\Ldim(V_t) = d_t$.
+
+Therefore $\min\{\Ldim(V_t^0), \Ldim(V_t^1)\} \leq d_t - 1$. Since $\hat{y}_t$ selects the side with the larger dimension, $V_{t+1} = V_t^{y_t}$ is the side with the smaller dimension, so $d_{t+1} = \Ldim(V_{t+1}) \leq d_t - 1$.
+
+\emph{Completing the proof.} We have $d_1 = \Ldim(\mathcal{H}) = d$. Each mistake decreases $d_t$ by at least $1$. Since the Littlestone dimension is a non-negative integer (the version space always contains the target $h^*$, so $V_t \neq \emptyset$ and $\Ldim(V_t) \geq 0$), the total number of mistakes is at most $d$.
+\end{proof}
+
+\begin{remark}[SOA vs.\ Halving]
+\label{rmk:soa-halving}
+For finite $\mathcal{H}$, the Halving algorithm predicts by majority vote: $\hat{y}_t = \arg\max_b |V_t^b|$. Each mistake halves the version space, giving at most $\lfloor \log_2 |\mathcal{H}| \rfloor$ mistakes. The $\SOA$ replaces cardinality $|V_t^b|$ with $\Ldim(V_t^b)$. For finite classes, this distinction is often unimportant (both give $O(\log |\mathcal{H}|)$ mistakes), but for infinite classes, cardinality is meaningless while the Littlestone dimension is finite and well-behaved.
+\end{remark}
+
+\begin{remark}[Computability of the $\SOA$]
+\label{rmk:soa-computability}
+The $\SOA$ is an \emph{information-theoretically} optimal algorithm, but it is not necessarily \emph{computationally} efficient. Computing $\Ldim(V_t^b)$ at each round may be undecidable for some hypothesis classes. The $\SOA$ is thus an existence proof: it shows that $d$ mistakes suffice, even if finding the optimal prediction at each step is computationally hard. Efficient online algorithms for specific classes (Perceptron for halfspaces, Winnow for disjunctions) achieve near-optimal mistake bounds through class-specific structure.
+\end{remark}
+
+% ================================================================
+% SECTION 4: THE LOWER BOUND — ADVERSARY STRATEGY
+% The adversary plays the mistake tree from root to leaf.
+% ================================================================
+
+\section{The Lower Bound: The Adversary Strategy}
+\label{sec:lower-bound}
+
+The upper bound shows that the $\SOA$ can limit mistakes to $\Ldim(\mathcal{H})$. The lower bound shows that no learner can do better: for any learner, there exists an adversary that forces at least $\Ldim(\mathcal{H})$ mistakes.
+
+\begin{thm}[Lower Bound: Any learner makes at least $\Ldim(\mathcal{H})$ mistakes {\cite{Littlestone1988}}]
+\label{thm:lower-bound}
+  \lean{forward_direction}
+  \leanok
+  \uses{def:ldim}
+For any hypothesis class $\mathcal{H}$ with $\Ldim(\mathcal{H}) = d$ and any (possibly randomized) learner $A$, there exists an adversary strategy that forces $A$ to make at least $d$ mistakes.
+\end{thm}
+
+\begin{proof}
+Let $T$ be a complete mistake tree for $\mathcal{H}$ of depth $d$. The adversary plays $T$ as follows.
+
+The adversary maintains a pointer to a node of $T$, starting at the root. At round $t$, the adversary presents the instance $x_{v_t}$ labeling the current node $v_t$. The learner predicts $\hat{y}_t$. The adversary then sets $y_t = 1 - \hat{y}_t$ (the opposite of the learner's prediction) and descends to the child of $v_t$ corresponding to label $y_t$.
+
+This strategy has two properties:
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item \textbf{Every round is a mistake.} By construction, $y_t = 1 - \hat{y}_t \neq \hat{y}_t$.
+\item \textbf{Realizability is maintained.} After $d$ rounds, the adversary has descended from the root to a leaf of $T$, tracing a path $(v_1, y_1), (v_2, y_2), \ldots, (v_d, y_d)$. By the definition of a mistake tree, there exists $h^* \in \mathcal{H}$ consistent with all labels along this path: $h^*(x_{v_i}) = y_i$ for all $i \in \{1, \ldots, d\}$. For any subsequent rounds $t > d$, the adversary can label consistently with this $h^*$.
+\end{enumerate}
+
+The adversary forces exactly $d$ mistakes in the first $d$ rounds, so $A$ makes at least $d$ mistakes.
+
+For randomized learners, the argument extends by the minimax theorem (or directly): for any distribution over predictions $\hat{y}_t$, the adversary's strategy of playing the opposite forces an expected mistake at every round. Alternatively, one can apply Yao's minimax principle: the worst-case deterministic adversary against the best randomized learner equals the best deterministic learner against the worst-case adversary, and we have shown the latter is at least $d$.
+\end{proof}
+
+Combining \Cref{thm:soa-upper,thm:lower-bound}, we obtain the fundamental characterization.
+
+\begin{thm}[Littlestone's Characterization {\cite{Littlestone1988}}]
+\label{thm:littlestone-characterization}
+  \lean{littlestone_characterization}
+  \leanok
+  \uses{thm:soa-upper,thm:lower-bound}
+For any hypothesis class $\mathcal{H}$:
+\[
+\mathrm{Opt}(\mathcal{H}) = \Ldim(\mathcal{H}).
+\]
+That is, the optimal mistake bound of $\mathcal{H}$ in the online learning game is exactly the Littlestone dimension of $\mathcal{H}$. In particular, $\mathcal{H}$ admits a finite mistake bound if and only if $\Ldim(\mathcal{H}) < \infty$.
+\end{thm}
+
+\begin{historical}
+Littlestone proved this characterization in 1988~\cite{Littlestone1988}, just four years after Valiant's PAC model. The result established online learning as a mathematically independent paradigm: the combinatorial quantity governing online learnability is genuinely different from the one governing PAC learnability. The $\SOA$ is sometimes called the ``Standard Optimal Algorithm'' precisely because it achieves the information-theoretic optimum; the name is due to the online learning community's convention.
+\end{historical}
+
+% ================================================================
+% SECTION 5: REGRET BOUNDS AND MULTIPLICATIVE WEIGHTS
+% Profile C (Revelation). Regret is surprising because it is relative.
+% ================================================================
+
+\section{Regret Bounds and the Multiplicative Weights Framework}
+\label{sec:regret}
+
+The mistake-bound framework requires that the adversary be realizable: some $h^* \in \mathcal{H}$ must be consistent with all labels. This is a strong assumption. What happens when we drop it?
+
+In the \emph{regret} framework, the adversary is unrestricted. The learner is compared not to the truth but to the \emph{best fixed hypothesis in hindsight}.
+
+\begin{defn}[Regret]
+\label{def:regret}
+Given a sequence $(x_1, y_1), \ldots, (x_T, y_T)$ and the learner's predictions $\hat{y}_1, \ldots, \hat{y}_T$, the \emph{regret} of the learner relative to $\mathcal{H}$ is
+\[
+\mathrm{Regret}_T = \sum_{t=1}^T \ind[\hat{y}_t \neq y_t] - \min_{h \in \mathcal{H}} \sum_{t=1}^T \ind[h(x_t) \neq y_t].
+\]
+\end{defn}
+
+This definition contains a conceptual surprise: the regret can be small even when the learner makes many mistakes. What matters is not the absolute number of errors, but how the learner's error count compares to the best fixed hypothesis in $\mathcal{H}$. If every hypothesis in $\mathcal{H}$ also makes many mistakes (because the adversary is not realizable), then a learner with many mistakes but low regret is performing well.
+
+\begin{remark}[Mistake bound vs.\ regret bound]
+\label{rmk:mistake-vs-regret}
+In the realizable case, the best hypothesis $h^*$ makes zero mistakes, so $\mathrm{Regret}_T$ equals the total mistake count. The regret framework is therefore a strict generalization of the mistake-bound framework. The regret formulation becomes essential when $\mathcal{H}$ is infinite or when realizability fails---precisely the settings where the Littlestone dimension may be infinite and the mistake-bound framework provides no guarantee.
+\end{remark}
+
+The Weighted Majority algorithm of Littlestone and Warmuth~\cite{Littlestone1988} achieves the following regret bound for finite $\mathcal{H}$.
+
+\begin{thm}[Weighted Majority / Hedge]
+\label{thm:weighted-majority}
+For a finite hypothesis class $\mathcal{H}$ with $|\mathcal{H}| = N$, the Weighted Majority algorithm achieves, for any sequence of $T$ rounds:
+\[
+\mathrm{Regret}_T \leq 2\sqrt{T \ln N}.
+\]
+In particular, the per-round regret $\mathrm{Regret}_T / T \to 0$ as $T \to \infty$.
+\end{thm}
+
+The algorithm maintains a weight $w_t(h)$ for each $h \in \mathcal{H}$, initially $w_1(h) = 1$. At each round: predict the weighted majority vote; after observing $y_t$, multiply the weight of each hypothesis that erred by a factor $(1 - \eta)$ for a learning rate $\eta \in (0, 1)$. Setting $\eta = \sqrt{\ln N / T}$ (or using the doubling trick when $T$ is unknown) yields the bound above.
+
+This approach generalizes to the \emph{multiplicative weights} framework (also called Hedge), which extends beyond binary prediction to decision-making over finitely many ``experts.'' The framework is one of the most widely applicable algorithmic paradigms in theoretical computer science, with applications to zero-sum games, boosting, and linear programming~\cite{ShalevShwartzBenDavid2014}.
+
+\begin{remark}[Connection to Littlestone dimension]
+\label{rmk:regret-ldim}
+Ben-David, P\'al, and Shalev-Shwartz~\cite{BenDavidPalShalevShwartz2009} showed that for infinite hypothesis classes, the Littlestone dimension also governs the optimal regret rate. Specifically, the minimax regret over $T$ rounds is $\Theta(\sqrt{\Ldim(\mathcal{H}) \cdot T})$ in the agnostic (non-realizable) setting. This connects the combinatorial tree structure of the Littlestone dimension to the sequential prediction framework even beyond realizability.
+\end{remark}
+
+% ================================================================
+% SECTION 6: THE PAC-ONLINE GAP
+% VC ≤ Ldim always; thresholds show the gap can be infinite.
+% ================================================================
+
+\section{The PAC--Online Gap}
+\label{sec:pac-online-gap}
+
+The VC dimension and the Littlestone dimension both measure the complexity of a hypothesis class, but they measure different things. How do they relate?
+
+\begin{prop}[$\VC \leq \Ldim$]
+\label{prop:vc-leq-ldim}
+  \lean{BranchWiseLittlestoneDim_ge_VCDim}
+  \leanok
+For any hypothesis class $\mathcal{H}$, $\VC(\mathcal{H}) \leq \Ldim(\mathcal{H})$.
+\end{prop}
+
+\begin{proof}
+Let $S = \{x_1, \ldots, x_d\}$ be a set shattered by $\mathcal{H}$, so $\VC(\mathcal{H}) \geq d$. We construct a complete mistake tree of depth $d$. The root is labeled $x_1$. Every node at depth $k$ is labeled $x_{k+1}$ (the same instance at every node of a given depth). For any root-to-leaf path with labels $(y_1, \ldots, y_d)$, shattering guarantees that some $h \in \mathcal{H}$ satisfies $h(x_i) = y_i$ for all $i$. Thus this is a valid mistake tree of depth $d$, so $\Ldim(\mathcal{H}) \geq d$.
+\end{proof}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    level distance=1.4cm,
+    every node/.style={font=\small},
+    treenode/.style={draw, circle, thick, minimum size=0.65cm, fill=defblue!10, font=\small},
+    leafnode/.style={draw, rectangle, rounded corners, thick, minimum width=0.5cm, minimum height=0.4cm, fill=sepgreen!15, font=\scriptsize},
+    edgelabel/.style={font=\scriptsize, midway},
+    level 1/.style={sibling distance=3.6cm},
+    level 2/.style={sibling distance=1.8cm},
+]
+\node[treenode] {$x_1$}
+    child { node[treenode] {$x_2$}
+        child { node[leafnode] {$(0,0)$} edge from parent node[edgelabel, left] {$0$} }
+        child { node[leafnode] {$(0,1)$} edge from parent node[edgelabel, right] {$1$} }
+        edge from parent node[edgelabel, left] {$0$}
+    }
+    child { node[treenode] {$x_2$}
+        child { node[leafnode] {$(1,0)$} edge from parent node[edgelabel, left] {$0$} }
+        child { node[leafnode] {$(1,1)$} edge from parent node[edgelabel, right] {$1$} }
+        edge from parent node[edgelabel, right] {$1$}
+    };
+
+% Annotation
+\node[font=\scriptsize\itshape, text=notegray, align=left, anchor=west] at (3.5, -1.4) {
+    Shattered set $\{x_1, x_2\}$ gives a\\
+    non-adaptive mistake tree:\\
+    same instance at each depth.\\[3pt]
+    Shattering $\Rightarrow$ valid mistake tree.\\
+    Adaptive tree $\not\Rightarrow$ shattered set.
+};
+\end{tikzpicture}
+\caption{A shattered set of size $2$ yields a (non-adaptive) mistake tree of depth $2$. The instances at each depth are identical, so the tree does not exploit adaptivity. This construction proves $\VC(\mathcal{H}) \leq \Ldim(\mathcal{H})$.}
+\label{fig:vc-leq-ldim}
+\end{figure}
+
+The inequality $\VC \leq \Ldim$ is often tight (e.g., for halfspaces, where both equal the ambient dimension). But the gap can be infinite.
+
+\begin{prop}[The PAC--Online separation: thresholds on $\R$]
+\label{prop:pac-online-sep}
+  \lean{pac_not_implies_online}
+  \leanok
+Let $\mathcal{H}_{\mathrm{thr}} = \{x \mapsto \ind[x \geq \theta] : \theta \in \R\}$. Then $\VC(\mathcal{H}_{\mathrm{thr}}) = 1$ and $\Ldim(\mathcal{H}_{\mathrm{thr}}) = \infty$.
+\end{prop}
+
+\begin{proof}
+$\VC = 1$: Any single point $x$ is shattered (take thresholds $\theta < x$ and $\theta > x$). No two points $x_1 < x_2$ are shattered, because $h(x_1) = 1, h(x_2) = 0$ requires $x_1 \geq \theta > x_2$, which contradicts $x_1 < x_2$.
+
+$\Ldim = \infty$: We construct mistake trees of arbitrary depth. For any $d$, consider the domain restricted to $\{1, 2, \ldots, 2^d\}$. The adversary can perform binary search: at depth $k$, present the midpoint of the current interval. Whatever the learner predicts, the adversary labels to force a mistake (and narrows the interval by half). After $d$ rounds, the adversary has traced a path from root to leaf, consistent with the threshold at the boundary of the final interval. Since $d$ was arbitrary, $\Ldim = \infty$.
+\end{proof}
+
+This separation is the most important non-implication in the concept graph. It witnesses the edge $\nde{pac\_learning} \xrightarrow{\rel{does\_not\_imply}} \nde{online\_learning}$: a class can be PAC learnable (finite VC dimension) yet not online learnable (infinite Littlestone dimension). The converse implication does hold: $\Ldim < \infty$ implies $\VC < \infty$ (by $\VC \leq \Ldim$), so online learnability implies PAC learnability.
+
+\begin{separation}
+\textbf{PAC $\not\Rightarrow$ Online.} Witness: $\mathcal{H}_{\mathrm{thr}}$ on $\R$. The adversary in the online game can exploit the \emph{order structure} of $\R$ by performing binary search on the threshold. A random sample from a fixed distribution cannot exploit this ordering---with high probability, the sample reveals the threshold's location to within $\varepsilon$. The gap between PAC and online learnability is not a technicality: it reflects a fundamental difference between random and adversarial data.
+\end{separation}
+
+\begin{remark}[Why the gap arises]
+\label{rmk:gap-intuition}
+In PAC learning, the distribution $D$ is fixed before the game begins; the learner faces a \emph{static} environment. In online learning, the adversary \emph{adapts} to the learner's behavior. Adaptivity is the source of the gap. A threshold on $\R$ is easy to learn from random data (one sample suffices, approximately) but impossible to learn from adversarial data (the adversary can always present a point that bisects the remaining uncertainty). The Littlestone dimension measures the depth of the adversary's adaptive search, which can exceed the VC dimension's non-adaptive combinatorics by an arbitrary amount. A full treatment of this and related separations appears in \Cref{ch:separations}.
+\end{remark}
+
+\section{What This Chapter Established}
+\label{sec:ch6-summary}
+
+The online learning model replaces PAC's probabilistic framework with a game between learner and adversary. The key structural results are:
+
+\begin{enumerate}[leftmargin=*, itemsep=3pt]
+\item \textbf{The Littlestone characterization.} The optimal mistake bound for online learning equals the Littlestone dimension $\Ldim(\mathcal{H})$---the maximum depth of a complete mistake tree. This is a \emph{combinatorial} characterization, in contrast to the VC dimension's \emph{set-combinatorial} characterization of PAC learning.
+
+\item \textbf{The SOA algorithm.} The upper bound is constructive: the Standard Optimal Algorithm achieves $\Ldim(\mathcal{H})$ mistakes by predicting the label whose version space has the larger Littlestone dimension. Each mistake provably reduces the Littlestone dimension of the version space by at least one.
+
+\item \textbf{The adversary strategy.} The lower bound is also constructive: the adversary traverses a complete mistake tree from root to leaf, labeling each instance to contradict the learner's prediction.
+
+\item \textbf{The PAC--Online gap.} $\VC(\mathcal{H}) \leq \Ldim(\mathcal{H})$ always, but the gap can be infinite (thresholds: $\VC = 1$, $\Ldim = \infty$). Online learnability implies PAC learnability, but not conversely.
+
+\item \textbf{The regret framework.} Regret bounds---measuring performance relative to the best fixed hypothesis---extend online learning beyond the realizable setting. The Littlestone dimension governs optimal regret rates even in the agnostic case.
+\end{enumerate}
+
+The combinatorial and algorithmic flavor of this chapter is not accidental. Online learning theory is fundamentally about trees and algorithms, where PAC learning theory is about sets and probabilities. Both paradigms measure the complexity of the same object (a hypothesis class $\mathcal{H}$), but through different instruments---and the instruments are not interchangeable.
+

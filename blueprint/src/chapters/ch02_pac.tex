@@ -1,0 +1,1064 @@
+% Chapter imported from the companion textbook
+% (formal-learning-theory-book) with lean annotations added
+% to cross-link each formalized statement to its kernel declaration.
+% Prose is unchanged; annotations are additive.
+
+% Chapter 5: PAC Learning and the Fundamental Theorem
+% fundamental_theorem = Profile B (crown jewel equivalence web),
+% agnostic_pac_learning = Profile C (revelation: the ε² price),
+% pac_lower_bound = Profile D (negative result),
+% nfl_theorem = Profile D (negative result, full proof here),
+% realizable/agnostic = Profile A (flags),
+% vc_characterization = Profile B (absorbed into fundamental_theorem),
+% sauer_shelah_lemma = forward reference to Ch10.
+
+\chapter{PAC Learning and the Fundamental Theorem}
+\label{ch:pac}
+
+This is the central chapter of the book.  Every paradigm that follows---online
+learning, Gold-style identification, universal learning---will be understood
+partly by how it resembles and partly by how it differs from what is
+established here.  The chapter builds toward a single destination: the
+Fundamental Theorem of Statistical Learning, which characterizes PAC
+learnability through a web of nine equivalent conditions.  The path there is
+the content.  Each lemma is a foothold; the VC characterization is the summit;
+the full equivalence web is the view from the top.
+
+\medskip
+
+The chapter is organized as an ascent.
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{The PAC framework} (\Cref{sec:pac-def}): the definition and its
+  moving parts.  Brief---the definition is not the centerpiece.
+\item \textbf{The VC characterization proof} (\Cref{sec:vc-char}): the full
+  proof that $\VC(\mathcal{H}) < \infty$ if and only if $\mathcal{H}$ is PAC
+  learnable, built in four stages through Sauer--Shelah, uniform convergence,
+  ERM analysis, and the converse.
+\item \textbf{The Fundamental Theorem} (\Cref{sec:fundamental}): all nine
+  equivalent conditions, the equivalence web, and the directions we proved versus
+  those we cited.
+\item \textbf{The agnostic setting} (\Cref{sec:agnostic}): why dropping the
+  realizability assumption changes sample complexity from $\Theta(d/\varepsilon)$
+  to $\Theta(d/\varepsilon^2)$, and why this gap is not an artifact.
+\item \textbf{Lower bounds and No Free Lunch} (\Cref{sec:lower-bounds}): the
+  matching lower bound $\Omega(d/\varepsilon)$ and the full NFL proof.
+\item \textbf{Computational interlude} (\Cref{sec:computational}): the
+  information--computation gap.
+\end{enumerate}
+
+
+% ================================================================
+% SECTION 1: THE PAC FRAMEWORK
+% ================================================================
+
+\section{The PAC Framework}
+\label{sec:pac-def}
+
+Two assumptions frame the discussion.
+
+\begin{defn}[Realizable setting]
+\label{def:realizable}
+  \lean{BatchLearner}
+  \leanok
+Learning is \emph{realizable} if the target concept $c^*$ lies in the
+hypothesis class: $c^* \in \mathcal{H}$.
+\end{defn}
+
+\begin{defn}[Agnostic setting]
+\label{def:agnostic}
+  \lean{BatchLearner}
+  \leanok
+Learning is \emph{agnostic} if no assumption is made on the relationship between
+$c^*$ and $\mathcal{H}$.  The learner competes with the best hypothesis
+$h^* = \arg\min_{h \in \mathcal{H}} \risk_D(h)$.
+\end{defn}
+
+The realizable setting is a special case of the agnostic one (take
+$h^* = c^*$, achieving zero risk).  The agnostic setting is the one that
+matters in practice, but the realizable setting is where the cleanest
+characterization lives.  We begin there.
+
+\begin{defn}[PAC Learning {\cite{Valiant1984}}]
+\label{def:pac}
+  \lean{PACLearnable}
+  \leanok
+A hypothesis class $\mathcal{H}$ over domain $X$ is \emph{PAC learnable} if
+there exists an algorithm $A$ and a function $m_\mathcal{H} \colon
+(0,1)^2 \to \N$ such that, for every $\varepsilon, \delta \in (0,1)$ and every
+distribution $D$ on $X$:
+
+If $c^* \in \mathcal{H}$ and $S \sim D^m$ with $m \geq
+m_\mathcal{H}(\varepsilon, \delta)$, then
+\[
+  \Pr_{S \sim D^m}\!\bigl[\risk_D(A(S)) > \varepsilon\bigr] \leq \delta.
+\]
+The function $m_\mathcal{H}(\varepsilon, \delta)$ is the \emph{sample
+complexity} of $\mathcal{H}$.  When $m_\mathcal{H}$ is polynomial in
+$1/\varepsilon$ and $1/\delta$, the class is \emph{efficiently PAC learnable}
+(information-theoretically); computational efficiency is a separate
+requirement.
+\end{defn}
+
+Before unpacking the definition, we illustrate the full PAC cycle on a
+concrete class where every step is visible.
+
+\begin{example}[PAC learning of rectangles: the full cycle]
+\label{ex:pac-rectangles}
+Let $\mathcal{H}$ be the class of axis-aligned rectangles in $\R^2$:
+$h_{(a_1,a_2,b_1,b_2)}(x) = \ind[a_1 \leq x_1 \leq b_1 \text{ and }
+a_2 \leq x_2 \leq b_2]$.
+
+\medskip
+\noindent\textbf{VC dimension.}  $\VC(\mathcal{H}) = 4$.  Four points,
+one near each side of a rectangle, can be shattered: for each subset
+$T$ of the four points, the rectangle that tightly encloses exactly
+$T$ labels precisely $T$ as positive.  No five points can be shattered:
+given any five points in $\R^2$, at least one is ``interior'' (not
+extremal in any coordinate), and the labeling that excludes only
+that point cannot be realized by a rectangle.
+
+\medskip
+\noindent\textbf{ERM and the error region.}  Given sample $S$
+consistent with target rectangle $R^*$, the ERM learner returns the
+tightest enclosing rectangle $R_S$ of the positive examples.  Since
+all positive examples lie in $R^*$, we have $R_S \subseteq R^*$:
+zero false positives.  The error region $R^* \setminus R_S$ consists
+of four \emph{strips}---one per side of $R^*$---each containing no
+positive sample.
+
+\medskip
+\noindent\textbf{Sample complexity.}  For each side~$j$ ($j = 1,
+\ldots, 4$), let $T_j$ be the strip of $R^*$ closest to side~$j$ with
+probability mass exactly $\varepsilon/4$ under~$D$.  If a positive
+example falls in $T_j$, then $R_S$ extends into $T_j$ and that
+strip's contribution to the error drops below $\varepsilon/4$.  The
+probability that strip $T_j$ is missed entirely by $m$ i.i.d.\ samples
+is at most $(1 - \varepsilon/4)^m \leq e^{-m\varepsilon/4}$.  A union
+bound over four strips gives
+\[
+  \Pr[\risk_D(R_S) > \varepsilon]
+  \;\leq\; 4\, e^{-m\varepsilon/4}.
+\]
+Setting the right-hand side $\leq \delta$ yields
+$m = \frac{4}{\varepsilon}\ln\frac{4}{\delta}
+= O\!\bigl(\frac{d + \log(1/\delta)}{\varepsilon}\bigr)$
+with $d = 4$---matching the Fundamental Theorem's prediction with the
+tight $1/\varepsilon$ dependence.
+
+The analysis makes visible what the general proof obscures: the error
+region has \emph{geometric structure} (four strips), the union bound
+exploits the \emph{number of strips} (controlled by VC dimension),
+and the exponential decay in $m$ comes from the i.i.d.\ assumption
+applied to each strip independently.  Replacing $\R^2$ with $\R^k$
+gives rectangles with $\VC = 2k$ and $2k$ strips, and the same
+argument yields $m = O(k/\varepsilon \cdot \log(k/\delta))$.
+\end{example}
+
+Three features of this definition deserve emphasis:
+
+\begin{enumerate}[leftmargin=*,itemsep=3pt]
+\item \textbf{Distribution-free.}  The guarantee holds for \emph{every}
+  distribution $D$.  The learner does not know $D$ and cannot assume anything
+  about it.
+\item \textbf{Approximate.}  The learner need not find $c^*$ exactly; error
+  $\leq \varepsilon$ suffices.
+\item \textbf{Probably.}  The guarantee is probabilistic: it may fail with
+  probability $\delta$, but $\delta$ can be driven arbitrarily small by
+  drawing more samples.
+\end{enumerate}
+
+\begin{remark}[The role of $\delta$]
+\label{rmk:delta}
+The $\delta$ parameter is structurally unimportant for characterization
+purposes: a bound with confidence $1 - \delta$ can always be converted to one
+with confidence $1 - \delta'$ by replacing $m$ with $m \cdot
+\lceil\log(1/\delta')/\log(1/\delta)\rceil$ and taking a majority vote.
+Consequently, the sample complexity depends on $\log(1/\delta)$, not on
+$1/\delta$, and the VC characterization is insensitive to how $\delta$ enters.
+\end{remark}
+
+\begin{defn}[Empirical Risk Minimization]
+\label{def:erm}
+  \lean{BatchLearner}
+  \leanok
+Given sample $S = \{(x_i, c^*(x_i))\}_{i=1}^m$ and hypothesis class
+$\mathcal{H}$, the \emph{empirical risk minimizer} is
+\[
+  \ERM_\mathcal{H}(S) = \arg\min_{h \in \mathcal{H}} \emprisk_S(h),
+  \qquad
+  \emprisk_S(h) = \frac{1}{m}\sum_{i=1}^m \ind[h(x_i) \neq c^*(x_i)].
+\]
+In the realizable setting, $\ERM$ returns any $h \in \mathcal{H}$ consistent
+with $S$ (since $\emprisk_S(c^*) = 0$).
+\end{defn}
+
+The question this chapter answers: \emph{for which $\mathcal{H}$ does ERM
+succeed, and when is PAC learning possible at all?}
+
+
+% ================================================================
+% SECTION 2: THE VC CHARACTERIZATION — FULL PROOF
+% ================================================================
+
+\section{The VC Characterization}
+\label{sec:vc-char}
+
+The main result of this section is:
+
+\begin{thm}[VC Characterization of PAC Learnability {\cite{BlumerEhrenfeuchtHausslerWarmuth1989,VapnikChervonenkis1971}}]
+\label{thm:vc-char}
+  \lean{fundamental_theorem}
+  \leanok
+  \uses{def:vc-dim,def:unif-conv,def:pac}
+Let $\mathcal{H}$ be a hypothesis class over domain $X$.  The following are
+equivalent:
+\begin{enumerate}[label=(\roman*)]
+\item $\mathcal{H}$ is PAC learnable.
+\item $\mathcal{H}$ has the uniform convergence property.
+\item $\VC(\mathcal{H}) < \infty$.
+\end{enumerate}
+Moreover, if $d = \VC(\mathcal{H}) < \infty$, then $\mathcal{H}$ is PAC
+learnable with sample complexity
+\[
+  m_\mathcal{H}(\varepsilon, \delta)
+  = O\!\left(\frac{d + \log(1/\delta)}{\varepsilon}\right).
+\]
+\end{thm}
+
+The proof proceeds in four stages.  Each stage is a separate lemma,
+and each lemma is a foothold on the ascent.
+
+\bigskip
+\noindent\textbf{Stage 1:} Finite VC dimension $\Longrightarrow$ polynomial
+growth function (Sauer--Shelah).
+
+\noindent\textbf{Stage 2:} Polynomial growth function $\Longrightarrow$
+uniform convergence ($\varepsilon$-net/symmetrization argument).
+
+\noindent\textbf{Stage 3:} Uniform convergence $\Longrightarrow$ ERM is a
+PAC learner.
+
+\noindent\textbf{Stage 4 (Converse):} Infinite VC dimension
+$\Longrightarrow$ not PAC learnable.
+
+
+% -----------------------------------------------
+% STAGE 1: Sauer--Shelah
+% -----------------------------------------------
+
+\subsection{Stage 1: Sauer--Shelah (Statement)}
+\label{sec:sauer-shelah}
+
+The growth function measures the effective richness of $\mathcal{H}$ on finite
+samples.
+
+\begin{defn}[Growth Function]
+\label{def:growth-function}
+  \lean{sauer_shelah}
+  \leanok
+For a hypothesis class $\mathcal{H}$ over $X$ and integer $m \geq 1$,
+\[
+  \growth_\mathcal{H}(m) = \max_{\{x_1, \ldots, x_m\} \subseteq X}
+  \bigl|\{(h(x_1), \ldots, h(x_m)) : h \in \mathcal{H}\}\bigr|.
+\]
+\end{defn}
+
+The growth function satisfies $\growth_\mathcal{H}(m) \leq 2^m$ always, with
+equality when $\mathcal{H}$ shatters some set of size $m$.  The Sauer--Shelah
+lemma says that finite VC dimension forces a polynomial bound.
+
+\begin{lemma}[Sauer--Shelah {\cite{Sauer1972,Shelah1972}}]
+\label{lem:sauer-shelah}
+  \lean{sauer_shelah}
+  \leanok
+  \uses{def:vc-dim,def:growth-function}
+If $\VC(\mathcal{H}) = d$, then for all $m \geq d$,
+\[
+  \growth_\mathcal{H}(m)
+  \leq \sum_{i=0}^d \binom{m}{i}
+  \leq \left(\frac{em}{d}\right)^d.
+\]
+\end{lemma}
+
+The proof of the Sauer--Shelah lemma is combinatorial, proceeding by induction
+on $m + d$.  It is given in full in \Cref{ch:dimensions}
+(\Cref{lem:sauer-shelah-proof}).  For the present chapter, we take it as given
+and use only the consequence: if $d = \VC(\mathcal{H}) < \infty$, then
+$\growth_\mathcal{H}(m) = O(m^d)$---polynomial, not exponential.
+
+
+% -----------------------------------------------
+% STAGE 2: Uniform Convergence
+% -----------------------------------------------
+
+\subsection{Stage 2: Uniform Convergence}
+\label{sec:uniform-convergence}
+
+The uniform convergence property says that empirical risk converges to true risk
+\emph{simultaneously} for all hypotheses in $\mathcal{H}$, not just for a
+single fixed $h$.
+
+\begin{defn}[Uniform Convergence]
+\label{def:unif-conv}
+  \lean{HasUniformConvergence}
+  \leanok
+A hypothesis class $\mathcal{H}$ has the \emph{uniform convergence property}
+if for every $\varepsilon, \delta > 0$, there exists
+$m_{\mathrm{UC}}(\varepsilon, \delta)$ such that for all distributions $D$,
+whenever $m \geq m_{\mathrm{UC}}(\varepsilon, \delta)$:
+\[
+  \Pr_{S \sim D^m}\!\left[
+    \sup_{h \in \mathcal{H}} |\risk_D(h) - \emprisk_S(h)| > \varepsilon
+  \right] \leq \delta.
+\]
+\end{defn}
+
+\begin{thm}[Uniform Convergence from Finite Growth]
+\label{thm:unif-conv}
+If $\growth_\mathcal{H}(m) \leq (em/d)^d$ for all $m \geq d$, then
+$\mathcal{H}$ has the uniform convergence property with
+\[
+  m_{\mathrm{UC}}(\varepsilon, \delta)
+  = O\!\left(\frac{d \log(1/\varepsilon) + \log(1/\delta)}{\varepsilon^2}\right).
+\]
+In the realizable setting, the $\varepsilon^2$ denominator improves to
+$\varepsilon$, giving $m = O\!\left(\frac{d\log(1/\varepsilon) +
+\log(1/\delta)}{\varepsilon}\right)$.
+\end{thm}
+
+\begin{proof}
+The proof uses the \emph{symmetrization} (or ``ghost sample'') technique of
+Vapnik and Chervonenkis~\cite{VapnikChervonenkis1971}.
+
+\medskip
+\noindent\textbf{Step 1: Symmetrization.}
+Draw two independent samples $S, S' \sim D^m$.  We claim that for
+$m \geq 8/\varepsilon^2$,
+\[
+  \Pr_S\!\left[\sup_{h} |\risk_D(h) - \emprisk_S(h)| > \varepsilon\right]
+  \leq 2\,\Pr_{S,S'}\!\left[
+    \sup_h |\emprisk_S(h) - \emprisk_{S'}(h)| > \varepsilon/2
+  \right].
+\]
+This follows because if $|\risk_D(h) - \emprisk_S(h)| > \varepsilon$ for some
+$h$, then with probability at least $1/2$ (by a Chebyshev argument on $S'$),
+the ghost sample satisfies $|\emprisk_{S'}(h) - \risk_D(h)| \leq
+\varepsilon/2$, and hence $|\emprisk_S(h) - \emprisk_{S'}(h)| > \varepsilon/2$
+by the triangle inequality.
+
+\medskip
+\noindent\textbf{Step 2: Permutation argument.}
+Let $T = S \cup S'$ be the pooled sample of size $2m$.  Conditioned on $T$,
+the partition into $S$ and $S'$ is uniformly random among all
+$\binom{2m}{m}$ splits.  By a union bound over the distinct label patterns
+that $\mathcal{H}$ induces on $T$:
+\[
+  \Pr_{S,S'}\!\left[\sup_h |\emprisk_S(h) - \emprisk_{S'}(h)| >
+  \varepsilon/2\right]
+  \leq \growth_\mathcal{H}(2m) \cdot
+  \max_h \Pr_{\text{split}}\!\bigl[|\emprisk_S(h) - \emprisk_{S'}(h)|
+  > \varepsilon/2\bigr].
+\]
+The number of distinct behaviors is at most $\growth_\mathcal{H}(2m)$, and for
+each fixed labeling pattern, $\emprisk_S(h) - \emprisk_{S'}(h)$ is a sum of
+$2m$ centered random variables (each $\pm 1/m$ depending on which half the
+point falls in).
+
+\medskip
+\noindent\textbf{Step 3: Hoeffding bound.}
+For each fixed label pattern, Hoeffding's inequality gives
+\[
+  \Pr_{\text{split}}\!\bigl[|\emprisk_S(h) - \emprisk_{S'}(h)| > \varepsilon/2\bigr]
+  \leq 2\exp(-m\varepsilon^2/8).
+\]
+Combining with the Sauer--Shelah bound:
+\[
+  \Pr_S\!\left[\sup_h |\risk_D(h) - \emprisk_S(h)| > \varepsilon\right]
+  \leq 4 \left(\frac{2em}{d}\right)^d \exp\!\left(-\frac{m\varepsilon^2}{8}\right).
+\]
+Setting this $\leq \delta$ and solving for $m$ gives
+\[
+  m = O\!\left(\frac{d\log(1/\varepsilon) + \log(1/\delta)}{\varepsilon^2}\right).
+\]
+
+\medskip
+\noindent\textbf{Realizable improvement.}
+In the realizable setting, $\risk_D(c^*) = 0$, so only one-sided deviations
+matter: we need $\Pr[\exists h \in \mathcal{H} : \emprisk_S(h) = 0 \text{ but }
+\risk_D(h) > \varepsilon] \leq \delta$.  For any fixed $h$ with $\risk_D(h) >
+\varepsilon$, the probability that $h$ is consistent with all $m$ samples is at
+most $(1 - \varepsilon)^m \leq e^{-m\varepsilon}$.  A union bound over the
+$\growth_\mathcal{H}(m)$ distinct behaviors gives
+\[
+  \Pr[\text{bad}] \leq \left(\frac{em}{d}\right)^d e^{-m\varepsilon}.
+\]
+Setting this $\leq \delta$ yields $m = O\!\left(\frac{d\log(d/\varepsilon) +
+\log(1/\delta)}{\varepsilon}\right)$, confirming the $1/\varepsilon$
+dependence.
+\end{proof}
+
+\begin{remark}[The Hanneke refinement]
+\label{rmk:hanneke}
+The optimal sample complexity in the realizable case is
+$\Theta\!\left(\frac{d + \log(1/\delta)}{\varepsilon}\right)$, achieved by a
+careful one-inclusion graph analysis.  The $\log(d/\varepsilon)$ factor in the
+union bound above is a mild overhead; Hanneke~\cite{Hanneke2016} showed it can
+be removed entirely, establishing the tight bound.
+\end{remark}
+
+
+% -----------------------------------------------
+% STAGE 3: ERM succeeds
+% -----------------------------------------------
+
+\subsection{Stage 3: Uniform Convergence Implies ERM Succeeds}
+\label{sec:erm-succeeds}
+
+\begin{prop}[ERM is a PAC learner under uniform convergence]
+\label{prop:erm-pac}
+If $\mathcal{H}$ has the uniform convergence property, then $\ERM_\mathcal{H}$
+is a PAC learner for $\mathcal{H}$.
+\end{prop}
+
+\begin{proof}
+Suppose $m \geq m_{\mathrm{UC}}(\varepsilon/2, \delta)$, so that with
+probability $\geq 1 - \delta$,
+\[
+  \sup_{h \in \mathcal{H}} |\risk_D(h) - \emprisk_S(h)| \leq \varepsilon/2.
+\]
+Let $h_S = \ERM_\mathcal{H}(S)$.  In the realizable case, $\emprisk_S(c^*) =
+0$, so $\emprisk_S(h_S) = 0$ as well.  Then:
+\[
+  \risk_D(h_S)
+  = \underbrace{(\risk_D(h_S) - \emprisk_S(h_S))}_{\leq \varepsilon/2}
+  + \underbrace{\emprisk_S(h_S)}_{= 0}
+  \leq \varepsilon/2 < \varepsilon.
+\]
+In the general (non-realizable) case, let $h^* = \arg\min_{h \in \mathcal{H}}
+\risk_D(h)$.  Then:
+\begin{align*}
+\risk_D(h_S) &\leq \emprisk_S(h_S) + \varepsilon/2
+  \leq \emprisk_S(h^*) + \varepsilon/2
+  \leq \risk_D(h^*) + \varepsilon. \qedhere
+\end{align*}
+\end{proof}
+
+
+% -----------------------------------------------
+% STAGE 4: Converse
+% -----------------------------------------------
+
+\subsection{Stage 4: Infinite VC Dimension Implies Failure}
+\label{sec:converse}
+
+\begin{thm}[Converse of the VC Characterization]
+\label{thm:vc-converse}
+If $\VC(\mathcal{H}) = \infty$, then $\mathcal{H}$ is not PAC learnable.
+\end{thm}
+
+\begin{proof}
+The proof constructs, for any candidate learner $A$ and any sample size $m$,
+a distribution on which $A$ must fail.  The construction is adversarial.
+
+Since $\VC(\mathcal{H}) = \infty$, there exists a shattered set
+$C = \{x_1, \ldots, x_{2m}\} \subseteq X$ of size $2m$.  By the definition of
+shattering, for every labeling $b \in \{0,1\}^{2m}$, there exists
+$h_b \in \mathcal{H}$ with $h_b(x_i) = b_i$ for all $i$.
+
+Now consider the uniform distribution $D_b$ on $C$ with target concept $h_b$.
+Run the learner $A$ on a sample $S$ of size $m$ drawn uniformly from $C$.
+With high probability, at least $m$ points of $C$ are unseen
+(by a coupon-collector argument, at least $m/2$ are unseen in expectation; we
+use $2m$ points to ensure $\geq m$ unseen with constant probability).
+
+On the unseen points, the learner has no information about the target labeling.
+We apply a probabilistic argument over $b$ drawn uniformly from $\{0,1\}^{2m}$:
+
+\medskip
+\noindent\textbf{Key claim.}  For any fixed algorithm $A$ and fixed training
+set $S$, if we draw $b$ uniformly at random, then for any hypothesis $A(S)$
+outputs, the expected error on unseen points is at least $1/2 \cdot (m/(2m))
+= 1/4$.
+
+This follows because, conditioned on $S$, the labels $b_j$ for unseen points
+$x_j \notin S$ are independent uniform bits under the uniform distribution on
+target functions.  Therefore $A(S)$'s prediction on each unseen point is
+correct with probability exactly $1/2$, regardless of the learner's strategy.
+
+Since the unseen points constitute at least half the support of $D_b$, the
+expected true risk satisfies $\E_b[\risk_{D_b}(A(S))] \geq 1/4$.  In
+particular, there exists a specific $b^*$ such that
+$\risk_{D_{b^*}}(A(S)) \geq 1/4$, which means $A$ fails to achieve
+$\varepsilon < 1/4$ with $m$ samples under distribution $D_{b^*}$.  Since $m$
+was arbitrary, $\mathcal{H}$ is not PAC learnable.
+\end{proof}
+
+\begin{remark}[Strength of the converse]
+\label{rmk:converse-strength}
+The converse is stronger than ``not uniformly convergent'': it says no learner
+whatsoever---not just ERM---can PAC learn $\mathcal{H}$.  The argument works
+because the adversary chooses the distribution \emph{after} seeing the learner.
+This distribution-free adversarial structure is the engine that makes VC
+dimension necessary, not just sufficient.
+\end{remark}
+
+The circle closes.  Finite VC dimension forces polynomial growth
+(Sauer--Shelah), which forces uniform convergence, which makes ERM
+succeed, which gives PAC learnability.  Infinite VC dimension shatters
+arbitrarily large sets, and the converse kills learnability outright.
+A single combinatorial quantity---the largest set the class can
+shatter---controls everything.
+
+
+% ================================================================
+% SECTION 3: THE FUNDAMENTAL THEOREM
+% ================================================================
+
+\section{The Fundamental Theorem of Statistical Learning}
+\label{sec:fundamental}
+
+The VC characterization (\Cref{thm:vc-char}) is the core equivalence.  But the
+full picture is richer: PAC learnability is equivalent to \emph{nine}
+conditions, not just three.  The Fundamental Theorem packages them all.
+
+\begin{thm}[The Fundamental Theorem of Statistical Learning
+{\cite{BlumerEhrenfeuchtHausslerWarmuth1989,ShalevShwartzBenDavid2014}}]
+\label{thm:fundamental}
+Let $\mathcal{H}$ be a hypothesis class of binary functions over a domain $X$.
+The following are equivalent:
+\begin{enumerate}[label=\textnormal{(F\arabic*)}]
+\item \label{F:pac} $\mathcal{H}$ is PAC learnable.
+\item \label{F:agpac} $\mathcal{H}$ is agnostic PAC learnable.
+\item \label{F:erm} $\ERM_\mathcal{H}$ is a PAC learner for $\mathcal{H}$.
+\item \label{F:uc} $\mathcal{H}$ has the uniform convergence property.
+\item \label{F:finvc} $\VC(\mathcal{H}) < \infty$.
+\item \label{F:fingrowth} $\growth_\mathcal{H}(m) < 2^m$ for some $m$.
+\item \label{F:compression} $\mathcal{H}$ has a finite compression scheme.
+\item \label{F:finiteness} Any finite subclass of $\mathcal{H}$ over a
+  finite domain is PAC learnable (with bounds depending on $|\mathcal{H}|$),
+  and this property ``lifts'' to $\mathcal{H}$.
+\item \label{F:online} $\mathcal{H}$ has finite Littlestone dimension
+  $\Longrightarrow$ $\mathcal{H}$ is PAC learnable. \emph{(The converse fails:
+  this implication is strict.  See \Cref{ch:separations}.)}
+\end{enumerate}
+\end{thm}
+
+\begin{remark}[On the numbering]
+\label{rmk:numbering}
+Condition~\ref{F:online} is an implication, not an equivalence: finite
+Littlestone dimension implies finite VC dimension (\Cref{ch:dimensions}), but
+the converse fails---thresholds on $\R$ have $\VC = 1$ but $\Ldim = \infty$
+(\Cref{ex:concept-classes}).  We include it to mark the boundary of the
+equivalence web: this is where the PAC--online separation begins.
+\end{remark}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+    node/.style={draw, thick, rounded corners, minimum width=2.4cm,
+      minimum height=0.8cm, font=\small, align=center, fill=defblue!8},
+    edge/.style={-{Stealth[length=2mm]}, thick},
+    bidir/.style={{Stealth[length=2mm]}-{Stealth[length=2mm]}, thick},
+    note/.style={font=\tiny, text=notegray, align=center, fill=white,
+      inner sep=1pt},
+    node distance=1.8cm and 2.2cm
+]
+% Core nodes
+\node[node, fill=thmred!12] (vc) {$\VC(\mathcal{H}) < \infty$\\\ref{F:finvc}};
+\node[node, right=2.5cm of vc] (uc) {Uniform\\convergence\\\ref{F:uc}};
+\node[node, right=2.5cm of uc] (erm) {ERM is PAC\\\ref{F:erm}};
+
+\node[node, below=2cm of vc] (growth) {$\growth(m) < 2^m$\\\ref{F:fingrowth}};
+\node[node, below=2cm of uc, fill=thmred!12] (pac) {PAC\\learnable\\\ref{F:pac}};
+\node[node, below=2cm of erm] (agpac) {Agnostic\\PAC\\\ref{F:agpac}};
+
+\node[node, below=2cm of growth] (comp) {Finite\\compression\\\ref{F:compression}};
+\node[node, below=2cm of pac] (finite) {Finiteness\\property\\\ref{F:finiteness}};
+\node[node, right=2.5cm of finite, draw=edgeorange, thick, fill=edgeorange!8]
+  (ldim) {$\Ldim < \infty$\\\ref{F:online}\\(strict)};
+
+% Equivalence edges (bidirectional)
+\draw[bidir, defblue] (vc) -- node[note, above] {Sauer--Shelah\\$+$ converse} (uc);
+\draw[bidir, defblue] (uc) -- node[note, above] {Prop.~\ref{prop:erm-pac}} (erm);
+\draw[bidir, defblue] (vc) -- node[note, left] {Sauer} (growth);
+\draw[bidir, defblue] (uc) -- node[note, right] {} (pac);
+\draw[bidir, defblue] (pac) -- node[note, above] {} (erm);
+\draw[bidir, defblue] (pac) -- node[note, right] {} (agpac);
+\draw[bidir, defblue] (growth) -- node[note, left] {} (comp);
+\draw[bidir, defblue] (pac) -- node[note, right] {} (finite);
+
+% The strict implication
+\draw[edge, edgeorange, dashed] (ldim) -- node[note, below=3pt, text=edgeorange]
+  {strict: $\Ldim < \infty \Rightarrow \VC < \infty$\\but not conversely} (finite);
+
+% Main diagonal
+\draw[bidir, thmred, very thick] (vc) -- node[note, right, text=thmred]
+  {\textbf{Core}} (pac);
+\end{tikzpicture}
+\caption{The equivalence web of the Fundamental Theorem.  All solid
+bidirectional arrows are full equivalences.  The dashed arrow from
+$\Ldim < \infty$ is strict: finite Littlestone dimension implies PAC
+learnability, but not conversely.  The thick red diagonal marks the VC
+characterization---the core equivalence proved in
+\Cref{sec:vc-char}.}
+\label{fig:equivalence-web}
+\end{figure}
+
+
+\subsection{The Proof Architecture}
+\label{sec:proof-architecture}
+
+We have already proved (in \Cref{sec:vc-char}):
+\[
+  \ref{F:finvc} \Rightarrow \ref{F:uc} \Rightarrow \ref{F:erm}
+  \Rightarrow \ref{F:pac}
+  \qquad\text{and}\qquad
+  \neg\ref{F:finvc} \Rightarrow \neg\ref{F:pac}.
+\]
+This establishes
+$\ref{F:finvc} \Leftrightarrow \ref{F:uc} \Leftrightarrow \ref{F:erm}
+\Leftrightarrow \ref{F:pac}$.
+
+The remaining directions:
+
+\begin{itemize}[leftmargin=*,itemsep=4pt]
+\item $\ref{F:finvc} \Leftrightarrow \ref{F:fingrowth}$:  By the Sauer--Shelah
+  lemma (\Cref{lem:sauer-shelah}), $\VC(\mathcal{H}) = d$ implies
+  $\growth_\mathcal{H}(m) \leq (em/d)^d < 2^m$ for $m$ large enough.
+  Conversely, if $\VC(\mathcal{H}) = \infty$, then $\growth_\mathcal{H}(m) =
+  2^m$ for all $m$ (since $\mathcal{H}$ shatters a set of every finite size).
+  This is immediate from the definition of VC dimension.
+
+\item $\ref{F:pac} \Leftrightarrow \ref{F:agpac}$:  Agnostic PAC learnability
+  trivially implies realizable PAC learnability (set $c^* \in \mathcal{H}$, so
+  the best hypothesis has zero risk).  The converse uses the uniform
+  convergence property: if $\mathcal{H}$ has finite VC dimension, then uniform
+  convergence holds, and \Cref{prop:erm-pac} shows ERM succeeds in the agnostic
+  setting as well (with the $\varepsilon^2$ sample complexity discussed in
+  \Cref{sec:agnostic}).
+
+\item $\ref{F:finvc} \Leftrightarrow \ref{F:compression}$:  This is the deepest
+  equivalence.  We sketch the argument below.
+
+\item $\ref{F:online} \Rightarrow \ref{F:finvc}$: If $\Ldim(\mathcal{H}) < \infty$,
+  then $\VC(\mathcal{H}) \leq \Ldim(\mathcal{H}) < \infty$, since any shattered
+  set gives a complete binary mistake tree of the same depth (\Cref{ch:dimensions}).
+\end{itemize}
+
+
+\subsection{The Compression Direction (Sketch)}
+\label{sec:compression-direction}
+
+\begin{defn}[Compression Scheme]
+\label{def:compression}
+A \emph{compression scheme} of size $k$ for $\mathcal{H}$ is a pair
+$(\kappa, \rho)$ where:
+\begin{itemize}[nosep]
+\item $\kappa$ (the compressor) maps any sample $S$ consistent with some
+  $h \in \mathcal{H}$ to a subsequence $\kappa(S) \subseteq S$ of size
+  $\leq k$;
+\item $\rho$ (the reconstructor) maps any subsequence of size $\leq k$ to a
+  hypothesis $\rho(\kappa(S)) \in Y^X$;
+\item $\rho(\kappa(S))$ is consistent with the full sample $S$.
+\end{itemize}
+\end{defn}
+
+The direction $\ref{F:compression} \Rightarrow \ref{F:pac}$ is classical
+and relatively straightforward: a compression scheme of size $k$ yields PAC
+learning with sample complexity $O\!\left(\frac{k\log(k/\varepsilon) +
+\log(1/\delta)}{\varepsilon}\right)$, since the compressed subsequence encodes
+all the information the learner needs, and there are at most $\binom{m}{k}$
+possible compressed sets.
+
+The converse direction $\ref{F:finvc} \Rightarrow \ref{F:compression}$ is the
+deep one.  It was an open conjecture for 30 years before being resolved by
+Moran and Yehudayoff~\cite{MoranYehudayoff2016}.
+
+\begin{historical}
+\textbf{The compression conjecture.}
+Littlestone and Warmuth conjectured in 1986 that every class of VC dimension
+$d$ has a compression scheme of size $O(d)$.  The conjecture was resolved
+positively by Moran and Yehudayoff (2016), who proved that every class of
+VC dimension $d$ has a compression scheme of size at most $2^{O(d)}$.
+The $O(d)$ bound remains open; the exponential gap between $d$ and $2^{O(d)}$
+is one of the field's remaining structural questions.
+\end{historical}
+
+\begin{proof}[Proof sketch (Moran--Yehudayoff)]
+The argument constructs a compression scheme from a
+\emph{maximum class} (a class achieving the Sauer--Shelah bound with
+equality).  Every class of VC dimension $d$ can be embedded, for sample
+complexity purposes, into a maximum class of VC dimension $d$ via a projection
+argument.  For maximum classes, the one-inclusion graph has special structure:
+its edges can be oriented so that every vertex has in-degree at most $d$.  This
+orientation defines a compression scheme---given sample $S$, output the
+at-most-$d$ predecessors of the unique vertex in the one-inclusion graph
+determined by $S$.  The reconstruction uses the structure of the maximum class
+to recover a consistent hypothesis from these $d$ points.
+
+Extending from maximum classes to arbitrary classes of finite VC dimension
+requires a more delicate argument involving fractional covers of the
+one-inclusion hypergraph, which blows up the size to $2^{O(d)}$.
+\end{proof}
+
+
+% ================================================================
+% SECTION 4: THE AGNOSTIC SETTING AND THE ε² PRICE
+% ================================================================
+
+\section{The Agnostic Setting and the \texorpdfstring{$\varepsilon^2$}{epsilon-squared} Price}
+\label{sec:agnostic}
+
+\begin{defn}[Agnostic PAC Learning]
+\label{def:agnostic-pac}
+A hypothesis class $\mathcal{H}$ is \emph{agnostic PAC learnable} if there
+exists an algorithm $A$ and a function $m_\mathcal{H}(\varepsilon, \delta)$
+such that for every $\varepsilon, \delta \in (0,1)$ and every distribution $D$
+on $X \times \{0,1\}$ (not necessarily generated by any $c^* \in \mathcal{H}$),
+whenever $m \geq m_\mathcal{H}(\varepsilon, \delta)$:
+\[
+  \Pr_{S \sim D^m}\!\bigl[
+    \risk_D(A(S)) - \min_{h \in \mathcal{H}} \risk_D(h) > \varepsilon
+  \bigr] \leq \delta.
+\]
+\end{defn}
+
+The Fundamental Theorem tells us that agnostic PAC learnability is
+equivalent to realizable PAC learnability (\ref{F:pac} $\Leftrightarrow$
+\ref{F:agpac}).  The same classes are learnable.  But the \emph{sample
+complexity} changes, and this change is not cosmetic.
+
+\begin{thm}[The Agnostic Sample Complexity Gap]
+\label{thm:agnostic-gap}
+Let $d = \VC(\mathcal{H})$.
+\begin{enumerate}[label=(\alph*)]
+\item In the realizable setting:
+  $m(\varepsilon, \delta) = \Theta\!\left(\frac{d +
+  \log(1/\delta)}{\varepsilon}\right)$.
+\item In the agnostic setting:
+  $m(\varepsilon, \delta) = \Theta\!\left(\frac{d +
+  \log(1/\delta)}{\varepsilon^2}\right)$.
+\end{enumerate}
+The gap from $1/\varepsilon$ to $1/\varepsilon^2$ is tight: no algorithm can
+achieve $o(d/\varepsilon^2)$ in the agnostic setting, and no algorithm needs
+$\omega(d/\varepsilon)$ in the realizable setting.
+\end{thm}
+
+Where does the gap come from?  It is tempting to blame the proof technique---perhaps a
+cleverer argument could recover $1/\varepsilon$ in the agnostic case.  It
+cannot.  The gap is fundamental, and the reason is information-theoretic.
+
+\begin{proof}[Proof sketch of the agnostic lower bound]
+Consider the class of threshold functions on $[0,1]$ (VC dimension 1, so
+$d = 1$ for simplicity).  In the realizable case, a single misclassified
+example pins down the threshold to within $\varepsilon$-precision, requiring
+$O(1/\varepsilon)$ samples.
+
+In the agnostic case, the distribution $D$ on $(X, Y)$ may have a base error
+rate $\eta = \min_h \risk_D(h) > 0$, and the learner must distinguish between
+two hypotheses $h_1, h_2$ whose risks differ by $\varepsilon$: $\risk_D(h_1) =
+\eta$ and $\risk_D(h_2) = \eta + \varepsilon$.  Distinguishing these requires
+detecting a difference $\varepsilon$ against a background noise level $\eta$.
+
+This is a hypothesis testing problem.  By standard lower bounds (Le Cam's
+method or Fano's inequality), distinguishing distributions at total variation
+distance $O(\varepsilon)$ from $m$ samples requires
+$m = \Omega(1/\varepsilon^2)$.  The noise ``contaminates'' the signal: in the
+realizable case, an error is always informative (it eliminates hypotheses),
+but in the agnostic case, each error might be noise or signal, and separating
+the two costs the extra $1/\varepsilon$ factor.
+\end{proof}
+
+\begin{remark}[The revelation]
+\label{rmk:revelation}
+The $\varepsilon$ vs.\ $\varepsilon^2$ gap is the first structural surprise of
+statistical learning theory that cannot be anticipated from finite-class
+arguments.  For finite $|\mathcal{H}|$, both realizable and agnostic sample
+complexities have the same dependence on $\varepsilon$ (up to the
+$\log|\mathcal{H}|$ factor).  The gap emerges only when $\mathcal{H}$ is
+infinite and VC dimension replaces $\log|\mathcal{H}|$.  Realizability is
+not just a simplifying assumption---it provides a qualitatively different
+information structure.
+\end{remark}
+
+
+% ================================================================
+% SECTION 5: LOWER BOUNDS AND NO FREE LUNCH
+% ================================================================
+
+\section{Lower Bounds and the No-Free-Lunch Theorem}
+\label{sec:lower-bounds}
+
+\subsection{The PAC Lower Bound}
+\label{sec:pac-lower}
+
+The upper bound of \Cref{thm:vc-char} gives $m = O(d/\varepsilon)$ in the
+realizable case.  The following shows this is tight up to constants.
+
+\begin{thm}[PAC Lower Bound]
+\label{thm:pac-lower}
+For any hypothesis class $\mathcal{H}$ with $\VC(\mathcal{H}) = d \geq 1$, any
+PAC learner for $\mathcal{H}$ requires sample complexity
+\[
+  m(\varepsilon, \delta) = \Omega\!\left(\frac{d}{\varepsilon}\right)
+\]
+for $\varepsilon \leq 1/8$ and $\delta \leq 1/7$.
+\end{thm}
+
+\begin{proof}
+Since $\VC(\mathcal{H}) = d$, there exists a shattered set
+$C = \{x_1, \ldots, x_d\}$.  For each subset $T \subseteq C$, let
+$h_T \in \mathcal{H}$ be the hypothesis that labels exactly $T$ as positive.
+This gives $2^d$ distinct hypotheses.
+
+Fix $\varepsilon \leq 1/8$.  For each $T \subseteq C$ with $|T| =
+\lfloor d/2 \rfloor$, define the distribution $D_T$: uniform on $C$, with
+target $h_T$.  The learner receives $m$ i.i.d.\ samples from $D_T$.
+
+Each sample reveals the label of one point in $C$.  After $m$ samples, the
+expected number of unseen points in $C$ is $d(1 - 1/d)^m \geq d \cdot
+e^{-2m/d}$ (for $m \leq d$).  For $m \leq d/(8\varepsilon)$, the number of
+unseen points is at least $d/4$ in expectation.
+
+On each unseen point, the learner must guess the label.  Since the target is
+consistent with both labels for unseen points (by the shattering property),
+no strategy can beat chance on unseen points.  The error on each unseen point
+contributes $1/d$ to the total risk (since $D_T$ is uniform on $C$).  With
+at least $d/4$ unseen points in expectation, the expected risk is at least
+$1/4 > \varepsilon$.  A Markov argument converts this to a high-probability
+statement, showing $m = \Omega(d/\varepsilon)$.
+\end{proof}
+
+
+\subsection{The No-Free-Lunch Theorem (Full Proof)}
+\label{sec:nfl-full}
+
+\Cref{thm:nfl} in \Cref{ch:objects} gave the statement and a brief argument.
+Here we give the full proof with the averaging argument over all target
+functions.
+
+\begin{thm}[No Free Lunch, Full Version]
+\label{thm:nfl-full}
+Let $|X| \geq 2m$.  For any learning algorithm $A$,
+\[
+  \max_{c \in \{0,1\}^X}\;
+  \E_{S \sim D_c^m}\!\bigl[\risk_{D_c}(A(S))\bigr] \geq \frac{1}{4},
+\]
+where $D_c$ is the uniform distribution on $X$ with target $c$.
+\end{thm}
+
+\begin{proof}
+Instead of proving the $\max$, we prove the stronger statement with $\E_c$
+(expectation over a uniform random target), which implies the $\max$ is at
+least as large.
+
+Fix any algorithm $A$.  Let $S = (x_1, \ldots, x_m)$ be drawn uniformly from
+$X$ (i.i.d.), and let $c$ be drawn uniformly from $\{0,1\}^X$.  Write
+$T = X \setminus \{x_1, \ldots, x_m\}$ for the unseen points.
+
+\medskip
+\noindent\textbf{Key observation.}  Conditioned on $S$ and on the labels
+$(c(x_1), \ldots, c(x_m))$, the labels $\{c(x) : x \in T\}$ are still
+independent uniform bits.  This is because the prior on $c$ is product
+measure.
+
+Therefore, for each $x \in T$, regardless of what $A(S)$ predicts:
+\[
+  \Pr_{c}[A(S)(x) \neq c(x) \mid S, c|_S] = \frac{1}{2}.
+\]
+The expected risk on unseen points is:
+\[
+  \E_c\!\left[\frac{1}{|X|}\sum_{x \in T} \ind[A(S)(x) \neq c(x)]
+  \;\middle|\; S\right]
+  = \frac{|T|}{|X|} \cdot \frac{1}{2}
+  \geq \frac{1}{2} \cdot \frac{1}{2} = \frac{1}{4},
+\]
+using $|T| \geq |X|/2$ (since $m \leq |X|/2$).  Taking expectation over $S$
+preserves the bound.
+\end{proof}
+
+\begin{remark}[NFL and inductive bias, revisited]
+\label{rmk:nfl-revisited}
+The NFL theorem is the structural reason that the VC characterization involves
+a \emph{restriction} on $\mathcal{H}$.  Without restricting to a class of
+finite VC dimension, no learning is possible.  The Fundamental Theorem can
+therefore be read as: ``inductive bias (finite VC dimension) is both necessary
+and sufficient for statistical learning.''
+\end{remark}
+
+
+% ================================================================
+% SECTION 6: COMPUTATIONAL INTERLUDE
+% ================================================================
+
+\section{Computational Interlude}
+\label{sec:computational}
+
+The Fundamental Theorem is an \emph{information-theoretic} characterization:
+it says when enough data exists to learn, regardless of computational cost.
+The computational question---when can learning be done in polynomial
+time---is a separate and largely open problem.
+
+\begin{thm}[Computational Hardness {\cite{KearnsValiant1994}}]
+\label{thm:kearns-valiant}
+Under standard cryptographic assumptions (specifically, the existence of
+one-way functions), there exist concept classes $\mathcal{C}$ with
+$\VC(\mathcal{C}) = O(\log n)$ that are PAC learnable
+(information-theoretically) but not \emph{efficiently} PAC learnable (no
+polynomial-time algorithm achieves PAC guarantees).
+\end{thm}
+
+This result separates the information-theoretic and computational landscapes of
+PAC learning.  The Fundamental Theorem characterizes the information boundary;
+it says nothing about the computational one.
+
+\begin{computational}
+The gap between information and computation is the subject of
+\Cref{ch:computational}.  The key examples:
+\begin{itemize}[nosep]
+\item \textbf{Properly learning DNF formulas} is computationally hard under
+  cryptographic assumptions, even though DNF has polynomial VC dimension.
+\item \textbf{Improperly learning DNF} can be done efficiently via boosting
+  (using a richer hypothesis class).
+\item \textbf{Learning intersections of halfspaces} is hard even improperly,
+  under stronger assumptions.
+\end{itemize}
+The proper/improper distinction (\Cref{def:hypothesis-target}) is
+computationally sharp even when it is information-theoretically irrelevant.
+\end{computational}
+
+
+% ================================================================
+% SECTION 7: WHAT THIS CHAPTER ESTABLISHED
+% ================================================================
+
+\section{What This Chapter Established}
+\label{sec:ch5-summary}
+
+The central achievement is the Fundamental Theorem (\Cref{thm:fundamental}),
+which says that the following are all the same property of a binary hypothesis
+class $\mathcal{H}$:
+
+\begin{center}\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lll}
+\toprule
+\textbf{Condition} & \textbf{First established} & \textbf{Proof location} \\
+\midrule
+Finite VC dimension & Vapnik--Chervonenkis (1971) & \Cref{sec:vc-char} \\
+Uniform convergence & Vapnik--Chervonenkis (1971) & \Cref{thm:unif-conv} \\
+ERM is a PAC learner & Blumer et al.\ (1989) & \Cref{prop:erm-pac} \\
+PAC learnable & Valiant (1984) & \Cref{thm:vc-char} \\
+Agnostic PAC learnable & Haussler (1992) & \Cref{sec:agnostic} \\
+$\growth(m) < 2^m$ for some $m$ & Sauer--Shelah (1972) & \Cref{sec:proof-architecture} \\
+Finite compression scheme & Moran--Yehudayoff (2016) & \Cref{sec:compression-direction} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Four structural lessons emerge:
+
+\begin{enumerate}[leftmargin=*,itemsep=3pt]
+\item \textbf{VC dimension is the right measure.}  Not because it was first, but
+  because it sits at the center of a seven-way equivalence.
+
+\item \textbf{The $\varepsilon^2$ price is real.}  The agnostic setting costs
+  $1/\varepsilon^2$ where the realizable setting costs $1/\varepsilon$.  This is
+  not a proof artifact---it is a lower bound.
+
+\item \textbf{ERM is canonical but not unique.}  The Fundamental Theorem says ERM
+  works whenever anything works, but other algorithms (compression-based,
+  Bayesian) also achieve PAC guarantees under the same conditions.
+
+\item \textbf{Information $\neq$ computation.}  The Fundamental Theorem
+  characterizes when learning is \emph{possible}; the Kearns--Valiant barrier
+  shows this does not determine when learning is \emph{efficient}.  The
+  computational landscape is the subject of \Cref{ch:computational}.
+\end{enumerate}
+
+\begin{historical}
+\textbf{Timeline.}  Vapnik and Chervonenkis introduced the VC dimension and
+proved the uniform convergence direction in 1971.  Valiant formalized PAC
+learning in 1984, without the VC connection.  Blumer, Ehrenfeucht, Haussler,
+and Warmuth closed the loop in 1989, proving that finite VC dimension is both
+necessary and sufficient for PAC learning.  The compression equivalence was
+conjectured by Littlestone and Warmuth (1986) and proved by Moran and
+Yehudayoff (2016)---a 30-year gap that reflects the depth of the combinatorial
+argument.  The tight realizable sample complexity $\Theta(d/\varepsilon)$
+(removing logarithmic factors) was established by
+Hanneke~\cite{Hanneke2016}.
+\end{historical}
+
+
+% ================================================================
+% EXERCISES
+% ================================================================
+
+\subsection*{Exercises}
+
+\begin{enumerate}[leftmargin=*,itemsep=6pt]
+
+\item \textbf{VC dimension of convex polygons.}
+  Let $\mathcal{H}_k$ be the class of convex $k$-gons in $\R^2$:
+  $h_P(x) = 1$ iff $x$ lies inside a convex polygon~$P$ with at
+  most $k$ vertices.  Prove that $\VC(\mathcal{H}_k) = 2k + 1$.
+
+  \emph{Lower bound:} Place $2k+1$ points in convex position
+  (on a circle).  For any subset $T$ of these points with
+  $|T| \leq k$, a convex $k$-gon can be drawn to include exactly
+  $T$.  For larger subsets, use the complement labeling and the
+  observation that $2k+1 - |T| \leq k$ of the remaining points
+  can be avoided.
+
+  \emph{Upper bound:} Show that any $2k+2$ points include a
+  labeling unrealizable by a $k$-gon.  Argue that a convex
+  polygon with $k$ vertices can ``separate'' at most $2k$
+  contiguous arcs on any circle through the points, and $2k+2$
+  points in convex position create $2k+2$ arcs.
+
+\item \textbf{The distribution-free assumption is essential.}
+  The Fundamental Theorem characterizes \emph{distribution-free}
+  PAC learnability.  Show that the equivalence breaks if
+  ``distribution-free'' is replaced by ``distribution-dependent.''
+  \begin{enumerate}[label=(\alph*)]
+  \item Construct a class $\mathcal{H}$ with $\VC(\mathcal{H}) =
+    \infty$ and a specific distribution $D$ such that $\mathcal{H}$
+    is PAC learnable under $D$ with $m(\varepsilon, \delta) = O(1)$
+    samples.
+  \item More subtly: construct a class $\mathcal{H}$ with
+    $\VC(\mathcal{H}) = \infty$ that is PAC learnable under
+    \emph{every} fixed distribution $D$ (with sample complexity
+    depending on $D$), yet is not distribution-free PAC learnable.
+    \emph{Hint:}  Let $\mathcal{H}$ be all measurable functions on
+    $[0,1]$.  For any fixed $D$, the metric entropy of $\mathcal{H}$
+    under $L^1(D)$ is finite at every scale---one can $\varepsilon$-net
+    the class with $O(1/\varepsilon)$ functions---so PAC learning
+    under $D$ is possible.  The distribution-free failure comes from
+    the adversary's ability to concentrate $D$ on the points where
+    the learner has not yet gathered information.
+  \end{enumerate}
+
+\item \textbf{Tight agnostic lower bound via Assouad's lemma.}
+  Prove the lower bound
+  $m(\varepsilon, \delta) = \Omega(d/\varepsilon^2)$ for agnostic
+  PAC learning of any class $\mathcal{H}$ with $\VC(\mathcal{H}) = d$,
+  using Assouad's lemma rather than Le~Cam's method.
+
+  \emph{Construction:} Let $C = \{x_1, \ldots, x_d\}$ be a shattered
+  set.  For each $b \in \{0,1\}^d$, define $D_b$ as the distribution
+  that places mass $1/(2d)$ on each $x_i$ and mass $1/2$ on a
+  ``noise point'' $z \notin C$ with label drawn from
+  $\mathrm{Bernoulli}(1/2)$.  The target function labels $x_i$ as
+  $b_i$ and $z$ as~$1$.  The optimal risk under $D_b$ is $1/4$ (from
+  the noise at~$z$).
+
+  Show that any algorithm distinguishing $D_b$ from $D_{b'}$ (where
+  $b$ and $b'$ differ in one coordinate) with advantage $\varepsilon$
+  requires $\Omega(1/\varepsilon^2)$ samples from the signal at
+  a single $x_i$.  Since there are $d$ coordinates, Assouad's
+  lemma gives the combined bound $\Omega(d/\varepsilon^2)$.  Verify
+  that this matches the agnostic gap of \Cref{thm:agnostic-gap}.
+
+\end{enumerate}
+

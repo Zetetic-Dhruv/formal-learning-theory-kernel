@@ -1,0 +1,296 @@
+% Chapter 6: The Measurability Layer
+% Net-new content: the Borel-analytic separation and the WellBehavedVCMeasTarget
+% refinement of the fundamental theorem were discovered during the formalization
+% effort and do not appear in the companion textbook.
+
+\chapter{The Measurability Layer}\label{chap:measurability}
+
+The fundamental theorem
+(Theorem~\ref{thm:vc-char}) was stated in Chapter~\ref{chap:pac} under
+a null-measurability hypothesis on the uniform convergence bad event.
+This chapter opens that hypothesis. The structure of the chapter is a
+three-step argument. Section~\ref{sec:borel-param} introduces the
+Borel-parameterized setting and identifies the precise regularity the
+symmetrization step requires. Section~\ref{sec:choquet-bridge} shows
+that in the Borel-parameterized setting the ghost-gap bad event is
+automatically analytic, and that analytic sets are null-measurable via
+the Choquet capacitability theorem. Section~\ref{sec:borel-analytic-sep}
+exhibits a concept class whose bad event is analytic but not Borel,
+certifying that the measurability refinement of the fundamental
+theorem is strict.
+
+This chapter contains the one piece of mathematical content in the
+blueprint that is net-new to the formalization effort. The textbook
+that supplies the prose for Chapters~\ref{chap:primitives}
+through~\ref{chap:separations} does not discuss the Borel-analytic
+separation, because the separation was discovered during the Lean
+formalization in the process of auditing which regularity hypotheses
+the symmetrization step actually uses.
+
+\section{Borel parameterization and the symmetrization route}\label{sec:borel-param}
+
+The symmetrization argument at the heart of the uniform convergence
+proof rewrites the one-sided bad event as a two-sided ghost-gap event.
+Given a sample $S$ of size $m$, a ghost sample $S'$ of the same size,
+and a gap threshold $\eps$, the ghost-gap bad event is
+\[
+  \mathrm{Bad}_2(C, m, \eps)
+    = \left\{ (S, S') \in X^m \times X^m :
+      \sup_{h \in C} \bigl| \emprisk_{S'}(h) - \emprisk_S(h) \bigr|
+      > \eps \right\}.
+\]
+The probability bound on $\mathrm{Bad}_2$ hinges on applying Hoeffding's
+inequality to each of the growth-function-many effective labelings of
+the combined sample and then controlling the supremum via a union
+bound. For this bound to apply, $\mathrm{Bad}_2$ must be measurable
+with respect to every product measure $D^{\otimes 2m}$ on
+$X^m \times X^m$ built from a distribution $D$ on $X$.
+
+The regularity the argument actually uses is \emph{null-measurability}
+of $\mathrm{Bad}_2$ with respect to the completion of the product
+measure, not Borel measurability with respect to the product Borel
+structure. This is a real difference. There exist sets in the
+completion that are not Borel, and we will construct one in
+Section~\ref{sec:borel-analytic-sep}. The weaker requirement is all the
+proof needs, and using it gives a strictly more general theorem.
+
+\begin{defn}[WellBehavedVCMeasTarget]
+\label{def:wbvc-meas-target}
+  \lean{WellBehavedVCMeasTarget}
+  \leanok
+A concept class $C$ over a measurable space $(X, \Sigma)$ satisfies
+\emph{WellBehavedVCMeasTarget} if for every sample size $m$, every
+gap threshold $\eps$, and every probability distribution $D$ on $X$,
+the two-sided ghost-gap bad event $\mathrm{Bad}_2(C, m, \eps)$ is a
+null-measurable subset of $(X^m \times X^m, \Sigma^{\otimes 2m})$ with
+respect to the product measure $D^{\otimes 2m}$. Null-measurability
+means that $\mathrm{Bad}_2$ sits in the completion of the product
+$\sigma$-algebra.
+\end{defn}
+
+\begin{defn}[KrappWirth well-behaved]
+\label{def:krapp-wirth}
+  \lean{KrappWirthWellBehaved}
+  \leanok
+A concept class $C$ satisfies the KrappWirth well-behaved hypothesis
+of Krapp and Wirth~\cite{KrappWirth2024} if for every $m$ and $\eps$,
+$\mathrm{Bad}_2(C, m, \eps)$ is a Borel subset of $X^m \times X^m$ in
+the product Borel structure.
+\end{defn}
+
+\begin{prop}[KrappWirth implies WellBehavedVCMeasTarget]
+\label{prop:krapp-wirth-implies-wbvc}
+  \lean{KrappWirthWellBehaved.toWellBehavedVC}
+  \leanok
+  \uses{def:wbvc-meas-target,def:krapp-wirth}
+Every Borel set is null-measurable with respect to any completion of a
+Borel probability measure. Consequently, any concept class carrying
+\texttt{KrappWirthWellBehaved} also carries
+\texttt{WellBehavedVCMeasTarget}.
+\end{prop}
+
+\begin{proof}
+Borel sets lie in the product $\sigma$-algebra by definition, hence in
+its completion with respect to any measure. The inclusion
+$\mathcal{B} \subseteq \mathcal{B}_\mu^\ast$ (Borel into completion) is
+immediate.
+\end{proof}
+
+\begin{defn}[Borel-parameterized concept class]
+\label{def:borel-param}
+A concept class $C \subseteq \{0,1\}^X$ over a measurable space
+$(X, \Sigma)$ is \emph{Borel-parameterized} by a standard Borel space
+$(\Theta, \mathcal{B}_\Theta)$ if there exists a jointly measurable
+evaluation map $\mathrm{eval} : \Theta \times X \to \{0,1\}$ such that
+$C = \{\,\mathrm{eval}(\theta, \cdot) : \theta \in \Theta\,\}$.
+\end{defn}
+
+Borel parameterization is the standard regularity assumption in
+descriptive-set-theory approaches to learning theory. Every concept
+class considered in practice admits a Borel parameterization: finite
+classes, neural networks with measurable weights, decision trees of
+bounded depth, thresholds, halfspaces, and so on. The kernel's
+Borel-parameterized setting captures exactly this regularity.
+
+\begin{defn}[Parameterized ghost-gap bad event]
+\label{def:param-bad-event}
+  \lean{paramBadEvent}
+  \leanok
+  \uses{def:borel-param}
+For a Borel-parameterized class with evaluation map $\mathrm{eval}$,
+sample size $m$, and gap threshold $\eps$, the \emph{parameterized
+ghost-gap bad event} is
+\[
+  \mathrm{Bad}_{\mathrm{eval}}(m, \eps) = \bigcup_{\theta \in \Theta}
+  \Bigl\{\, (S, S') :
+    \bigl| \emprisk_{S'}(\mathrm{eval}(\theta, \cdot))
+    - \emprisk_S(\mathrm{eval}(\theta, \cdot)) \bigr| > \eps
+  \,\Bigr\}.
+\]
+This is the projection of a jointly Borel event in
+$\Theta \times X^m \times X^m$ onto the last two factors.
+\end{defn}
+
+\section{The analytic measurability bridge}\label{sec:choquet-bridge}
+
+\begin{lemma}[Projections of Borel sets are analytic]
+\label{lem:borel-proj-analytic}
+The projection of a Borel set in a standard Borel space onto one
+factor of a product is an analytic set. This is the defining property
+of analytic sets: they are exactly the projections of Borel sets,
+equivalently the continuous images of Polish spaces.
+\end{lemma}
+
+Applied to Definition~\ref{def:param-bad-event}, the lemma gives that
+the parameterized ghost-gap bad event is always analytic in
+$X^m \times X^m$. The rest of the measurability argument is to show
+that analytic sets are null-measurable with respect to every Borel
+probability measure. This is the content of the Choquet capacitability
+theorem.
+
+\begin{thm}[Choquet capacitability~{\cite[Theorem 30.13]{Kechris1995}}]
+\label{thm:choquet-capacity}
+  \lean{MeasureTheory.AnalyticSet.compactCap_eq}
+  \leanok
+Let $\mu$ be a Borel probability measure on a Polish space. For every
+analytic set $A$, the outer measure of $A$ equals the supremum of
+$\mu(K)$ over compact sets $K \subseteq A$. Equivalently, $A$ is
+$\mu$-capacitable: its outer and inner measures agree, so $A$ is in
+the completion of the Borel $\sigma$-algebra with respect to $\mu$.
+\end{thm}
+
+Choquet capacitability is a pure descriptive-set-theory result. Its
+proof in the kernel is 416 lines and is independent of learning
+theory: it belongs to
+\texttt{FLT\_Proofs.PureMath.ChoquetCapacity} and is
+Mathlib-contributable as a standalone result. The blueprint treats it
+as a black-box citation because its proof is too long to reproduce and
+too orthogonal to the learning theory story to justify inclusion.
+
+\begin{cor}[Analytic sets are null-measurable]
+\label{cor:analytic-null-measurable}
+  \lean{analyticSet_nullMeasurableSet}
+  \leanok
+  \uses{thm:choquet-capacity}
+Every analytic set in a Polish space is null-measurable with respect
+to every Borel probability measure.
+\end{cor}
+
+Applied to the parameterized ghost-gap bad event of
+Definition~\ref{def:param-bad-event},
+Corollary~\ref{cor:analytic-null-measurable} gives the regularity the
+symmetrization step needs.
+
+\begin{prop}[Borel-parameterized classes satisfy WellBehavedVCMeasTarget]
+\label{prop:borel-param-implies-wbvc}
+  \lean{analyticSet_nullMeasurableSet_ghostPairs}
+  \leanok
+  \uses{def:borel-param,def:param-bad-event,cor:analytic-null-measurable,def:wbvc-meas-target}
+Every Borel-parameterized concept class carries
+\texttt{WellBehavedVCMeasTarget}. The bad event
+$\mathrm{Bad}_{\mathrm{eval}}(m, \eps)$ is analytic by
+Lemma~\ref{lem:borel-proj-analytic}, hence null-measurable by
+Corollary~\ref{cor:analytic-null-measurable}, hence in the completion
+of the product $\sigma$-algebra.
+\end{prop}
+
+The fundamental theorem (Theorem~\ref{thm:vc-char}) therefore applies
+to every Borel-parameterized concept class, including the classes for
+which it was originally stated under the stronger Borel hypothesis of
+Krapp and Wirth.
+
+\section{The Borel-analytic separation}\label{sec:borel-analytic-sep}
+
+Section~\ref{sec:choquet-bridge} showed that the null-measurability
+hypothesis is sufficient for the fundamental theorem. This section
+shows that it is strictly weaker than the Borel hypothesis by
+constructing a concept class whose ghost-gap bad event is analytic and
+null-measurable but not Borel.
+
+\begin{defn}[Singleton class over a set]
+\label{def:singleton-class}
+  \lean{singletonClassOn}
+  \leanok
+For a set $A \subseteq \R$, define the \emph{singleton class over $A$}
+as the concept class on $\R$ given by
+\[
+  C_A = \{\,\mathbf{0}\,\} \cup \{\,\mathbf{1}_{\{a\}} : a \in A\,\}
+\]
+where $\mathbf{0}$ is the everywhere-false concept and
+$\mathbf{1}_{\{a\}}$ is the indicator of the point $a$.
+\end{defn}
+
+Every hypothesis in $C_A$ is individually measurable: the zero concept
+is measurable because it is constant, and each singleton indicator is
+measurable because $\{a\}$ is a Borel set. This is verified as
+\lean{singletonClassOn_measurable}. The non-trivial question is
+whether the bad event associated to $C_A$ inherits Borel structure.
+
+\begin{defn}[Planar witness event]
+\label{def:planar-witness}
+  \lean{planarWitnessEvent}
+  \leanok
+For $A \subseteq \R$, the \emph{planar witness event} is
+\[
+  W_A = \{\, (x, y) \in \R^2 : y \in A \text{ and } x \neq y \,\}.
+\]
+\end{defn}
+
+\begin{lemma}[Bad event as preimage of planar witness]
+\label{lem:bad-eq-preimage}
+  \lean{singleton_badEvent_eq_preimage_planar}
+  \leanok
+  \uses{def:singleton-class,def:planar-witness}
+For the singleton class $C_A$, the one-step bad event
+$\mathrm{Bad}(C_A, 1, 1/2)$ equals the preimage of the planar witness
+$W_A$ under the sample-pair projection
+$(\mathrm{Fin}\,1 \to \R) \times (\mathrm{Fin}\,1 \to \R) \to \R^2$.
+\end{lemma}
+
+The lemma reduces a question about a bad event on
+$\R^1 \times \R^1$ to a question about a planar set in $\R^2$. The
+following two theorems characterize the planar set.
+
+\begin{thm}[Planar witness is analytic]
+\label{thm:planar-analytic}
+  \lean{planarWitnessEvent_analytic}
+  \leanok
+  \uses{def:planar-witness}
+For every analytic set $A \subseteq \R$, the planar witness $W_A$ is
+an analytic subset of $\R^2$.
+\end{thm}
+
+\begin{thm}[Planar witness fails to be Borel]
+\label{thm:planar-not-borel}
+  \lean{planarWitnessEvent_not_measurable}
+  \leanok
+  \uses{def:planar-witness}
+There exists an analytic non-Borel set $A \subseteq \R$ for which the
+planar witness $W_A$ is analytic but not Borel. The existence of such
+$A$ is classical: any complete analytic set in $\R$ suffices (for
+example, a specific projection of the complement of a well-founded
+tree), and the projection $A \mapsto W_A$ preserves the non-Borel
+property.
+\end{thm}
+
+\begin{cor}[Borel-analytic separation]
+\label{cor:borel-analytic-separation}
+  \lean{singleton_badEvent_not_measurable}
+  \leanok
+  \uses{lem:bad-eq-preimage,thm:planar-analytic,thm:planar-not-borel,prop:borel-param-implies-wbvc,def:krapp-wirth,def:wbvc-meas-target}
+There exists a concept class $C$ over $\R$ such that $C$ carries
+\texttt{WellBehavedVCMeasTarget} (via the analytic measurability
+bridge) but $C$ does not carry \texttt{KrappWirthWellBehaved} (because
+its ghost-gap bad event is analytic and not Borel). Consequently, the
+fundamental theorem applies to $C$ under the NullMeasurableSet
+refinement but not under the Borel hypothesis of Krapp and Wirth.
+\end{cor}
+
+The corollary closes the loop opened at the start of this chapter. The
+NullMeasurableSet refinement of the fundamental theorem is not
+cosmetic: the singleton class $C_A$ over an analytic non-Borel set is
+a concrete witness that the Borel hypothesis is strictly stronger than
+what the symmetrization proof actually uses. The kernel formalizes
+this as a chain of five theorems in
+\texttt{FLT\_Proofs.Theorem.BorelAnalyticSeparation}, each one
+corresponding to a step in the argument above.
