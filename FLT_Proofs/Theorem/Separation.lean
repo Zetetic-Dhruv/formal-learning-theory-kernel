@@ -1172,6 +1172,13 @@ private theorem ldim_threshold_top : LittlestoneDim ℕ thresholdClass = ⊤ := 
       rw [hc] at hge
       exact absurd hge (by simp only [WithBot.coe_le_coe]; exact not_le.mpr (WithTop.coe_lt_coe.mpr (Nat.lt_succ_self n)))
 
+/-- Paradigm separation: PAC learnability does not imply online learnability. The
+witness is the class of one-sided thresholds on `ℕ`, `thresholdClass = { (· ≤ n) | n : ℕ }`.
+Its VC dimension is finite (in fact at most `1`; monotonicity prevents shattering any
+`{a, b}` with `a < b`), so the class is PAC learnable. Its Littlestone dimension is
+`∞`: a binary-search adversary hides the threshold in whichever half of the queried
+interval the learner has not yet ruled out. The witness exposes that statistical
+sampling can exploit monotone structure that adversarial sequences ignore. -/
 theorem pac_not_implies_online :
     ∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
       PACLearnable X C ∧ ¬ OnlineLearnable X Bool C := by

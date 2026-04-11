@@ -1318,6 +1318,14 @@ theorem compression_with_info_imp_vcdim_finite
 
 /-! ## Biconditional -/
 
+/-- **Full VC ↔ compression equivalence with side information** (Moran and Yehudayoff
+2020). A concept class has finite VC dimension iff it admits a finite sample
+compression scheme in which the compressed representation may carry a fixed-size piece
+of side information. Combines `vcdim_finite_imp_compression_with_info` (the hard
+direction, formalized via approximate minimax / multiplicative weights rather than
+Sion's exact minimax for constructivity) and `compression_with_info_imp_vcdim_finite`
+(the pigeonhole counting argument). The fundamental theorem of statistical learning
+closes on this equivalence. -/
 theorem fundamental_vc_compression_with_info
     (X : Type u) (C : ConceptClass X Bool) :
     (VCDim X C < ⊤) ↔

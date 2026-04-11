@@ -57,6 +57,9 @@ def MistakeTree.fromList {X : Type u} : List X → MistakeTree X
   | [] => .leaf
   | x :: xs => .branch x (fromList xs) (fromList xs)
 
+/-- The depth of a mistake tree built from a list of length `n` equals `n`. The basic
+well-formedness property of the `fromList` constructor: depth tracks list length
+exactly, so the Littlestone dimension can be read off from a built tree. -/
 theorem MistakeTree.fromList_depth {X : Type u} : ∀ (l : List X), (MistakeTree.fromList l).depth = l.length
   | [] => rfl
   | _ :: xs => by

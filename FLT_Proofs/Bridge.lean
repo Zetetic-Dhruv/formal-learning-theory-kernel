@@ -287,14 +287,11 @@ theorem growthFunction_le_card_restrict {X : Type u} [Fintype X] [DecidableEq X]
     (restrictConceptClass C S).card ≤ C.card := by
   exact Finset.card_image_le
 
-/-- Sauer-Shelah via Mathlib: |C|_S| ≤ Σ_{i ≤ d} C(|S|, i).
-    The proof chain:
-    1. Convert C|_S to a Finset family over S (conceptToFinset on restrictions)
-    2. Apply card_le_card_shatterer: |𝒜| ≤ |𝒜.shatterer|
-    3. Apply card_shatterer_le_sum_vcDim: |𝒜.shatterer| ≤ Σ C(|S|, i) for i ≤ vcDim(𝒜)
-    4. Show vcDim(𝒜) ≤ d (restriction doesn't increase VCDim)
-    This requires building the S-local Finset family from C|_S. -/
--- Convert Finset (↥S → Bool) to Finset (Finset ↥S). Each f maps to {x | f x = true}.
+/-- Maps a family of `Bool`-valued functions on a finite set `S` to its family of
+accepting sets, `f ↦ {x | f x = true}`. Bridges the function-class view of a concept
+class to the set-system view consumed by Mathlib's combinatorial shattering API
+(`Finset.Shatters`, `Finset.vcDim`). Injective on distinct functions, so loses no
+information. -/
 def funcToSubsetFamily {X : Type u} [DecidableEq X] (S : Finset X)
     (fs : Finset (↥S → Bool)) : Finset (Finset ↥S) :=
   fs.image (fun f => Finset.univ.filter (fun x => f x = true))
@@ -390,6 +387,11 @@ private theorem vcDim_restrict_le {X : Type u} [Fintype X] [DecidableEq X]
   calc T.card = (T.map ⟨Subtype.val, Subtype.val_injective⟩).card := hCard.symm
     _ ≤ Finset.vcDim (conceptClassToFinsetFamily C) := hLift.card_le_vcDim
 
+/-- Sauer-Shelah for restricted concept classes: `|C|_S| ≤ ∑_{i ≤ d} C(|S|, i)`, where
+`d = VCDim C`. Proved by routing through `funcToSubsetFamily` into Mathlib's
+`card_le_card_shatterer` and `card_shatterer_le_sum_vcDim`, plus `vcDim_restrict_le`.
+The restricted form (not the global growth function) is what the symmetrization
+argument consumes. -/
 theorem card_restrict_le_sauer_shelah_bound {X : Type u} [Fintype X] [DecidableEq X]
     (C : Finset (X → Bool)) (S : Finset X)
     (d : ℕ) (hd : Finset.vcDim (conceptClassToFinsetFamily C) = d) :
@@ -462,6 +464,10 @@ private theorem ncard_restrictions_le_bound {X : Type u} [Fintype X] [DecidableE
   rw [ncard_restrictions_eq_card]
   exact card_restrict_le_sauer_shelah_bound C S d hd
 
+/-- Sauer-Shelah for the growth function: `Π_C(m) ≤ ∑_{i ≤ d} C(m, i)` whenever
+`d ≤ m`. Suprema of trace cardinalities over `m`-element subsets, bounded by the
+standard Sauer-Shelah sum. The form consumed by `Theorem/PAC.lean` to close the
+combinatorics-to-measure-theory loop in symmetrization. -/
 theorem growth_function_le_sauer_shelah {X : Type u} [Fintype X] [DecidableEq X]
     (C : Finset (X → Bool)) (d : ℕ)
     (hd : Finset.vcDim (conceptClassToFinsetFamily C) = d) (m : ℕ) (hm : d ≤ m) :
@@ -624,6 +630,13 @@ def bayesianToBatch (X : Type u) (Y : Type v) [MeasurableSpace X]
 -- (k+1) * (2n)^k. At n = 2(k+1)^2 the exponential 2^n exceeds this polynomial,
 -- giving a contradiction. Hence no set of size >= 2(k+1)^2 is shattered.
 -- Statement uses the weaker bound 2(k+1)^2 - 1 rather than 2^k - 1.
+/-- Easy direction of the VC ↔ compression equivalence: a sample compression scheme
+of size `k` forces `VCDim C ≤ 2(k + 1)² - 1`. Pigeonhole on labellings: a class with
+large VC dimension shatters a large set, so the compression map would have to encode
+exponentially many distinct labellings into a small index space, impossible past the
+stated bound. The hard direction (VC finite implies compression exists) is the 2020
+Moran-Yehudayoff theorem in `Complexity/Compression.lean`, formalized via approximate
+minimax (MWU) instead of Sion's theorem. -/
 theorem compression_bounds_vcdim (X : Type u)
     (C : ConceptClass X Bool) (cs : CompressionScheme X Bool C)
     (hcs : 0 < cs.size) :

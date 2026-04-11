@@ -26,22 +26,43 @@ open MeasureTheory
 
 /-! ## Definitions -/
 
+/-- The constantly false concept. The base hypothesis of the singleton class, serving
+both as the target concept and as the `zeroConcept` disjunct of `singletonClassOn`. -/
 noncomputable def zeroConcept : Concept ℝ Bool := fun _ => false
 
+/-- The point indicator `singletonConcept a x = (x = a)`. Each `singletonConcept a` is
+itself Borel measurable; non-Borelness in the singleton-class witness comes from
+quantifying over `a ∈ A` for `A` analytic non-Borel, not from any individual concept. -/
 noncomputable def singletonConcept (a : ℝ) : Concept ℝ Bool :=
   fun x => if x = a then true else false
 
+/-- The singleton class over `A ⊆ ℝ`: `{zeroConcept} ∪ {singletonConcept a | a ∈ A}`.
+The `zeroConcept` disjunct is the target concept against which the symmetrization bad
+event is measured. For `A` analytic non-Borel, this is the witness used to separate
+`WellBehavedVCMeasTarget` from the Krapp-Wirth Borel condition. -/
 def singletonClassOn (A : Set ℝ) : ConceptClass ℝ Bool :=
   {h | h = zeroConcept ∨ ∃ a ∈ A, h = singletonConcept a}
 
+/-- The planar witness `{(x, y) ∈ ℝ × ℝ | y ∈ A ∧ x ≠ y}`. For `A` analytic non-Borel,
+this set is itself analytic non-Borel. The geometric core of the separation: the
+learning-theoretic bad event below is a measurable preimage of this planar set. -/
 def planarWitnessEvent (A : Set ℝ) : Set (ℝ × ℝ) :=
   {q | q.2 ∈ A ∧ q.1 ≠ q.2}
 
+/-- The ghost sample space at sample size `m = 1`: `(Fin 1 → ℝ) × (Fin 1 → ℝ)`. The
+smallest sample size at which the singleton-class obstruction is already visible. -/
 abbrev GhostPairs1 := (Fin 1 → ℝ) × (Fin 1 → ℝ)
 
+/-- The projection `GhostPairs1 → ℝ × ℝ`, `p ↦ (p.1 0, p.2 0)`. Surjective and
+measurable; non-Borelness of a target set transfers to non-Borelness of its preimage
+under a measurable surjection. -/
 def samplePair1ToPlane : GhostPairs1 → ℝ × ℝ :=
   fun p => (p.1 0, p.2 0)
 
+/-- The symmetrization bad event for the singleton class at sample size `m = 1`, target
+concept `zeroConcept`, and threshold `1/2`. Equals the preimage of `planarWitnessEvent`
+under `samplePair1ToPlane` (see `singleton_badEvent_eq_preimage_planar`), and inherits
+both analyticity and non-Borelness from the planar set when `A` is analytic non-Borel. -/
 def singletonBadEvent (A : Set ℝ) : Set GhostPairs1 :=
   {p | ∃ h ∈ singletonClassOn A,
     EmpiricalError ℝ Bool h (fun i => (p.2 i, zeroConcept (p.2 i))) (zeroOneLoss Bool) -
@@ -49,6 +70,10 @@ def singletonBadEvent (A : Set ℝ) : Set GhostPairs1 :=
 
 /-! ## Theorem G -/
 
+/-- Every hypothesis in `singletonClassOn A` is Borel measurable: `zeroConcept` is
+constant, and each `singletonConcept a` factors through `measurableSet_singleton`. The
+class is regular at the level of individual hypotheses; non-measurability enters only
+through the existential over `A`. -/
 theorem singletonClassOn_measurable
     (A : Set ℝ) :
     ∀ h ∈ singletonClassOn A, Measurable h := by
@@ -61,6 +86,9 @@ theorem singletonClassOn_measurable
 
 /-! ## Theorem H -/
 
+/-- The singleton bad event equals `samplePair1ToPlane ⁻¹' planarWitnessEvent`. The set
+equality that transports both analyticity and non-Borelness from the planar witness to
+the learning-theoretic bad event. -/
 theorem singleton_badEvent_eq_preimage_planar
     (A : Set ℝ) :
     singletonBadEvent A = samplePair1ToPlane ⁻¹' planarWitnessEvent A := by
@@ -130,6 +158,10 @@ theorem singleton_badEvent_eq_preimage_planar
 
 /-! ## Theorem I -/
 
+/-- For `A` analytic, `planarWitnessEvent A` is analytic. The proof presents it as the
+intersection of `Prod.snd ⁻¹' A` (analytic, by preimage of analytic under a continuous
+map) with the Borel set `{(x, y) | x ≠ y}` (the complement of the diagonal). Analytic
+sets are closed under intersection with Borel sets. -/
 theorem planarWitnessEvent_analytic
     (A : Set ℝ) (hA : AnalyticSet A) :
     AnalyticSet (planarWitnessEvent A) := by
@@ -147,6 +179,10 @@ theorem planarWitnessEvent_analytic
 
 /-! ## Theorem J -/
 
+/-- For `A` non-Borel, `planarWitnessEvent A` is non-Borel. The proof picks some
+`a ∉ A` and shows the vertical section `y ↦ (a, y)` pulls the planar event back to `A`
+itself: if the planar event were Borel, its preimage under this measurable map would be
+Borel too, contradicting the hypothesis on `A`. -/
 theorem planarWitnessEvent_not_measurable
     (A : Set ℝ) (hA_non : ¬ MeasurableSet A) :
     ¬ MeasurableSet (planarWitnessEvent A) := by
@@ -165,6 +201,9 @@ theorem planarWitnessEvent_not_measurable
 
 /-! ## Theorem K -/
 
+/-- For `A` non-Borel, the singleton bad event is non-Borel. Combine
+`singleton_badEvent_eq_preimage_planar` with `planarWitnessEvent_not_measurable`: the
+preimage of a non-Borel set under a measurable *surjection* cannot itself be Borel. -/
 theorem singleton_badEvent_not_measurable
     (A : Set ℝ) (hA_non : ¬ MeasurableSet A) :
     ¬ MeasurableSet (singletonBadEvent A) := by
@@ -181,6 +220,30 @@ theorem singleton_badEvent_not_measurable
 
 /-! ## Theorem L: Relative separation theorem -/
 
+/-- **Main separation theorem.** Given any analytic non-Borel set `A ⊆ ℝ`, the
+concept class obtained by parameterising `singletonConcept` (plus `zeroConcept`) over
+`A` is a concrete witness that `WellBehavedVCMeasTarget` is strictly weaker than the
+Krapp-Wirth Borel condition. The class is constructed as `Set.range e` for an
+evaluation map `e : Bool × β → Concept ℝ Bool` built from a Polish parameterisation of
+`A`; post-construction, `Set.range e` equals `singletonClassOn (Set.range g)` where `g`
+realises `A`.
+
+The class satisfies:
+
+* `MeasurableHypotheses`: every individual hypothesis is Borel
+  (`singletonClassOn_measurable`).
+* `WellBehavedVCMeasTarget`: the bad event is analytic
+  (`planarWitnessEvent_analytic` lifted via `singleton_badEvent_eq_preimage_planar`),
+  hence `NullMeasurableSet` by the Choquet bridge.
+* NOT `KrappWirthWellBehaved`: the bad event is not Borel
+  (`singleton_badEvent_not_measurable`).
+
+The separation is realised by passing through the standard Borel space ℝ as the
+parameter space; the construction reuses no problem-specific fact beyond the existence
+of an analytic non-Borel subset of ℝ (Souslin's classical result), supplied in
+`exists_measTarget_separation`. The witness shows that the measurable-target variant
+proved in this kernel is a genuine improvement over the existing literature, not a
+restatement. -/
 theorem analytic_nonborel_set_gives_measTarget_separation
     (A : Set ℝ)
     (hA_an : MeasureTheory.AnalyticSet A)
@@ -298,6 +361,10 @@ theorem analytic_nonborel_set_gives_measTarget_separation
     obtain ⟨h_star, hh_star, h_eq⟩ := h_attained
     exact ⟨h_star, hC_eq ▸ hh_star, by rw [← h_eq]; exact hp⟩
 
+/-- Existence form: provided an analytic non-Borel set in ℝ is available, the
+separation in `analytic_nonborel_set_gives_measTarget_separation` is realised. The
+unconditional form (with no hypothesis) requires supplying Souslin's classical
+analytic non-Borel set; this theorem packages the reduction. -/
 theorem exists_measTarget_separation
     (hex : ∃ A : Set ℝ, MeasureTheory.AnalyticSet A ∧ ¬ MeasurableSet A) :
     KrappWirthSeparationMeasTarget := by

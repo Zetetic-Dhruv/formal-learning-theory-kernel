@@ -167,6 +167,10 @@ noncomputable abbrev GhostPairMeasure
   (MeasureTheory.Measure.pi (fun _ : Fin m => D)).prod
     (MeasureTheory.Measure.pi (fun _ : Fin m => D))
 
+/-- Analytic subsets of the ghost sample space `(Fin m → X) × (Fin m → X)` are
+`NullMeasurableSet` under the product probability measure. A specialisation of
+`analyticSet_nullMeasurableSet` from `PureMath/AnalyticMeasurability.lean` to the type
+the symmetrization argument actually consumes. -/
 theorem analyticSet_nullMeasurableSet_ghostPairs
     {X : Type u}
     [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [PolishSpace X]
@@ -179,6 +183,13 @@ theorem analyticSet_nullMeasurableSet_ghostPairs
 
 /-! ## Theorem D: Positive bridge - bad event is NullMeasurableSet -/
 
+/-- Positive bridge. If a concept class is parameterized by a Borel measurable map
+`Θ → Concept X` from a standard Borel space `Θ`, then the symmetrization bad event is
+analytic, hence `NullMeasurableSet`. The bad event is a Suslin projection of a Borel
+witness set (the projection along `Θ` of `{(θ, p) | gap(eval θ, p) ≥ ε / 2}`), and
+projections of Borel sets are analytic by definition. This is the entry point through
+which Borel parameterization implies the regularity required by the fundamental
+theorem. -/
 theorem borel_param_nullMeasurableSet_bad_event
     {X : Type u} [MeasurableSpace X] [TopologicalSpace X] [PolishSpace X] [BorelSpace X]
     {Θ : Type*} [MeasurableSpace Θ] [StandardBorelSpace Θ]
@@ -193,6 +204,12 @@ theorem borel_param_nullMeasurableSet_bad_event
 
 /-! ## Theorem E (F5): Class-level corollary -/
 
+/-- Class-level corollary: every Borel-parameterized concept class with a measurable
+evaluation map satisfies `WellBehavedVCMeasTarget`. Composes
+`borel_param_nullMeasurableSet_bad_event` over all measurable targets `c`. The
+measurable-target variant of `WellBehavedVC` is what the kernel actually proves; the
+unrestricted variant remains open and is the subject of the Borel-analytic separation
+witness in `Theorem/BorelAnalyticSeparation.lean`. -/
 theorem borel_param_wellBehavedVCMeasTarget
     {X : Type u} [MeasurableSpace X] [TopologicalSpace X] [PolishSpace X] [BorelSpace X]
     {Θ : Type*} [MeasurableSpace Θ] [StandardBorelSpace Θ]
@@ -218,6 +235,12 @@ theorem borel_param_wellBehavedVCMeasTarget
 
 /-! ## Theorem F (F6): Closure principle for patching -/
 
+/-- Closure under patching: if `e₁ : Θ₁ → Concept X`, `e₂ : Θ₂ → Concept X`, and a
+region selector `r : Ρ → Concept X Bool` are jointly measurable, then so is the
+piecewise evaluation
+`(θ₁, θ₂, ρ, x) ↦ if r ρ x then e₁ θ₁ x else e₂ θ₂ x`
+on the combined parameter space. The basic compositional fact behind
+`patch_borel_param_wellBehavedVCMeasTarget`. -/
 theorem patchEval_measurable
     {X : Type u} [MeasurableSpace X]
     {Θ₁ Θ₂ Ρ : Type*} [MeasurableSpace Θ₁] [MeasurableSpace Θ₂] [MeasurableSpace Ρ]
@@ -241,6 +264,11 @@ theorem patchEval_measurable
     hpred (measurableSet_singleton true)
   exact Measurable.piecewise hset hleft hright
 
+/-- The patched union of two Borel-parameterized classes (with a measurable region
+selector) is itself Borel-parameterized over `Θ₁ × Θ₂ × Ρ`, and therefore satisfies
+`WellBehavedVCMeasTarget`. Immediate from `patchEval_measurable` and
+`borel_param_wellBehavedVCMeasTarget`. Surfacing this corollary at the class level makes
+the closure of the measurable-target hypothesis under amalgamation explicit. -/
 theorem patch_borel_param_wellBehavedVCMeasTarget
     {X : Type u} [MeasurableSpace X] [TopologicalSpace X] [PolishSpace X] [BorelSpace X]
     {Θ₁ Θ₂ Ρ : Type*}

@@ -43,6 +43,11 @@ variable {X : Type u} {C : ConceptClass X Bool}
 /-- A dual concept is determined by a point: the evaluation-at-x function. -/
 def evalConcept (x : X) : ↥C → Bool := fun c => c.val x
 
+/-- Membership lemma for Assouad's dual VC construction: the evaluation function
+`fun c => c x` belongs to the dual class `C^T` of `C`. Used in the bitstring coding
+step of the dual bound `vcDim(C^T) ≤ 2^(vcDim(C) + 1) - 1`, the standard inequality
+that lets compression arguments switch between primal and dual without losing
+dimension control. -/
 theorem evalConcept_mem_dualClass (x : X) : evalConcept x ∈ DualClass X C :=
   ⟨x, fun _ => rfl⟩
 

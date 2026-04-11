@@ -33,18 +33,26 @@ universe u v
 /-- Convert Bool labels to ±1 reals. true ↦ 1, false ↦ -1. -/
 noncomputable def boolToSign (b : Bool) : ℝ := if b then 1 else -1
 
+/-- `|boolToSign b| = 1`. The image of `boolToSign` is exactly `{-1, +1}`. -/
 theorem boolToSign_abs_eq_one (b : Bool) : |boolToSign b| = 1 := by
   unfold boolToSign; cases b <;> simp
 
+/-- `|boolToSign b| ≤ 1`. Weakening of `boolToSign_abs_eq_one`, kept separate because
+most bound chains only need the inequality. -/
 theorem boolToSign_abs_le_one (b : Bool) : |boolToSign b| ≤ 1 := by
   rw [boolToSign_abs_eq_one]
 
+/-- `(boolToSign b)^2 = 1`. The squared-Rademacher identity. -/
 theorem boolToSign_sq (b : Bool) : boolToSign b ^ 2 = 1 := by
   unfold boolToSign; cases b <;> norm_num
 
+/-- `boolToSign true + boolToSign false = 0`. Records the symmetry of the Rademacher
+distribution: a uniform `Bool` mapped through `boolToSign` is mean zero. -/
 theorem boolToSign_sum_zero : ∑ b : Bool, boolToSign b = 0 := by
   simp [Fintype.sum_bool, boolToSign]
 
+/-- `|boolToSign b₁ * boolToSign b₂| ≤ 1`. Bounds individual terms in correlation
+sums. -/
 theorem boolToSign_mul_abs_le_one (b₁ b₂ : Bool) : |boolToSign b₁ * boolToSign b₂| ≤ 1 := by
   rw [abs_mul]
   calc |boolToSign b₁| * |boolToSign b₂|
@@ -52,6 +60,9 @@ theorem boolToSign_mul_abs_le_one (b₁ b₂ : Bool) : |boolToSign b₁ * boolTo
           (abs_nonneg _) (by norm_num)
     _ = 1 := one_mul 1
 
+/-- The Rademacher sample space at length `m`: `Fin m → Bool`, intended to be
+interpreted as a `±1` vector via `boolToSign`. Carrier of the average defining the
+empirical Rademacher complexity. -/
 abbrev SignVector (m : ℕ) := Fin m → Bool
 
 /-- Bit-flip at coordinate i: σ ↦ σ' where σ'(i) = !σ(i), σ'(k) = σ(k) for k ≠ i. -/
@@ -175,11 +186,17 @@ private theorem rademacher_variance_eq {m : ℕ} (hm : 0 < m) (a : Fin m → ℝ
     nlinarith [this]
   rw [hai, one_mul]
 
+/-- The Rademacher correlation `(1/m) · ∑ᵢ σᵢ · f(xᵢ)` of a function `f` with a sign
+vector `σ ∈ {±1}^m` on a sample. Taking the supremum over `f` in a class gives the
+empirical Rademacher complexity, the central data-dependent complexity measure of this
+file. The `m = 0` branch returns `0`. -/
 noncomputable def rademacherCorrelation {X : Type u} {m : ℕ}
     (h : Concept X Bool) (σ : SignVector m) (xs : Fin m → X) : ℝ :=
   if hm : m = 0 then 0
   else (1 / (m : ℝ)) * ∑ i : Fin m, boolToSign (σ i) * boolToSign (h (xs i))
 
+/-- Rademacher correlations are bounded by `1` in absolute value (for `m > 0`). The
+basic sanity bound that propagates upward into `empiricalRademacherComplexity_le_one`. -/
 theorem rademacherCorrelation_abs_le_one {X : Type u} {m : ℕ} (hm : 0 < m)
     (h : Concept X Bool) (σ : SignVector m) (xs : Fin m → X) :
     |rademacherCorrelation h σ xs| ≤ 1 := by
@@ -203,6 +220,10 @@ theorem rademacherCorrelation_abs_le_one {X : Type u} {m : ℕ} (hm : 0 < m)
         exact div_nonneg one_pos.le hm_pos.le
     _ = 1 := by field_simp
 
+/-- Empirical Rademacher complexity of a class `C` on a sample `xs`:
+`Ê_Rad(C, xs) = E_σ[ sup_{f ∈ C} (1/m) ∑ᵢ σᵢ · f(xᵢ) ]`,
+the expectation over uniform sign vectors in `{±1}^m`. Data-dependent: depends on the
+realised sample, not only on the underlying distribution. -/
 noncomputable def EmpiricalRademacherComplexity (X : Type u)
     (C : ConceptClass X Bool) {m : ℕ} (xs : Fin m → X) : ℝ :=
   if hm : m = 0 then 0
@@ -211,6 +232,9 @@ noncomputable def EmpiricalRademacherComplexity (X : Type u)
     (1 / numSigns) * ∑ σ : SignVector m,
       sSup { r : ℝ | ∃ h ∈ C, r = rademacherCorrelation h σ xs }
 
+/-- The empirical Rademacher complexity is at most `1` on every nonempty class and
+every sample of size `m > 0`. Sanity bound that prevents the complexity from diverging
+in the generalisation inequality. -/
 theorem empiricalRademacherComplexity_le_one (X : Type u)
     (C : ConceptClass X Bool) {m : ℕ} (hm : 0 < m) (xs : Fin m → X) :
     EmpiricalRademacherComplexity X C xs ≤ 1 := by
@@ -245,6 +269,11 @@ theorem empiricalRademacherComplexity_le_one (X : Type u)
         exact div_nonneg one_pos.le hnum_pos.le
     _ = 1 := by field_simp
 
+/-- Population Rademacher complexity
+`Rad_m(C, D) = E_{xs ∼ D^m}[ Ê_Rad(C, xs) ]`,
+obtained by integrating the empirical complexity over samples drawn from the
+distribution. Distribution-dependent and the principal data-independent term in
+`rademacher_gen_bound`. -/
 noncomputable def RademacherComplexity (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X) (m : ℕ) : ℝ :=
   ∫ xs : Fin m → X,
@@ -288,6 +317,8 @@ private theorem empRad_nonneg {X : Type u} (C : ConceptClass X Bool) {m : ℕ}
         rintro ⟨h, hh, _⟩; simp [hC] at hh
       rw [this, Real.sSup_empty]
 
+/-- Population Rademacher complexity is at most `1`. Immediate from
+`empiricalRademacherComplexity_le_one` and monotonicity of integration. -/
 theorem rademacherComplexity_le_one (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X) (m : ℕ) (hm : 0 < m)
     [MeasureTheory.IsProbabilityMeasure (MeasureTheory.Measure.pi (fun _ : Fin m => D))] :
@@ -303,6 +334,8 @@ theorem rademacherComplexity_le_one (X : Type u) [MeasurableSpace X]
             (fun xs => empiricalRademacherComplexity_le_one X C hm xs)
     _ = 1 := by simp [MeasureTheory.integral_const, MeasureTheory.measure_univ]
 
+/-- Population Rademacher complexity is nonnegative: each supremum dominates the
+identically-zero row, and integration of nonnegative functions is nonnegative. -/
 theorem rademacherComplexity_nonneg (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X) (m : ℕ) (hm : 0 < m)
     [MeasureTheory.IsProbabilityMeasure (MeasureTheory.Measure.pi (fun _ : Fin m => D))] :
@@ -312,6 +345,14 @@ theorem rademacherComplexity_nonneg (X : Type u) [MeasurableSpace X]
   intro xs
   exact empRad_nonneg C (Nat.pos_iff_ne_zero.mp hm) xs
 
+/-- Placeholder scaffold for the Rademacher generalisation bound. For every positive
+`m` and positive slack `ε`, the real number `2 · Rad_m(C, D) + ε` exists and is
+nonnegative. This is the *quantity* that will upper-bound the gap between true and
+empirical risk in the full bound, not the bound itself; the full inequality
+`L(c) ≤ L̂_S(c) + 2 · Rad_m(C, D) + ε` with high probability is slated to be proved
+upstream of this file and is not formalised here. Kept in the API at this stub level so
+that downstream theorems can refer to the bound term by name once the statistical
+inequality is available. -/
 theorem rademacher_gen_bound (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X)
     [MeasureTheory.IsProbabilityMeasure D]

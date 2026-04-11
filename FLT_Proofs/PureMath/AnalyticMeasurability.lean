@@ -21,6 +21,11 @@ This file is independent of learning theory and is a candidate for contribution 
 
 open MeasureTheory Set
 
+/-- Inner regularity for analytic sets: every analytic subset of a Polish space can be
+approximated from inside by a compact subset, in measure. For any finite Borel measure
+`μ`, any analytic `s`, and any `r < μ.real s`, there is a compact `K ⊆ s` with
+`μ.real K > r`. The Choquet capacitability theorem (Kechris 30.13), specialised to the
+measure-as-capacity instance. -/
 theorem MeasureTheory.AnalyticSet.exists_isCompact_measureReal_gt
     {α : Type*}
     [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [PolishSpace α]
@@ -72,6 +77,17 @@ theorem MeasureTheory.AnalyticSet.exists_isCompact_measureReal_gt
 
 /-! ## Main theorem: analytic → NullMeasurableSet -/
 
+/-- **Analytic sets are null-measurable.** For any finite Borel measure on a Polish
+space, every analytic set is `NullMeasurableSet`. The proof inner-approximates the
+analytic set by compacts via the previous lemma, takes the union of approximators (a
+Borel set), and shows the difference is contained in a Borel null set.
+
+This is the abstract result that the entire Borel-analytic measurability layer of the
+kernel rests on. The learning-theoretic significance is that the symmetrization bad
+event, which is analytic in the Borel-parameterized setting, is automatically
+null-measurable; this is enough to run the symmetrization argument under
+`NullMeasurableSet` regularity, sidestepping the stronger `MeasurableSet` requirement of
+the existing literature. Candidate for upstream contribution to Mathlib. -/
 theorem analyticSet_nullMeasurableSet
     {α : Type*}
     [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [PolishSpace α]

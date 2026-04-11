@@ -88,6 +88,12 @@ private lemma trueErrorReal_extend_false
 /-! ## Main Theorem -/
 
 set_option maxHeartbeats 400000 in
+/-- Finite-support distributions uniformly approximate any distribution on a VC class.
+For a class of VC dimension at most `d` and any `ε > 0`, there exists
+`T = T(d, ε)` such that every finitely supported distribution `μ` is within `ε`
+(uniformly over the class) of some empirical distribution on `T` points. A
+density-style reduction that lets the approximate minimax / MWU machinery, which lives
+in finite support, apply to general distributions. -/
 theorem finite_support_vc_approx
     (d : ℕ) (ε : ℝ) (hε : 0 < ε) :
     ∃ (T : ℕ) (hT : 0 < T),

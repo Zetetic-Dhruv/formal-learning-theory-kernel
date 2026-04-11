@@ -53,6 +53,8 @@ def normalizeToPMF {C : Type*} [Fintype C] [Nonempty C]
     rw [← Finset.sum_div]
     exact div_self (ne_of_gt (Finset.sum_pos (fun c _ => hw c) univ_nonempty))
 
+/-- `(normalizeToPMF w hw).prob c = w c / ∑ w` for any strictly positive weight vector.
+Specification of the normaliser; used wherever an MWU mixed strategy is unfolded. -/
 lemma normalizeToPMF_prob {C : Type*} [Fintype C] [Nonempty C]
     (w : C → ℝ) (hw : ∀ c, 0 < w c) (c : C) :
     (normalizeToPMF w hw).prob c = w c / ∑ c' : C, w c' := rfl
@@ -91,12 +93,16 @@ def boolGamePayoff {R C : Type*} [Fintype R]
     (M : R → C → Bool) (p : FinitePMF R) (c : C) : ℝ :=
   ∑ r : R, p.prob r * (if M r c then (1 : ℝ) else 0)
 
+/-- Bool-game payoffs are nonnegative. The lower-range condition required by the MWU
+regret analysis. -/
 lemma boolGamePayoff_nonneg {R C : Type*} [Fintype R]
     (M : R → C → Bool) (p : FinitePMF R) (c : C) :
     0 ≤ boolGamePayoff M p c :=
   Finset.sum_nonneg fun r _ =>
     mul_nonneg (p.prob_nonneg r) (by split_ifs <;> norm_num)
 
+/-- Bool-game payoffs are at most `1`. Together with `boolGamePayoff_nonneg`, confines
+payoffs to `[0, 1]`, the standard range for multiplicative weights. -/
 lemma boolGamePayoff_le_one {R C : Type*} [Fintype R]
     (M : R → C → Bool) (p : FinitePMF R) (c : C) :
     boolGamePayoff M p c ≤ 1 := by
@@ -251,6 +257,10 @@ structure MWUConfig (C : Type*) [Fintype C] where
 def MWUConfig.potential {C : Type*} [Fintype C] (cfg : MWUConfig C) : ℝ :=
   ∑ c : C, cfg.weights c
 
+/-- The total potential `∑ c, cfg.weights c` of any `MWUConfig` is strictly positive,
+since each weight is and the index type is nonempty. The base invariant of the MWU
+potential argument: the bound `Φ_T ≤ |C| · (1 - η v)^T` is meaningful only while
+`Φ > 0`. -/
 lemma MWUConfig.potential_pos {C : Type*} [Fintype C] [Nonempty C]
     (cfg : MWUConfig C) : 0 < cfg.potential :=
   Finset.sum_pos (fun c _ => cfg.weights_pos c) univ_nonempty
@@ -260,6 +270,9 @@ def mwuInit (C : Type*) [Fintype C] : MWUConfig C where
   weights := fun _ => 1
   weights_pos := fun _ => one_pos
 
+/-- The initial MWU configuration (all weights `1`) has potential equal to `|C|` (the
+cardinality of the index, coerced to `ℝ`). Base case for the inductive bound
+`Φ_T ≤ |C| · (1 - η v)^T` that drives the regret analysis. -/
 lemma mwuInit_potential (C : Type*) [Fintype C] :
     (mwuInit C).potential = Fintype.card C := by
   simp [MWUConfig.potential, mwuInit, sum_const, nsmul_eq_mul, mul_one]

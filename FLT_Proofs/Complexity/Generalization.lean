@@ -90,6 +90,10 @@ noncomputable def EmpiricalError (X : Type u) (Y : Type v)
 section ERM_section
 open Classical
 
+/-- Empirical risk minimisation: given a sample and a hypothesis space `H`, returns a
+hypothesis in `H` minimising the empirical error if one exists, falling back to a
+chosen element via `H.Nonempty` otherwise. The canonical PAC learner for finite-VC
+realisable problems. -/
 noncomputable def ermLearn (X : Type u) (Y : Type v) [DecidableEq Y]
     (H : HypothesisSpace X Y) (loss : LossFunction Y) (hne : H.Nonempty)
     {m : ℕ} (S : Fin m → X × Y) : Concept X Y :=
@@ -98,6 +102,8 @@ noncomputable def ermLearn (X : Type u) (Y : Type v) [DecidableEq Y]
   then h.choose
   else hne.some
 
+/-- The output of `ermLearn` is always in `H`. Sanity property required by
+`PACLearnable` and consumed by `erm_consistent_realizable`. -/
 theorem ermLearn_in_H (X : Type u) (Y : Type v) [DecidableEq Y]
     (H : HypothesisSpace X Y) (loss : LossFunction Y) (hne : H.Nonempty)
     {m : ℕ} (S : Fin m → X × Y) : ermLearn X Y H loss hne S ∈ H := by
@@ -249,15 +255,16 @@ noncomputable def EmpiricalMeasureError (X : Type u) [MeasurableSpace X]
     {m : ℕ} (xs : Fin m → X) : ENNReal :=
   TrueError X h c (EmpiricalMeasure X xs)
 
-/-- Bridge: EmpiricalMeasureError equals the counting-based EmpiricalError
-    under 0-1 loss (up to ENNReal ↔ ℝ conversion).
-    KU₄: The division by m creates a rational, not necessarily a real.
-    Does ENNReal.ofReal (k/m) = (k : ENNReal) / (m : ENNReal)? -/
 -- Added [MeasurableSingletonClass X] to enable Measure.dirac_apply
 -- without requiring MeasurableSet on the disagreement set. This is structurally
 -- necessary: Dirac evaluation on arbitrary sets requires singletons to be measurable.
 -- Without it, we would need an explicit MeasurableSet hypothesis on {x | h x ≠ c x},
 -- which is a strictly stronger and less reusable assumption.
+/-- Bridges the measure-theoretic definition of empirical error (integral against the
+empirical measure) and the combinatorial definition (sample average). Holds for
+`Bool`-valued concepts under 0/1 loss on a sample of length `m > 0` with
+`MeasurableSingletonClass X`. The identity that lets the abstract framework reduce to
+sample counting in the symmetrization proof. -/
 theorem empiricalMeasureError_eq_empiricalError (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (h : Concept X Bool) (c : Concept X Bool)
@@ -387,6 +394,10 @@ theorem empError_zero_iff_consistent {X : Type u} {Y : Type v} [DecidableEq Y]
       exact hfaith.loss_self_zero _
     rw [this, zero_div]
 
+/-- Realisable consistency of ERM. In the realisable setting (target `c ∈ C ⊆ H`), the
+ERM learner achieves zero empirical error on a sample drawn from `c`. The cornerstone
+lemma of realisable-case PAC learning: `c` itself attains zero empirical error and so
+must any minimiser. -/
 theorem erm_consistent_realizable (X : Type u) [MeasurableSpace X] [DecidableEq Bool]
     (H : HypothesisSpace X Bool) (C : ConceptClass X Bool)
     (loss : LossFunction Bool) (hfaith : IsFaithfulLoss loss)

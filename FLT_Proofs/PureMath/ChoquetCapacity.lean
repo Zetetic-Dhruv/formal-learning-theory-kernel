@@ -38,11 +38,16 @@ open MeasureTheory Set Filter Topology
 
 /-! ## Compact capacity -/
 
+/-- Compact capacity of a set `s` relative to a measure `μ`: the supremum of `μ K` over
+compact subsets `K ⊆ s`. The inner-regularity functional whose equality with `μ s`
+characterises measurability for analytic sets. -/
 noncomputable def MeasureTheory.compactCap
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     (μ : MeasureTheory.Measure α) (s : Set α) : ENNReal :=
   sSup {r : ENNReal | ∃ K : Set α, IsCompact K ∧ K ⊆ s ∧ r = μ K}
 
+/-- Compact capacity is monotone in its set argument: enlarging `s` enlarges the family
+of compact subsets and so the supremum. -/
 theorem MeasureTheory.compactCap_mono
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
     {μ : MeasureTheory.Measure α} {s t : Set α} (hst : s ⊆ t) :
@@ -53,6 +58,12 @@ theorem MeasureTheory.compactCap_mono
 
 /-! ## Choquet capacity structure -/
 
+/-- Bundled record of the three Choquet capacity axioms for a functional
+`cap : Set α → ℝ≥0∞`: monotonicity, sequential continuity from below along increasing
+unions, and sequential continuity from above along decreasing intersections of *closed*
+sets. The third axiom is what distinguishes a capacity from a general outer measure; it
+is the asymmetry that makes the capacitability theorem possible. Every finite Borel
+measure on a Polish space is a Choquet capacity (`measure_isChoquetCapacity`). -/
 structure MeasureTheory.IsChoquetCapacity
     {α : Type*} [TopologicalSpace α]
     (cap : Set α → ENNReal) : Prop where
@@ -65,6 +76,11 @@ structure MeasureTheory.IsChoquetCapacity
 
 /-! ## Finite Borel measures on Polish spaces are Choquet capacities -/
 
+/-- Every finite Borel measure on a Polish space is a Choquet capacity. Monotonicity
+and the increasing-union axiom are immediate from `measure_mono` and `measure_iUnion`;
+the decreasing-closed-intersection axiom uses Mathlib's `Antitone.measure_iInter` for
+finite measures on closed sets. The instance that lets the abstract capacitability
+machinery be applied to ordinary probability measures. -/
 theorem MeasureTheory.measure_isChoquetCapacity
     {α : Type*}
     [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [PolishSpace α]
@@ -80,6 +96,11 @@ theorem MeasureTheory.measure_isChoquetCapacity
 
 /-! ## Measurable sets: compact capacity = measure -/
 
+/-- For Borel-measurable sets, `compactCap μ s = μ s`. Two-sided bound: monotonicity
+gives `≤`, and the existing inner regularity of finite Borel measures on Polish spaces
+(`MeasurableSet.exists_isCompact_lt_add`) gives `≥`. The easy half of the
+capacitability statement; the analytic-set half requires the cylinder construction in
+the rest of the file. -/
 theorem MeasureTheory.MeasurableSet.compactCap_eq
     {α : Type*}
     [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [PolishSpace α]

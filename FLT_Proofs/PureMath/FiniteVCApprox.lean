@@ -25,20 +25,29 @@ noncomputable section
 
 /-! ## Expectations -/
 
+/-- Expected value `∑ h, μ.prob h * f h` of a real-valued test under a finitely supported
+distribution. The base expectation primitive of the approximation layer; specialised to
+indicator tests in `boolTestExpectation`. -/
 def trueExpectation {H : Type*} [Fintype H]
     (μ : FinitePMF H) (f : H → ℝ) : ℝ :=
   ∑ h : H, μ.prob h * f h
 
+/-- Expected value of a `Bool`-valued test under a finite distribution, via the
+indicator embedding `if f h then 1 else 0`. The central quantity of the finite-VC
+approximation layer: a TV bound on distributions translates to a uniform bound on test
+expectations via `expectation_approx_of_tv`. -/
 def boolTestExpectation {H : Type*} [Fintype H]
     (μ : FinitePMF H) (f : H → Bool) : ℝ :=
   trueExpectation μ (fun h => if f h then (1 : ℝ) else 0)
 
+/-- A convex combination of values in `{0, 1}` is nonnegative. -/
 lemma boolTestExpectation_nonneg {H : Type*} [Fintype H]
     (μ : FinitePMF H) (f : H → Bool) :
     0 ≤ boolTestExpectation μ f :=
   Finset.sum_nonneg fun h _ =>
     mul_nonneg (μ.prob_nonneg h) (by simp only; split_ifs <;> norm_num)
 
+/-- A convex combination of values in `{0, 1}` is at most `1`. -/
 lemma boolTestExpectation_le_one {H : Type*} [Fintype H]
     (μ : FinitePMF H) (f : H → Bool) :
     boolTestExpectation μ f ≤ 1 := by
@@ -50,20 +59,30 @@ lemma boolTestExpectation_le_one {H : Type*} [Fintype H]
 
 /-! ## Total Variation Distance -/
 
+/-- Total variation distance `∑ h, |μ.prob h - ν.prob h|` between two finitely
+supported distributions, in its L1 form. (The probabilists' normalised TV is half of
+this; the L1 form is what composes directly with the bound in `expectation_approx_of_tv`
+and so is carried through the rest of the layer.) The approximation metric for finite
+VC approximation: two distributions close in `tvDistance` have nearly identical
+expectations on every `Bool`-valued test, which is what the compression argument needs
+to substitute an empirical distribution for the true one. -/
 def tvDistance {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) : ℝ :=
   ∑ h : H, |μ.prob h - ν.prob h|
 
+/-- Total variation distance is nonnegative. -/
 lemma tvDistance_nonneg {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) :
     0 ≤ tvDistance μ ν :=
   Finset.sum_nonneg fun _ _ => abs_nonneg _
 
+/-- Total variation distance is symmetric. -/
 lemma tvDistance_comm {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) :
     tvDistance μ ν = tvDistance ν μ := by
   simp only [tvDistance, abs_sub_comm]
 
+/-- Total variation distance from a distribution to itself is zero. -/
 lemma tvDistance_self {H : Type*} [Fintype H]
     (μ : FinitePMF H) :
     tvDistance μ μ = 0 := by
@@ -71,6 +90,11 @@ lemma tvDistance_self {H : Type*} [Fintype H]
 
 /-! ## Key Approximation Lemma -/
 
+/-- **Transfer principle.** If `tvDistance μ ν ≤ δ`, then for every `Bool`-valued test
+`f`, `|E_μ[f] - E_ν[f]| ≤ δ`. This is the inequality that lets the approximate-minimax
+route to compression replace a target distribution by an empirical distribution: any
+high-probability event under `μ` is approximately high-probability under `ν`, with
+slack controlled by the TV distance. -/
 theorem expectation_approx_of_tv {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) (f : H → Bool) (δ : ℝ)
     (hδ : tvDistance μ ν ≤ δ) :
@@ -95,6 +119,10 @@ theorem expectation_approx_of_tv {H : Type*} [Fintype H]
     _ = tvDistance μ ν := rfl
     _ ≤ δ := hδ
 
+/-- Uniform variant of `expectation_approx_of_tv`: a single `tvDistance` bound suffices
+for every test in any finite family simultaneously, with no union bound. The form
+actually used by the compression characterisation, where the family is the restricted
+concept class. -/
 theorem tv_bound_implies_all_tests {H : Type*} [Fintype H]
     (μ ν : FinitePMF H) (ε : ℝ)
     (hε : tvDistance μ ν ≤ ε)
@@ -104,6 +132,10 @@ theorem tv_bound_implies_all_tests {H : Type*} [Fintype H]
 
 /-! ## Expectation of empiricalPMF equals average -/
 
+/-- Bridges the `FinitePMF` view and the sample-average view: the expectation of a
+`Bool`-valued test under the empirical PMF of a sample equals the sample average
+`(1/T) ∑_t f (s_t)`. This lets the MWU updates and the approximation transfer
+principle live in the same distributional framework. -/
 lemma boolTestExpectation_empirical_eq_avg
     {H : Type*} [Fintype H] [DecidableEq H]
     {T : ℕ} (hT : 0 < T) (hs : Fin T → H) (f : H → Bool) :
@@ -133,6 +165,9 @@ lemma boolTestExpectation_empirical_eq_avg
 
 /-! ## Approximate Minimax Connection -/
 
+/-- Identifies the game-theoretic payoff (a row distribution against a fixed column in
+the Bool game) with the corresponding test expectation. The translation that lets the
+MWU regret bound be applied directly to the compression problem. -/
 lemma boolGamePayoff_eq_boolTestExpectation
     {R : Type*} [Fintype R] [DecidableEq R]
     {C : Type*} (M : R → C → Bool) (p : FinitePMF R) (c : C) :
@@ -141,10 +176,17 @@ lemma boolGamePayoff_eq_boolTestExpectation
 
 /-! ## VC Dimension for Boolean Function Families -/
 
+/-- Maps a finite family of `Bool`-valued functions to its image as a family of
+accepting sets. The set-system view is what Mathlib's `Finset.Shatters` and
+`Finset.vcDim` consume, so this is the entry point from the function-class view to the
+combinatorial VC machinery. -/
 def boolFamilyToFinsetFamily {H : Type*} [Fintype H] [DecidableEq H]
     (A : Finset (H → Bool)) : Finset (Finset H) :=
   A.image (fun f => Finset.univ.filter (fun h => f h = true))
 
+/-- VC dimension of a finite `Bool`-valued family, computed via the set-system image
+`boolFamilyToFinsetFamily` and Mathlib's `Finset.vcDim`. Declared `noncomputable`
+because the underlying `vcDim` is. -/
 noncomputable def Finset.boolVCDim {H : Type*} [Fintype H] [DecidableEq H]
     (A : Finset (H → Bool)) : ℕ :=
   (boolFamilyToFinsetFamily A).vcDim

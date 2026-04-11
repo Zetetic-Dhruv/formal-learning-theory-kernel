@@ -1028,6 +1028,14 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
    MeasurableSet requirements for uncountable C. Resolution:
    NullMeasurableSet + finite_exchangeability_bound (above). -/
 
+/-- The exchangeability chain bound for the symmetrization route (the kernel's
+formulation of SSBD Theorem 6.7). The probability of the symmetrization bad event is at
+most `Π_C(2m) · exp(-m ε² / 8)`. The proof threads three ingredients: the ghost-sample
+doubling that converts a true-versus-empirical event into an empirical-versus-empirical
+event, the Rademacher swap that this kernel licenses by `NullMeasurableSet` of the bad
+event (rather than the stronger `MeasurableSet` in the prior literature), and a
+per-sample Hoeffding-style concentration. The core measure-theoretic step of the VC to
+PAC route. -/
 theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (C : ConceptClass X Bool) (c : Concept X Bool)
@@ -2320,6 +2328,15 @@ private lemma growth_function_le_two_pow {X : Type u}
     simpa [T] using hBound'
 
 set_option maxHeartbeats 800000 in
+/-- Final calibration of the symmetrization bound. Assuming the growth function obeys
+a Sauer-Shelah polynomial bound `hv_bound` past the VC threshold `v`, the sample-size
+condition
+`m ≥ ((16 e (v + 1) / ε²)^(v + 1)) / δ`
+implies two arithmetic facts simultaneously: the chain bound
+`4 · Π_C(2m) · exp(-m ε² / 8) ≤ δ`
+and the auxiliary inequality `2 · log 2 ≤ m · ε²` (which feeds the Hoeffding step).
+The conjunction closes the arithmetic loop between the combinatorial growth function
+and the failure probability target. -/
 theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
     (C : ConceptClass X Bool)
     (v : ℕ) (hv : 0 < v) (m : ℕ) (hm : 0 < m) (ε δ : ℝ)
