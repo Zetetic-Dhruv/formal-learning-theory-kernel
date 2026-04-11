@@ -1,0 +1,23 @@
+% PDF master for the Formal Learning Theory Kernel blueprint.
+% Builds a standalone print-version PDF via pdflatex or xelatex.
+
+\documentclass[a4paper]{report}
+
+\usepackage[textwidth=14cm]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage[capitalize]{cleveref}
+\usepackage{enumitem}
+
+\input{preamble/common}
+\input{preamble/print}
+
+\title{Formal Learning Theory Kernel: Blueprint v1}
+\author{Dhruv Gupta \\ Indian Institute of Science}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\input{content}
+\end{document}

@@ -1,0 +1,357 @@
+% Formal Learning Theory Kernel: Blueprint v1
+% Content source. This file is included by print.tex and web.tex;
+% it should not carry \documentclass or \begin{document}.
+%
+% Scope: core story of the kernel. Five-way PAC equivalence with the
+% NullMeasurableSet refinement, Littlestone characterization, Gold
+% theorem and mind-change characterization, three-paradigm separation,
+% Borel-analytic measurability refinement. Compression, MBL monad, and
+% PAC-Bayes are deferred to blueprint v2.
+
+\chapter{Introduction}\label{chap:intro}
+
+This document is the mathematical blueprint for a Lean 4 formalization
+of the fundamental theorem of statistical learning. It tracks the core
+story of the kernel: the five-way equivalence for PAC learning with a
+measurability refinement that weakens the standard Borel hypothesis,
+the Littlestone characterization for online learning, Gold's theorem
+and the mind-change characterization for Gold-style learning, the
+three-paradigm separation, and the Borel-analytic separation theorem
+that witnesses the strict weakening of the measurability hypothesis.
+
+The formalization targets Lean 4 \texttt{v4.29.0-rc6} against mathlib4
+pinned at commit \texttt{fde0cc5}. The repository sits at
+\url{https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
+the per-module API reference at
+\url{https://zetetic-dhruv.github.io/formal-learning-theory-kernel/}.
+The kernel contains 354 machine-checked theorems in 21{,}522 lines with
+zero sorry. Every statement in this blueprint carrying a
+\texttt{\textbackslash lean\{\}} annotation corresponds to a proved
+declaration in the kernel.
+
+The audience is learning theorists who do not read Lean 4. Informal
+statements are self-contained mathematical prose. The
+\texttt{\textbackslash lean\{\}} hyperlinks are there for formalization
+readers who want to drill into the precise Lean counterparts of each
+statement. Both audiences are served by the same document.
+
+Compression via approximate minimax, the measurable batch learner
+monad, and PAC-Bayes infrastructure are deferred to blueprint v2,
+together with the Baxter multi-task base case and the extended
+criteria family (robust PAC, PAC-Bayes, RKHS statistical layer).
+Blueprint v2 will be published as a separate document once v1 is
+complete.
+
+\chapter{Primitives}\label{chap:primitives}
+
+\section{Concept and concept class}\label{sec:concept-class}
+
+\begin{definition}[Concept and concept class]\label{def:concept-class}
+  \lean{Concept, ConceptClass}
+  \leanok
+  Fix a domain $X$ and a label set $Y$. A \emph{concept} is a function
+  $h : X \to Y$. A \emph{concept class} is a set $C \subseteq Y^X$ of
+  concepts.
+\end{definition}
+
+Throughout this blueprint we work mostly with the Boolean label set
+$Y = \{0, 1\}$, identifying $\{0,1\}^X$ with the power set of $X$. All
+definitions extend to arbitrary $Y$ unless stated otherwise, and the
+kernel formalizes the general case.
+
+\section{Batch learner}\label{sec:batch-learner}
+
+\begin{definition}[Batch learner]\label{def:batch-learner}
+  \lean{BatchLearner}
+  \leanok
+  A \emph{batch learner} over $(X, Y)$ is a bundled structure carrying a
+  hypothesis set $H \subseteq Y^X$, a learning function
+  $\mathcal{A}$ that takes a finite training sample
+  $S : \mathrm{Fin}\,m \to X \times Y$ and returns a hypothesis in $H$,
+  and a proof that the output lies in $H$.
+\end{definition}
+
+\begin{definition}[Realizable setting]\label{def:realizable}
+  The learning problem for a concept class $C$ is \emph{realizable} if
+  the target concept $c$ lies in $C$ and the sample is drawn i.i.d.\
+  from a distribution $D$ with labels $c(x_i)$. Unless otherwise noted,
+  PAC learnability statements in this blueprint are in the realizable
+  setting. The kernel also formalizes the agnostic variant and the
+  extended criteria in the extended theorems module.
+\end{definition}
+
+\section{Sample, loss, and error}\label{sec:sample-loss}
+
+\begin{definition}[I.i.d.\ sample]\label{def:iid-sample}
+  For a distribution $D$ on $X$ and a target concept $c$, an
+  \emph{i.i.d.\ sample} of size $m$ is a tuple
+  $S = ((x_1, c(x_1)), \dots, (x_m, c(x_m)))$ with each $x_i \sim D$
+  drawn independently.
+\end{definition}
+
+\begin{definition}[Zero-one loss]\label{def:zero-one-loss}
+  For $h, c : X \to \{0,1\}$ and $x \in X$, the \emph{zero-one loss} is
+  $\ell(h, c, x) = \mathbf{1}[h(x) \neq c(x)]$.
+\end{definition}
+
+\begin{definition}[Empirical and true error]\label{def:errors}
+  For a hypothesis $h$, a target $c$, a distribution $D$, and a sample
+  $S$ of size $m$:
+  \begin{align*}
+    \err_S(h) &= \frac{1}{m} \sum_{i=1}^{m} \mathbf{1}[h(x_i) \neq c(x_i)]
+      && \text{(empirical error)}, \\
+    \err_D(h) &= \mathbb{P}_{x \sim D}\!\left[ h(x) \neq c(x) \right]
+      && \text{(true error)}.
+  \end{align*}
+\end{definition}
+
+\chapter{PAC Characterization}\label{chap:pac}
+
+\section{VC dimension, shattering, and the growth function}\label{sec:vc-dim}
+
+\begin{definition}[Shattering]\label{def:shatters}
+  \lean{Shatters}
+  \leanok
+  A finite set $S \subseteq X$ is \emph{shattered} by a concept class
+  $C \subseteq \{0,1\}^X$ if for every function $f : S \to \{0,1\}$
+  there exists $h \in C$ with $h \restriction_S = f$. Equivalently, $C$
+  realizes every Boolean labeling of $S$.
+\end{definition}
+
+\begin{definition}[VC dimension]\label{def:vcdim}
+  The \emph{VC dimension} of $C$, written $\VCdim(C)$, is the supremum
+  of cardinalities of finite sets shattered by $C$:
+  \[
+    \VCdim(C) = \sup\{ |S| : S \subseteq X \text{ finite and shattered by } C \}.
+  \]
+  If the supremum is not finite, we set $\VCdim(C) = \infty$.
+\end{definition}
+
+\begin{definition}[Growth function]\label{def:growth}
+  The \emph{growth function} $\Pi_C(m) : \N \to \N$ is
+  \[
+    \Pi_C(m) = \sup_{\substack{S \subseteq X \\ |S| = m}}
+      \bigl|\, \{ h \restriction_S : h \in C \}\, \bigr|.
+  \]
+  It counts the maximum number of distinct Boolean labelings of an
+  $m$-element subset that the class can realize.
+\end{definition}
+
+\section{Sauer-Shelah lemma}\label{sec:sauer-shelah}
+
+The Sauer-Shelah lemma is the combinatorial heart of the uniform
+convergence argument. Without it, the growth function on a class with
+finite VC dimension could grow exponentially in the sample size; with
+it, the growth is polynomial of degree at most $\VCdim(C)$, and the
+union bound over growth-function-many effective hypotheses closes the
+PAC proof.
+
+\begin{lemma}[Sauer-Shelah]\label{lem:sauer-shelah}
+  \lean{sauer_shelah}
+  \leanok
+  \uses{def:vcdim, def:growth}
+  Let $C$ be a concept class with $\VCdim(C) = d < \infty$. Then for
+  every $m \geq 0$,
+  \[
+    \Pi_C(m) \leq \sum_{i=0}^{d} \binom{m}{i}.
+  \]
+  In particular, $\Pi_C(m) = O(m^d)$ as $m \to \infty$.
+\end{lemma}
+
+\begin{proof}[Proof sketch]
+  The classical proof is a downward induction on VC dimension via a
+  shift operator on the restriction $C \restriction_S$. For each element
+  $x \in S$, partition the restrictions into those distinguished at $x$
+  and those that are not; the distinguished subclass has VC dimension
+  at most $d - 1$, and a short double-counting argument with Pascal's
+  identity closes the induction. The kernel formalizes the quantitative
+  variant with explicit binomial-sum bounds as
+  \lean{sauer_shelah_quantitative}, and the exponential upper bound
+  $\Pi_C(m) \leq (em/d)^d$ used downstream by the symmetrization
+  argument as \lean{sauer_shelah_exp_bound}.
+\end{proof}
+
+\section{The five-way equivalence}\label{sec:fundamental-theorem}
+
+This section is the centerpiece of the blueprint. The fundamental
+theorem bundles five a priori distinct characterizations of PAC
+learnability into a single equivalence class, and this kernel adds a
+measurability refinement to the statement: the Borel hypothesis that
+appears in the standard treatment can be weakened to a
+null-measurability hypothesis on the uniform convergence bad event.
+The weakening is strict, witnessed by the class constructed in
+Chapter~\ref{chap:measurability}.
+
+\begin{definition}[Uniform convergence]\label{def:uniform-convergence}
+  \lean{HasUniformConvergence}
+  \leanok
+  A concept class $C$ has the \emph{uniform convergence property} over
+  all distributions on $X$ if for every $\eps, \delta \in (0, 1)$ there
+  exists a sample complexity $m_0(\eps, \delta)$, independent of the
+  distribution, such that for every distribution $D$ on $X$,
+  \[
+    \mathbb{P}_{S \sim D^{m_0}}
+      \!\left[ \sup_{h \in C} \bigl| \err_S(h) - \err_D(h) \bigr| > \eps \right]
+      < \delta.
+  \]
+\end{definition}
+
+\begin{definition}[PAC learnability]\label{def:pac-learnable}
+  \lean{PACLearnable}
+  \leanok
+  A concept class $C$ is \emph{PAC learnable} if there exist a batch
+  learner $\mathcal{A}$ and a sample complexity
+  $m_0 : (0, 1)^2 \to \N$, both independent of the target distribution,
+  such that for every $\eps, \delta \in (0, 1)$, every distribution $D$,
+  and every realizable target $c \in C$,
+  \[
+    \mathbb{P}_{S \sim D^{m_0(\eps, \delta)}}
+      \!\left[ \err_D(\mathcal{A}(S)) > \eps \right] < \delta.
+  \]
+\end{definition}
+
+\begin{theorem}[Five-way equivalence for PAC learning]\label{thm:fundamental-theorem}
+  \lean{fundamental_theorem}
+  \leanok
+  \uses{def:vcdim, def:uniform-convergence, def:pac-learnable,
+        lem:sauer-shelah, def:well-behaved-vc-meas-target}
+  Let $X$ be an infinite domain and let $C \subseteq \{0,1\}^X$ be a
+  concept class carrying \texttt{WellBehavedVCMeasTarget}
+  (Definition~\ref{def:well-behaved-vc-meas-target}). The following are
+  equivalent.
+  \begin{enumerate}[label=(\roman*)]
+    \item $\VCdim(C) < \infty$.
+    \item $C$ has the uniform convergence property over all
+      distributions on $X$.
+    \item Empirical risk minimization over $C$ is a PAC learner.
+    \item $C$ is PAC learnable.
+    \item Every realizable distribution admits a sample complexity
+      bound polynomial in $1/\eps$ and $1/\delta$.
+  \end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+  Forward direction (i) $\Rightarrow$ (ii). Sauer-Shelah
+  (Lemma~\ref{lem:sauer-shelah}) gives polynomial growth of the growth
+  function $\Pi_C(2m)$. Symmetrization introduces a ghost sample and
+  rewrites the supremum over $C$ as a supremum over the finitely many
+  effective labelings of the combined sample (see
+  Section~\ref{sec:symmetrization-nullmeas}). Hoeffding's inequality
+  bounds the deviation at each fixed effective labeling, and the union
+  bound over $\Pi_C(2m)$ such labelings produces the uniform
+  convergence rate. The symmetrization step uses the
+  \texttt{WellBehavedVCMeasTarget} hypothesis to ensure the ghost-gap
+  bad event is null-measurable, which is the exact regularity the
+  argument requires.
+
+  Chain (ii) $\Rightarrow$ (iii) $\Rightarrow$ (iv) $\Rightarrow$ (v).
+  Uniform convergence implies ERM soundness in the realizable setting:
+  the empirical risk minimizer has zero empirical error, and the
+  uniform convergence bound transfers zero empirical error to
+  vanishing true error. The sample complexity bound from (ii) carries
+  over to PAC learnability. The polynomial rate (v) is extracted from
+  the explicit $m_0(\eps, \delta)$ produced by the union bound: it is
+  polynomial in $1/\eps$ and $\log(1/\delta)$, and therefore polynomial
+  in $1/\eps$ and $1/\delta$ as claimed.
+
+  Backward direction (v) or (iv) $\Rightarrow$ (i). Contrapositive: if
+  $\VCdim(C) = \infty$, then for every $m$ there is a shattered set
+  $S_m$ of size $|S_m| > m$. A no-free-lunch argument on $S_m$
+  constructs, for any learner and any sample-complexity bound $m$, a
+  realizable target and a distribution on $S_m$ under which the
+  learner's expected error exceeds a fixed constant with constant
+  probability. Taking $|S_m|$ large enough forces the error above any
+  prescribed $\eps$ with probability at least $\delta$, contradicting
+  PAC learnability.
+\end{proof}
+
+\subsection{The NullMeasurableSet refinement}\label{sec:symmetrization-nullmeas}
+
+The proof of (i) $\Rightarrow$ (ii) above goes through a
+symmetrization argument that rewrites the bad event
+\[
+  \mathrm{Bad}_1(C, m, \eps)
+    = \left\{ S \in X^m :
+      \sup_{h \in C} \bigl| \err_S(h) - \err_D(h) \bigr| > \eps \right\}
+\]
+in terms of a ghost sample $S'$ and the two-sided comparison event
+\[
+  \mathrm{Bad}_2(C, m, \eps)
+    = \left\{ (S, S') \in X^m \times X^m :
+      \sup_{h \in C} \bigl| \err_{S'}(h) - \err_S(h) \bigr| > \eps \right\}.
+\]
+The probability bound on $\mathrm{Bad}_2$ requires it to be measurable
+with respect to the product measure; the symmetrization step is where
+regularity of the class enters the proof.
+
+\begin{definition}[WellBehavedVCMeasTarget]\label{def:well-behaved-vc-meas-target}
+  \lean{WellBehavedVCMeasTarget}
+  \leanok
+  A concept class $C$ over a measurable space $(X, \Sigma)$ satisfies
+  \emph{WellBehavedVCMeasTarget} if the two-sided ghost-gap bad event
+  $\mathrm{Bad}_2(C, m, \eps)$ is a \emph{null-measurable} subset of
+  $(X^m \times X^m,\, \Sigma^{\otimes 2m})$ with respect to every
+  product probability measure $D^{\otimes 2m}$ arising from a
+  distribution $D$ on $X$. Null-measurability means that
+  $\mathrm{Bad}_2$ sits in the completion of the product
+  $\sigma$-algebra.
+\end{definition}
+
+\begin{definition}[KrappWirth well-behaved]\label{def:krapp-wirth-well-behaved}
+  \lean{KrappWirthWellBehaved}
+  \leanok
+  A concept class $C$ satisfies the \emph{KrappWirth well-behaved}
+  hypothesis of Krapp and Wirth (2024) if the two-sided ghost-gap bad
+  event $\mathrm{Bad}_2(C, m, \eps)$ is a Borel subset of
+  $X^m \times X^m$ in the product Borel structure.
+\end{definition}
+
+\begin{proposition}[KrappWirth implies WellBehavedVCMeasTarget]\label{prop:krapp-wirth-implies-wb-vc}
+  \lean{KrappWirthWellBehaved.toWellBehavedVC}
+  \leanok
+  \uses{def:well-behaved-vc-meas-target, def:krapp-wirth-well-behaved}
+  Every Borel set is null-measurable with respect to any completion of
+  a Borel probability measure. Consequently, any concept class carrying
+  \texttt{KrappWirthWellBehaved} also carries
+  \texttt{WellBehavedVCMeasTarget}.
+\end{proposition}
+
+\begin{proof}
+  Borel sets lie in the product $\sigma$-algebra by definition, hence
+  in its completion with respect to any measure. The inclusion
+  $\mathcal{B} \subseteq \mathcal{B}_\mu^\ast$ (Borel into
+  completion) is immediate.
+\end{proof}
+
+\begin{remark}[Why the refinement matters]\label{rem:why-refinement}
+  The standard treatment in Krapp and Wirth (2024) states the
+  fundamental theorem under the Borel hypothesis on the ghost-gap bad
+  event, matching Definition~\ref{def:krapp-wirth-well-behaved}. This
+  kernel observes that the symmetrization step uses only
+  null-measurability of the bad event, not Borelness, and that the
+  resulting theorem (Theorem~\ref{thm:fundamental-theorem}) is strictly
+  stronger: it applies to concept classes whose ghost-gap bad event is
+  null-measurable without being Borel.
+  Chapter~\ref{chap:measurability} exhibits a concept class whose bad
+  event sits precisely in the gap between Borel and null-measurable,
+  certifying that the refinement is not cosmetic.
+\end{remark}
+
+\section{Forward pointer to the measurability layer}\label{sec:pac-pointer-forward}
+
+The fundamental theorem (Theorem~\ref{thm:fundamental-theorem}) uses
+the \texttt{WellBehavedVCMeasTarget} hypothesis as a black box at this
+stage. Chapter~\ref{chap:measurability} opens that black box: it
+constructs the Borel-parameterized setting in which the ghost-gap bad
+event is always \emph{analytic} (a strictly larger class than Borel),
+proves that analytic sets are null-measurable with respect to every
+Borel probability measure via Choquet capacitability, and exhibits a
+concept class (a singleton class over an analytic non-Borel set) whose
+bad event is null-measurable but not Borel. This witnesses the strict
+weakening announced in Remark~\ref{rem:why-refinement}.
+
+% Chapters 3 through 7 deferred to later implementation sessions.
+% Planned: Chapter 3 Online characterization, Chapter 4 Gold
+% characterization, Chapter 5 Three-paradigm separations, Chapter 6
+% Measurability layer, Chapter 7 Closing notes. See blueprint/PLAN.md
+% for scope and structure.
