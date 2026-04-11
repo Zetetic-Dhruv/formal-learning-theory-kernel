@@ -444,7 +444,102 @@ Lake require in the docbuild-creation step of the workflow.
 
 ## Revision history
 
-- v1 draft (this file): task-URS-manuscript discovery pass. Scope v1 = core story.
+- v1 draft: task-URS-manuscript discovery pass. Scope v1 = core story.
   Profile distribution checked under the 40% homogeneity threshold. Dependency skeleton
   and draft informal statements captured. Next action: `leanblueprint new` in a fresh
   implementation session.
+
+- v1 book-grade rewrite (session 4): imported chapters 0-5 verbatim from the
+  companion textbook with `\lean{}` annotations, copied `flt_bibliography.bib`
+  as `blueprint/src/references.bib`, updated preamble to match book conventions,
+  added Chapter 6 as net-new content, wired initial CI workflow port.
+
+- v1 publication-grade rewrite (session 5): the full task-URS-manuscript pass
+  was rerun on Chapter 6 (the kernel's novel contribution) per the skill's
+  three-step procedure. Two references missing from the book bibliography were
+  added (KrappWirth2024 arXiv:2410.10243, Kechris1995 GTM 156). An A4 violation
+  in `ch02_pac.tex` was corrected (`\lean{sauer_shelah}` was incorrectly attached
+  to `def:growth-function`, which is a definition; the annotation now lives
+  only on `lem:sauer-shelah`). A refinement remark was added after the VC
+  characterization theorem pointing forward to Chapter 6 so the reader
+  encounters the null-measurability vs Borel gap before reading the four-stage
+  proof that depends on it. The CI workflow was tightened: `checkdecls` is now
+  added as a Lake dependency in the generated `docbuild/lakefile.toml`, the web
+  build switched from direct plastex to the canonical `leanblueprint web` CLI
+  (which auto-generates `blueprint/lean_decls`), and `lake exe checkdecls
+  ../blueprint/lean_decls` is invoked as a hard-failing gate. Silent `|| true`
+  pass-throughs were removed.
+
+### Chapter 6 URS measurements (session 5)
+
+Computed per task-URS-manuscript Step 1 (Cuzzolin mass functions per
+measurement class). These drove the section-level structural decisions:
+content length, environment selection, diagram requirement, tonal arc.
+
+```
+§6.1 Borel parameterization and the symmetrization route
+  g_Pl       = 0.00 (single crisp definition of Borel parameterization)
+  sigma_Pl   = 1.00
+  Coh_fail   = 0.25 (edge: symmetrization step fails to preserve Borelness)
+  Coh_surpr  = 0.00
+  Inv        = 0.50 (boundary at multiclass / regression / unsupervised)
+  Comp       = 1.00
+  Profile    = E (Obstruction) primary, hint of C secondary
+  Centerpiece= the precise point where "Borel on the product" is stronger
+               than "null-measurable wrt completion"
+  Tone arc   = diagnostic / clinical, with explicit Krapp-Wirth diagnosis
+               remark box
+  Length     = 1.5 pages
+```
+
+```
+§6.2 The analytic measurability bridge via Choquet capacitability
+  g_Pl       = 0.50 (three defensible framings of Choquet: capacity,
+                     Souslin, compact approximation)
+  sigma_Pl   = 0.50
+  Coh_fail   = 0.00
+  Coh_surpr  = 0.50 (Choquet-learning bridge is the revelation edge)
+  Inv        = 1.00 (every Borel probability measure on every Polish space)
+  Comp       = 0.85 (Mathlib contribution status partial)
+  Profile    = B + C (load-bearing with revelation at the bridge)
+  Centerpiece= the bridge sentence tying Choquet's 1955 capacitability
+               theorem to the ghost-gap bad event of statistical learning
+  Tone arc   = anticipatory then sharp turn at the bridge, expansive
+               after
+  Length     = 1.3 pages
+```
+
+```
+§6.3 The Borel-analytic separation theorem
+  g_Pl       = 0.00 (kernel is sole authority for the separation)
+  sigma_Pl   = 1.00
+  Coh_fail   = 0.20 (one fails edge: WBVCMeasTarget vs KrappWirthWB)
+  Coh_surpr  = 0.40 (two surprises: individual measurability does not
+                     lift, and the Souslin-not-Borel planar witness)
+  Inv        = 0.33 (robust on R, boundary for other Polish spaces
+                     and higher sample sizes)
+  Comp       = 1.00 (all five theorems in the chain proved sorry-free)
+  Profile    = C (Revelation) primary, D (Negative Result) secondary
+  Centerpiece= singleton class over an analytic non-Borel set plus the
+               planar-witness reduction
+  Environments used: \begin{historical} for Krapp-Wirth 2024 context,
+                     \begin{separation} for the main theorem block,
+                     TikZ figure for the planar witness W_A
+  Tone arc   = build tension through the singleton class definition and
+               individual-measurability lemma, sharp turn at the planar
+               reduction, slow burn through the analytic/not-Borel steps,
+               witness-centered close
+  Length     = 3.2 pages
+```
+
+Homogeneity check: Chapter 6 has three sections with distinct primary
+profiles (E, B+C, C+D). Centerpieces are distinct (obstruction point,
+bridge sentence, witness construction). Tonal arcs are distinct
+(diagnostic, anticipatory-sharp, tension-release-witness). No
+homogeneity warning. No banned vocabulary. Zero em-dashes. 14 unique
+`\lean{}` identifiers in the chapter, all cross-checked against source.
+
+- Next action after session 5: wait for CI workflow run. If the first
+  run goes green, the blueprint v1 first-pass content is complete. If
+  checkdecls reports unresolved identifiers, reconcile per the error
+  listing and push a fix.

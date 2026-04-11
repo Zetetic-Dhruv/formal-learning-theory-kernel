@@ -66,10 +66,10 @@ jobs:
 
       # docgen-action's index.js hard-requires lakefile.toml, but the kernel
       # uses lakefile.lean. We replicate docgen-action/scripts/build_docs.sh
-      # by hand: create a tiny `docbuild` sibling package with its own
-      # lakefile.toml that requires the parent kernel by local path and
-      # doc-gen4 by git tag, reusing the parent's .lake/packages so mathlib
-      # is not re-fetched.
+      # by hand: create a `docbuild` sibling package with its own
+      # lakefile.toml that requires the parent kernel by local path,
+      # doc-gen4 by git tag, and checkdecls by git tag, reusing the parent's
+      # .lake/packages so mathlib is not re-fetched.
       - name: Create docbuild subpackage
         run: |
           mkdir -p docbuild
@@ -86,6 +86,11 @@ jobs:
           scope = "leanprover"
           name = "doc-gen4"
           rev = "${{ steps.docgen.outputs.rev }}"
+
+          [[require]]
+          name = "checkdecls"
+          git = "https://github.com/PatrickMassot/checkdecls.git"
+          rev = "main"
           EOF
           cat docbuild/lakefile.toml
 
@@ -105,21 +110,25 @@ jobs:
           cp -r docbuild/.lake/build/doc/. docs/docs/
 
       # ===================================================================
-      # Blueprint (leanblueprint + plastex + TeX Live)
+      # Blueprint build: PDF + HTML + checkdecls
       # ===================================================================
       #
-      # The blueprint builds two outputs:
+      # The blueprint builds three outputs:
       #   1. A PDF compiled with xelatex inside a TeX Live docker image,
       #      dropped at docs/blueprint.pdf.
-      #   2. A static HTML site compiled with plastex + leanblueprint,
-      #      dropped at docs/blueprint/.
+      #   2. A static HTML site compiled with the canonical `leanblueprint web`
+      #      CLI (which wraps plastex + the leanblueprint plugin), dropped at
+      #      docs/blueprint/. Running `leanblueprint web` also generates
+      #      blueprint/lean_decls, a newline-separated list of the Lean
+      #      identifiers referenced by every \lean{} macro in the source.
+      #   3. A checkdecls verification pass that reads blueprint/lean_decls
+      #      and asserts every identifier resolves against a declaration in
+      #      the kernel. If any identifier is stale (renamed, removed, or
+      #      typoed), this step fails the workflow.
       #
-      # Both builds live inside blueprint/src/. The TeX Live action is used
-      # so we do not have to provision ~1 GB of TeX packages on the
-      # GitHub-hosted runner.
-      #
-      # When the blueprint source is absent or the build fails, the steps
-      # are guarded so the API documentation still deploys.
+      # When the blueprint source is absent the steps are guarded so the
+      # API documentation still deploys. When the source IS present, every
+      # step is a hard gate: no `|| true`, no silent fallback.
       - name: Check blueprint source exists
         id: blueprint_check
         run: |
@@ -139,15 +148,13 @@ jobs:
           run: |
             apk add --no-cache make py3-pip graphviz graphviz-dev gcc musl-dev python3-dev
             cd blueprint/src
-            # latexmk three-pass to resolve references and citations
             mkdir -p ../print
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
-            # Run bibtex if the bibliography step produced an .aux
-            if [ -f ../print/print.aux ]; then
-              (cd ../print && bibtex print || true)
-            fi
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            # Three xelatex passes + one bibtex pass to resolve references,
+            # cross-references, and the 172-entry bibliography.
+            xelatex -output-directory=../print -interaction=nonstopmode print.tex
+            (cd ../print && bibtex print)
+            xelatex -output-directory=../print -interaction=nonstopmode print.tex
+            xelatex -output-directory=../print -interaction=nonstopmode print.tex
             ls -la ../print/
 
       - name: Install Python build dependencies for blueprint web
@@ -160,18 +167,28 @@ jobs:
           $HOME/blueprint-venv/bin/pip install invoke leanblueprint pygraphviz
           echo "$HOME/blueprint-venv/bin" >> "$GITHUB_PATH"
 
-      - name: Build blueprint web HTML (plastex + leanblueprint)
+      - name: Build blueprint web HTML via leanblueprint CLI
         if: steps.blueprint_check.outputs.present == 'true'
-        working-directory: blueprint/src
+        working-directory: blueprint
         run: |
-          mkdir -p ../web
-          # leanblueprint web wraps plastex with the leanblueprint plugin.
-          # It reads plastex.cfg and emits HTML into blueprint/web/.
-          # Use plastex directly rather than the leanblueprint CLI so we can
-          # skip the decl-check until the lake/Lean integration is in place
-          # (see `lake exe checkdecls` step below, which we keep optional).
-          plastex --config=plastex.cfg web.tex || true
-          ls -la ../web/ || true
+          # The leanblueprint CLI wraps plastex with the leanblueprint plugin
+          # and additionally writes blueprint/lean_decls, which is the input
+          # to the checkdecls verification step below.
+          leanblueprint web
+          echo "=== blueprint/web/ top level ==="
+          ls -la web/ | head
+          echo "=== blueprint/lean_decls ==="
+          wc -l lean_decls 2>/dev/null || echo "lean_decls not produced; checkdecls will fail"
+
+      - name: Verify every \lean{} identifier resolves (hard gate)
+        if: steps.blueprint_check.outputs.present == 'true'
+        working-directory: docbuild
+        run: |
+          # checkdecls reads the list of identifiers leanblueprint extracted
+          # from the \lean{} macros and fails if any of them fail to resolve
+          # against the kernel. Every \lean{} in the blueprint source must
+          # name a real declaration.
+          lake exe checkdecls ../blueprint/lean_decls
 
       - name: Copy blueprint outputs into Pages tree
         if: steps.blueprint_check.outputs.present == 'true'
@@ -181,16 +198,18 @@ jobs:
             cp blueprint/print/print.pdf docs/blueprint.pdf
             echo "Copied blueprint.pdf"
           else
-            echo "Warning: blueprint PDF not produced"
+            echo "Error: blueprint PDF not produced" >&2
+            exit 1
           fi
           if [ -d blueprint/web ]; then
             cp -r blueprint/web/. docs/blueprint/
             echo "Copied blueprint HTML"
           else
-            echo "Warning: blueprint HTML not produced"
+            echo "Error: blueprint HTML not produced" >&2
+            exit 1
           fi
           ls -la docs/
-          ls -la docs/blueprint/ 2>/dev/null || true
+          ls -la docs/blueprint/ | head
 
       # ===================================================================
       # Pages deploy

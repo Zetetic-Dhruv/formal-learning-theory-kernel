@@ -12,7 +12,7 @@
 \label{ch:separations}
 
 Most textbooks in learning theory treat separation results as scattered
-remarks---brief asides after a characterization theorem, noting that
+remarks, brief asides after a characterization theorem, noting that
 some plausible implication fails. This chapter reverses that convention.
 Here, the separations are first-class citizens: each one receives a
 formal statement, a witness construction, and an analysis of what
@@ -20,8 +20,8 @@ structural feature the witness exploits.
 
 A separation result has two components. The \emph{statement} asserts
 that some implication $A \Rightarrow B$ does not hold. The
-\emph{witness} is a concrete mathematical object---a concept class,
-a dimension pair, a computational reduction---that demonstrates the
+\emph{witness} is a concrete mathematical object, a concept class,
+a dimension pair, a computational reduction, that demonstrates the
 failure. The witness is the mathematics; the statement is merely its
 summary. Throughout this chapter, we privilege the construction over the
 claim.
@@ -48,7 +48,7 @@ demonstrating the gap.
 
 The first observation is structural: the lattice is \emph{sparse}.
 Thirteen edges connect concepts drawn from six paradigms and a dozen
-complexity measures. Most paradigm pairs are simply incomparable---they
+complexity measures. Most paradigm pairs are simply incomparable, they
 neither imply nor contradict each other, because they operate on
 different mathematical objects. The sparsity is itself informative:
 learning theory is not a linear hierarchy from weak to strong, but a
@@ -69,7 +69,7 @@ partially ordered collection of largely independent formalisms.
   witness/.style={font=\tiny\itshape, text=notegray, align=center}
 ]
 
-% --- Nodes ---
+%, Nodes,
 \node[concept] (ul) {Universal\\Learning};
 \node[concept, below left=2.0cm and 1.2cm of ul] (ol) {Online\\Learning};
 \node[concept, below right=2.0cm and 1.2cm of ul] (pac) {PAC\\Learning};
@@ -92,7 +92,7 @@ partially ordered collection of largely independent formalisms.
 \node[concept, below right=1.8cm and 0.0cm of exact] (uc) {Unlabeled\\Compression};
 \node[concept, below=1.5cm of uc] (cs) {Compression\\Scheme};
 
-% --- does_not_imply edges (dashed red) ---
+%, does_not_imply edges (dashed red),
 \draw[dni] (pac) -- node[witness, above, sloped] {thresholds} (mb);
 \draw[dni] (nd) -- node[witness, above, sloped] {$d_N{=}1$, not learnable} (pac);
 \draw[dni] (pac) -- node[witness, above, sloped] {approx.\ vs.\ exact} (exact);
@@ -103,7 +103,7 @@ partially ordered collection of largely independent formalisms.
 \draw[dni] (uc) -- node[witness, right, pos=0.4] {P\'alv\"olgyi--Tardos} (cs);
 \draw[dni] (ft) -- node[witness, above, sloped] {beyond binary} (stab);
 
-% --- strictly_stronger edges (solid blue) ---
+%, strictly_stronger edges (solid blue),
 \draw[ss] (ul) -- node[witness, above left, sloped] {removes uniformity} (pac);
 \draw[ss] (ol) -- node[witness, above, sloped] {$\Ldim \Rightarrow \VC$} (pac);
 \draw[ss] (ex) -- node[witness, right] {unbounded mind changes} (fin);
@@ -131,7 +131,7 @@ witness (a one-parameter family on $\R$) to the most conceptually
 involved (the breakdown of the fundamental theorem beyond binary
 classification).
 
-% --- Separation 1 ---
+%, Separation 1,
 
 \begin{separation}
 \textbf{PAC learning $\not\Rightarrow$ mistake-bounded learning.}
@@ -173,7 +173,7 @@ but a random sample reveals it with high probability.
   Formalized in the kernel; see the source link.
 \end{remark}
 
-% --- Separation 2 ---
+%, Separation 2,
 
 \begin{separation}
 \textbf{Ex-learning $\not\Rightarrow$ PAC learning.}
@@ -211,7 +211,7 @@ have no finite VC dimension.
   Formalized in the kernel; see the source link.
 \end{remark}
 
-% --- Separation 3 ---
+%, Separation 3,
 
 \begin{separation}
 \textbf{PAC learning $\not\Rightarrow$ exact learning.}
@@ -225,7 +225,7 @@ different data models, and neither subsumes the other.
 
 More concretely, consider any concept class $\mathcal{C}$ that is PAC
 learnable (finite VC dimension) but for which proper hypothesis
-selection is NP-hard---for instance, intersections of halfspaces in
+selection is NP-hard, for instance, intersections of halfspaces in
 $\R^d$ for sufficiently large $d$. An improper PAC learner can achieve
 low error using a surrogate hypothesis class, but the exact learning
 model requires the learner to output a hypothesis \emph{exactly equal}
@@ -242,7 +242,7 @@ criterion mismatch, not a data mismatch.
 \hfill\cite{Valiant1984}
 \end{separation}
 
-% --- Separation 4 ---
+%, Separation 4,
 
 \begin{separation}
 \textbf{Finite VC dimension $\not\Rightarrow$ computational
@@ -277,7 +277,7 @@ good hypothesis from that data.
 \hfill\cite{KearnsValiant1994}
 \end{separation}
 
-% --- Separation 5 ---
+%, Separation 5,
 
 \begin{separation}
 \textbf{Finite VC dimension $\not\Rightarrow$ low SQ dimension.}
@@ -307,7 +307,7 @@ VC sense.
 \hfill\cite{BlumFurstJacksonKearnsMansourRudich1994}
 \end{separation}
 
-% --- Separation 6 ---
+%, Separation 6,
 
 \begin{separation}
 \textbf{Natarajan dimension $\not\Rightarrow$ multiclass PAC
@@ -338,7 +338,7 @@ characterization.
 \hfill\cite{BrukhimCarmonDinurMoranYehudayoff2022}
 \end{separation}
 
-% --- Separation 7 ---
+%, Separation 7,
 
 \begin{separation}
 \textbf{Proper learnability $\not\Rightarrow$ efficient proper PAC
@@ -348,7 +348,7 @@ learning.}
 \emph{Witness.}
 The class of 3-term DNF formulas over $\{0,1\}^n$. Pitt and
 Valiant~\cite{PittValiant1988} showed that \emph{proper} PAC
-learning---where the hypothesis must itself be a 3-term DNF---is
+learning, where the hypothesis must itself be a 3-term DNF, is
 NP-hard, assuming $\mathrm{RP} \neq \mathrm{NP}$. Yet the same class
 is efficiently PAC learnable \emph{improperly}: every 3-term DNF can be
 represented as a 3-CNF, and 3-CNFs are efficiently PAC learnable.
@@ -365,7 +365,7 @@ with the right representation, but finding a hypothesis in the
 \hfill\cite{PittValiant1988}
 \end{separation}
 
-% --- Separation 8 ---
+%, Separation 8,
 
 \begin{separation}
 \textbf{Labeled compression $\not\Rightarrow$ unlabeled compression.}
@@ -395,7 +395,7 @@ stronger requirement than labeled compression.
 \hfill\cite{PalvolgyiTardos2020}
 \end{separation}
 
-% --- Separation 9 ---
+%, Separation 9,
 
 \begin{separation}
 \textbf{The fundamental theorem $\not\Rightarrow$ stability
@@ -411,7 +411,7 @@ theorem is the crown jewel of binary classification.
 It does not survive contact with real-valued loss.
 
 Shalev-Shwartz et al.~\cite{ShalevShwartzShamir2010} construct a
-learning problem---arbitrary loss, multi-valued output---that is
+learning problem, arbitrary loss, multi-valued output, that is
 learnable, yet for which uniform convergence fails outright.  The
 nine-way equivalence collapses.  In its place, a different quantity
 takes over: algorithmic stability, measuring how much a learner's output
@@ -421,12 +421,12 @@ changes when a single training point is perturbed.
 \emph{What the witness exploits.}
 The symmetrization argument at the heart of the Fundamental Theorem's
 proof requires the loss to take finitely many values.  Specifically:
-two.  That assumption is invisible in the binary setting---it looks like
+two.  That assumption is invisible in the binary setting, it looks like
 a harmless feature of the problem.  Make the loss real-valued and
 symmetrization breaks.  Uniform convergence stops characterizing
 learnability.  Stability, indifferent to loss cardinality, remains.
 
-The Fundamental Theorem is not wrong.  It is \emph{local}---an artifact
+The Fundamental Theorem is not wrong.  It is \emph{local}, an artifact
 of the 0-1 loss that does not announce itself as such.
 
 \hfill\cite{ShalevShwartzShamir2010}
@@ -443,10 +443,10 @@ of the 0-1 loss that does not announce itself as such.
 The 4 \rel{strictly\_stronger} edges assert that one concept
 \emph{does} imply another, but the reverse fails: the stronger concept
 is a proper generalization. Each edge requires two proofs: one for the
-forward implication, and one---the witness---for the strictness of the
+forward implication, and one, the witness, for the strictness of the
 gap.
 
-% --- Strict 1 ---
+%, Strict 1,
 
 \begin{separation}
 \textbf{Ex-learning $\supsetneq$ FIN-learning.}
@@ -479,7 +479,7 @@ changes (any finite number, not bounded in advance).
 \hfill\cite{Gold1967}
 \end{separation}
 
-% --- Strict 2 ---
+%, Strict 2,
 
 \begin{separation}
 \textbf{Online learning $\supsetneq$ PAC learning.}
@@ -508,7 +508,7 @@ every level of the hierarchy.
 \hfill\cite{Littlestone1988}
 \end{separation}
 
-% --- Strict 3 ---
+%, Strict 3,
 
 \begin{separation}
 \textbf{Universal learning $\supsetneq$ PAC learning.}
@@ -528,7 +528,7 @@ established a trichotomy for universal learning rates: every concept
 class has either an exponential rate, an arbitrarily slow rate, or is
 not universally learnable at all. The trichotomy theorem shows that
 classes with $\VC(\mathcal{H}) = \infty$ but containing no infinite
-Littlestone tree achieve exponential universal learning rates---they
+Littlestone tree achieve exponential universal learning rates, they
 are universally learnable but \emph{not} PAC learnable (since PAC
 requires finite VC dimension).
 
@@ -543,7 +543,7 @@ of learning problems.
 \hfill\cite{BousquetHannekeMoranVanHandelYehudayoff2021}
 \end{separation}
 
-% --- Strict 4 ---
+%, Strict 4,
 
 \begin{separation}
 \textbf{DS dimension $\supsetneq$ Natarajan dimension.}
@@ -563,8 +563,8 @@ a concept class using a hyperbolic pseudo-manifold with $\Ndim = 1$
 but $\DSdim = \infty$. The construction builds a concept class over an
 infinite label space where every pair of points admits only one
 non-trivial two-coloring (giving $\Ndim = 1$), but the global
-combinatorial structure---encoded in the oriented faces of the
-pseudo-manifold---is rich enough to drive the DS dimension to infinity.
+combinatorial structure, encoded in the oriented faces of the
+pseudo-manifold, is rich enough to drive the DS dimension to infinity.
 
 This is the witness that simultaneously demonstrates the separation
 $\Ndim \not\Rightarrow \text{PAC learnable}$ from \Cref{sec:separations}:
@@ -609,8 +609,8 @@ The witnesses in this chapter make the incomparability concrete.
 Thresholds on $\R$ separate PAC from online learning. All finite subsets
 of $\N$ separate Gold identification from PAC learning. Parities
 separate VC dimension from SQ dimension. Each witness exploits a specific
-structural mismatch---in the data model, the success criterion, the
-adversarial model, or the computational model---and these mismatches are
+structural mismatch, in the data model, the success criterion, the
+adversarial model, or the computational model, and these mismatches are
 not removable by clever proof techniques. They are features of the
 mathematical landscape.
 

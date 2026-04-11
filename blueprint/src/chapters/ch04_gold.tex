@@ -17,7 +17,7 @@
 
 In 1967, seventeen years before Valiant introduced PAC learning, E.\ Mark Gold posed a question that remains the oldest open research programme in computational learning theory: which classes of recursive functions can a machine identify from examples?
 
-Gold's framework differs from PAC and online learning not merely in its definitions but in its \emph{proof technique}. PAC theory rests on concentration inequalities---the probabilistic convergence of empirical risk to true risk. Online learning rests on combinatorial game trees---the Littlestone dimension measures the depth of a binary tree that the adversary can force. Gold-style identification rests on \emph{diagonalization}---the recursion-theoretic technique of defeating every candidate learner by constructing an adversarial input that forces failure. The proof method shapes the entire chapter.
+Gold's framework differs from PAC and online learning not merely in its definitions but in its \emph{proof technique}. PAC theory rests on concentration inequalities, the probabilistic convergence of empirical risk to true risk. Online learning rests on combinatorial game trees, the Littlestone dimension measures the depth of a binary tree that the adversary can force. Gold-style identification rests on \emph{diagonalization}, the recursion-theoretic technique of defeating every candidate learner by constructing an adversarial input that forces failure. The proof method shapes the entire chapter.
 
 Three features distinguish this paradigm from everything that precedes it in this book:
 
@@ -30,7 +30,7 @@ Three features distinguish this paradigm from everything that precedes it in thi
 \end{enumerate}
 
 \begin{historical}
-Gold's 1967 paper~\cite{Gold1967} was preceded by his 1965 paper on limiting recursion~\cite{Gold1965}, which introduced the idea that a computation could ``converge in the limit'' even if it never halts in the classical sense. The 1967 paper applied this idea to language learning. It was the first mathematical theory of learning from examples---predating Valiant's PAC model by 17 years, Vapnik and Chervonenkis's foundational work on uniform convergence by 4 years, and Littlestone's online model by 21 years. The diagonalization technique Gold used to prove his impossibility theorem later became standard in computational complexity theory, but Gold's use predates most of those applications.
+Gold's 1967 paper~\cite{Gold1967} was preceded by his 1965 paper on limiting recursion~\cite{Gold1965}, which introduced the idea that a computation could ``converge in the limit'' even if it never halts in the classical sense. The 1967 paper applied this idea to language learning. It was the first mathematical theory of learning from examples, predating Valiant's PAC model by 17 years, Vapnik and Chervonenkis's foundational work on uniform convergence by 4 years, and Littlestone's online model by 21 years. The diagonalization technique Gold used to prove his impossibility theorem later became standard in computational complexity theory, but Gold's use predates most of those applications.
 \end{historical}
 
 % ================================================================
@@ -55,7 +55,7 @@ Let $L \subseteq \Sigma^*$ be a language.
 
 Text presents only positive examples; informant presents both positive and negative examples. This distinction matters enormously: Gold showed that informant is strictly more powerful than text. We focus on text, which is the harder and more interesting case.
 
-After seeing the first $n$ data points $(t_0, \ldots, t_{n-1})$, the learner outputs a hypothesis $h_n$. The hypothesis is an \emph{index}---a natural number naming a program that computes a language. The learner has no deadline, no accuracy target, and no probability distribution on targets. It simply sees more and more of $L$ and must eventually guess correctly.
+After seeing the first $n$ data points $(t_0, \ldots, t_{n-1})$, the learner outputs a hypothesis $h_n$. The hypothesis is an \emph{index}, a natural number naming a program that computes a language. The learner has no deadline, no accuracy target, and no probability distribution on targets. It simply sees more and more of $L$ and must eventually guess correctly.
 
 % ================================================================
 % SECTION 2: Ex-Learning and Gold's Impossibility Theorem
@@ -73,7 +73,7 @@ A learner $M$ \emph{$\Ex$-identifies} a language $L$ from text if, for every tex
 A class $\mathcal{L}$ of languages is \emph{$\Ex$-identifiable} if there exists a single learner $M$ that $\Ex$-identifies every $L \in \mathcal{L}$ from text.
 \end{defn}
 
-The definition requires \emph{syntactic convergence}: the learner must eventually output the same index forever. It is not enough to output a sequence of indices that all happen to compute the correct language---the index itself must stabilize. (Relaxing this requirement gives BC-learning; see \Cref{sec:bc-learning}.)
+The definition requires \emph{syntactic convergence}: the learner must eventually output the same index forever. It is not enough to output a sequence of indices that all happen to compute the correct language, the index itself must stabilize. (Relaxing this requirement gives BC-learning; see \Cref{sec:bc-learning}.)
 
 \begin{example}[$\Ex$-identification of finite languages]
 \label{ex:finite-languages}
@@ -90,7 +90,7 @@ This simple algorithm illustrates a crucial asymmetry: the learner does not know
 Let $\mathcal{L}$ be any class of languages that contains all finite languages and at least one infinite language. Then $\mathcal{L}$ is not $\Ex$-identifiable from text.
 \end{thm}
 
-This is the centerpiece of the chapter. The proof is a diagonalization argument: we defeat \emph{every} candidate learner by constructing a text that forces it to fail. The construction is adversarial, not probabilistic---there is no distribution, no $\varepsilon$-net, no covering number. The adversary simply watches the learner and manipulates the future of the stream to prevent convergence.
+This is the centerpiece of the chapter. The proof is a diagonalization argument: we defeat \emph{every} candidate learner by constructing a text that forces it to fail. The construction is adversarial, not probabilistic, there is no distribution, no $\varepsilon$-net, no covering number. The adversary simply watches the learner and manipulates the future of the stream to prevent convergence.
 
 \begin{proof}
 Let $M$ be any learner. We construct a text $t$ for some language $L \in \mathcal{L}$ such that $M$ fails to $\Ex$-identify $L$ on $t$.
@@ -112,14 +112,14 @@ Consider two cases:
 
 The key observation is the \emph{diagonalization}: we never let the learner rest.
 
-If Case~A occurs at every stage, then every element of $L_\infty$ is eventually presented, so $t$ is a text for $L_\infty$. At each stage, $M$'s current hypothesis $h_{n_k}$ is checked: does $W_{h_{n_k}} = F_k$? If yes, we expand. But $F_k \subsetneq L_\infty$ for all $k$ (since $L_\infty$ is infinite), so $W_{h_{n_k}} = F_k \neq L_\infty$. Therefore $M$ outputs a hypothesis that is wrong at every stage---it cannot converge to a correct index for $L_\infty$.
+If Case~A occurs at every stage, then every element of $L_\infty$ is eventually presented, so $t$ is a text for $L_\infty$. At each stage, $M$'s current hypothesis $h_{n_k}$ is checked: does $W_{h_{n_k}} = F_k$? If yes, we expand. But $F_k \subsetneq L_\infty$ for all $k$ (since $L_\infty$ is infinite), so $W_{h_{n_k}} = F_k \neq L_\infty$. Therefore $M$ outputs a hypothesis that is wrong at every stage, it cannot converge to a correct index for $L_\infty$.
 
 If Case~B occurs at some stage $k$, then $M$ has already failed for $F_k$. We commit to $L = F_k$ and repeat elements of $F_k$ forever. But we can do more: before committing, we wait to see if $M$ changes its mind. If $M$ later outputs a hypothesis $h'$ with $W_{h'} = F_k$, we switch to Case~A and add the next element of $L_\infty$. This forces $M$ to fail for $L_\infty$ instead.
 
 In either case, $M$ fails. Since $M$ was an arbitrary learner, no learner $\Ex$-identifies $\mathcal{L}$.
 \end{proof}
 
-The proof has a recursive structure that repays careful study. The adversary maintains a ``threat'' at every stage: either the current language is the finite set seen so far, or it is the infinite language $L_\infty$. Whenever the learner commits to one possibility, the adversary switches to the other. The learner is forced to change its mind infinitely often---and $\Ex$-identification requires that it eventually stop changing its mind.
+The proof has a recursive structure that repays careful study. The adversary maintains a ``threat'' at every stage: either the current language is the finite set seen so far, or it is the infinite language $L_\infty$. Whenever the learner commits to one possibility, the adversary switches to the other. The learner is forced to change its mind infinitely often, and $\Ex$-identification requires that it eventually stop changing its mind.
 
 \begin{remark}[Diagonalization vs.\ concentration]
 \label{rmk:diag-vs-conc}
@@ -144,7 +144,7 @@ Gold's impossibility theorem says that $\Ex$-identification is limited. Two natu
 
 \begin{defn}[Finite Identification ($\FIN$)]
 \label{def:fin-learning}
-A learner $M$ \emph{$\FIN$-identifies} a language $L$ from text if, for every text $t$ for $L$, there exists a time $n_0$ such that $M$ outputs exactly one hypothesis---$M$ outputs ``?'' (no guess) for $n < n_0$ and outputs a single index $e$ at time $n_0$ with $W_e = L$, never changing its mind. A class $\mathcal{L}$ is \emph{$\FIN$-identifiable} if a single learner $\FIN$-identifies every $L \in \mathcal{L}$.
+A learner $M$ \emph{$\FIN$-identifies} a language $L$ from text if, for every text $t$ for $L$, there exists a time $n_0$ such that $M$ outputs exactly one hypothesis, $M$ outputs ``?'' (no guess) for $n < n_0$ and outputs a single index $e$ at time $n_0$ with $W_e = L$, never changing its mind. A class $\mathcal{L}$ is \emph{$\FIN$-identifiable} if a single learner $\FIN$-identifies every $L \in \mathcal{L}$.
 \end{defn}
 
 $\FIN$ is the strongest identification criterion: the learner must produce the correct answer in finitely many steps with no subsequent revision. The class of $\FIN$-identifiable families is a strict subset of $\Ex$-identifiable families; for instance, the class of all finite languages is $\Ex$-identifiable (\Cref{ex:finite-languages}) but not $\FIN$-identifiable, since the learner cannot know when the last element has been seen.
@@ -219,7 +219,7 @@ The essential point is that $\BC$-identification does not require the \emph{inde
 
 \begin{traversal}
 \textbf{Path:} $\nde{fin\_learning} \xrightarrow{\rel{strictly\_stronger}} \nde{ex\_learning} \xrightarrow{\rel{strictly\_stronger}} \nde{bc\_learning}$.\\[3pt]
-Each arrow is witnessed by an explicit separation. The graph encodes these as \rel{strictly\_stronger} edges with the separation witness as metadata. The hierarchy is not a sequence of increasingly liberal definitions---it is a chain of \emph{theorems}, each proved by constructing a class that one criterion can learn and the other cannot.
+Each arrow is witnessed by an explicit separation. The graph encodes these as \rel{strictly\_stronger} edges with the separation witness as metadata. The hierarchy is not a sequence of increasingly liberal definitions, it is a chain of \emph{theorems}, each proved by constructing a class that one criterion can learn and the other cannot.
 \end{traversal}
 
 % ================================================================
@@ -236,7 +236,7 @@ The $\FIN$--$\Ex$--$\BC$ chain is the spine of the hierarchy. Several natural re
 
 \begin{defn}[Anomalous Learning ($\Ex^*$)]
 \label{def:anomalous}
-A learner \emph{$\Ex^*$-identifies} a language $L$ if it $\Ex$-converges to an index $e$ such that $W_e$ differs from $L$ on at most finitely many strings. That is, the final hypothesis may contain finitely many errors---finitely many strings incorrectly included or excluded.
+A learner \emph{$\Ex^*$-identifies} a language $L$ if it $\Ex$-converges to an index $e$ such that $W_e$ differs from $L$ on at most finitely many strings. That is, the final hypothesis may contain finitely many errors, finitely many strings incorrectly included or excluded.
 \end{defn}
 
 Anomalous learning relaxes $\Ex$ by removing the requirement of exact correctness, replacing it with correctness up to a finite set. In graph terms, this is a \rel{restricts} edge from $\nde{anomalous\_learning}$ to $\nde{ex\_learning}$: the constraint (zero anomalies) is removed, and no new grammatical structure is introduced. The class of $\Ex^*$-identifiable families strictly contains the class of $\Ex$-identifiable families~\cite{CaseSmith1983}.
@@ -269,7 +269,7 @@ Vacillatory learning sits between $\Ex$ (which requires convergence to a single 
 A \emph{trial-and-error} predicate for a set $A \subseteq \N$ is a computable function $f : \N \to \{0, 1\}$ such that $\lim_{s \to \infty} f_s(n)$ exists for all $n$ and equals the characteristic function of $A$. The learner may ``retract'' previous outputs: it learns by making mistakes and correcting them.
 \end{defn}
 
-Trial-and-error learning connects identification in the limit to the arithmetical hierarchy. A set $A$ is trial-and-error learnable if and only if $A \in \Delta^0_2$---the class of sets that are both $\Sigma^0_2$ and $\Pi^0_2$. This is the precise recursion-theoretic characterization, due to Putnam~\cite{Gold1965} and Gold: the limit-computable functions are exactly the $\Delta^0_2$ functions. This connection places Gold-style learning firmly within the landscape of classical recursion theory.
+Trial-and-error learning connects identification in the limit to the arithmetical hierarchy. A set $A$ is trial-and-error learnable if and only if $A \in \Delta^0_2$, the class of sets that are both $\Sigma^0_2$ and $\Pi^0_2$. This is the precise recursion-theoretic characterization, due to Putnam~\cite{Gold1965} and Gold: the limit-computable functions are exactly the $\Delta^0_2$ functions. This connection places Gold-style learning firmly within the landscape of classical recursion theory.
 
 % ================================================================
 % SECTION 5: Mind-Change Complexity and Ordinals
@@ -289,7 +289,7 @@ A \emph{mind change} occurs at time $n$ if the learner's output satisfies $M(t_0
 
 For finite mind-change bounds, the theory is straightforward: we say that $M$ identifies $\mathcal{L}$ with at most $k$ mind changes if, on every text for every $L \in \mathcal{L}$, the mind-change count is at most $k$. The class of all finite languages is identifiable with 0 mind changes after the first hypothesis (the learner in \Cref{ex:finite-languages} changes its mind every time a new element appears, but a more careful learner can be designed with bounded mind changes for restricted subclasses).
 
-The surprise---genuinely unexpected for readers coming from PAC theory---is that integer-valued bounds are \emph{not sufficient} to characterize the full landscape.
+The surprise, genuinely unexpected for readers coming from PAC theory, is that integer-valued bounds are \emph{not sufficient} to characterize the full landscape.
 
 \begin{thm}[Freivalds--Smith {\cite{FreivaldsSmith1993}}]
 \label{thm:mind-change-ordinal}
@@ -304,7 +304,7 @@ The mind-change complexity of $\Ex$-identification is naturally measured by \emp
 \end{enumerate}
 \end{thm}
 
-The idea behind ordinal mind-change bounds is as follows. A learner with mind-change bound $\omega$ begins with an ordinal counter set to $\omega$. At each mind change, the counter must decrease---but it may decrease to any smaller ordinal. Since there is no infinite descending sequence of ordinals (ordinals are well-ordered), the learner must eventually stop changing its mind. The counter $\omega$ allows finitely many mind changes, but the \emph{number} of mind changes need not be bounded in advance by any fixed integer---it may depend on the input.
+The idea behind ordinal mind-change bounds is as follows. A learner with mind-change bound $\omega$ begins with an ordinal counter set to $\omega$. At each mind change, the counter must decrease, but it may decrease to any smaller ordinal. Since there is no infinite descending sequence of ordinals (ordinals are well-ordered), the learner must eventually stop changing its mind. The counter $\omega$ allows finitely many mind changes, but the \emph{number} of mind changes need not be bounded in advance by any fixed integer, it may depend on the input.
 
 This is fundamentally different from an integer bound. With a bound of $k \in \N$, the learner may change its mind at most $k$ times on \emph{every} input. With a bound of $\omega$, the learner may change its mind $k$ times for input-dependent $k$, with no uniform finite upper bound. The ordinal hierarchy continues: $\omega \cdot 2$ allows the learner to ``reset'' its finite counter once; $\omega^2$ allows nested levels of resetting; and so on up through the constructive ordinals.
 
@@ -315,7 +315,7 @@ The appearance of transfinite ordinals in learning theory is a genuine structura
 
 \begin{traversal}
 \textbf{Path:} $\nde{mind\_change\_characterization} \xrightarrow{\rel{measures}} \nde{ex\_learning}$.\\[3pt]
-The mind-change ordinal is a complexity measure on $\Ex$-identifiable classes, analogous to the VC dimension for PAC-learnable classes. But where VC dimension is a single integer, mind-change complexity is an ordinal---potentially transfinite. This is a \rel{measures} edge of a qualitatively different kind than $\nde{vc\_dimension} \xrightarrow{\rel{measures}} \nde{concept\_class}$.
+The mind-change ordinal is a complexity measure on $\Ex$-identifiable classes, analogous to the VC dimension for PAC-learnable classes. But where VC dimension is a single integer, mind-change complexity is an ordinal, potentially transfinite. This is a \rel{measures} edge of a qualitatively different kind than $\nde{vc\_dimension} \xrightarrow{\rel{measures}} \nde{concept\_class}$.
 \end{traversal}
 
 % ================================================================
@@ -333,7 +333,7 @@ The answer is that they are \emph{pairwise incomparable}. No paradigm subsumes a
 \textbf{Theorem} (Three-Paradigm Separation). \textit{The following four separations hold:}
 
 \begin{enumerate}[label=(\alph*),leftmargin=*,itemsep=4pt]
-\item \textbf{$\Ex$-learnable but not PAC-learnable.} The class $\mathcal{L}_{\mathrm{fin}}$ of all finite subsets of $\N$ is $\Ex$-identifiable from text (\Cref{ex:finite-languages}). But the associated concept class has infinite VC dimension---any finite set of points can be shattered---so it is not PAC-learnable.
+\item \textbf{$\Ex$-learnable but not PAC-learnable.} The class $\mathcal{L}_{\mathrm{fin}}$ of all finite subsets of $\N$ is $\Ex$-identifiable from text (\Cref{ex:finite-languages}). But the associated concept class has infinite VC dimension, any finite set of points can be shattered, so it is not PAC-learnable.
 
 The witness exploits the fundamental difference in how the two paradigms treat ``all finite subsets.'' $\Ex$-identification succeeds because on any \emph{fixed} finite set, the learner eventually sees all elements. PAC fails because the learner must handle \emph{all} finite sets simultaneously with bounded sample complexity, and the VC dimension is infinite.
 
@@ -388,7 +388,7 @@ The three-paradigm separation is not a deficiency of the definitions. It reflect
 This chapter introduced Gold-style identification in the limit, the oldest paradigm in formal learning theory, and established five structural facts:
 
 \begin{enumerate}[leftmargin=*,itemsep=3pt]
-\item \textbf{Gold's impossibility theorem} (\Cref{thm:gold}): any class containing all finite languages and at least one infinite language is not $\Ex$-identifiable from text. The proof is by diagonalization---the first impossibility result in learning theory, and one whose proof technique (adversarial stream construction) has no analogue in PAC or online theory.
+\item \textbf{Gold's impossibility theorem} (\Cref{thm:gold}): any class containing all finite languages and at least one infinite language is not $\Ex$-identifiable from text. The proof is by diagonalization, the first impossibility result in learning theory, and one whose proof technique (adversarial stream construction) has no analogue in PAC or online theory.
 
 \item \textbf{The identification hierarchy} (\Cref{sec:hierarchy}): the chain $\FIN \subsetneq \Ex \subsetneq \BC$ is strict, with the Case--Smith separation (\Cref{thm:bc-strictly-stronger}) providing the witness for $\BC > \Ex$. The hierarchy is not a sequence of definitions but a chain of theorems.
 
@@ -399,7 +399,7 @@ This chapter introduced Gold-style identification in the limit, the oldest parad
 \item \textbf{The three paradigms are pairwise incomparable} (\Cref{sec:three-paradigm}): PAC, online, and Gold-style identification are separated in every direction by explicit witnesses. This is the most important structural fact about the landscape of learning theory.
 \end{enumerate}
 
-The recursion-theoretic character of this chapter---diagonalization proofs, connections to the arithmetical hierarchy, ordinal-valued measures---contrasts sharply with the probabilistic character of \Cref{ch:pac} and the combinatorial character of \Cref{ch:online}. Each paradigm brings its own mathematical world. The separations of \Cref{sec:three-paradigm} are consequences of this fact: the paradigms use different proof techniques because they formalize genuinely different questions.
+The recursion-theoretic character of this chapter, diagonalization proofs, connections to the arithmetical hierarchy, ordinal-valued measures, contrasts sharply with the probabilistic character of \Cref{ch:pac} and the combinatorial character of \Cref{ch:online}. Each paradigm brings its own mathematical world. The separations of \Cref{sec:three-paradigm} are consequences of this fact: the paradigms use different proof techniques because they formalize genuinely different questions.
 
 
 % ================================================================
@@ -427,7 +427,7 @@ The recursion-theoretic character of this chapter---diagonalization proofs, conn
     show that no text-based substitute exists.  (\emph{Hint:} The
     learner can refute ``$\varphi_e$ includes $x$'' from an
     informant presentation of $(x, 0)$, but a text for $L$ never
-    explicitly says ``$x \notin L$''---it merely fails to present
+    explicitly says ``$x \notin L$'', it merely fails to present
     $x$, which is indistinguishable from delay.)
   \end{enumerate}
 
@@ -453,7 +453,7 @@ The recursion-theoretic character of this chapter---diagonalization proofs, conn
   \item The result of~(b) is sharper than Gold's theorem applied
     to ``all finite + one infinite'': the single infinite language
     is itself very structured (co-finite).  Explain why the structure
-    of the infinite language does not help---what makes the
+    of the infinite language does not help, what makes the
     diagonalization work is not the complexity of $L_\infty$ but
     the learner's inability to distinguish ``finite set, done
     growing'' from ``co-finite set, still growing.''
