@@ -272,8 +272,9 @@ theorem empiricalRademacherComplexity_le_one (X : Type u)
 /-- Population Rademacher complexity
 `Rad_m(C, D) = E_{xs ∼ D^m}[ Ê_Rad(C, xs) ]`,
 obtained by integrating the empirical complexity over samples drawn from the
-distribution. Distribution-dependent and the principal data-independent term in
-`rademacher_gen_bound`. -/
+distribution. Distribution-dependent. Used in `fundamental_rademacher`
+(`Theorem/PAC.lean`) via its uniform vanishing characterisation of PAC
+learnability. -/
 noncomputable def RademacherComplexity (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (D : MeasureTheory.Measure X) (m : ℕ) : ℝ :=
   ∫ xs : Fin m → X,
@@ -344,23 +345,6 @@ theorem rademacherComplexity_nonneg (X : Type u) [MeasurableSpace X]
   apply MeasureTheory.integral_nonneg
   intro xs
   exact empRad_nonneg C (Nat.pos_iff_ne_zero.mp hm) xs
-
-/-- Placeholder scaffold for the Rademacher generalisation bound. For every positive
-`m` and positive slack `ε`, the real number `2 · Rad_m(C, D) + ε` exists and is
-nonnegative. This is the *quantity* that will upper-bound the gap between true and
-empirical risk in the full bound, not the bound itself; the full inequality
-`L(c) ≤ L̂_S(c) + 2 · Rad_m(C, D) + ε` with high probability is slated to be proved
-upstream of this file and is not formalised here. Kept in the API at this stub level so
-that downstream theorems can refer to the bound term by name once the statistical
-inequality is available. -/
-theorem rademacher_gen_bound (X : Type u) [MeasurableSpace X]
-    (C : ConceptClass X Bool) (D : MeasureTheory.Measure X)
-    [MeasureTheory.IsProbabilityMeasure D]
-    (m : ℕ) (hm : 0 < m) (c : Concept X Bool) (hcC : c ∈ C)
-    (ε : ℝ) (hε : 0 < ε) :
-    ∃ (bound : ℝ), bound = 2 * RademacherComplexity X C D m + ε ∧ bound ≥ 0 := by
-  refine ⟨2 * RademacherComplexity X C D m + ε, rfl, ?_⟩
-  linarith [rademacherComplexity_nonneg X C D m hm]
 
 /-- When h agrees with σ on all sample points, correlation is exactly 1. -/
 private theorem corr_eq_one_of_agree {X : Type u} {m : ℕ} (hm : 0 < m)
