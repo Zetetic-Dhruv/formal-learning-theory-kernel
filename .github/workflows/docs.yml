@@ -152,6 +152,7 @@ jobs:
             # Three xelatex passes + one bibtex pass to resolve references,
             # cross-references, and the 172-entry bibliography.
             xelatex -output-directory=../print -interaction=nonstopmode print.tex
+            cp references.bib ../print/
             (cd ../print && bibtex print)
             xelatex -output-directory=../print -interaction=nonstopmode print.tex
             xelatex -output-directory=../print -interaction=nonstopmode print.tex

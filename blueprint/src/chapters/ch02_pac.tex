@@ -304,8 +304,9 @@ If $\VC(\mathcal{H}) = d$, then for all $m \geq d$,
 \end{lemma}
 
 The proof of the Sauer--Shelah lemma is combinatorial, proceeding by induction
-on $m + d$.  It is given in full in \Cref{ch:dimensions}
-(\Cref{lem:sauer-shelah-proof}).  For the present chapter, we take it as given
+on $m + d$.  It is given in full in the companion textbook's chapter on
+Combinatorial Dimensions.\footnote{See \url{https://github.com/Zetetic-Dhruv/formal-learning-theory-book}, Chapter~10.}
+For the present chapter, we take it as given
 and use only the consequence: if $d = \VC(\mathcal{H}) < \infty$, then
 $\growth_\mathcal{H}(m) = O(m^d)$, polynomial, not exponential.
 
@@ -569,7 +570,7 @@ The following are equivalent:
 \begin{remark}[On the numbering]
 \label{rmk:numbering}
 Condition~\ref{F:online} is an implication, not an equivalence: finite
-Littlestone dimension implies finite VC dimension (\Cref{ch:dimensions}), but
+Littlestone dimension implies finite VC dimension (see the textbook's Chapter~10, Combinatorial Dimensions), but
 the converse fails, thresholds on $\R$ have $\VC = 1$ but $\Ldim = \infty$
 (\Cref{ex:concept-classes}).  We include it to mark the boundary of the
 equivalence web: this is where the PAC--online separation begins.
@@ -665,7 +666,7 @@ The remaining directions:
 
 \item $\ref{F:online} \Rightarrow \ref{F:finvc}$: If $\Ldim(\mathcal{H}) < \infty$,
   then $\VC(\mathcal{H}) \leq \Ldim(\mathcal{H}) < \infty$, since any shattered
-  set gives a complete binary mistake tree of the same depth (\Cref{ch:dimensions}).
+  set gives a complete binary mistake tree of the same depth (textbook Chapter~10, Combinatorial Dimensions).
 \end{itemize}
 
 
@@ -856,7 +857,7 @@ statement, showing $m = \Omega(d/\varepsilon)$.
 \subsection{The No-Free-Lunch Theorem (Full Proof)}
 \label{sec:nfl-full}
 
-\Cref{thm:nfl} in \Cref{ch:objects} gave the statement and a brief argument.
+The companion textbook's Chapter~1 (The Objects of Learning)\footnote{\url{https://github.com/Zetetic-Dhruv/formal-learning-theory-book}, Chapter~1.} gave the statement and a brief argument.
 Here we give the full proof with the averaging argument over all target
 functions.
 
@@ -937,7 +938,8 @@ it says nothing about the computational one.
 
 \begin{computational}
 The gap between information and computation is the subject of
-\Cref{ch:computational}.  The key examples:
+the textbook's Chapter~16 (Computational Hardness).\footnote{\url{https://github.com/Zetetic-Dhruv/formal-learning-theory-book}, Chapter~16.}
+The key examples:
 \begin{itemize}[nosep]
 \item \textbf{Properly learning DNF formulas} is computationally hard under
   cryptographic assumptions, even though DNF has polynomial VC dimension.
@@ -996,7 +998,7 @@ Four structural lessons emerge:
 \item \textbf{Information $\neq$ computation.}  The Fundamental Theorem
   characterizes when learning is \emph{possible}; the Kearns--Valiant barrier
   shows this does not determine when learning is \emph{efficient}.  The
-  computational landscape is the subject of \Cref{ch:computational}.
+  computational landscape is the subject of the textbook's Chapter~16 (Computational Hardness).
 \end{enumerate}
 
 \begin{historical}
