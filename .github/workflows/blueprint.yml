@@ -115,18 +115,12 @@ jobs:
           echo "$HOME/blueprint-venv/bin" >> "$GITHUB_PATH"
 
       - name: Build blueprint web HTML
+        env:
+          TEXINPUTS: ".:./blueprint/src/:./blueprint/src/chapters/:./blueprint/src/preamble/:"
         run: |
-          # leanblueprint must run from the project root. The blueprint
-          # package option project=../../ in src/web.tex tells it where
-          # to find blueprint/src/. Running from blueprint/ or
-          # blueprint/src/ breaks plastex's \input path resolution.
           leanblueprint web
-          echo "=== lean_decls location ==="
-          find . -name 'lean_decls' -not -path './.lake/*' -not -path './.git/*' 2>/dev/null
-          echo "=== blueprint/web/ ==="
-          ls blueprint/web/ 2>/dev/null | head -10 || echo "not at blueprint/web/"
-          echo "=== blueprint/src/web/ ==="
-          ls blueprint/src/../web/ 2>/dev/null | head -10 || echo "not at blueprint/src/../web/"
+          echo "=== chapter count in blueprint/web/ ==="
+          ls blueprint/web/sect*.html 2>/dev/null | wc -l || echo "0"
 
       # ---------------------------------------------------------------
       # checkdecls (hard gate)
