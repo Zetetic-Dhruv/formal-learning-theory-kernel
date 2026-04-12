@@ -115,8 +115,14 @@ jobs:
           echo "$HOME/blueprint-venv/bin" >> "$GITHUB_PATH"
 
       - name: Build blueprint web HTML
-        working-directory: blueprint
-        run: leanblueprint web
+        working-directory: blueprint/src
+        run: |
+          # Run from src/ so plastex resolves \input{chapters/...} paths
+          # relative to where the .tex files actually live.
+          leanblueprint web
+          # lean_decls is written to CWD; move it to blueprint/ root
+          # where checkdecls expects it.
+          mv lean_decls ../lean_decls 2>/dev/null || true
 
       # ---------------------------------------------------------------
       # checkdecls (hard gate)
