@@ -1,5 +1,10 @@
 % Web master for the Formal Learning Theory Kernel blueprint.
 % Rendered by plastex with the leanblueprint plugin into static HTML.
+%
+% NOTE: plastex does not resolve nested \input (e.g. content.tex
+% dispatching to chapters/*.tex). We bypass content.tex and \input
+% each chapter directly. print.tex still uses content.tex because
+% xelatex handles nested \input correctly.
 
 \documentclass{report}
 
@@ -29,7 +34,17 @@
 
 \begin{document}
 \maketitle
-\input{content}
+
+% Direct chapter inputs (bypassing content.tex dispatcher because
+% plastex does not resolve nested \input calls).
+\input{chapters/ch00_intro}
+\input{chapters/ch01_primitives}
+\input{chapters/ch02_pac}
+\input{chapters/ch03_online}
+\input{chapters/ch04_gold}
+\input{chapters/ch05_separations}
+\input{chapters/ch06_measurability}
+\input{chapters/ch07_closing}
 
 \bibliographystyle{alpha}
 \bibliography{references}
