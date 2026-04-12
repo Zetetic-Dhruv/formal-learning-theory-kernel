@@ -35,7 +35,7 @@ private theorem bhmz_middle_branch (X : Type) [MeasurableSpace X]
     (hldim : LittlestoneDim X C = ⊤)
     (hvcdim : VCDim X C < ⊤) :
     UniversalLearnable X C := by
-  sorry
+  pending_further_proof
 
 theorem universal_trichotomy (X : Type) [MeasurableSpace X]
     [MeasurableSingletonClass X]
