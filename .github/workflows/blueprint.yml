@@ -49,8 +49,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin gh-pages
           git add -A
           git diff --cached --quiet && echo "No changes to deploy" && exit 0
           git commit -m "Deploy blueprint PDF from ${{ github.sha }}"
+          git pull --rebase origin gh-pages
           git push
