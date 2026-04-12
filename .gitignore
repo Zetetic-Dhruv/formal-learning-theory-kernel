@@ -9,3 +9,11 @@ build/
 
 # Private working drafts (integrated into README.md)
 drafts/
+
+# Blueprint planning docs and build artifacts (source at blueprint/src/ stays tracked)
+blueprint/PLAN.md
+blueprint/print/
+blueprint/web/
+
+# Methodology planning docs (not a build input)
+methodology/

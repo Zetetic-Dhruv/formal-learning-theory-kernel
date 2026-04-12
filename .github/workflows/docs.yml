@@ -90,7 +90,7 @@ jobs:
           [[require]]
           name = "checkdecls"
           git = "https://github.com/PatrickMassot/checkdecls.git"
-          rev = "main"
+          rev = "master"
           EOF
           cat docbuild/lakefile.toml
 
