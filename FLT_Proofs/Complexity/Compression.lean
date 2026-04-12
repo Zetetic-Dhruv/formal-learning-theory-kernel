@@ -31,7 +31,7 @@ the bounded set of (kernel, info) pairs.
 ## No Measure Theory
 
 The forward theorem is pure and combinatorial. It uses FinitePMF, Finset,
-and finite games; no MeasureTheory.Measure, IsProbabilityMeasure, Measure.dirac,
+and finite games — no MeasureTheory.Measure, IsProbabilityMeasure, Measure.dirac,
 or MeasurableSpace hypotheses.
 -/
 
@@ -189,7 +189,7 @@ private lemma supportError_eq_boolTestExpectation
 theorem vcdim_finite_imp_proper_finite_support_learner
     (X : Type u) (C : ConceptClass X Bool)
     (hCne : C.Nonempty) (hC : VCDim X C < ⊤) :
-    ∃ L : ProperFiniteSupportLearner X C, True := by
+    ∃ _L : ProperFiniteSupportLearner X C, True := by
   obtain ⟨d, hd⟩ := WithTop.ne_top_iff_exists.mp (ne_of_lt hC)
   obtain ⟨c₀, hc₀⟩ := hCne
   -- ERM learner: pick a consistent hypothesis if realizable, else c₀
@@ -395,7 +395,7 @@ lemma decodeWitnessXCoords_encode_eq
         subst hidx_mem2
         simp only [dif_pos hltCard, Finset.mem_singleton] at hx
         have hrt := congrArg Subtype.val (Equiv.symm_apply_apply (kernel.equivFin) ⟨(x0, c x0), hmk⟩)
-        simp only [Subtype.val] at hrt
+        simp only [] at hrt
         rw [hrt] at hx; simp at hx; rw [hx]; exact hx0W
       · simp only [dif_pos hmk, dif_neg hlt] at hidx_mem2; exact absurd hidx_mem2 (by simp)
     · simp only [dif_neg hmk] at hidx_mem2; exact absurd hidx_mem2 (by simp)
@@ -414,7 +414,7 @@ lemma decodeWitnessXCoords_encode_eq
     refine ⟨⟨(kernel.equivFin ⟨(x, c x), hmk⟩).val, hltK⟩, hidx_in_enc, ?_⟩
     have hltCard : ((kernel.equivFin ⟨(x, c x), hmk⟩ : Fin kernel.card) : ℕ) < kernel.card :=
       (kernel.equivFin ⟨(x, c x), hmk⟩).isLt
-    simp [dif_pos hltCard, Equiv.symm_apply_apply]
+    simp [Equiv.symm_apply_apply]
 
 /-- On the encoded witness support, the decoded label function agrees with the true
 label function `c`, provided every pair in the kernel has the correct second coordinate. -/
@@ -617,7 +617,7 @@ private lemma agreeTests_boolVCDim_le
   exact absurd this (by
     push_neg; exact_mod_cast Nat.lt_succ_of_le le_rfl)
 
-/-! ## Moran-Yehudayoff forward construction: universe-fixed closure helpers -/
+/-! ## Moran-Yehudayoff forward construction — universe-fixed closure helpers -/
 
 /-- Fix the hidden `Info` universe parameter of `CompressionSchemeWithInfo` to `0`.
     This resolves the universe elaboration obstruction: `Fin T → Finset (Fin K)` is
@@ -699,7 +699,7 @@ private lemma majority_vote_eq_of_agree_gt_half
     have hnot_true_majority :
         ¬ 2 * (Finset.univ.filter (fun t => votes t = true)).card > T := by
       intro htrue; omega
-    simp [majority_vote, hnot_true_majority, hy]
+    simp [majority_vote, hnot_true_majority]
 
 /-- The actual final closure helper. Packages the majority-vote construction.
     If decoded hypotheses agree with reference hypotheses on sample points,
@@ -804,10 +804,10 @@ set_option maxHeartbeats 4000000 in
     `hsmall`, `hsub`, `hagree`, `hmajor`. These are the MY wiring. -/
 private theorem moran_yehudayoff_forward_construction
     (X : Type u) (C : ConceptClass X Bool)
-    (hne : C.Nonempty)
+    (_hne : C.Nonempty)
     (L : ProperFiniteSupportLearner X C)
     (hC : VCDim X C < ⊤)
-    (K : ℕ) :
+    (_K : ℕ) :
     ∃ (k : ℕ) (cs : CompressionSchemeWithInfo0 X Bool C), cs.size = k := by
   classical
   haveI : DecidableEq X := Classical.decEq X
@@ -863,7 +863,7 @@ private theorem moran_yehudayoff_forward_construction
           let getWitness : Fin Tvc → Finset X := fun t =>
             let hmem : (reps t).val ∈ hypothesisEnvelope L c Y := (reps t).property
             (Finset.mem_image.mp hmem).choose
-          -- Step 8: Build kernel - union of all witness samples, labeled by c
+          -- Step 8: Build kernel — union of all witness samples, labeled by c
           let kernel : Finset (X × Bool) :=
             Finset.univ.biUnion (fun t =>
               (getWitness t).image (fun x => (x, c x)))
@@ -958,7 +958,7 @@ private theorem moran_yehudayoff_forward_construction
         (1 / 2 : ℝ) := by
     intro m S hreal i
     have hm : 0 < m := Fin.pos i
-    -- Roundtrip: decoded block hyp = raw representative
+    -- Phase 1: Roundtrip — decoded block hyp = raw representative
     -- Key insight: dsimp only [localLet] works on GOALS but NOT hypotheses.
     -- So unfold in the goal FIRST, then intro.
     -- Step A: All pairs in kernel have label c.
@@ -1028,7 +1028,7 @@ private theorem moran_yehudayoff_forward_construction
         simp only [dif_pos hreal, dif_pos hm]
       rw [hinfo_eq]
       exact hrt
-    -- Rewrite sum via if_congr (handles Decidable instance mismatch)
+    -- Phase 2: Rewrite sum via if_congr (handles Decidable instance mismatch)
     have hlabel : (S i).2 = hreal.choose (S i).1 := (hreal.choose_spec.2 i).symm
     have hsum_eq : (∑ t : Fin Tvc,
         if rowHyp S hreal t (S i).1 = (S i).2 then (1 : ℝ) else 0) =
@@ -1038,7 +1038,7 @@ private theorem moran_yehudayoff_forward_construction
       Finset.sum_congr rfl (fun t _ =>
         if_congr (by rw [hround t, hlabel]) rfl rfl)
     rw [hsum_eq]
-    -- MWU + VC-approx chain gives ≥ 13/24 > 1/2
+    -- Phase 3: MWU + VC-approx chain gives ≥ 13/24 > 1/2
     suffices h_ge : (∑ t : Fin Tvc,
         if (mkReps S hreal hm t).val (S i).1 = hreal.choose (S i).1
         then (1 : ℝ) else 0) / ↑Tvc ≥ 13 / 24 by linarith
@@ -1059,7 +1059,7 @@ private theorem moran_yehudayoff_forward_construction
     let hvc_bound := agreeTests_boolVCDim_le C c' Y' HY'
       (fun h hh => hypothesisEnvelope_sub L c' Y' h hh) (le_of_eq hd.symm)
     let vc_result := hVCApprox (agreeTests c' Y' HY') hvc_bound p
-    -- reps = mkReps S hreal hm (definitionally, same pipeline)
+    -- reps = mkReps S hreal hm (definitionally — same pipeline)
     -- hreps: approximation guarantee
     have hreps : ∀ a ∈ agreeTests c' Y' HY',
         |boolTestExpectation p a -
@@ -1150,7 +1150,7 @@ theorem vcdim_finite_imp_compression_with_info
 theorem compress_with_info_injective_on_labelings {X : Type u} {n : ℕ}
     {C : ConceptClass X Bool}
     (cs : CompressionSchemeWithInfo X Bool C)
-    (pts : Fin n → X) (hpts : Function.Injective pts)
+    (pts : Fin n → X) (_hpts : Function.Injective pts)
     (f g : Fin n → Bool)
     (hf_real : ∃ c ∈ C, ∀ i : Fin n, c (pts i) = f i)
     (hg_real : ∃ c ∈ C, ∀ i : Fin n, c (pts i) = g i)
@@ -1318,14 +1318,6 @@ theorem compression_with_info_imp_vcdim_finite
 
 /-! ## Biconditional -/
 
-/-- **Full VC ↔ compression equivalence with side information** (Moran and Yehudayoff
-2020). A concept class has finite VC dimension iff it admits a finite sample
-compression scheme in which the compressed representation may carry a fixed-size piece
-of side information. Combines `vcdim_finite_imp_compression_with_info` (the hard
-direction, formalized via approximate minimax / multiplicative weights rather than
-Sion's exact minimax for constructivity) and `compression_with_info_imp_vcdim_finite`
-(the pigeonhole counting argument). The fundamental theorem of statistical learning
-closes on this equivalence. -/
 theorem fundamental_vc_compression_with_info
     (X : Type u) (C : ConceptClass X Bool) :
     (VCDim X C < ⊤) ↔

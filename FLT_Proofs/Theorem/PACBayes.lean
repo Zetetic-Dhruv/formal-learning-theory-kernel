@@ -34,7 +34,7 @@ universe u
 open MeasureTheory Finset
 
 -- ============================================================================
--- Definitions: PAC-Bayes quantities (FinitePMF, klDiv, etc. in PureMath.KLDivergence)
+-- Definitions: PAC-Bayes quantities (FinitePMF, klDiv, etc. in MathLib.KLDivergence)
 -- ============================================================================
 
 /-- The Gibbs error: expected true error under posterior Q.
@@ -55,7 +55,7 @@ noncomputable def gibbsEmpError {X : Type u} [MeasurableSpace X]
     EmpiricalError X Bool (hs h) (fun i => (S i, c (S i))) (zeroOneLoss Bool))
 
 -- ============================================================================
--- Per-hypothesis Hoeffding with prior-weighted tail
+-- Phase 2: Per-hypothesis Hoeffding with prior-weighted tail
 -- ============================================================================
 
 /-- Per-hypothesis Hoeffding with prior-weighted tail.
@@ -169,7 +169,7 @@ theorem pac_bayes_per_hypothesis {X : Type u} [MeasurableSpace X]
       _ = ENNReal.ofReal (P.prob h₀ * δ) := by rw [h_exp_eq]
 
 -- ============================================================================
--- Simultaneous bound via union bound
+-- Phase 3: Simultaneous bound via union bound
 -- ============================================================================
 
 /-- For a probability measure, μ(S) ≥ 1 - μ(Sᶜ), and hence μ(S) ≥ 1 - δ if μ(Sᶜ) ≤ δ. -/
@@ -280,7 +280,6 @@ theorem pac_bayes_all_hypotheses {X : Type u} [MeasurableSpace X]
           -- Use the fact that ofReal is additive on nonneg reals
           rw [← ENNReal.ofReal_sum_of_nonneg
             (fun h _ => le_of_lt (mul_pos (hP_pos h) hδ))]
-          congr 1
           rw [← Finset.sum_mul, P.prob_sum_one, one_mul]
   have h_result := prob_ge_one_sub_compl' μ Good (ENNReal.ofReal δ) h_compl_bound
   -- Convert 1 - ENNReal.ofReal δ to ENNReal.ofReal (1 - δ)
@@ -291,7 +290,7 @@ theorem pac_bayes_all_hypotheses {X : Type u} [MeasurableSpace X]
     _ ≤ μ Good := h_result
 
 -- ============================================================================
--- The PAC-Bayes bound (Jensen)
+-- Phase 4: The PAC-Bayes bound (Jensen)
 -- ============================================================================
 
 /-- Jensen's inequality for √ over a finite PMF: ∑ q_h · √(f_h) ≤ √(∑ q_h · f_h).

@@ -6,12 +6,12 @@ Authors: Dhruv Gupta
 import FLT_Proofs.Complexity.BorelAnalyticBridge
 
 /-!
-# Interpolation of Concept Classes: Measurability Descent
+# Interpolation of Concept Classes — Measurability Descent
 
 If C₁ and C₂ are concept classes with Borel parameterizations
 (StandardBorelSpace parameter spaces, jointly measurable evaluation maps),
-their **interpolation** (the class of piecewise concepts agreeing with
-h₁ ∈ C₁ on region A and h₂ ∈ C₂ on Aᶜ) satisfies
+their **interpolation** — the class of piecewise concepts agreeing with
+h₁ ∈ C₁ on region A and h₂ ∈ C₂ on Aᶜ — satisfies
 `WellBehavedVCMeasTarget` (NullMeasurableSet bad events).
 
 The interpolated class may NOT preserve `KrappWirthWellBehaved`
@@ -23,7 +23,7 @@ not stay at the Borel level.
 - `interpClassFixed_wellBehaved`: fixed-region interpolation is well-behaved
 - `interpClassCountable_wellBehaved`: countable-family interpolation is well-behaved
 - `interpClass_wellBehaved_of_routerCode`: conditional interpolation (BorelRouterCode)
-- `not_KrappWirth_of_nonBorel_badEvent`: descent; Borel level can fail
+- `not_KrappWirth_of_nonBorel_badEvent`: descent — Borel level can fail
 
 ## References
 
@@ -104,8 +104,7 @@ theorem interpClassFixed_eq_range_patchEval
     interpClassFixed (Set.range e₁) (Set.range e₂) A =
       Set.range (patchEval e₁ e₂ (routerOfSet A)) := by
   ext h
-  simp only [interpClassFixed, Set.mem_setOf_eq, Set.mem_range, patchEval, routerOfSet,
-    piecewiseConcept]
+  simp only [interpClassFixed, Set.mem_setOf_eq, Set.mem_range]
   constructor
   · rintro ⟨_, ⟨θ₁, rfl⟩, _, ⟨θ₂, rfl⟩, rfl⟩
     refine ⟨(θ₁, θ₂, ()), funext fun x => ?_⟩
@@ -242,7 +241,7 @@ theorem interpClass_wellBehaved_of_routerCode
 
 /-! ## Open Question Definition -/
 
-/-- Whether there exists a BorelRouterCode for X, i.e., whether every measurable
+/-- Whether there exists a BorelRouterCode for X — i.e., whether every measurable
     region can be encoded by a Borel-parameterized router. -/
 def HasFullInterpolationRouterCode (X : Type u) [MeasurableSpace X] : Prop :=
   Nonempty (BorelRouterCode X)

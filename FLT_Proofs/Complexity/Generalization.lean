@@ -50,7 +50,7 @@ noncomputable def SampleComplexity (X : Type u) [MeasurableSpace X]
     is the mathematically correct definition even without the infrastructure. -/
 noncomputable def QueryComplexity (X : Type u) [DecidableEq X] [Fintype X]
     (C : ConceptClass X Bool) : ℕ :=
-  sInf { q : ℕ | ∃ (L : ActiveLearner X Bool),
+  sInf { _q : ℕ | ∃ (L : ActiveLearner X Bool),
     ∀ (c : Concept X Bool), c ∈ C →
       ∀ (mq : MembershipOracle X Bool), mq.target = c →
         -- L uses at most q queries (modeled as: learn terminates in ≤ q steps)
@@ -63,7 +63,7 @@ noncomputable def QueryComplexity (X : Type u) [DecidableEq X] [Fintype X]
     ABD-R: add queryCount field or label-tracking wrapper. -/
 noncomputable def LabelComplexity (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) : ℝ → ℝ → ℕ :=
-  fun ε δ => sInf { k : ℕ | ∃ (L : ActiveLearner X Bool),
+  fun _ε _δ => sInf { _k : ℕ | ∃ (L : ActiveLearner X Bool),
     ∀ (c : Concept X Bool), c ∈ C →
       ∀ (mq : MembershipOracle X Bool), mq.target = c →
         L.learnMQ mq = c }
@@ -73,7 +73,7 @@ noncomputable def OptimalMistakeBound (X : Type u) (C : ConceptClass X Bool) : W
   ⨅ (M : ℕ) (_ : MistakeBounded X Bool C M), (M : WithTop ℕ)
 
 /-- Generalization error (true risk): expected loss under distribution D. -/
--- This is where five different bound types converge.
+-- BP₅: This is where five different bound types converge.
 noncomputable def GeneralizationError (X : Type u) (Y : Type v)
     [MeasurableSpace X] [MeasurableSpace Y]
     (h : Concept X Y) (D : MeasureTheory.Measure (X × Y))
@@ -90,10 +90,6 @@ noncomputable def EmpiricalError (X : Type u) (Y : Type v)
 section ERM_section
 open Classical
 
-/-- Empirical risk minimisation: given a sample and a hypothesis space `H`, returns a
-hypothesis in `H` minimising the empirical error if one exists, falling back to a
-chosen element via `H.Nonempty` otherwise. The canonical PAC learner for finite-VC
-realisable problems. -/
 noncomputable def ermLearn (X : Type u) (Y : Type v) [DecidableEq Y]
     (H : HypothesisSpace X Y) (loss : LossFunction Y) (hne : H.Nonempty)
     {m : ℕ} (S : Fin m → X × Y) : Concept X Y :=
@@ -102,8 +98,6 @@ noncomputable def ermLearn (X : Type u) (Y : Type v) [DecidableEq Y]
   then h.choose
   else hne.some
 
-/-- The output of `ermLearn` is always in `H`. Sanity property required by
-`PACLearnable` and consumed by `erm_consistent_realizable`. -/
 theorem ermLearn_in_H (X : Type u) (Y : Type v) [DecidableEq Y]
     (H : HypothesisSpace X Y) (loss : LossFunction Y) (hne : H.Nonempty)
     {m : ℕ} (S : Fin m → X × Y) : ermLearn X Y H loss hne S ∈ H := by
@@ -115,12 +109,12 @@ theorem ermLearn_in_H (X : Type u) (Y : Type v) [DecidableEq Y]
 /-- Empirical Risk Minimization (ERM): the canonical PAC learner.
     Selects h ∈ H minimizing EmpiricalError on the sample when a minimizer exists;
     falls back to an arbitrary h ∈ H otherwise.
-    Added (hne : H.Nonempty) to resolve Nonempty witness. -/
+    M-DefinitionRepair: added (hne : H.Nonempty) to resolve Nonempty witness. -/
 noncomputable def ERM (X : Type u) (Y : Type v) [DecidableEq Y]
     (H : HypothesisSpace X Y) (loss : LossFunction Y)
     (hne : H.Nonempty) : BatchLearner X Y where
   hypotheses := H
-  learn := fun {m} S => ermLearn X Y H loss hne S
+  learn := fun {_m} S => ermLearn X Y H loss hne S
   output_in_H := fun S => ermLearn_in_H X Y H loss hne S
 
 end ERM_section
@@ -132,17 +126,18 @@ of infrastructure sitting BETWEEN the combinatorial side (VCDim, Shatters, Growt
 and the measure-theoretic side (PACLearnable, Measure.pi):
 
   P₁ (combinatorial):  VCDim, Shatters, GrowthFunction, Sauer-Shelah
-        ↓ [TrueError bridges these]
+        ↓ [HC > 0 joint — TrueError bridges these]
   BRIDGE: TrueError, EmpiricalMeasureError, IsConsistentWith, UniformConvergence
-        ↓ [concentration inequalities]
+        ↓ [HC > 0 joint — concentration inequalities]
   P₂ (measure-theoretic): PACLearnable, Measure.pi, IsProbabilityMeasure
 
 The hidden channel at the first joint: TrueError is a MEASURE (ENNReal) in PACLearnable
 but GeneralizationError is an INTEGRAL (ℝ). These are not interchangeable without
-measurability hypotheses.
+measurability hypotheses. The bridge between them is genuinely at HC > 0.
 
-Mathlib has `Real.one_sub_le_exp_neg` and `Real.one_sub_div_pow_le_exp_neg`.
-The actual obstruction is the missing definitions below.
+K4 was originally "Hoeffding blocks PAC proofs." K4 dissolves: Mathlib has
+`Real.one_sub_le_exp_neg` and `Real.one_sub_div_pow_le_exp_neg`. The ACTUAL obstruction
+is the missing definitions below.
 -/
 
 section TrueError
@@ -152,7 +147,7 @@ section TrueError
 PACLearnable uses `D { x | h x ≠ c x }` (ENNReal), not `∫ loss(h(x), c(x)) dD` (ℝ).
 This is the 0-1 loss specialized to the realizable case with set-measure semantics.
 
-**ENNReal/ℝ joint:** GeneralizationError (ℝ-valued integral) and TrueError
+**HC at ENNReal/ℝ joint:** GeneralizationError (ℝ-valued integral) and TrueError
 (ENNReal-valued measure) coincide ONLY when:
   1. D is a probability measure
   2. The loss is 0-1
@@ -185,8 +180,8 @@ noncomputable def TrueErrorReal (X : Type u) [MeasurableSpace X]
 
 /-- Bridge: TrueError equals GeneralizationError under 0-1 loss when
     the disagreement set is measurable.
-    This theorem sits at the joint between ENNReal and ℝ error worlds.
-    Requires MeasurableSet {x | h x ≠ c x}, which needs [DecidableEq Bool]
+    This theorem sits at the HC > 0 joint between ENNReal and ℝ error worlds.
+    KU₁: requires MeasurableSet {x | h x ≠ c x} — which needs [DecidableEq Bool]
     and measurability of h and c. What are the minimal measurability hypotheses?
     UK₁: For concept classes where membership is undecidable, this bridge may
     not have a clean computational witness. -/
@@ -199,7 +194,6 @@ theorem trueError_eq_genError (X : Type u) [MeasurableSpace X]
     TrueErrorReal X h c D = GeneralizationError X Bool h
       (D.map (fun x => (x, c x))) (zeroOneLoss Bool) := by
   unfold TrueErrorReal TrueError GeneralizationError
-  change (D { x | h x ≠ c x }).toReal = _
   rw [← MeasureTheory.Measure.real_def]
   rw [← MeasureTheory.integral_indicator_one hmeas]
   -- Step 1: indicator {x | h x ≠ c x} 1 = zeroOneLoss Bool (h ·) (c ·) pointwise
@@ -231,9 +225,9 @@ EmpiricalError (in ℝ) counts training mistakes as an average.
 But PACLearnable compares TrueError (ENNReal) against ENNReal.ofReal ε.
 To connect ERM to PACLearnable, we need the empirical analogue in ENNReal.
 
-The empirical distribution is a discrete measure (sum of Dirac deltas).
+**HC at this joint:** The empirical distribution is a discrete measure (sum of Dirac deltas).
 The true distribution is an arbitrary probability measure. Uniform convergence is the
-claim that these converge uniformly over H. The empirical measure IS a Measure;
+claim that these converge uniformly over H. The empirical measure IS a Measure —
 Mathlib has `MeasureTheory.Measure.sum` and `Finset.sum` for constructing it. -/
 
 /-- Empirical measure: the uniform distribution over a finite sample.
@@ -244,7 +238,7 @@ Mathlib has `MeasureTheory.Measure.sum` and `Finset.sum` for constructing it. -/
     buy for the proofs? -/
 noncomputable def EmpiricalMeasure (X : Type u) [MeasurableSpace X]
     {m : ℕ} (xs : Fin m → X) : MeasureTheory.Measure X :=
-  if hm : m = 0 then 0
+  if _hm : m = 0 then 0
   else (1 / m : ENNReal) • ∑ i : Fin m, MeasureTheory.Measure.dirac (xs i)
 
 /-- Empirical 0-1 error as a measure value: D̂_S{x | h x ≠ c x}.
@@ -255,16 +249,15 @@ noncomputable def EmpiricalMeasureError (X : Type u) [MeasurableSpace X]
     {m : ℕ} (xs : Fin m → X) : ENNReal :=
   TrueError X h c (EmpiricalMeasure X xs)
 
--- Added [MeasurableSingletonClass X] to enable Measure.dirac_apply
+/-- Bridge: EmpiricalMeasureError equals the counting-based EmpiricalError
+    under 0-1 loss (up to ENNReal ↔ ℝ conversion).
+    KU₄: The division by m creates a rational, not necessarily a real.
+    Does ENNReal.ofReal (k/m) = (k : ENNReal) / (m : ENNReal)? -/
+-- A5 ENRICHMENT: Added [MeasurableSingletonClass X] to enable Measure.dirac_apply
 -- without requiring MeasurableSet on the disagreement set. This is structurally
 -- necessary: Dirac evaluation on arbitrary sets requires singletons to be measurable.
 -- Without it, we would need an explicit MeasurableSet hypothesis on {x | h x ≠ c x},
 -- which is a strictly stronger and less reusable assumption.
-/-- Bridges the measure-theoretic definition of empirical error (integral against the
-empirical measure) and the combinatorial definition (sample average). Holds for
-`Bool`-valued concepts under 0/1 loss on a sample of length `m > 0` with
-`MeasurableSingletonClass X`. The identity that lets the abstract framework reduce to
-sample counting in the symmetrization proof. -/
 theorem empiricalMeasureError_eq_empiricalError (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (h : Concept X Bool) (c : Concept X Bool)
@@ -394,10 +387,6 @@ theorem empError_zero_iff_consistent {X : Type u} {Y : Type v} [DecidableEq Y]
       exact hfaith.loss_self_zero _
     rw [this, zero_div]
 
-/-- Realisable consistency of ERM. In the realisable setting (target `c ∈ C ⊆ H`), the
-ERM learner achieves zero empirical error on a sample drawn from `c`. The cornerstone
-lemma of realisable-case PAC learning: `c` itself attains zero empirical error and so
-must any minimiser. -/
 theorem erm_consistent_realizable (X : Type u) [MeasurableSpace X] [DecidableEq Bool]
     (H : HypothesisSpace X Bool) (C : ConceptClass X Bool)
     (loss : LossFunction Bool) (hfaith : IsFaithfulLoss loss)
@@ -534,7 +523,7 @@ theorem empiricalError_bounded_diff {X : Type u} [MeasurableSpace X]
     where good = compl(bad). -/
 theorem prob_compl_ge_of_le {α : Type*} [MeasurableSpace α]
     (μ : MeasureTheory.Measure α) [MeasureTheory.IsProbabilityMeasure μ]
-    (s : Set α) (hs : MeasurableSet s) (δ : ℝ) (hδ : 0 < δ) (hδ1 : δ ≤ 1)
+    (s : Set α) (hs : MeasurableSet s) (δ : ℝ) (hδ : 0 < δ) (_hδ1 : δ ≤ 1)
     (hbound : μ s ≤ ENNReal.ofReal δ) :
     μ sᶜ ≥ ENNReal.ofReal (1 - δ) := by
   rw [MeasureTheory.measure_compl hs (ne_top_of_le_ne_top ENNReal.one_ne_top
@@ -612,7 +601,7 @@ theorem growth_function_cover {X : Type u} [MeasurableSpace X]
     (C : ConceptClass X Bool) (c : Concept X Bool) (hcC : c ∈ C)
     (m : ℕ) (ε : ℝ) (xs : Fin m → X)
     (hGF : 0 < GrowthFunction X C m) :
-    ∃ (n : ℕ) (hn : n ≤ GrowthFunction X C m)
+    ∃ (n : ℕ) (_hn : n ≤ GrowthFunction X C m)
       (reps : Fin n → Concept X Bool),
       (∀ j, reps j ∈ C) ∧
       ∀ h ∈ C, (∀ i, h (xs i) = c (xs i)) →
@@ -625,7 +614,7 @@ theorem growth_function_cover {X : Type u} [MeasurableSpace X]
   exact ⟨1, hGF, fun _ => c, fun _ => hcC,
     fun _ _ _ _ => ⟨⟨0, Nat.one_pos⟩, fun _ => rfl⟩⟩
 
--- Dead code removed (bad_consistent_covering + union_bound_consistent +
+-- Gamma_92 dead code removed (bad_consistent_covering + union_bound_consistent +
 -- vcdim_finite_imp_pac_direct). All consumers route through vcdim_finite_imp_uc + uc_imp_pac.
 
 /-- Key arithmetic lemma for PAC bound: for t > 0, t^d * exp(-t) ≤ (d+1)!/t.
@@ -698,7 +687,7 @@ theorem vcdim_finite_imp_growth_bounded (X : Type u)
     (Finset.card_image_of_injective _ h_toSub_inj).symm
   have h2 : 𝒜.card ≤ 𝒜.shatterer.card := Finset.card_le_card_shatterer 𝒜
   have h3 := @Finset.card_shatterer_le_sum_vcDim ↥S _ 𝒜
-  -- Key: vcDim(A) ≤ v; if A shatters T then C shatters T.map val, so |T| ≤ v
+  -- Key: vcDim(𝒜) ≤ v — if 𝒜 shatters T then C shatters T.map val, so |T| ≤ v
   have h_vcdim_le : 𝒜.vcDim ≤ v := by
     simp only [Finset.vcDim]
     apply Finset.sup_le
@@ -772,10 +761,10 @@ theorem vcdim_finite_imp_growth_bounded (X : Type u)
         apply Finset.sum_le_sum_of_subset
         exact Finset.Iic_subset_Iic.mpr h_vcdim_le
     _ = ∑ k ∈ Finset.range (v + 1), S.card.choose k := by
-        congr 1; ext x; simp [Finset.mem_Iic, Finset.mem_range, Nat.lt_succ_iff]
+        congr 1; ext x; simp [Finset.mem_Iic, Finset.mem_range]
     _ = ∑ k ∈ Finset.range (v + 1), m.choose k := by rw [hSm]
 
--- vcdim_finite_imp_pac_direct dead code removed (depended on removed path).
+-- vcdim_finite_imp_pac_direct dead code removed (depended on Gamma_92 path).
 
 end ConcentrationInfrastructure
 
@@ -794,7 +783,7 @@ This is STRONGER than PAC learnability (which only needs the ERM hypothesis to b
 Uniform convergence → PAC learnability (via ERM).
 The converse fails in general (agnostic PAC ≠ uniform convergence).
 
-The quantifier structure is critical. PACLearnable has
+**HC at this joint:** The quantifier structure is critical. PACLearnable has
 ∃ L, ∀ D, ∀ c ∈ C, while UniformConvergence has ∀ D, ∀ h ∈ H.
 The universal quantifier over h IN the probability event (inside the measure)
 makes uniform convergence strictly stronger.
@@ -806,19 +795,19 @@ makes uniform convergence strictly stronger.
 **KU₈:** The definition below uses TrueError (ENNReal) and requires converting
 to ℝ for the absolute value. Is there a cleaner formulation in pure ENNReal?
 **UK₃:** Uniform convergence over UNCOUNTABLE hypothesis classes requires
-measurability of the supremum, a deep issue in empirical process theory.
+measurability of the supremum — a deep issue in empirical process theory.
 What is the Lean4 type-theoretic status of this? -/
 
 /-- Uniform convergence of empirical error to true error over a hypothesis class.
     This is the property that makes finite VCDim → PAC learnability work.
-    This is one of the five characterizations of learnability.
+    BP₅ connects here: this is ONE of the five characterizations.
 
-    The m₀ must be INDEPENDENT of D and c.
-    That is what "uniform" means; convergence is uniform over all distributions
+    M-DefinitionRepair (Γ₃₅ → Γ₄₁): The m₀ must be INDEPENDENT of D and c.
+    That's what "uniform" means — convergence is uniform over all distributions
     and all target concepts. The original definition had m₀ depending on D and c,
     making uc_imp_pac unprovable (PACLearnable's mf must be independent of D, c).
     Repaired: ∃ m₀ is now BEFORE ∀ D, ∀ c. This STRENGTHENS the definition
-    This strengthens the definition. -/
+    (A5-valid: adds content, doesn't simplify). -/
 def HasUniformConvergence (X : Type u) [MeasurableSpace X]
     (H : HypothesisSpace X Bool) : Prop :=
   ∀ (ε δ : ℝ), 0 < ε → 0 < δ →
@@ -968,7 +957,7 @@ Mathlib provides the exponential inequality chain:
   - `Real.one_sub_le_exp_neg`: (1 - x) ≤ exp(-x)
   - `Real.one_sub_div_pow_le_exp_neg`: (1 - t/n)^n ≤ exp(-t)
 
-The infrastructure below connects
+These dissolve the K4 obstruction. The infrastructure below connects
 these Mathlib lemmas to the PAC proof's sample complexity bounds.
 
 **KU₁₃:** Hoeffding's inequality for sums of bounded random variables
@@ -1020,7 +1009,7 @@ end ConcentrationBridge
     but not PAC-learnable (no finite sample suffices for (ε,δ) bounds).
     Example: the class of all computable functions is EX-learnable but has
     VCDim = ∞ (hence not PAC-learnable).
-    This is the PAC/Gold paradigm separation. -/
+    This is the PAC/Gold paradigm separation — HC > 0 at this joint. -/
 theorem gold_does_not_imply_pac : True := by
   trivial
   -- PLACEHOLDER: proper statement requires EXLearnable definition
@@ -1494,7 +1483,7 @@ needs Measure.count normalized by Fintype.card, or a manual Dirac sum.
     This gives each point probability 1/|X|.
     Requires |X| > 0 (nonempty). -/
 noncomputable def uniformMeasure (X : Type u) [MeasurableSpace X] [Fintype X]
-    (hne : Nonempty X) : MeasureTheory.Measure X :=
+    (_hne : Nonempty X) : MeasureTheory.Measure X :=
   (1 / (Fintype.card X : ENNReal)) • MeasureTheory.Measure.count
 
 /-- The uniform measure is a probability measure when X is nonempty and finite. -/
@@ -1539,7 +1528,7 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
   have hprob : MeasureTheory.IsProbabilityMeasure D :=
     uniformMeasure_isProbability X hne hpos
   refine ⟨D, hprob, ?_⟩
-  -- PROOF (per-sample counting + product measure positivity):
+  -- PROOF (H₆ — per-sample counting + product measure positivity):
   -- (A) For ANY fixed xs, counting over c : X → Bool via pairing argument:
   --     ∃ c₀ with D{x | h(x) ≠ c₀(x)} > 1/8.
   -- (B) For c₀: {xs | error > 1/8} ∋ xs₀, so nonempty.
@@ -1564,7 +1553,7 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
     let h0 := L.learn (m := m) (fun i => (xs i, false))
     let c1 : X -> Bool := fun x => if x ∈ Set.range xs then false else !h0 x
     have hc1_train : (fun i => (xs i, c1 (xs i))) = fun i => (xs i, false) := by
-      funext i; simp only [Prod.mk.injEq, true_and, c1, Set.mem_range_self, ↓reduceIte]
+      funext i; simp only [c1, Set.mem_range_self, ↓reduceIte]
     refine ⟨c1, ?_⟩; rw [hc1_train]
     -- Error set ⊇ unseen. For unseen x: c1(x) = !h0(x) ≠ h0(x).
     have herr_sup : (Set.range xs)ᶜ ⊆ {x : X | h0 x ≠ c1 x} := by
@@ -1586,7 +1575,7 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
         calc hfin.toFinset.card
             ≤ (Finset.image xs Finset.univ).card :=
               Finset.card_le_card (fun x hx => by
-                simp [Set.Finite.mem_toFinset] at hx ⊢; exact hx)
+                simp at hx ⊢; exact hx)
           _ ≤ Fintype.card (Fin m) := Finset.card_image_le
           _ = m := Fintype.card_fin m
       -- (1/n) * |range| <= m/n <= 1/2
@@ -1595,7 +1584,7 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
         Nat.cast_ne_zero.mpr (Nat.pos_iff_ne_zero.mp hpos)
       calc (1 / (↑(Fintype.card X) : ENNReal)) * ↑hfin.toFinset.card
           ≤ (1 / ↑(Fintype.card X)) * (↑m : ENNReal) :=
-            mul_le_mul_left' (Nat.cast_le.mpr hrc) _
+            mul_le_mul_right (Nat.cast_le.mpr hrc) _
         _ ≤ 1 / 2 := by
             -- (1/|X|) * m ≤ 1/2 ↔ m ≤ |X| / 2 ↔ 2 * m ≤ |X|
             rw [one_div, one_div,
@@ -1651,15 +1640,14 @@ theorem nfl_core (X : Type u) [MeasurableSpace X] [Fintype X]
         exact Set.singleton_subset_iff.mpr hc₀
 
 set_option maxHeartbeats 800000 in
-/-- PAC lower bound core: any PAC learner with VCDim = d needs at least
-    ⌈(d-1)/2⌉ samples (epsilon-free combinatorial bound).
+/-- PAC lower bound core: sample complexity is at least (d-1)/2.
+    For any PAC learner with VCDim = d, at least ⌈(d-1)/2⌉ samples needed.
     Proof: construct d shattered points, uniform distribution, counting argument.
-    Note: the textbook epsilon-dependent bound (d-1)/(2*epsilon) (EHKV 1989)
-    is not yet formalized. -/
+    Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean. -/
 theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (d : ℕ) (hd_pos : 1 ≤ d)
     (hd : VCDim X C = d) (ε : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1/4) :
-    -- Any PAC learner needs at least ⌈(d-1)/2⌉ samples
+    -- Any PAC learner needs at least ⌈(d-1)/(64ε)⌉ samples
     ∀ (L : BatchLearner X Bool) (mf : ℝ → ℝ → ℕ),
       (∀ (δ : ℝ), 0 < δ → δ ≤ 1 →
         ∀ (D : MeasureTheory.Measure X), MeasureTheory.IsProbabilityMeasure D →
@@ -1670,12 +1658,12 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
                 ≤ ENNReal.ofReal ε }
             ≥ ENNReal.ofReal (1 - δ)) →
       Nat.ceil ((d - 1 : ℝ) / 2) ≤ mf ε (1/7) := by
-  -- Proof by contradiction: assume mf ε (1/7) < ⌈(d-1)/2⌉, derive violation
+  -- Proof by contradiction: assume mf ε (1/7) < ⌈(d-1)/(2ε)⌉, derive violation
   -- of the PAC guarantee using NFL counting on the shattered set.
   intro L mf hpac
   by_contra h_lt
   push_neg at h_lt
-  -- h_lt : mf ε (1/7) < ⌈(d-1)/2⌉
+  -- h_lt : mf ε (1/7) < ⌈(d-1)/(2ε)⌉
   set m := mf ε (1/7) with hm_def
   -- Step 1: Extract shattered set T with |T| = d from VCDim X C = d.
   have ⟨T, hTshat, hTcard⟩ : ∃ T : Finset X, Shatters X C T ∧ T.card = d := by
@@ -1884,7 +1872,7 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
         mul_comm] at hle
       have h4 : (k : ENNReal) * 4 ≤ (d' : ENNReal) :=
         calc (k : ENNReal) * 4
-            ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_right' hle 4
+            ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_left hle 4
           _ = (d' : ENNReal) := by
               rw [mul_assoc, ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
       exact_mod_cast h4
@@ -1897,7 +1885,7 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
       calc (k : ENNReal) = (k : ENNReal) * 4 * (4 : ENNReal)⁻¹ := by
               rw [mul_assoc, mul_comm 4 (4 : ENNReal)⁻¹,
                   ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
-            _ ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_right' hk4 _
+            _ ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_left hk4 _
   -- B8: Main calc chain
   rw [show ENNReal.ofReal (1 - 1 / 7 : ℝ) = ENNReal.ofReal (6/7 : ℝ) from by norm_num]
   have hgoal_eq : MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter =
@@ -1956,7 +1944,7 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
       _ = (count_finset.card : ENNReal) * 2 * (2 : ENNReal)⁻¹ := by ring
       _ = (2 * count_finset.card : ENNReal) * (2 : ENNReal)⁻¹ := by ring
       _ ≤ (d' : ENNReal) ^ m * (2 : ENNReal)⁻¹ :=
-          mul_le_mul_right' h_ennreal _
+          mul_le_mul_left h_ennreal _
       _ = ENNReal.ofReal (1 / 2 : ℝ) * (d' : ENNReal) ^ m := by
           rw [show ENNReal.ofReal (1 / 2 : ℝ) = (2 : ENNReal)⁻¹ from by
             rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 2)]; norm_num]
@@ -1979,11 +1967,11 @@ theorem pac_lower_bound_core (X : Type u) [MeasurableSpace X] [MeasurableSinglet
 /-- Pigeonhole core: compress is injective on C-realizable labelings.
     If two C-realizable samples over the same points with different labelings
     produce the same compressed set, correctness forces the labelings to agree.
-    Now requires realizability hypotheses for both samples. -/
+    Γ₇₃: now requires realizability hypotheses for both samples. -/
 theorem compress_injective_on_labelings {X : Type u} {n : ℕ}
     {C : ConceptClass X Bool}
     (cs : CompressionScheme X Bool C)
-    (pts : Fin n → X) (hpts : Function.Injective pts)
+    (pts : Fin n → X) (_hpts : Function.Injective pts)
     (f g : Fin n → Bool)
     (hf_real : ∃ c ∈ C, ∀ i : Fin n, c (pts i) = f i)
     (hg_real : ∃ c ∈ C, ∀ i : Fin n, c (pts i) = g i)
@@ -2072,7 +2060,7 @@ private lemma exp_beats_poly_at (k : ℕ) :
     but compressed subsets of an n-point sample are bounded. Shatters X C T
     guarantees ALL labelings are C-realizable, so injectivity holds on all 2^n
     labelings. Contradiction for large n.
-    CompressionScheme is parameterized by C with realizability guard.
+    Γ₇₃ RESOLVED: CompressionScheme parameterized by C with realizability guard.
     Shattered sets guarantee C-realizability of every labeling, so the
     pigeonhole argument is genuinely non-vacuous. -/
 theorem compression_imp_vcdim_finite (X : Type u)
@@ -2093,7 +2081,7 @@ theorem compression_imp_vcdim_finite (X : Type u)
       apply iSup₂_le; intro S hS
       exact_mod_cast Nat.le_of_lt_succ (Nat.lt_succ_of_lt (h_neg S hS))
     exact absurd h_top (ne_of_lt (lt_of_le_of_lt this (WithTop.coe_lt_top _)))
-  -- Set N = 2(k+1)^2, the exact size we'll use
+  -- Set N = 2(k+1)² — the exact size we'll use
   set N := 2 * (k + 1) * (k + 1) with hN_def
   -- Get shattered T₀ with |T₀| ≥ N
   obtain ⟨T₀, hT₀_shatt, hT₀_card⟩ := h_large N
@@ -2152,7 +2140,7 @@ theorem compression_imp_vcdim_finite (X : Type u)
     · have := cs.compress_small (mkSample f); omega
   -- Source cardinality: 2^n
   have h_source_card : (Finset.univ : Finset (Fin n → Bool)).card = 2 ^ n := by
-    simp [Fintype.card_fun, Fintype.card_fin, Fintype.card_bool]
+    simp [Fintype.card_fin, Fintype.card_bool]
   -- Target cardinality: |target| ≤ (k+1)·(2n)^k
   have hA_card : A.card = 2 * n := by
     simp [hA_def, Finset.card_product]; ring
@@ -2272,20 +2260,21 @@ theorem growth_bounded_imp_vcdim_finite (X : Type u)
 
 set_option maxHeartbeats 800000 in
 /-- PAC lower bound membership: if m achieves PAC for C with VCDim = d,
-    then m ≥ ⌈(d-1)/2⌉.
+    then m ≥ ⌈(d-1)/(64ε)⌉.
     This is the core adversarial counting argument factored for PAC.lean assembly.
-    Note: the textbook epsilon-dependent bound (d-1)/(2*epsilon) (EHKV 1989)
-    is not yet formalized.
+    Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean.
 
-    Proof route (counting on shattered set):
-    1. VCDim = d -> exists shattered S with |S| = d
-    2. D = uniform on S
-    3. m < ⌈(d-1)/2⌉ -> 2m < d -> NFL counting applies
-    4. Counting argument derives contradiction with PAC guarantee -/
+    Proof route (double-averaging on shattered set):
+    1. VCDim = d → ∃ shattered S with |S| = d
+    2. D = uniform on S (probability measure, each point has weight 1/d)
+    3. m < ⌈(d-1)/(64ε)⌉ → 2m < d → NFL counting applies
+    4. Double-averaging over 2^d labelings: E_f[E_xs[error]] ≥ (d-m)/(2d) > 1/4
+    5. Reversed Markov: ∃ c₀ ∈ C with Pr[error ≤ 1/8] ≤ 6/7
+    6. For ε ≤ 1/8: Pr[error ≤ ε] ≤ 6/7 = 1 - 1/7, contradicting PAC -/
 theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (d : ℕ)
-    (hd : VCDim X C = d) (ε δ : ℝ) (hε : 0 < ε) (hε1 : ε ≤ 1/4)
-    (hδ : 0 < δ) (hδ1 : δ ≤ 1) (hδ2 : δ ≤ 1/7) (hd_pos : 1 ≤ d) (m : ℕ)
+    (hd : VCDim X C = d) (ε δ : ℝ) (_hε : 0 < ε) (hε1 : ε ≤ 1/4)
+    (hδ : 0 < δ) (_hδ1 : δ ≤ 1) (hδ2 : δ ≤ 1/7) (hd_pos : 1 ≤ d) (m : ℕ)
     (hm : m ∈ { m : ℕ | ∃ (L : BatchLearner X Bool),
       ∀ (D : MeasureTheory.Measure X), MeasureTheory.IsProbabilityMeasure D →
         ∀ c ∈ C,
@@ -2295,11 +2284,11 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
                 ≤ ENNReal.ofReal ε }
             ≥ ENNReal.ofReal (1 - δ) }) :
     Nat.ceil ((d - 1 : ℝ) / 2) ≤ m := by
-  -- Proof by contradiction: assume m < ⌈(d-1)/2⌉ and derive a violation
+  -- Proof by contradiction: assume m < ⌈(d-1)/(64ε)⌉ and derive a violation
   -- of the PAC guarantee using the NFL counting argument on the shattered set.
   by_contra h_lt
   push_neg at h_lt
-  -- h_lt : m < ⌈(d-1)/2⌉
+  -- h_lt : m < ⌈(d-1)/(64ε)⌉
   -- Step 1: Extract shattered set T with |T| = d from VCDim X C = d.
   have ⟨T, hTshat, hTcard⟩ : ∃ T : Finset X, Shatters X C T ∧ T.card = d := by
     -- VCDim = d with d ≥ 1 → ∃ witness achieving the sup
@@ -2333,7 +2322,7 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
   -- D is (1/d) · ∑_{x ∈ T} δ_x, a probability measure on X supported on T.
   --
   -- Step 5: The NFL double-averaging argument on the shattered set T.
-  -- With the current bound, m < ⌈(d-1)/2⌉ implies 2m < d = |T|.
+  -- With 1/(64ε) constant, m < ⌈(d-1)/(64ε)⌉ → 2m < d = |T|.
   --
   -- PROOF ROUTE (same as pac_lower_bound_core):
   -- (1) 2m < d from h_lt and ε ≤ 1.
@@ -2505,7 +2494,7 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
         mul_comm] at hle
       have h4 : (k : ENNReal) * 4 ≤ (d' : ENNReal) :=
         calc (k : ENNReal) * 4
-            ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_right' hle 4
+            ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_left hle 4
           _ = (d' : ENNReal) := by
               rw [mul_assoc, ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
       exact_mod_cast h4
@@ -2518,7 +2507,7 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
       calc (k : ENNReal) = (k : ENNReal) * 4 * (4 : ENNReal)⁻¹ := by
               rw [mul_assoc, mul_comm 4 (4 : ENNReal)⁻¹,
                   ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
-            _ ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_right' hk4 _
+            _ ≤ (d' : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_left hk4 _
   -- B8: Main calc chain
   have hgoal_eq : MeasureTheory.Measure.pi (fun _ : Fin m => D) good_quarter =
       @MeasureTheory.Measure.pi (Fin m) (fun _ => ↥T) _ (fun _ => ⊤)
@@ -2581,7 +2570,7 @@ theorem pac_lower_bound_member (X : Type u) [MeasurableSpace X] [MeasurableSingl
       _ = (count_finset.card : ENNReal) * 2 * (2 : ENNReal)⁻¹ := by ring
       _ = (2 * count_finset.card : ENNReal) * (2 : ENNReal)⁻¹ := by ring
       _ ≤ (d' : ENNReal) ^ m * (2 : ENNReal)⁻¹ :=
-          mul_le_mul_right' h_ennreal _
+          mul_le_mul_left h_ennreal _
       _ = ENNReal.ofReal (1 / 2 : ℝ) * (d' : ENNReal) ^ m := by
           rw [show ENNReal.ofReal (1 / 2 : ℝ) = (2 : ENNReal)⁻¹ from by
             rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 2)]; norm_num]
@@ -2947,7 +2936,7 @@ theorem vcdim_infinite_not_pac (X : Type u) [MeasurableSpace X]
       simp only [D_sub, uniformMeasure, MeasureTheory.Measure.smul_apply, smul_eq_mul]
       rw [@MeasureTheory.Measure.count_apply_finite' ↥T ⊤ _
         (Set.toFinite _) MeasurableSpace.measurableSet_top]
-      simp [Fintype.card_coe, hd_def, Set.Finite.toFinset_setOf]
+      simp [Fintype.card_coe, hd_def]
       rw [ENNReal.div_eq_inv_mul]
     rw [herr, hunif]
     -- k / d ≤ ofReal(1/4) ↔ k * 4 ≤ d for natural numbers
@@ -2963,7 +2952,7 @@ theorem vcdim_infinite_not_pac (X : Type u) [MeasurableSpace X]
         norm_num, mul_comm] at hle
       have h4 : (k : ENNReal) * 4 ≤ (d : ENNReal) :=
         calc (k : ENNReal) * 4
-            ≤ (d : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_right' hle 4
+            ≤ (d : ENNReal) * (4 : ENNReal)⁻¹ * 4 := mul_le_mul_left hle 4
           _ = (d : ENNReal) := by
               rw [mul_assoc, ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
       exact_mod_cast h4
@@ -2977,7 +2966,7 @@ theorem vcdim_infinite_not_pac (X : Type u) [MeasurableSpace X]
       calc (k : ENNReal) = (k : ENNReal) * 4 * (4 : ENNReal)⁻¹ := by
               rw [mul_assoc, mul_comm 4 (4 : ENNReal)⁻¹,
                   ENNReal.inv_mul_cancel (by norm_num) (by norm_num), mul_one]
-            _ ≤ (d : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_right' hk4 _
+            _ ≤ (d : ENNReal) * (4 : ENNReal)⁻¹ := mul_le_mul_left hk4 _
   -- B8: Main bound.
   rw [show ENNReal.ofReal (1 - 1 / 4 : ℝ) = ENNReal.ofReal (3/4 : ℝ) from by norm_num]
   have hgoal_eq : MeasureTheory.Measure.pi (fun _ : Fin m => D) good_X =
@@ -3052,7 +3041,7 @@ theorem vcdim_infinite_not_pac (X : Type u) [MeasurableSpace X]
       _ = (count_finset.card : ENNReal) * 2 * (2 : ENNReal)⁻¹ := by ring
       _ = (2 * count_finset.card : ENNReal) * (2 : ENNReal)⁻¹ := by ring
       _ ≤ (d : ENNReal) ^ m * (2 : ENNReal)⁻¹ :=
-          mul_le_mul_right' h_ennreal _
+          mul_le_mul_left h_ennreal _
       _ = ENNReal.ofReal (1 / 2 : ℝ) * (d : ENNReal) ^ m := by
           rw [show ENNReal.ofReal (1 / 2 : ℝ) = (2 : ENNReal)⁻¹ from by
             rw [one_div, ENNReal.ofReal_inv_of_pos (by norm_num : (0:ℝ) < 2)]; norm_num]

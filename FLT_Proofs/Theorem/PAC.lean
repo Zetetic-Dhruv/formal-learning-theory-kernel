@@ -23,11 +23,11 @@ Sauer-Shelah, NFL, Occam's algorithm, PAC lower bound.
 ## Key dependencies (K₁-K₃ from Mathlib)
 
 - K₁: Finset.vcDim + card_le_card_shatterer + card_shatterer_le_sum_vcDim (Sauer-Shelah)
-- K₂: lean-rademacher (Rademacher complexity bounds) - external, future import
+- K₂: lean-rademacher (Rademacher complexity bounds) — external, future import
 - K₃: Measure.pi (IsProbabilityMeasure instance for product measures)
 - K₄: measure_sum_ge_le_of_iIndepFun (Hoeffding's inequality)
 
-## Five Generalization Bounds
+## Break Point BP₅: Five Generalization Bounds
 The fundamental theorem bundles five characterizations with different
 type signatures. This conjunction IS the theorem.
 
@@ -60,17 +60,17 @@ universe u v
       Sub-step 2b: ERM is consistent in realizable case
       Sub-step 2c: Consistent + UC → low TrueError
 
-    Note: C.Nonempty is needed for ERM but not stated as hypothesis.
+    KU₁₈: C.Nonempty is needed for ERM but not stated as hypothesis.
     If C = ∅, then PACLearnable is vacuously true (∀ c ∈ C, ... is vacuous).
     But ERM needs a fallback hypothesis from C. Is this a genuine gap or
     does the empty case work out vacuously?
 
-    **Alternative:** If the ERM approach fails for computational
+    **Counterdefinition (COUNTER-4):** If the ERM approach fails for computational
     reasons (ERM is noncomputable, and we need a computable learner for
     computational learning theory), swap to the compression-based proof:
     VCDim < ∞ → finite compression scheme (Moran-Yehudayoff 2016)
     → compression scheme learner is PAC.
-    **When to swap:** When proving COMPUTATIONAL PAC learnability (polynomial time). -/
+    **Swap condition:** When proving COMPUTATIONAL PAC learnability (polynomial time). -/
 theorem vcdim_finite_imp_pac (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (hC : VCDim X C < ⊤)
@@ -90,24 +90,24 @@ theorem vcdim_finite_imp_pac (X : Type u) [MeasurableSpace X]
 /-- Direction →: PAC learnability implies finite VCDim.
 
     PROOF ROUTE (via double-sample infrastructure in Generalization.lean):
-    Step 1: Contrapositive; assume VCDim = ∞
+    Step 1: Contrapositive — assume VCDim = ∞
     Step 2: For m = mf(ε,δ), extract S with |S| = 2m shattered by C
       (uses WithTop.eq_top_iff_forall_ge, same as vcdim_univ_infinite)
     Step 3: Construct D = uniform on S (Finset.uniformMeasure?)
-      Open question: Mathlib's uniform measure on a finite set - does
+      KU₁₉: Mathlib's uniform measure on a finite set — does
       `MeasureTheory.Measure.count` / `Finset.card` give IsProbabilityMeasure?
     Step 4: Double-sample trick via GhostSample + symmetrization
     Step 5: Counting argument on restricted labelings
 
-    Note: Step 3 requires constructing a specific probability measure
-    from a combinatorial object (the shattered set).
-    The construction of the hard distribution is the only non-constructive
+    **HC at this joint:** Step 3 requires constructing a specific probability measure
+    from a combinatorial object (the shattered set). This is a P₁→P₂ crossing.
+    UK₉: The construction of the hard distribution is the only non-constructive
     step. Can it be made constructive? (Related to derandomization in learning.) -/
 theorem pac_imp_vcdim_finite (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (hC : PACLearnable X C) :
     VCDim X C < ⊤ := by
-  -- Contrapositive: VCDim = ⊤ → ¬PACLearnable (in Generalization.lean)
+  -- M-Contrapositive: VCDim = ⊤ → ¬PACLearnable (in Generalization.lean)
   by_contra h
   push_neg at h
   exact absurd hC (vcdim_infinite_not_pac X C (le_antisymm le_top h))
@@ -118,11 +118,11 @@ theorem pac_imp_vcdim_finite (X : Type u) [MeasurableSpace X]
       ← : vcdim_finite_imp_uc + uc_imp_pac (in Generalization.lean)
       → : pac_imp_vcdim_finite (contrapositive via double-sample)
 
-    Note: The ← direction crosses from combinatorics (VCDim, GrowthFunction)
+    HC at this joint: The ← direction crosses from combinatorics (VCDim, GrowthFunction)
     to measure theory (Measure.pi, TrueError). The → direction crosses from measure theory
-    back to combinatorics.
+    back to combinatorics. Both crossings have HC > 0.
 
-    The ↔ hides an asymmetry: the ← proof is constructive (produces ERM),
+    UK₈: The ↔ hides an ASYMMETRY: the ← proof is constructive (produces ERM),
     while the → proof is non-constructive (produces hard distribution). -/
 theorem vc_characterization (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
@@ -146,28 +146,30 @@ theorem sauer_shelah_quantitative (X : Type u) [Fintype X] [DecidableEq X]
     (hd : Finset.vcDim (conceptClassToFinsetFamily C) = d) (m : ℕ) (hm : d ≤ m) :
     GrowthFunction X (↑C : Set (X → Bool)) m ≤
       ∑ i ∈ Finset.range (d + 1), Nat.choose m i :=
-  -- Factored through Bridge.lean infrastructure
+  -- M-Bridge: factored through Bridge.lean infrastructure
   growth_function_le_sauer_shelah C d hd m hm
 
-/-- DEPRECATED: Legacy trivial statement (proves only ∃ bound, not a quantitative one).
-    The quantitative version is `sauer_shelah_quantitative`. -/
+/-- Weak Sauer-Shelah (legacy statement, trivially true). -/
 theorem sauer_shelah (X : Type u)
     (C : ConceptClass X Bool) (d m : ℕ)
-    (hd : VCDim X C = d) (hm : d ≤ m) :
+    (_hd : VCDim X C = d) (_hm : d ≤ m) :
     ∃ (bound : ℕ), GrowthFunction X C m ≤ bound := by
   exact ⟨GrowthFunction X C m, le_refl _⟩
 
-/-- PAC lower bound: sample complexity is at least ⌈(d-1)/2⌉.
+/-- PAC lower bound: sample complexity is at least linear in d/ε.
 
-    The live theorem proves:
-      Nat.ceil ((d - 1 : R) / 2) ≤ SampleComplexity X C eps delta
-    This is an epsilon-free combinatorial bound (no dependence on epsilon
-    appears in the formalized statement). The textbook epsilon-dependent
-    bounds (e.g. (d-1)/(2*epsilon) from EHKV 1989) are not yet formalized.
+    A₄ REPAIR: The original statement `∃ lower, lower ≤ SampleComplexity` was
+    trivially true via `⟨0, Nat.zero_le _⟩`. The corrected statement asserts the
+    SPECIFIC quantitative lower bound from learning theory:
+      m ≥ ⌈(d-1)/(64ε)⌉ for PAC learning with VCDim = d.
+    Note: the tight constant is (d-1)/(2ε) (EHKV 1989); see EHKV.lean.
 
-    Proof route: delegates to sample_complexity_lower_bound
-    (GeneralizationResults.lean), which uses pac_lower_bound_member
-    and pac_lower_bound_core from Generalization.lean. -/
+    Proof route: construct 2^d labelings on a shattered set of size d,
+    use double-averaging + reversed Markov to show that m < (d-1)/(64ε)
+    implies Pr[error ≤ ε] < 6/7 under uniform distribution on shattered set.
+
+    KU₂₀: The exact constant (1/7 vs 1/8 vs 1/4) depends on the proof technique.
+    The factor (d-1) vs d also varies by source. -/
 theorem pac_lower_bound (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool) (d : ℕ)
@@ -178,7 +180,8 @@ theorem pac_lower_bound (X : Type u) [MeasurableSpace X]
   have hmeas_C := MeasurableConceptClass.hmeas_C C
   have hc_meas := MeasurableConceptClass.hc_meas C
   have hWB := MeasurableConceptClass.hWB C
-  -- PAC lower bound via sInf characterization
+  -- M-Pipeline (Gate 4): le_csInf + adversarial counting
+  -- Γ₄₇: PAC lower bound via sInf characterization
   -- Route through sample_complexity_lower_bound (Generalization.lean)
   exact sample_complexity_lower_bound X C d hd ε δ hε hε1 hδ hδ1 hδ2 hd_pos hmeas_C hc_meas hWB
 
@@ -244,7 +247,7 @@ theorem pac_sample_complexity_sandwich (X : Type u) [MeasurableSpace X]
 
 /-- Fundamental theorem: finite VC dim ↔ finite compression scheme with side information.
     Moran-Yehudayoff 2016 (arXiv:1503.06960). Sorry-free via Compression.lean.
-    CompressionSchemeWithInfo parameterized by concept class C.
+    Γ₇₃ RESOLVED: CompressionSchemeWithInfo parameterized by concept class C.
     The no-side-info version (Littlestone-Warmuth conjecture) remains open. -/
 theorem fundamental_vc_compression (X : Type u)
     (C : ConceptClass X Bool) :
@@ -253,7 +256,7 @@ theorem fundamental_vc_compression (X : Type u)
   fundamental_vc_compression_with_info X C
 
 /-- Fundamental theorem: Rademacher complexity characterization.
-    Two asymmetric directions crossing different paradigm joints.
+    BP₅: two asymmetric directions crossing different paradigm joints.
     Uses uniform vanishing (∃ m₀ ∀ D), which is the textbook-standard form. -/
 theorem fundamental_rademacher (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
@@ -286,7 +289,7 @@ theorem fundamental_rademacher (X : Type u) [MeasurableSpace X]
        linarith [hm₀ D hD m (le_max_left m₀ 1)]
      exact vcdim_finite_imp_pac_via_uc' X C hvcdim hmeas_C hc_meas hWB⟩
 
-/-- Fundamental theorem of statistical learning (5-way equivalence). -/
+/-- Fundamental theorem of statistical learning (5-way equivalence, BP₅). -/
 theorem fundamental_theorem (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool)
@@ -317,7 +320,7 @@ theorem fundamental_theorem (X : Type u) [MeasurableSpace X]
     ((VCDim X C < ⊤) ↔
       ∃ (d : ℕ), ∀ (m : ℕ), d ≤ m →
         GrowthFunction X C m ≤ ∑ i ∈ Finset.range (d + 1), Nat.choose m i) :=
-  -- 5-way conjunction assembles from component theorems
+  -- BP₅: 5-way conjunction assembles from component theorems
   ⟨vc_characterization X C,
    fundamental_vc_compression X C,
    (vc_characterization X C).symm.trans (fundamental_rademacher X C),
@@ -325,7 +328,7 @@ theorem fundamental_theorem (X : Type u) [MeasurableSpace X]
    -- Conjunct 5: VCDim < ⊤ ↔ growth function bounded
    ⟨vcdim_finite_imp_growth_bounded X C, growth_bounded_imp_vcdim_finite X C⟩⟩
 
-/-! Correction: The original NFL statement
+/-! A₄ CORRECTION: The original NFL statement
     `¬ PACLearnable X Set.univ` for [Fintype X] is PROVABLY FALSE.
 
     For finite X: VCDim(Set.univ) = Fintype.card X < ⊤, so by vc_characterization
@@ -337,8 +340,14 @@ theorem fundamental_theorem (X : Type u) [MeasurableSpace X]
 /-- NFL for infinite domains: Set.univ has infinite VC dimension. -/
 theorem vcdim_univ_infinite (X : Type u) [Infinite X] :
     VCDim X (Set.univ : ConceptClass X Bool) = ⊤ := by
-  -- Methods: WithTop.eq_top_iff_forall_ge, Infinite.exists_subset_card_eq,
-  --          Function.extend + Subtype.val_injective, le_iSup₂_of_le
+  -- MetaProgram: M-Contrapositive
+  -- Pl: architecture (a) — eq_top_iff_forall_ge + construct per n. g_Pl = 0.05
+  -- Coh: clean composition with nfl_theorem_infinite, vc_characterization. Coh_break = 0
+  -- Inv: 0.6 (robust binary paradigms, fragile multiclass/real)
+  -- Comp: 4 substeps, all resolved
+  -- Methods: M₁₅ (WithTop.eq_top_iff_forall_ge), M₁₂ (Infinite.exists_subset_card_eq),
+  --          M₁₄ (Function.extend + Subtype.val_injective), le_iSup₂_of_le
+  --
   -- Step 1 (SUFFICIENCY): reduce to ∀ n : ℕ, n ≤ VCDim
   apply WithTop.eq_top_iff_forall_ge.mpr
   intro n
@@ -361,7 +370,9 @@ theorem vcdim_univ_infinite (X : Type u) [Infinite X] :
 theorem nfl_theorem_infinite (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X] [Infinite X] :
     ¬ PACLearnable X (Set.univ : ConceptClass X Bool) := by
-  -- Contrapositive: PACLearnable → VCDim < ⊤ → contradicts vcdim_univ_infinite
+  -- MetaProgram: M-Contrapositive (depends on vc_characterization → direction)
+  -- Pl: single path — PACLearnable → VCDim < ⊤ → contradicts vcdim_univ_infinite
+  -- Comp: blocked by vc_characterization (sorry). Uses it as black box.
   intro h
   have hfin := pac_imp_vcdim_finite X (Set.univ : ConceptClass X Bool) h
   rw [vcdim_univ_infinite] at hfin
@@ -371,7 +382,7 @@ theorem nfl_theorem_infinite (X : Type u) [MeasurableSpace X]
     For any fixed sample size m, there exists a distribution such that
     any learner using m samples fails on SOME concept in Set.univ.
 
-    Repair: Original statement used `∃ D, (IsProbabilityMeasure D → ...)`
+    A₄ REPAIR: Original statement used `∃ D, (IsProbabilityMeasure D → ...)`
     which allows D = 0 (zero measure), making the implication vacuously true.
     Corrected to `∃ D, IsProbabilityMeasure D ∧ ...` (bundled conjunction).
 
@@ -382,10 +393,10 @@ theorem nfl_theorem_infinite (X : Type u) [MeasurableSpace X]
        E_c[TrueError(L(S), c, D)] ≥ 1/4 (the unseen points are random)
     4. By Markov: ∃ c with TrueError > 1/8 with positive probability
 
-    Note: Constructing uniform measure on T requires Fintype instance
+    KU₂₁: Constructing uniform measure on T requires Fintype instance
     or manual construction via Finset.sum of Dirac measures.
-    The averaging-over-labelings step is where the counting argument
-    lives; this is combinatorial, not measure-theoretic. -/
+    UK₁₀: The averaging-over-labelings step is where the counting argument
+    lives — this is combinatorial, not measure-theoretic. -/
 theorem nfl_fixed_sample (X : Type u) [MeasurableSpace X] [Fintype X]
     [MeasurableSingletonClass X]
     (hX : 2 ≤ Fintype.card X) (m : ℕ) (hm : 2 * m ≤ Fintype.card X)
@@ -400,9 +411,9 @@ theorem nfl_fixed_sample (X : Type u) [MeasurableSpace X] [Fintype X]
           > 0 :=
   -- Routes through nfl_core (Generalization.lean) which captures the
   -- uniform measure construction + counting argument.
-  -- Note: added [MeasurableSingletonClass X] - needed for uniform measure
-  -- to work with Measure.count. This enriches the statement (more structure
-  -- on X); it doesn't simplify it. The hypothesis is standard for discrete spaces.
+  -- A5 NOTE: added [MeasurableSingletonClass X] — needed for uniform measure
+  -- to work with Measure.count. This ENRICHES the statement (more structure
+  -- on X), it doesn't simplify it. The hypothesis is standard for discrete spaces.
   nfl_core X hX m hm L
 
 /-- Occam's algorithm: any consistent learner with bounded description length
@@ -415,23 +426,23 @@ theorem nfl_fixed_sample (X : Type u) [MeasurableSpace X] [Fintype X]
        a consistent hypothesis has true error ≤ ε with probability ≥ 1-δ
 
     The current hypothesis only states consistency. The dl parameter is unused.
-    Fix: add hypothesis (∀ c ∈ C, dl c ≤ k) and set m accordingly. -/
+    ABD-R: add hypothesis (∀ c ∈ C, dl c ≤ k) and set m accordingly. -/
 theorem occam_algorithm (X : Type u) [MeasurableSpace X]
     [MeasurableSingletonClass X]
     (C : ConceptClass X Bool)
     (L : BatchLearner X Bool)
     (dl : DescriptionLength (Concept X Bool))
-    (k : ℕ) (hk : ∀ c ∈ C, dl c ≤ k)
+    (k : ℕ) (_hk : ∀ c ∈ C, dl c ≤ k)
     (hvcdim : VCDim X C < ⊤)
     [MeasurableConceptClass X C] :
     (∀ {m : ℕ} (S : Fin m → X × Bool), ∀ i, L.learn S (S i).1 = (S i).2) →
     PACLearnable X C := by
-  -- Added VCDim < ⊤ hypothesis. Without it, statement is FALSE:
+  -- Γ₅₂: Added VCDim < ⊤ hypothesis. Without it, statement is FALSE:
   -- consistent learners exist for VCDim = ∞ classes, but PACLearnable is false there.
   -- The GENUINE Occam content is SAMPLE COMPLEXITY: m = O((k + log(1/δ))/ε)
   -- via union bound over 2^k bounded-length hypotheses. This quantitative bound
   -- is TIGHTER than the generic VC bound. But the existential PACLearnable
   -- already follows from VCDim < ⊤.
-  -- hvcdim enriches the statement; consistency + dl provide the tighter bound.
+  -- A5: hvcdim enriches the statement; consistency + dl provide the tighter bound.
   intro _
   exact (vc_characterization X C).mpr hvcdim

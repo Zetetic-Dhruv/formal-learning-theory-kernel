@@ -26,7 +26,7 @@ universe u v
     the current target is targets(t), and the learner must eventually
     output a hypothesis matching the current target before it drifts again. -/
 def EXUnderDrift (X : Type u) (C : ConceptClass X Bool)
-    (driftRate : ℝ) : Prop :=
+    (_driftRate : ℝ) : Prop :=
   ∃ (L : GoldLearner X Bool),
     ∀ (targets : ℕ → Concept X Bool),
       (∀ t, targets t ∈ C) →
@@ -44,7 +44,7 @@ def EXUnderDrift (X : Type u) (C : ConceptClass X Bool)
     The rate function converges to 0, and for every m, with probability ≥ 2/3
     over D^m, the learner's error is at most rate(m).
 
-    Uses the concrete product measure Measure.pi rather than an existential Dm. -/
+    Γ₄₈ fix: changed from existential Dm to Measure.pi (CNA₁₁ definition repair). -/
 def UniversalLearnable (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) : Prop :=
   ∃ (L : BatchLearner X Bool) (rate : ℕ → ℝ),
@@ -123,7 +123,7 @@ def PACBayesBound (X : Type u) (Y : Type v)
 /-- Information-theoretic bound: generalization bounds based on mutual information. -/
 def InformationTheoreticBound (X : Type u) (Y : Type v)
     [MeasurableSpace X] [MeasurableSpace Y]
-    (L : BatchLearner X Y) (S : IIDSample X Y) : Prop :=
+    (_L : BatchLearner X Y) (S : IIDSample X Y) : Prop :=
   -- Generalization gap is bounded by the mutual information I(S; L(S))
   -- between the sample and the hypothesis output:
   -- |E[err_D(L(S))] - E[emp_err_S(L(S))]| ≤ √(2 · I(S; L(S)) / m)

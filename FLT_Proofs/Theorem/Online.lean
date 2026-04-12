@@ -164,7 +164,7 @@ private theorem exists_shattered_of_ldim_ge {X : Type} {C : ConceptClass X Bool}
 /-- When Ldim(V) = 0 (↑↑0), all concepts in V agree on every point.
     Key lemma for M-VersionSpaceCollapse. -/
 private theorem ldim_zero_all_agree {X : Type} {V : ConceptClass X Bool}
-    (hd : LittlestoneDim X V = ↑(↑0 : WithTop ℕ)) (hne : V.Nonempty)
+    (hd : LittlestoneDim X V = ↑(↑0 : WithTop ℕ)) (_hne : V.Nonempty)
     (x : X) (c₁ c₂ : X → Bool) (hc₁ : c₁ ∈ V) (hc₂ : c₂ ∈ V) :
     c₁ x = c₂ x := by
   by_contra hdis

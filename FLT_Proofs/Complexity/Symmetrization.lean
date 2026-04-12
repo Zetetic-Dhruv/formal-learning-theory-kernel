@@ -47,7 +47,7 @@ universe u v
 
 open MeasureTheory ENNReal
 
-/-! ## Helper Definitions (DoubleSampleMeasure, ValidSplit, etc. in PureMath.Exchangeability) -/
+/-! ## Helper Definitions (DoubleSampleMeasure, ValidSplit, etc. in MathLib.Exchangeability) -/
 
 /-! ## T1: One-sided Hoeffding Inequality -/
 
@@ -93,14 +93,14 @@ open MeasureTheory ENNReal
 
     **CAST ISSUES to watch:**
     - `m : ℕ` needs cast to `ℝ` in the exponent: `(m : ℝ)`
-    - `EmpiricalError` returns `ℝ`, `TrueErrorReal` returns `ℝ`; no ENNReal gap
+    - `EmpiricalError` returns `ℝ`, `TrueErrorReal` returns `ℝ`, good — no ENNReal gap
     - The measure value is `ENNReal`, the bound `exp(-2mt²)` is `ℝ≥0∞` via `ENNReal.ofReal`
 
     **References:** SSBD Lemma B.3, Hoeffding (1963) -/
 theorem hoeffding_one_sided {X : Type u} [MeasurableSpace X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (h c : Concept X Bool) (m : ℕ) (hm : 0 < m)
-    (t : ℝ) (ht : 0 < t) (ht1 : t ≤ 1)
+    (t : ℝ) (ht : 0 < t) (_ht1 : t ≤ 1)
     (hmeas : MeasurableSet {x | h x ≠ c x}) :
     MeasureTheory.Measure.pi (fun _ : Fin m => D)
       {xs : Fin m → X | EmpiricalError X Bool h (fun i => (xs i, c (xs i)))
@@ -276,7 +276,7 @@ theorem hoeffding_one_sided {X : Type u} [MeasurableSpace X]
           simp only [hind_def, zeroOneLoss]
           have hmeas_eq : MeasurableSet {a : X | h a = c a} := by
             have : {a : X | h a = c a} = {a : X | h a ≠ c a}ᶜ := by
-              ext x; simp [not_not]
+              ext x; simp
             rw [this]; exact hmeas.compl
           exact Measurable.ite hmeas_eq measurable_const measurable_const
         -- Step B: AEMeasurability of g
@@ -302,7 +302,7 @@ theorem hoeffding_one_sided {X : Type u} [MeasurableSpace X]
             · simp [hx]
             · simp [hx]
           rw [h_ite_eq, integral_indicator_one hmeas]
-          simp only [hp_def, TrueErrorReal, TrueError, Measure.real]
+          simp only [Measure.real]
         have h_int_g : ∫ x, g x ∂D = 0 := by
           simp only [hg_def]
           rw [integral_sub (integrable_const p)
@@ -533,18 +533,17 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
   suffices h_half : (1 : ℝ≥0∞) / 2 * μ A ≤ (μ.prod μ) B by
     have h2 : μ A ≤ 2 * ((1 : ℝ≥0∞) / 2 * μ A) := by
       rw [← mul_assoc, show (2 : ℝ≥0∞) * (1 / 2) = 1 from by
-        simp [ENNReal.div_eq_inv_mul, ← mul_assoc,
-          ENNReal.mul_inv_cancel (by norm_num : (2 : ℝ≥0∞) ≠ 0)
+        simp [ENNReal.mul_inv_cancel (by norm_num : (2 : ℝ≥0∞) ≠ 0)
             (by exact ENNReal.ofNat_ne_top)]]
       simp
-    exact h2.trans (mul_le_mul_left' h_half 2)
+    exact h2.trans (mul_le_mul_right h_half 2)
   -- Step 1: Use toMeasurable on B to get a measurable superset
   set B' := MeasureTheory.toMeasurable (μ.prod μ) B with hB'_def
   have hB'_meas : MeasurableSet B' := MeasureTheory.measurableSet_toMeasurable _ _
   -- Step 2: The slice function f(xs) = μ(Prod.mk xs ⁻¹' B') is measurable
   set f : (Fin m → X) → ℝ≥0∞ := fun xs => μ (Prod.mk xs ⁻¹' B') with hf_def
   have hf_meas : Measurable f := measurable_measure_prodMk_left hB'_meas
-  -- Step 3: Conditional bound; for xs ∈ A, f(xs) ≥ 1/2
+  -- Step 3: Conditional bound — for xs ∈ A, f(xs) ≥ 1/2
   -- This is the heart: for xs in the bad event, the ghost sample witnesses
   -- the double event with probability ≥ 1/2.
   have h_cond : ∀ xs ∈ A, (1 : ℝ≥0∞) / 2 ≤ f xs := by
@@ -691,13 +690,13 @@ theorem symmetrization_step {X : Type u} [MeasurableSpace X]
   -- Step 6: Chain the inequalities
   calc (1 : ℝ≥0∞) / 2 * μ A
       ≤ (1 : ℝ≥0∞) / 2 * μ {xs | (1 : ℝ≥0∞) / 2 ≤ f xs} := by
-        apply mul_le_mul_left'
+        apply mul_le_mul_right
         exact MeasureTheory.measure_mono h_cond
     _ ≤ ∫⁻ xs, f xs ∂μ := h_markov
     _ = (μ.prod μ) B' := h_prod.symm
     _ = (μ.prod μ) B := MeasureTheory.measure_toMeasurable B
 
-/-! ## T3: Double Sample Pattern Bound (Standard Exchangeability Approach) -/
+/-! ## T3: Double Sample Pattern Bound (Approach A — Standard Exchangeability) -/
 
 /-- Per-hypothesis Hoeffding on the double sample: for a FIXED hypothesis h,
     the probability that EmpErr(h,S') - EmpErr(h,S) ≥ ε/2 under D^m ⊗ D^m
@@ -842,10 +841,10 @@ theorem per_hypothesis_gap_bound {X : Type u} [MeasurableSpace X]
             intro a
             simp only [hg_def]
             rw [MeasureTheory.integral_sub h_ind_int (integrable_const _)]
-            simp [MeasureTheory.integral_const, MeasureTheory.IsProbabilityMeasure.measure_univ]
+            simp [MeasureTheory.integral_const]
           simp_rw [h_inner]
           rw [MeasureTheory.integral_sub (integrable_const _) h_ind_int]
-          simp [MeasureTheory.integral_const, MeasureTheory.IsProbabilityMeasure.measure_univ]
+          simp [MeasureTheory.integral_const]
         -- Step 4: HasSubgaussianMGF for g under ν
         have h_g_subG : ProbabilityTheory.HasSubgaussianMGF g ((‖(1:ℝ) - (-1:ℝ)‖₊ / 2) ^ 2) ν :=
           ProbabilityTheory.hasSubgaussianMGF_of_mem_Icc_of_integral_eq_zero
@@ -903,7 +902,7 @@ theorem restriction_pattern_count {X : Type u} [MeasurableSpace X] [Infinite X]
     Set.ncard {p : Fin n → Bool | ∃ h ∈ C, ∀ i, p i = decide (h (z i) ≠ c (z i))} ≤
       GrowthFunction X C n := by
   classical
-  -- XOR bijection showing |P| = |R|
+  -- Phase 1: XOR bijection showing |P| = |R|
   let R : Set (Fin n → Bool) := {f | ∃ h ∈ C, ∀ i, f i = h (z i)}
   let ψ : (Fin n → Bool) → (Fin n → Bool) := fun f i => Bool.xor (f i) (c (z i))
   have hψ_inj : Function.Injective ψ := by
@@ -921,12 +920,12 @@ theorem restriction_pattern_count {X : Type u} [MeasurableSpace X] [Infinite X]
       exact ⟨h, hC, fun i => by simp only [hf i]; cases h (z i) <;> cases c (z i) <;> rfl⟩
   rw [hP_eq, Set.ncard_image_of_injective R hψ_inj]
   -- Now goal: R.ncard ≤ GrowthFunction X C n
-  -- Build witness Finset S ⊇ image(z) with |S| = n
+  -- Phase 2: Build witness Finset S ⊇ image(z) with |S| = n
   let S₀ : Finset X := Finset.univ.image z
   have hS₀_card : S₀.card ≤ n :=
     (Finset.card_image_le).trans (by simp [Fintype.card_fin])
   obtain ⟨S, hS₀_sub, hS_card⟩ := Infinite.exists_superset_card_eq S₀ n hS₀_card
-  -- Show R.ncard ≤ R_S.ncard
+  -- Phase 3: Show R.ncard ≤ R_S.ncard
   have hz_mem : ∀ i : Fin n, z i ∈ S :=
     fun i => hS₀_sub (Finset.mem_image_of_mem z (Finset.mem_univ i))
   let R_S : Set (↥S → Bool) := {g | ∃ h ∈ C, ∀ x : ↥S, g x = h ↑x}
@@ -936,7 +935,7 @@ theorem restriction_pattern_count {X : Type u} [MeasurableSpace X] [Infinite X]
     exact ⟨fun x => h ↑x, ⟨h, hC, fun x => rfl⟩, funext fun i => by simp only [ρ, hf i]⟩
   have hR_le_RS : R.ncard ≤ R_S.ncard :=
     (Set.ncard_le_ncard hR_sub (Set.toFinite _)).trans (Set.ncard_image_le (Set.toFinite R_S))
-  -- Show R_S.ncard ≤ GrowthFunction X C n
+  -- Phase 4: Show R_S.ncard ≤ GrowthFunction X C n
   have hR_S_eq : R_S.ncard =
       ({f : ↥S → Bool | ∃ c_1 ∈ C, ∀ x : ↥S, c_1 ↑x = f x} : Set _).ncard := by
     congr 1; ext f; exact ⟨fun ⟨h, hC, hf⟩ => ⟨h, hC, fun x => (hf x).symm⟩,
@@ -999,7 +998,7 @@ theorem finite_exchangeability_bound
   have hcard_ne_zero : (Fintype.card G : ENNReal) ≠ 0 := by
     exact_mod_cast Fintype.card_ne_zero
   have hcard_ne_top : (Fintype.card G : ENNReal) ≠ ⊤ := ENNReal.natCast_ne_top _
-  exact (ENNReal.mul_le_mul_right hcard_ne_zero hcard_ne_top).mp (by rwa [mul_comm] at hmain)
+  exact (ENNReal.mul_le_mul_iff_left hcard_ne_zero hcard_ne_top).mp (by rwa [mul_comm] at hmain)
 
 /-- A concept class is well-behaved if the ghost gap event is null-measurable.
     This is the minimal regularity assumption for the symmetrization proof. -/
@@ -1014,7 +1013,7 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
        (MeasureTheory.Measure.pi (fun _ : Fin m => D)))
 
 /- The exchangeability + union bound + Hoeffding chain.
-   ORPHANED: contains 2 sorrys (swap-to-signed avg + Tonelli).
+   ORPHANED — contains 2 sorrys (swap→signed avg + Tonelli).
    The critical path now uses `uc_bad_event_le_delta_proved` (below) which
    composes `symmetrization_uc_bound` + `growth_exp_le_delta` via the
    `finite_exchangeability_bound` + NullMeasurableSet architecture.
@@ -1022,25 +1021,17 @@ def WellBehavedVC (X : Type u) [MeasurableSpace X] (C : ConceptClass X Bool) : P
    `symmetrization_uc_bound` (unprimed) call it, and those are called by
    the unprimed `vcdim_finite_imp_uc` in Generalization.lean.
 
-   The 2 sorrys here represent the original attempt to close the exchangeability
-   chain via direct Tonelli interchange. Sorry A (swap-to-signed avg) needed
-   connecting swap_fun to a Rademacher sum. Sorry B (Tonelli) was blocked by
-   MeasurableSet requirements for uncountable C. Resolution:
-   NullMeasurableSet + finite_exchangeability_bound (above). -/
+   γ₁₈ (Session 7 discovery): The 2 sorrys here represent the original
+   attempt to close the exchangeability chain via direct Tonelli interchange.
+   Sorry A (swap→signed avg) needed connecting swap_fun to a Rademacher sum.
+   Sorry B (Tonelli) was blocked by MeasurableSet requirements for uncountable C.
+   Resolution: NullMeasurableSet + finite_exchangeability_bound (above). -/
 
-/-- The exchangeability chain bound for the symmetrization route (the kernel's
-formulation of SSBD Theorem 6.7). The probability of the symmetrization bad event is at
-most `Π_C(2m) · exp(-m ε² / 8)`. The proof threads three ingredients: the ghost-sample
-doubling that converts a true-versus-empirical event into an empirical-versus-empirical
-event, the Rademacher swap that this kernel licenses by `NullMeasurableSet` of the bad
-event (rather than the stronger `MeasurableSet` in the prior literature), and a
-per-sample Hoeffding-style concentration. The core measure-theoretic step of the VC to
-PAC route. -/
 theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (C : ConceptClass X Bool) (c : Concept X Bool)
-    (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : Measurable c)
-    (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε) (hε2 : ε ≤ 2) (hC : C.Nonempty)
+    (_hmeas_C : ∀ h ∈ C, Measurable h) (_hc_meas : Measurable c)
+    (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε) (_hε2 : ε ≤ 2) (hC : C.Nonempty)
     (hE_nullmeas : MeasureTheory.NullMeasurableSet
       {p : (Fin m → X) × (Fin m → X) | ∃ h ∈ C,
         EmpiricalError X Bool h (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
@@ -1151,7 +1142,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
       by_cases hσi : σ i
       · simp only [swap_fun, hσi, ↓reduceIte]
         exact (measurable_pi_apply i |>.snd).prod (measurable_pi_apply i |>.fst)
-      · simp only [swap_fun, hσi, ↓reduceIte]
+      · simp only [swap_fun, hσi]
         exact measurable_pi_apply i
     let swap_eqv (σ : SignVector m) : MeasurableEquiv (Fin m → X × X) (Fin m → X × X) :=
       { toEquiv := (h_swap_invol σ).toPerm
@@ -1411,7 +1402,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
               congr 1; rw [Real.exp_sub]
           _ = (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
               congr 1; rw [ht₀_def]; field_simp; ring
-      -- Connect swap_fun σ z ∈ S to the signed average condition
+      -- Step A4: Connect swap_fun σ z ∈ S to the signed average condition
       -- For each σ, swap_fun σ z ∈ S iff ∃h ∈ C with gap under swap ≥ ε/2.
       -- The gap under swap = (1/m)∑ sign(σ_i) · a_i(h,z).
       -- Two h's with the same pattern on merged have the same gap.
@@ -1441,7 +1432,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
             (if p (⟨i.val, by omega⟩ : Fin (2 * m)) then (1 : ℝ) else 0))
         have h_ptc_bound : ∀ p : Fin (2 * m) → Bool, ∀ i : Fin m, |patToCoeff p i| ≤ 1 := by
           intro p i; simp only [patToCoeff, abs_neg]
-          split <;> split <;> simp <;> norm_num
+          split <;> split <;> simp
         -- Helper: gap identity for swap under eqv
         -- For any h and σ, the gap EmpErr(.2) - EmpErr(.1) under eqv(swap_fun σ z)
         -- equals (1/m) * ∑ patToCoeff(pattern_h) i * boolToSign(σ i)
@@ -1472,13 +1463,13 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
             simp only [boolToSign, zeroOneLoss]
             rcases Bool.eq_false_or_eq_true (h (z i).2 == c (z i).2) with h2 | h2 <;>
             rcases Bool.eq_false_or_eq_true (h (z i).1 == c (z i).1) with h1 | h1 <;>
-            simp [h1, h2, beq_iff_eq, bne_iff_ne, decide_eq_true_eq, Ne] <;> norm_num
+            simp [Ne]
           · -- σ i = true: swapped, .2 = (z i).1, .1 = (z i).2
             -- boolToSign true = 1
             simp only [boolToSign, Prod.swap, zeroOneLoss]
             rcases Bool.eq_false_or_eq_true (h (z i).2 == c (z i).2) with h2 | h2 <;>
             rcases Bool.eq_false_or_eq_true (h (z i).1 == c (z i).1) with h1 | h1 <;>
-            simp [h1, h2, beq_iff_eq, bne_iff_ne, decide_eq_true_eq, Ne] <;> norm_num
+            simp [Ne]
         -- The main filter ⊆ biUnion over patterns of per-pattern Markov filters
         have h_filter_biUnion :
             Finset.univ.filter (fun σ : SignVector m => swap_fun σ z ∈ S) ⊆
@@ -1584,7 +1575,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
 /-- On the double sample, the probability that any hypothesis has
     EmpErr' - EmpErr ≥ ε/2 is bounded by GF(C,2m) · exp(-mε²/8).
 
-    **Proof strategy (standard exchangeability, 5 steps):**
+    **Proof strategy (Approach A — standard exchangeability, 5 steps):**
 
     1. **EXCHANGEABILITY:** Under D^m ⊗ D^m, the 2m draws z₁,...,z_{2m} are iid from D.
        The joint distribution is invariant under permutations of {1,...,2m}.
@@ -1834,7 +1825,7 @@ theorem double_sample_pattern_bound {X : Type u} [MeasurableSpace X] [Infinite X
 theorem hoeffding_one_sided_upper {X : Type u} [MeasurableSpace X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
     (h c : Concept X Bool) (m : ℕ) (hm : 0 < m)
-    (t : ℝ) (ht : 0 < t) (ht1 : t ≤ 1)
+    (t : ℝ) (ht : 0 < t) (_ht1 : t ≤ 1)
     (hmeas : MeasurableSet {x | h x ≠ c x}) :
     MeasureTheory.Measure.pi (fun _ : Fin m => D)
       {xs : Fin m → X | EmpiricalError X Bool h (fun i => (xs i, c (xs i)))
@@ -1886,7 +1877,7 @@ theorem hoeffding_one_sided_upper {X : Type u} [MeasurableSpace X]
         have h_ind_meas : Measurable indicator := by
           simp only [hind_def, zeroOneLoss]
           have hmeas_eq : MeasurableSet {a : X | h a = c a} := by
-            have : {a : X | h a = c a} = {a : X | h a ≠ c a}ᶜ := by ext x; simp [not_not]
+            have : {a : X | h a = c a} = {a : X | h a ≠ c a}ᶜ := by ext x; simp
             rw [this]; exact hmeas.compl
           exact Measurable.ite hmeas_eq measurable_const measurable_const
         have h_g_meas : Measurable g := h_ind_meas.sub measurable_const
@@ -1899,7 +1890,7 @@ theorem hoeffding_one_sided_upper {X : Type u} [MeasurableSpace X]
             ext x; simp only [Set.indicator, Set.mem_setOf_eq, Pi.one_apply]
             by_cases hx : h x = c x <;> simp [hx]
           rw [h_ite_eq, integral_indicator_one hmeas]
-          simp only [hp_def, TrueErrorReal, TrueError, Measure.real]
+          simp only [Measure.real]
         have h_int_g : ∫ x, g x ∂D = 0 := by
           simp only [hg_def]
           rw [integral_sub
@@ -1985,11 +1976,10 @@ theorem symmetrization_step_lower {X : Type u} [MeasurableSpace X]
   suffices h_half : (1 : ℝ≥0∞) / 2 * μ A ≤ (μ.prod μ) B by
     have h2 : μ A ≤ 2 * ((1 : ℝ≥0∞) / 2 * μ A) := by
       rw [← mul_assoc, show (2 : ℝ≥0∞) * (1 / 2) = 1 from by
-        simp [ENNReal.div_eq_inv_mul, ← mul_assoc,
-          ENNReal.mul_inv_cancel (by norm_num : (2 : ℝ≥0∞) ≠ 0)
+        simp [ENNReal.mul_inv_cancel (by norm_num : (2 : ℝ≥0∞) ≠ 0)
             (by exact ENNReal.ofNat_ne_top)]]
       simp
-    exact h2.trans (mul_le_mul_left' h_half 2)
+    exact h2.trans (mul_le_mul_right h_half 2)
   -- Use toMeasurable
   set B' := MeasureTheory.toMeasurable (μ.prod μ) B with hB'_def
   have hB'_meas : MeasurableSet B' := MeasureTheory.measurableSet_toMeasurable _ _
@@ -2124,7 +2114,7 @@ theorem symmetrization_step_lower {X : Type u} [MeasurableSpace X]
     MeasureTheory.Measure.prod_apply hB'_meas
   calc (1 : ℝ≥0∞) / 2 * μ A
       ≤ (1 : ℝ≥0∞) / 2 * μ {xs | (1 : ℝ≥0∞) / 2 ≤ f xs} := by
-        apply mul_le_mul_left'
+        apply mul_le_mul_right
         exact MeasureTheory.measure_mono h_cond
     _ ≤ ∫⁻ xs, f xs ∂μ := h_markov
     _ = (μ.prod μ) B' := h_prod.symm
@@ -2207,7 +2197,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     have h1 := symmetrization_step D C c hmeas_C hc_meas m hm ε hε hm_large
     have h2 := double_sample_pattern_bound D C c hmeas_C hc_meas m hm ε hε hE_nullmeas
     calc μ upper ≤ 2 * (μ.prod μ) _ := h1
-      _ ≤ 2 * ENNReal.ofReal gf_exp := by exact mul_le_mul_left' h2 2
+      _ ≤ 2 * ENNReal.ofReal gf_exp := by exact mul_le_mul_right h2 2
       _ = ENNReal.ofReal (2 * gf_exp) := by
           rw [ENNReal.ofReal_mul (by norm_num : (0:ℝ) ≤ 2), ENNReal.ofReal_ofNat]
   -- Step 2: Lower tail bound
@@ -2223,7 +2213,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     -- Step 1: symmetrization_step_lower gives μ(lower) ≤ 2*(μ.prod μ)(B_lower)
     -- where B_lower = {p | ∃ h ∈ C, EmpErr(p.1) - EmpErr(p.2) ≥ ε/2}
     have h1 := symmetrization_step_lower D C c hmeas_C hc_meas m hm ε hε hm_large
-    -- Step 2: Swap symmetry; (μ.prod μ)(B_lower) = (μ.prod μ)(B_upper)
+    -- Step 2: Swap symmetry — (μ.prod μ)(B_lower) = (μ.prod μ)(B_upper)
     -- where B_upper = {p | ∃ h ∈ C, EmpErr(p.2) - EmpErr(p.1) ≥ ε/2}
     -- This uses Measure.prod_swap: (μ.prod μ).map Prod.swap = μ.prod μ
     have h_swap : (μ.prod μ)
@@ -2247,7 +2237,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
       have h_preimage : ⇑swap_equiv ⁻¹' S2 = S1 := by
         ext p
         show (p.2, p.1) ∈ S2 ↔ p ∈ S1
-        simp only [S1, S2, Set.mem_setOf_eq, Prod.fst, Prod.snd]
+        simp only [S1, S2, Set.mem_setOf_eq]
       -- (μ.prod μ).map swap_equiv = μ.prod μ (symmetric product)
       have h_swap_eq_swap : (⇑swap_equiv : (Fin m → X) × (Fin m → X) → _) = Prod.swap := rfl
       have h_sym : (μ.prod μ).map swap_equiv = μ.prod μ := by
@@ -2262,7 +2252,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     have h2 := double_sample_pattern_bound D C c hmeas_C hc_meas m hm ε hε hE_nullmeas
     calc μ lower ≤ 2 * (μ.prod μ) _ := h1
       _ = 2 * (μ.prod μ) _ := by rw [h_swap]
-      _ ≤ 2 * ENNReal.ofReal gf_exp := mul_le_mul_left' h2 2
+      _ ≤ 2 * ENNReal.ofReal gf_exp := mul_le_mul_right h2 2
       _ = ENNReal.ofReal (2 * gf_exp) := by
           rw [ENNReal.ofReal_mul (by norm_num : (0:ℝ) ≤ 2), ENNReal.ofReal_ofNat]
   -- Step 3: Decompose |gap| ≥ ε into upper ∪ lower
@@ -2271,7 +2261,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
        EmpiricalError X Bool h (fun i => (xs i, c (xs i))) (zeroOneLoss Bool)| ≥ ε}
       ⊆ upper ∪ lower := by
     intro xs ⟨h, hC, hgap⟩
-    simp only [Set.mem_union, Set.mem_setOf_eq]
+    simp only [Set.mem_union]
     by_cases h_pos : TrueErrorReal X h c D -
         EmpiricalError X Bool h (fun i => (xs i, c (xs i))) (zeroOneLoss Bool) ≥ 0
     · exact Or.inl ⟨h, hC, by rwa [abs_of_nonneg h_pos] at hgap⟩
@@ -2293,7 +2283,7 @@ theorem symmetrization_uc_bound {X : Type u} [MeasurableSpace X] [Infinite X]
     _ = ENNReal.ofReal (4 * ↑(GrowthFunction X C (2 * m)) *
           Real.exp (-(↑m * ε ^ 2 / 8))) := by rw [hgf_exp_def]; ring_nf
 
-/-! ## T5: Arithmetic - Growth Function times Exponential ≤ δ -/
+/-! ## T5: Arithmetic — Growth Function × Exponential ≤ δ -/
 
 -- Arithmetic: 4*GF(C,2m)*exp(-m*eps^2/8) <= delta and 2*ln2 <= m*eps^2.
 -- Uses: Sauer-Shelah + pow_mul_exp_neg_le_factorial_div + hm_bound.
@@ -2328,15 +2318,6 @@ private lemma growth_function_le_two_pow {X : Type u}
     simpa [T] using hBound'
 
 set_option maxHeartbeats 800000 in
-/-- Final calibration of the symmetrization bound. Assuming the growth function obeys
-a Sauer-Shelah polynomial bound `hv_bound` past the VC threshold `v`, the sample-size
-condition
-`m ≥ ((16 e (v + 1) / ε²)^(v + 1)) / δ`
-implies two arithmetic facts simultaneously: the chain bound
-`4 · Π_C(2m) · exp(-m ε² / 8) ≤ δ`
-and the auxiliary inequality `2 · log 2 ≤ m · ε²` (which feeds the Hoeffding step).
-The conjunction closes the arithmetic loop between the combinatorial growth function
-and the failure probability target. -/
 theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
     (C : ConceptClass X Bool)
     (v : ℕ) (hv : 0 < v) (m : ℕ) (hm : 0 < m) (ε δ : ℝ)
@@ -2374,7 +2355,7 @@ theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
   · -- Part 1: 4 * GF(C, 2m) * exp(-mε²/8) ≤ δ
     -- Case split: v ≤ 2m (Sauer-Shelah applies) vs v > 2m (use trivial GF bound)
     by_cases hvm : v ≤ 2 * m
-    · -- Case A: v ≤ 2m; use Sauer-Shelah + sum_choose_le_exp_pow
+    · -- Case A: v ≤ 2m — use Sauer-Shelah + sum_choose_le_exp_pow
       have hgf_exp : (GrowthFunction X C (2 * m) : ℝ) ≤
           (Real.exp 1 * ↑(2 * m) / ↑v) ^ v := by
         have h1 : (GrowthFunction X C (2 * m) : ℝ) ≤
@@ -2447,7 +2428,7 @@ theorem growth_exp_le_delta {X : Type u} [MeasurableSpace X]
         _ ≤ 4 * K ^ v * (↑((v + 1).factorial) / t) := by
             nlinarith [h_pow_exp, pow_pos hK_pos v]
         _ ≤ δ := hfinal
-    · -- Case B: v > 2m; use trivial bound GF(C, 2m) ≤ 2^{2m}
+    · -- Case B: v > 2m — use trivial bound GF(C, 2m) ≤ 2^{2m}
       push_neg at hvm
       -- v ≥ 2m + 1
       have hvm' : 2 * m + 1 ≤ v := by omega

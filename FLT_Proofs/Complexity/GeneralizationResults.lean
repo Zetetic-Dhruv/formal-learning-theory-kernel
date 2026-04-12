@@ -204,7 +204,7 @@ theorem consistent_learner_pac (X : Type u) [MeasurableSpace X]
     (hmeas_C : ∀ h ∈ C, Measurable h) (hc_meas : ∀ c : Concept X Bool, Measurable c)
     (hWB : WellBehavedVC X C)
     (L : BatchLearner X Bool)
-    (hcons : ∀ {m : ℕ} (S : Fin m → X × Bool), ∀ i, L.learn S (S i).1 = (S i).2) :
+    (_hcons : ∀ {m : ℕ} (S : Fin m → X × Bool), ∀ i, L.learn S (S i).1 = (S i).2) :
     PACLearnable X C := by
   by_cases hne : C.Nonempty
   · exact uc_imp_pac X C hne (vcdim_finite_imp_uc' X C hvcdim hmeas_C hc_meas hWB)

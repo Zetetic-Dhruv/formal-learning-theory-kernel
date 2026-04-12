@@ -18,7 +18,7 @@ import Mathlib.Probability.Moments.Variance
 /-!
 # Separation Theorems
 
-These prove that the paradigms are genuinely different;
+These prove that the paradigms are genuinely different —
 the criteria do NOT imply each other.
 -/
 
@@ -128,7 +128,7 @@ private theorem vcdim_le_of_mistake_bounded {X : Type u}
   omega
 
 /-- Online learnable → PAC learnable.
-    Requires LittlestoneDim → VCDim bridge or online-to-batch conversion. -/
+    Γ₄₈: requires LittlestoneDim → VCDim bridge or online-to-batch conversion. -/
 theorem online_imp_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool) (hol : OnlineLearnable X Bool C)
     [MeasurableConceptClass X C] :
@@ -149,10 +149,10 @@ theorem online_imp_pac (X : Type u) [MeasurableSpace X]
 private def boosted_majority (k : ℕ) (votes : Fin k → Bool) : Bool :=
   k < 2 * ((Finset.univ.filter (fun j => votes j)).card)
 
--- chebyshev_majority_bound moved to PureMath.Concentration
+-- chebyshev_majority_bound moved to MathLib.Concentration
 
 -- ============================================================
--- Scaffolding for boost_two_thirds_to_pac
+-- FP4 Phase 1: Scaffolding for boost_two_thirds_to_pac
 -- ============================================================
 
 /-- Joint measurability of a batch learner's evaluation map. -/
@@ -162,7 +162,7 @@ def LearnEvalMeasurable
   ∀ m : ℕ,
     Measurable (fun p : (Fin m → X × Bool) × X => L.learn p.1 p.2)
 
-/-- A learner with joint measurability gives measurable hypotheses for fixed training data. -/
+/-- T1: A learner with joint measurability gives measurable hypotheses for fixed training data. -/
 private lemma learn_measurable_fixed
     {X : Type u} [MeasurableSpace X]
     (L : BatchLearner X Bool) [MeasurableBatchLearner X L]
@@ -182,7 +182,7 @@ private def goodBlockEvent
           L.learn (fun i => (block_extract k n ω j i, c (block_extract k n ω j i))) x ≠ c x }
         ≤ ENNReal.ofReal (rate n) }
 
-/-- goodBlockEvent is measurable for each block index j. -/
+/-- T2: goodBlockEvent is measurable for each block index j. -/
 private lemma goodBlockEvent_measurable
     {X : Type u} [MeasurableSpace X]
     (L : BatchLearner X Bool) [MeasurableBatchLearner X L]
@@ -192,7 +192,7 @@ private lemma goodBlockEvent_measurable
     ∀ j : Fin k, MeasurableSet (goodBlockEvent L D c rate k n j) := by
   have hL_meas : LearnEvalMeasurable L := MeasurableBatchLearner.eval_measurable
   intro j
-  -- Prove measurability of the "good training set" event
+  -- Prove measurability of the "good training set" event (inline T0 argument)
   have h_label : Measurable (fun p : (Fin n → X) × X =>
       fun i : Fin n => (p.1 i, c (p.1 i))) :=
     measurable_pi_lambda _ (fun i =>
@@ -230,7 +230,7 @@ private lemma goodBlockEvent_measurable
   rw [hpre]
   exact measurableSet_preimage (block_extract_measurable k n j) hA
 
-/-- Shared helper: measurability of the "good training set" event for a single block. -/
+/-- T0: Shared helper — measurability of the "good training set" event for a single block. -/
 private lemma measurableSet_goodBlock_A
     {X : Type u} [MeasurableSpace X]
     (L : BatchLearner X Bool) [MeasurableBatchLearner X L]
@@ -272,7 +272,7 @@ private lemma measurableSet_goodBlock_A
   -- Step 3: Preimage of Iic under measurable function
   exact h_meas_fn measurableSet_Iic
 
-/-- Block extraction pushforward of product measure equals product measure. -/
+/-- T3: Block extraction pushforward of product measure equals product measure. -/
 private lemma map_block_extract_eq_pi
     {X : Type u} [MeasurableSpace X]
     (k n : ℕ) (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D] (j : Fin k) :
@@ -322,7 +322,7 @@ private lemma map_block_extract_eq_pi
     _ = D' j := (measurePreserving_eval D' j).map_eq
     _ = Measure.pi (fun _ : Fin n => D) := rfl
 
-/-- The goodBlockEvents are independent under the product measure. -/
+/-- T5: The goodBlockEvents are independent under the product measure. -/
 private lemma iIndepSet_goodBlockEvents
     {X : Type u} [MeasurableSpace X]
     (L : BatchLearner X Bool) [MeasurableBatchLearner X L]
@@ -353,7 +353,7 @@ private lemma iIndepSet_goodBlockEvents
   rw [hs, hpre j]
   exact MeasurableSpace.measurableSet_comap.mpr ⟨A, hA, rfl⟩
 
-/-- Each block's good event has probability ≥ 2/3, transported from the base learner guarantee. -/
+/-- T4: Each block's good event has probability ≥ 2/3, transported from the base learner guarantee. -/
 private lemma goodBlockEvent_prob_ge_two_thirds
     {X : Type u} [MeasurableSpace X]
     (C : ConceptClass X Bool)
@@ -388,7 +388,7 @@ private lemma goodBlockEvent_prob_ge_two_thirds
   -- Step 3: Apply the base learner guarantee
   exact huniv D inferInstance c hcC n
 
-/-- Chebyshev concentration for 7/12 threshold: when k ≥ 36/δ independent events
+/-- T6: Chebyshev concentration for 7/12 threshold — when k ≥ 36/δ independent events
     each have probability ≥ 2/3, the fraction exceeding 7/12 is ≥ 1-δ. -/
 private lemma chebyshev_seven_twelfths_bound
     {Ω : Type*} [MeasurableSpace Ω] {μ : MeasureTheory.Measure Ω}
@@ -543,7 +543,7 @@ private lemma chebyshev_seven_twelfths_bound
     linarith
   exact_mod_cast this
 
-/-- If ≥ 7/12 of the hypotheses have D-error ≤ ρ, majority vote has D-error ≤ 7ρ. -/
+/-- T7: If ≥ 7/12 of the hypotheses have D-error ≤ ρ, majority vote has D-error ≤ 7ρ. -/
 private lemma majority_error_le_seven_rate_of_good_fraction
     {X : Type u} [MeasurableSpace X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -643,7 +643,7 @@ private lemma majority_error_le_seven_rate_of_good_fraction
           ≤ (Finset.univ \ good).card := Finset.card_filter_le _ _
       have hsdiff_card : (Finset.univ \ good).card = k - good.card := by
         rw [Finset.card_sdiff_of_subset (Finset.subset_univ _)]
-        simp [Finset.card_fin]
+        simp
       omega
     have hthreshold_nat : 2 * good.card - k ≤ 2 * wrongGood := by
       have h1 := hwrong_all
@@ -725,7 +725,7 @@ private lemma majority_error_le_seven_rate_of_good_fraction
     _ ≤ (∫⁻ x, G x ∂D) / threshold := hmarkov
     _ ≤ ENNReal.ofReal (7 * ρ) := hratio
 
-/-- If ≥ 7/12 of blocks are good, the boosted hypothesis has D-error ≤ 7·max(rate(n),0). -/
+/-- T8: If ≥ 7/12 of blocks are good, the boosted hypothesis has D-error ≤ 7·max(rate(n),0). -/
 private lemma boosted_sample_error_le_of_good_blocks
     {X : Type u} [MeasurableSpace X]
     (D : MeasureTheory.Measure X) [MeasureTheory.IsProbabilityMeasure D]
@@ -770,7 +770,7 @@ private lemma boosted_sample_error_le_of_good_blocks
     hgooderr
 
 -- ============================================================
--- End scaffolding for boost_two_thirds_to_pac
+-- End FP4 Phase 1 scaffolding
 -- ============================================================
 
 /-- Boosting lemma: given a learner with success probability ≥ 2/3 under D^m,
@@ -787,7 +787,7 @@ private lemma boosted_sample_error_le_of_good_blocks
     - Event containment: when > k/2 blocks have D-error ≤ rate(n) < ε/kmin,
       majority D-error ≤ k · rate(n) < k/kmin · ε ≤ ε via union bound.
 
-    Sorry: the full measure-theoretic proof requires:
+    Γ₆₇: sorry — the full measure-theoretic proof requires:
     (a) block_extract : (Fin (k*n) → X) → Fin k → (Fin n → X)
     (b) iIndepFun for block extractions under product measure D^(k*n)
     (c) chebyshev_majority_bound for i.i.d. Bernoulli(≥2/3) events
@@ -795,9 +795,9 @@ private lemma boosted_sample_error_le_of_good_blocks
     (e) majority vote D-error analysis via union bound
 
     None of this infrastructure currently exists in the codebase.
-    The sorry is valid: the conclusion PACLearnable X C is non-trivially-true
-    (it requires genuine concentration + majority analysis), and the proof
-    strategy is structurally complete; only infrastructure is missing. -/
+    The sorry is A4-compliant (the conclusion PACLearnable X C is non-trivially-true:
+    it requires genuine concentration + majority analysis) and A5-compliant
+    (the proof strategy is structurally complete, only infrastructure is missing). -/
 private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool)
     [MeasurableHypotheses X C]
@@ -988,7 +988,7 @@ private theorem boost_two_thirds_to_pac (X : Type u) [MeasurableSpace X]
     Proof sketch: UniversalLearnable gives learner L with rate → 0 and Pr[error ≤ rate(m)] ≥ 2/3.
     Two components:
     1. Event containment: rate(m) < ε ⟹ {error ≤ rate(m)} ⊆ {error ≤ ε} (monotonicity).
-    2. Confidence boosting: 2/3 → 1-δ via median-of-means (sorry'd in boost_two_thirds_to_pac).
+    2. Confidence boosting: 2/3 → 1-δ via median-of-means (Γ₆₇, sorry'd in boost_two_thirds_to_pac).
     Routes through boost_two_thirds_to_pac which encapsulates the Chernoff-based boosting. -/
 theorem universal_imp_pac (X : Type u) [MeasurableSpace X]
     (C : ConceptClass X Bool)
@@ -1033,7 +1033,7 @@ private theorem threshold_not_shatter_pair {S : Finset ℕ} (hcard : 2 ≤ S.car
   -- So no threshold can map a ↦ false and b ↦ true when a < b
   -- (and symmetrically for b < a).
   -- We show: for EVERY concept c ∈ thresholdClass, if c(a) = false then c(b) = false
-  -- (regardless of ordering of a,b - but we'll use that they're distinct)
+  -- (regardless of ordering of a,b — but we'll use that they're distinct)
   -- Actually, we need the SPECIFIC labeling where the smaller gets false.
   -- Since we don't know who's smaller, we use that threshold monotonicity gives:
   -- ∀ n, ∀ x y, x ≤ y → decide(y ≤ n) = true → decide(x ≤ n) = true
@@ -1172,13 +1172,6 @@ private theorem ldim_threshold_top : LittlestoneDim ℕ thresholdClass = ⊤ := 
       rw [hc] at hge
       exact absurd hge (by simp only [WithBot.coe_le_coe]; exact not_le.mpr (WithTop.coe_lt_coe.mpr (Nat.lt_succ_self n)))
 
-/-- Paradigm separation: PAC learnability does not imply online learnability. The
-witness is the class of one-sided thresholds on `ℕ`, `thresholdClass = { (· ≤ n) | n : ℕ }`.
-Its VC dimension is finite (in fact at most `1`; monotonicity prevents shattering any
-`{a, b}` with `a < b`), so the class is PAC learnable. Its Littlestone dimension is
-`∞`: a binary-search adversary hides the threshold in whichever half of the queried
-interval the learner has not yet ruled out. The witness exposes that statistical
-sampling can exploit monotone structure that adversarial sequences ignore. -/
 theorem pac_not_implies_online :
     ∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
       PACLearnable X C ∧ ¬ OnlineLearnable X Bool C := by
@@ -1239,7 +1232,7 @@ theorem pac_not_implies_online :
 
 /-- EX does not imply PAC.
     Witness: X = ℕ, C = all indicator functions of finite subsets of ℕ.
-    EX-learnable: learner outputs "true on everything seen so far"; converges on any text.
+    EX-learnable: learner outputs "true on everything seen so far" — converges on any text.
     Not PAC-learnable: VCDim = ⊤ (every finite set is shattered). -/
 theorem ex_not_implies_pac :
     ∃ (X : Type) (_ : Countable X) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
@@ -1330,8 +1323,8 @@ theorem online_strictly_stronger_pac :
   --           conjunct 2 = pac_not_implies_online (this file, sorry)
   ⟨fun X _ C _ hol => online_imp_pac X C hol, pac_not_implies_online⟩
 
--- `universal_strictly_stronger_pac` REMOVED from kernel.
--- The original conjunct 2 (∃ PAC ∧ ¬ Universal) was FALSE - Bousquet et al.
+-- Γ₆₈: `universal_strictly_stronger_pac` REMOVED from kernel.
+-- The original conjunct 2 (∃ PAC ∧ ¬ Universal) was FALSE — Bousquet et al.
 -- (STOC 2021, arXiv:2011.04483) showed PAC ↔ Universal for binary classification.
 -- The true equivalence (PAC ↔ Universal ↔ VCDim < ⊤) requires `pac_imp_universal`
 -- which needs infrastructure not yet in this kernel (rate convergence + boosting).
@@ -1349,18 +1342,18 @@ theorem ex_strictly_stronger_finite :
 
 -- natarajan_not_characterizes_pac MOVED to Benchmarks/Extended.lean.
 -- Brukhim et al. (FOCS 2022): NatarajanDim ≠ multiclass PAC characterization.
--- Requires hyperbolic pseudo-manifolds (Januszkiewicz-Swiatkowski 2003); deep
--- algebraic topology absent from Mathlib.
+-- Requires hyperbolic pseudo-manifolds (Januszkiewicz-Swiatkowski 2003) — deep
+-- algebraic topology absent from Mathlib. Benchmark Category A (UU region).
 
 -- proper_improper_separation REMOVED from kernel.
--- The statement (∃ C H, IsProper C H ∧ PACLearnable C) is trivially
+-- The statement (∃ C H, IsProper C H ∧ PACLearnable C) is A4-failing: trivially
 -- satisfied via Empty (IsProbabilityMeasure absurd). The meaningful separation
 -- (computational: proper learners need exponentially more samples, assuming OWFs)
 -- requires cryptographic hardness infrastructure absent from Lean4/Mathlib.
 -- Zero downstream consumers. Moved to SeparationGraveyard.lean.
 
 /-- Online-PAC-Gold three-way separation.
-    Repair: first conjunct had [Fintype X] which made it false.
+    Pl-REPAIR: first conjunct had [Fintype X] which made it false.
     Fixed to match pac_not_implies_online repair. -/
 theorem online_pac_gold_separation :
     (∃ (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
