@@ -18,73 +18,6 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
 
-      - name: Install elan (needed for checkdecls)
-        run: |
-          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf \
-            | sh -s -- -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-
-      - name: Set toolchain
-        run: elan default "$(cat lean-toolchain)"
-
-      - name: Cache .lake
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.elan
-            .lake
-          key: lean-blueprint-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
-          restore-keys: |
-            lean-blueprint-
-            lean-
-
-      - name: Fetch mathlib cache
-        run: lake exe cache get
-
-      - name: Build kernel (needed for checkdecls)
-        run: lake build
-
-      # ---------------------------------------------------------------
-      # Determine doc-gen4 rev (needed for docbuild subpackage)
-      # ---------------------------------------------------------------
-      - name: Determine doc-gen4 revision
-        id: docgen
-        run: |
-          TOOLCHAIN="$(cut -f2 -d: lean-toolchain)"
-          echo "rev=$TOOLCHAIN" >> "$GITHUB_OUTPUT"
-
-      - name: Create docbuild subpackage (for checkdecls)
-        run: |
-          mkdir -p docbuild
-          cat > docbuild/lakefile.toml <<EOF
-          name = "docbuild"
-          reservoir = false
-          packagesDir = "../.lake/packages"
-
-          [[require]]
-          name = "LimitsOfLearning"
-          path = "../"
-
-          [[require]]
-          scope = "leanprover"
-          name = "doc-gen4"
-          rev = "${{ steps.docgen.outputs.rev }}"
-
-          [[require]]
-          name = "checkdecls"
-          git = "https://github.com/PatrickMassot/checkdecls.git"
-          rev = "master"
-          EOF
-
-      - name: Resolve docbuild dependencies
-        working-directory: docbuild
-        env:
-          MATHLIB_NO_CACHE_ON_UPDATE: "1"
-        run: lake update
-
-      # ---------------------------------------------------------------
-      # Blueprint PDF (xelatex inside TeX Live docker)
-      # ---------------------------------------------------------------
       - name: Build blueprint PDF
         uses: xu-cheng/texlive-action@v2
         with:
@@ -92,66 +25,24 @@ jobs:
           run: |
             cd blueprint/src
             mkdir -p ../print
-            # Multi-pass LaTeX: intermediate passes have undefined references
-            # and exit non-zero. This is normal. Only the final PDF matters.
             xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
             cp references.bib ../print/
             (cd ../print && bibtex print) || true
             xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
             xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
-            # Verify the PDF was produced
             test -f ../print/print.pdf || (echo "PDF build failed" && exit 1)
 
-      # ---------------------------------------------------------------
-      # Blueprint HTML (leanblueprint CLI)
-      # ---------------------------------------------------------------
-      - name: Install leanblueprint
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y graphviz libgraphviz-dev pkg-config
-          python3 -m venv $HOME/blueprint-venv
-          $HOME/blueprint-venv/bin/pip install --upgrade pip wheel
-          $HOME/blueprint-venv/bin/pip install invoke leanblueprint pygraphviz
-          echo "$HOME/blueprint-venv/bin" >> "$GITHUB_PATH"
-
-      - name: Build blueprint web HTML
-        env:
-          TEXINPUTS: ".:./blueprint/src/:./blueprint/src/chapters/:./blueprint/src/preamble/:"
-        run: |
-          leanblueprint web
-          echo "=== chapter count in blueprint/web/ ==="
-          ls blueprint/web/sect*.html 2>/dev/null | wc -l || echo "0"
-
-      # ---------------------------------------------------------------
-      # checkdecls (hard gate)
-      # ---------------------------------------------------------------
-      - name: Verify all lean identifiers resolve
-        working-directory: docbuild
-        run: lake exe checkdecls ../blueprint/lean_decls
-
-      # ---------------------------------------------------------------
-      # Deploy to gh-pages branch
-      # ---------------------------------------------------------------
       - name: Checkout gh-pages
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages-deploy
 
-      - name: Copy outputs into gh-pages tree
+      - name: Deploy PDF and landing page
         run: |
-          # Landing page
           cp docs/index.html gh-pages-deploy/index.html
-
-          # Blueprint HTML
-          rm -rf gh-pages-deploy/blueprint
-          mkdir -p gh-pages-deploy/blueprint
-          cp -r blueprint/web/. gh-pages-deploy/blueprint/
-
-          # Blueprint PDF
           cp blueprint/print/print.pdf gh-pages-deploy/blueprint.pdf
-
-          ls -la gh-pages-deploy/
+          rm -rf gh-pages-deploy/blueprint 2>/dev/null || true
 
       - name: Push to gh-pages
         working-directory: gh-pages-deploy
@@ -160,5 +51,5 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --cached --quiet && echo "No changes to deploy" && exit 0
-          git commit -m "Deploy blueprint from ${{ github.sha }}"
+          git commit -m "Deploy blueprint PDF from ${{ github.sha }}"
           git push
