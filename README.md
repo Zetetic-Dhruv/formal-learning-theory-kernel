@@ -7,13 +7,13 @@
 
 | Lean | Mathlib | LOC | Theorems | Files | Sorry |
 |------|---------|-----|----------|-------|-------|
-| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 21,522 | 354 | 53 | **0** |
+| `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 21,728 | 354 | 53 | **0** |
 
 <p align="center">
   <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning" width="820" />
 </p>
 
-A 42-node typed premise scoped human-guided, AI-driven proof search across three learning paradigms. The search produced 354 machine-checked theorems in 21,522 lines of Lean 4 with zero sorry. The infrastructure it required produced mathematics the premise did not predict.
+A 42-node typed premise scoped human-guided, AI-driven proof search across three learning paradigms. The search produced 354 machine-checked theorems in 21,728 lines of Lean 4 with zero sorry. The infrastructure it required produced mathematics the premise did not predict.
 
 The type structure of a field's definitions determines the proof methods available to formalize it. A typed premise, derived before proof search, constrains the search space enough for AI-driven proof discovery to succeed where unconstrained search fails, and the infrastructure forced by the types can generate mathematics the premise did not predict.
 
@@ -1085,7 +1085,7 @@ With this ordering, each proof begins only after its unknowns have been stated a
 | COPRA | GPT-4 + backtracking | None (in-context) | miniF2F (244 problems) |
 | ReProver | Supervised + retrieval | Auto-retrieved | 51.2% Mathlib random split |
 | Draft-Sketch-Prove | Informal proof -> formal sketch | Informal proof as guide | 39.3% miniF2F-test |
-| **This work** | **Human premise + LLM execution** | **Typed premise (human)** | **354 theorems, 21,522 LOC** |
+| **This work** | **Human premise + LLM execution** | **Typed premise (human)** | **354 theorems, 21,728 LOC** |
 
 The existing approaches assign proof strategy to the AI (via RL, beam search, or in-context reasoning). This method assigns proof strategy to the human and tactic execution to the AI. The inversion explains the scale: no existing system has produced a coherent theory-scale kernel because no existing system delegates the type structure to a human who understands the mathematics. The tradeoff is that this method requires a human who CAN design the typed premise.
 
