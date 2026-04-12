@@ -1401,7 +1401,7 @@ theorem exchangeability_chain_bound {X : Type u} [MeasurableSpace X] [Infinite X
                 Real.exp (t₀ ^ 2 * 1 ^ 2 / (2 * ↑m) - t₀ * (ε / 2)) := by
               congr 1; rw [Real.exp_sub]
           _ = (Fintype.card (SignVector m) : ℝ) * Real.exp (-(↑m * ε ^ 2 / 8)) := by
-              congr 1; rw [ht₀_def]; field_simp; ring
+              congr 1; rw [ht₀_def]; field_simp; ring_nf
       -- Step A4: Connect swap_fun σ z ∈ S to the signed average condition
       -- For each σ, swap_fun σ z ∈ S iff ∃h ∈ C with gap under swap ≥ ε/2.
       -- The gap under swap = (1/m)∑ sign(σ_i) · a_i(h,z).
