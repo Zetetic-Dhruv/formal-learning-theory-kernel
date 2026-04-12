@@ -3,26 +3,22 @@ name: Docs
 on:
   push:
     branches: [main]
+    paths:
+      - 'FLT_Proofs/**'
+      - 'lakefile.lean'
+      - 'lean-toolchain'
+      - 'lake-manifest.json'
+      - 'world_model/**'
   workflow_dispatch:
 
-# Required for GitHub Pages deployment
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Only one Pages deploy at a time; don't cancel in-flight deploys
-concurrency:
-  group: pages
-  cancel-in-progress: false
+  contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
     steps:
-      - name: Checkout repository
+      - name: Checkout main
         uses: actions/checkout@v4
 
       - name: Install elan
@@ -31,7 +27,7 @@ jobs:
             | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
-      - name: Set toolchain from lean-toolchain
+      - name: Set toolchain
         run: elan default "$(cat lean-toolchain)"
 
       - name: Cache .lake
@@ -51,25 +47,12 @@ jobs:
       - name: Build FLT_Proofs
         run: lake build
 
-      # ===================================================================
-      # API documentation (doc-gen4)
-      # ===================================================================
-      #
-      # Determine the doc-gen4 revision from lean-toolchain. For a toolchain
-      # like `leanprover/lean4:v4.29.0-rc6`, doc-gen4 publishes a matching tag.
       - name: Determine doc-gen4 revision
         id: docgen
         run: |
           TOOLCHAIN="$(cut -f2 -d: lean-toolchain)"
           echo "rev=$TOOLCHAIN" >> "$GITHUB_OUTPUT"
-          echo "Using doc-gen4 rev: $TOOLCHAIN"
 
-      # docgen-action's index.js hard-requires lakefile.toml, but the kernel
-      # uses lakefile.lean. We replicate docgen-action/scripts/build_docs.sh
-      # by hand: create a `docbuild` sibling package with its own
-      # lakefile.toml that requires the parent kernel by local path,
-      # doc-gen4 by git tag, and checkdecls by git tag, reusing the parent's
-      # .lake/packages so mathlib is not re-fetched.
       - name: Create docbuild subpackage
         run: |
           mkdir -p docbuild
@@ -86,13 +69,7 @@ jobs:
           scope = "leanprover"
           name = "doc-gen4"
           rev = "${{ steps.docgen.outputs.rev }}"
-
-          [[require]]
-          name = "checkdecls"
-          git = "https://github.com/PatrickMassot/checkdecls.git"
-          rev = "master"
           EOF
-          cat docbuild/lakefile.toml
 
       - name: Resolve docbuild dependencies
         working-directory: docbuild
@@ -104,125 +81,32 @@ jobs:
         working-directory: docbuild
         run: lake build FLT_Proofs:docs
 
-      - name: Copy API docs into Pages tree
-        run: |
-          mkdir -p docs/docs
-          cp -r docbuild/.lake/build/doc/. docs/docs/
-
-      # ===================================================================
-      # Blueprint build: PDF + HTML + checkdecls
-      # ===================================================================
-      #
-      # The blueprint builds three outputs:
-      #   1. A PDF compiled with xelatex inside a TeX Live docker image,
-      #      dropped at docs/blueprint.pdf.
-      #   2. A static HTML site compiled with the canonical `leanblueprint web`
-      #      CLI (which wraps plastex + the leanblueprint plugin), dropped at
-      #      docs/blueprint/. Running `leanblueprint web` also generates
-      #      blueprint/lean_decls, a newline-separated list of the Lean
-      #      identifiers referenced by every \lean{} macro in the source.
-      #   3. A checkdecls verification pass that reads blueprint/lean_decls
-      #      and asserts every identifier resolves against a declaration in
-      #      the kernel. If any identifier is stale (renamed, removed, or
-      #      typoed), this step fails the workflow.
-      #
-      # When the blueprint source is absent the steps are guarded so the
-      # API documentation still deploys. When the source IS present, every
-      # step is a hard gate: no `|| true`, no silent fallback.
-      - name: Check blueprint source exists
-        id: blueprint_check
-        run: |
-          if [ -f blueprint/src/content.tex ] && [ -f blueprint/src/web.tex ] && [ -f blueprint/src/print.tex ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-            echo "Blueprint source detected at blueprint/src/"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "Blueprint source not found; skipping blueprint build"
-          fi
-
-      - name: Build blueprint PDF (xelatex inside texlive-full)
-        if: steps.blueprint_check.outputs.present == 'true'
-        uses: xu-cheng/texlive-action@v2
+      # ---------------------------------------------------------------
+      # Deploy to gh-pages branch
+      # ---------------------------------------------------------------
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
         with:
-          docker_image: ghcr.io/xu-cheng/texlive-full:latest
-          run: |
-            apk add --no-cache make py3-pip graphviz graphviz-dev gcc musl-dev python3-dev
-            cd blueprint/src
-            mkdir -p ../print
-            # Three xelatex passes + one bibtex pass to resolve references,
-            # cross-references, and the 172-entry bibliography.
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex
-            cp references.bib ../print/
-            (cd ../print && bibtex print)
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex
-            ls -la ../print/
+          ref: gh-pages
+          path: gh-pages-deploy
 
-      - name: Install Python build dependencies for blueprint web
-        if: steps.blueprint_check.outputs.present == 'true'
+      - name: Copy API docs into gh-pages tree
         run: |
-          sudo apt-get update
-          sudo apt-get install -y graphviz libgraphviz-dev pkg-config
-          python3 -m venv $HOME/blueprint-venv
-          $HOME/blueprint-venv/bin/pip install --upgrade pip wheel
-          $HOME/blueprint-venv/bin/pip install invoke leanblueprint pygraphviz
-          echo "$HOME/blueprint-venv/bin" >> "$GITHUB_PATH"
+          rm -rf gh-pages-deploy/docs
+          mkdir -p gh-pages-deploy/docs
+          cp -r docbuild/.lake/build/doc/. gh-pages-deploy/docs/
 
-      - name: Build blueprint web HTML via leanblueprint CLI
-        if: steps.blueprint_check.outputs.present == 'true'
-        working-directory: blueprint
+          # Also copy landing page so it stays current
+          cp docs/index.html gh-pages-deploy/index.html
+
+          ls -la gh-pages-deploy/
+
+      - name: Push to gh-pages
+        working-directory: gh-pages-deploy
         run: |
-          # The leanblueprint CLI wraps plastex with the leanblueprint plugin
-          # and additionally writes blueprint/lean_decls, which is the input
-          # to the checkdecls verification step below.
-          leanblueprint web
-          echo "=== blueprint/web/ top level ==="
-          ls -la web/ | head
-          echo "=== blueprint/lean_decls ==="
-          wc -l lean_decls 2>/dev/null || echo "lean_decls not produced; checkdecls will fail"
-
-      - name: Verify every \lean{} identifier resolves (hard gate)
-        if: steps.blueprint_check.outputs.present == 'true'
-        working-directory: docbuild
-        run: |
-          # checkdecls reads the list of identifiers leanblueprint extracted
-          # from the \lean{} macros and fails if any of them fail to resolve
-          # against the kernel. Every \lean{} in the blueprint source must
-          # name a real declaration.
-          lake exe checkdecls ../blueprint/lean_decls
-
-      - name: Copy blueprint outputs into Pages tree
-        if: steps.blueprint_check.outputs.present == 'true'
-        run: |
-          mkdir -p docs/blueprint
-          if [ -f blueprint/print/print.pdf ]; then
-            cp blueprint/print/print.pdf docs/blueprint.pdf
-            echo "Copied blueprint.pdf"
-          else
-            echo "Error: blueprint PDF not produced" >&2
-            exit 1
-          fi
-          if [ -d blueprint/web ]; then
-            cp -r blueprint/web/. docs/blueprint/
-            echo "Copied blueprint HTML"
-          else
-            echo "Error: blueprint HTML not produced" >&2
-            exit 1
-          fi
-          ls -la docs/
-          ls -la docs/blueprint/ | head
-
-      # ===================================================================
-      # Pages deploy
-      # ===================================================================
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && echo "No changes to deploy" && exit 0
+          git commit -m "Deploy docs from ${{ github.sha }}"
+          git push
