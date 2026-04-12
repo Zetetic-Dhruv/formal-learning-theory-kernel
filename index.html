@@ -1,1 +1,266 @@
-Site is being built. Check back shortly.
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Formal Learning Theory Kernel</title>
+  <meta name="description" content="Lean 4 formalization of the fundamental theorem of statistical learning, with paradigm separations and a measurability refinement.">
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #555;
+      --faint: #8a8a8a;
+      --accent: #0b4f8b;
+      --accent-hover: #083a66;
+      --rule: #e4e4e4;
+      --bg: #fafafa;
+      --card: #ffffff;
+      --pending-border: #d4d4d4;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+      max-width: 50rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+      font-size: 16px;
+    }
+    header {
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+    h1 {
+      font-size: 2.0rem;
+      margin: 0 0 0.45rem;
+      letter-spacing: -0.015em;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .tagline {
+      color: var(--muted);
+      margin: 0 0 1.1rem;
+      font-size: 1.05rem;
+      line-height: 1.45;
+    }
+    .badges {
+      margin: 0 0 1.0rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .badges img { vertical-align: middle; height: 20px; }
+    .badges a { display: inline-flex; }
+    .stats {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.6;
+    }
+    .stats code {
+      font-family: var(--mono);
+      color: var(--text);
+      background: var(--card);
+      padding: 0.08em 0.32em;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+    }
+    h2 {
+      font-size: 1.2rem;
+      margin: 2.2rem 0 0.85rem;
+      letter-spacing: -0.005em;
+      font-weight: 600;
+    }
+    p { margin: 0 0 1rem; }
+    p.lead { font-size: 1.04rem; margin-top: 0; }
+    ul { margin: 0 0 1rem; padding-left: 1.3rem; }
+    li { margin-bottom: 0.45rem; }
+    a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+    a:hover { color: var(--accent-hover); text-decoration-thickness: 2px; }
+    code {
+      font-family: var(--mono);
+      font-size: 0.9em;
+      background: var(--card);
+      padding: 0.08em 0.32em;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+    }
+    .links {
+      display: grid;
+      gap: 0.65rem;
+      margin: 0.5rem 0 0;
+    }
+    a.link-row,
+    span.link-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.9rem;
+      padding: 0.8rem 1.0rem;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.1s ease-in;
+    }
+    a.link-row:hover {
+      border-color: var(--accent);
+    }
+    .link-row .label {
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 10.5rem;
+      font-size: 0.98rem;
+    }
+    .link-row .desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      flex: 1;
+      line-height: 1.4;
+    }
+    span.link-row.pending {
+      background: transparent;
+      border-style: dashed;
+      border-color: var(--pending-border);
+      cursor: default;
+    }
+    span.link-row.pending .label { color: var(--faint); }
+    span.link-row.pending .desc { color: var(--faint); }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    footer p { margin: 0 0 0.5rem; }
+    @media (max-width: 42rem) {
+      body { padding: 1.5rem 1rem 3rem; font-size: 15px; }
+      h1 { font-size: 1.6rem; }
+      .tagline { font-size: 0.98rem; }
+      .link-row .label { min-width: auto; }
+      .badges { gap: 0.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Formal Learning Theory Kernel</h1>
+    <p class="tagline">
+      Lean 4 formalization of the fundamental theorem of statistical learning,
+      with paradigm separations and a measurability refinement.
+    </p>
+    <p class="badges">
+      <a href="https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml" aria-label="CI status">
+        <img src="https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg" alt="CI status">
+      </a>
+      <a href="https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/docs.yml" aria-label="Docs build status">
+        <img src="https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/docs.yml/badge.svg" alt="Docs build status">
+      </a>
+      <a href="https://github.com/leanprover/lean4/releases/tag/v4.29.0-rc6" aria-label="Lean version">
+        <img src="https://img.shields.io/badge/Lean-v4.29.0--rc6-blue" alt="Lean v4.29.0-rc6">
+      </a>
+      <img src="https://img.shields.io/badge/sorry-0-brightgreen" alt="Zero sorry declarations">
+    </p>
+    <p class="stats">
+      21,522 lines &middot; 354 theorems &middot; 53 files &middot;
+      mathlib4 <code>fde0cc5</code>
+    </p>
+  </header>
+
+  <section>
+    <p class="lead">
+      A typed premise with 42 nodes scoped a human-guided, AI-driven proof
+      search across three learning paradigms (PAC, Online, and Gold-style).
+      Every theorem in the kernel is fully proved.
+    </p>
+    <p>
+      The infrastructure the types demanded produced mathematics the premise
+      did not predict: a Borel-analytic separation correcting Krapp-Wirth
+      2024, a compression scheme via approximate minimax (multiplicative
+      weights update), and a monadic structure on measurable batch learners
+      closed under Boolean combination, majority vote, and piecewise
+      interpolation.
+    </p>
+  </section>
+
+  <section>
+    <h2>Main results</h2>
+    <ul>
+      <li>Five-way equivalence for PAC learning, with the NullMeasurableSet refinement of the standard Borel hypothesis</li>
+      <li>Littlestone dimension characterization for online learning</li>
+      <li>Gold's theorem and mind-change characterization for text-based learning</li>
+      <li>Three-paradigm separation: PAC &#x21CF; Online, Gold &#x21CF; PAC, Online &#x21D2; PAC (unconditional)</li>
+      <li>Borel-analytic separation theorem, witnessed by a singleton class over an analytic non-Borel set</li>
+      <li>Compression via approximate minimax (multiplicative weights update)</li>
+      <li>Measurable batch learner monad with version-space instance and closure algebra</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Navigate</h2>
+    <div class="links">
+      <a class="link-row" href="./docs/">
+        <span class="label">API documentation</span>
+        <span class="desc">Per-module doc-gen4 reference with mathlib cross-links and per-declaration docstrings</span>
+      </a>
+      <a class="link-row" href="https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel#readme">
+        <span class="label">Project README</span>
+        <span class="desc">Full contributions table, related work, paradigm overview, proof engineering notes</span>
+      </a>
+      <a class="link-row" href="https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel">
+        <span class="label">Source repository</span>
+        <span class="desc">GitHub, Apache 2.0</span>
+      </a>
+      <a class="link-row" href="./blueprint/">
+        <span class="label">Mathematical blueprint</span>
+        <span class="desc">Repo-specific copy of the relevant chapters from the companion textbook, annotated with Lean 4 hyperlinks into each formalized statement. For the full textbook, see Zetetic-Dhruv/formal-learning-theory-book on GitHub.</span>
+      </a>
+      <span class="link-row pending">
+        <span class="label">Proof engineering</span>
+        <span class="desc">In preparation. Audience: formalization specialists. Covers the typed proof operad (TPG_FLT) and the measurable inner event metaprogram.</span>
+      </span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Related work</h2>
+    <p>
+      The only prior attempt at formalizing PAC learning theory with VC
+      dimension is Google's
+      <a href="https://github.com/google/formal-ml">formal-ml</a>, incomplete
+      in Lean 3 with one sorry. Zhang et al.'s
+      <a href="https://github.com/jtristan/lean-stat-learning-theory">lean-stat-learning-theory</a>
+      is complementary: it formalizes concentration inequalities, covering
+      numbers, and Dudley's entropy integral in Lean 4. This kernel formalizes
+      the characterization theorems, paradigm separations, and measurability
+      theory that theirs does not.
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      Author: Dhruv Gupta, Indian Institute of Science.
+      Source licensed under
+      <a href="https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/blob/main/LICENSE">Apache 2.0</a>.
+    </p>
+    <p>
+      This landing page is generated once per push; badges refresh from
+      GitHub Actions and shields.io.
+    </p>
+  </footer>
+</body>
+</html>
