@@ -1,0 +1,94 @@
+name: lean4checker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  lean4checker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Cache .lake and elan
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan
+            .lake
+          key: lean4checker-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+          restore-keys: |
+            lean4checker-
+
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+
+      - name: Build kernel
+        run: lake build FLT_Proofs
+
+      - name: Build Verification
+        run: lake build Verification
+
+      - name: Run lean4checker on SolutionCrown
+        run: |
+          lake env leanchecker --fresh Verification.SolutionCrown 2>&1 \
+            | tee /tmp/lean4checker_solution.txt
+
+      - name: Run lean4checker on key theorem modules
+        run: |
+          for mod in \
+            FLT_Proofs.Theorem.PAC \
+            FLT_Proofs.Complexity.Compression \
+            FLT_Proofs.PureMath.ApproxMinimax \
+            FLT_Proofs.Complexity.FiniteSupportUC \
+            FLT_Proofs.Theorem.Separation \
+            FLT_Proofs.Theorem.Online \
+            FLT_Proofs.Theorem.Gold; do
+            echo "=== $mod ==="
+            lake env leanchecker --fresh "$mod"
+          done 2>&1 | tee /tmp/lean4checker_modules.txt
+
+      - name: Print axioms for crown jewels
+        run: |
+          lake env lean --run - <<'LEAN_SCRIPT' 2>&1 | tee /tmp/print_axioms.txt
+          import Verification.SolutionCrown
+          #print axioms challenge_fundamental_theorem
+          #print axioms challenge_fundamental_vc_compression_with_info
+          #print axioms challenge_vc_characterization
+          #print axioms challenge_sauer_shelah
+          #print axioms challenge_mwu_approx_minimax
+          #print axioms challenge_finite_support_vc_approx
+          LEAN_SCRIPT
+
+      - name: Assemble report
+        if: always()
+        run: |
+          mkdir -p test/verification
+          {
+            echo "lean4checker verification report"
+            echo "Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "Toolchain: $(cat lean-toolchain)"
+            echo "Commit: ${{ github.sha }}"
+            echo ""
+            echo "=== SolutionCrown ==="
+            cat /tmp/lean4checker_solution.txt 2>/dev/null || echo "(not generated)"
+            echo ""
+            echo "=== Key modules ==="
+            cat /tmp/lean4checker_modules.txt 2>/dev/null || echo "(not generated)"
+            echo ""
+            echo "=== Axioms ==="
+            cat /tmp/print_axioms.txt 2>/dev/null || echo "(not generated)"
+          } > test/verification/lean4checker_results.txt
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lean4checker-results
+          path: test/verification/lean4checker_results.txt

@@ -1,0 +1,14 @@
+{
+  "challenge_module": "Verification.ChallengeCrown",
+  "solution_module": "Verification.SolutionCrown",
+  "theorem_names": [
+    "challenge_fundamental_theorem",
+    "challenge_fundamental_vc_compression_with_info",
+    "challenge_vc_characterization",
+    "challenge_sauer_shelah",
+    "challenge_mwu_approx_minimax",
+    "challenge_finite_support_vc_approx"
+  ],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": false
+}

@@ -1,0 +1,96 @@
+name: comparator
+
+on:
+  workflow_dispatch:
+
+jobs:
+  comparator:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan and prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y golang jq
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
+      - name: Cache .lake and elan
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan
+            .lake
+          key: comparator-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+          restore-keys: |
+            comparator-
+
+      - name: Fetch Mathlib cache
+        run: lake exe cache get
+
+      - name: Build kernel
+        run: lake build FLT_Proofs
+
+      - name: Build Verification
+        run: lake build Verification
+
+      - name: Install landrun
+        run: go install github.com/zouuup/landrun/cmd/landrun@latest
+
+      - name: Preflight Landlock probe
+        run: |
+          echo "Kernel version: $(uname -r)"
+          if landrun -- /usr/bin/true; then
+            echo "Landlock sandbox: OK"
+          else
+            echo "Landlock sandbox: FAILED (comparator may not work)"
+            echo "Continuing without sandbox (lean4checker provides fallback verification)"
+          fi
+
+      - name: Build lean4export for matching toolchain
+        run: |
+          TOOLCHAIN=$(cat lean-toolchain)
+          git clone https://github.com/leanprover/lean4export /tmp/lean4export
+          cd /tmp/lean4export
+          echo "$TOOLCHAIN" > lean-toolchain
+          lake build
+          echo "/tmp/lean4export/.lake/build/bin" >> "$GITHUB_PATH"
+
+      - name: Build comparator for matching toolchain
+        run: |
+          TOOLCHAIN=$(cat lean-toolchain)
+          git clone https://github.com/leanprover/comparator /tmp/comparator
+          cd /tmp/comparator
+          echo "$TOOLCHAIN" > lean-toolchain
+          lake build
+          echo "/tmp/comparator/.lake/build/bin" >> "$GITHUB_PATH"
+
+      - name: Run comparator
+        run: |
+          lake env comparator Verification/config.crown.json 2>&1 \
+            | tee /tmp/comparator_results.txt
+
+      - name: Assemble report
+        if: always()
+        run: |
+          mkdir -p test/verification
+          {
+            echo "comparator verification report"
+            echo "Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "Toolchain: $(cat lean-toolchain)"
+            echo "Commit: ${{ github.sha }}"
+            echo ""
+            echo "=== Comparator output ==="
+            cat /tmp/comparator_results.txt 2>/dev/null || echo "(not generated)"
+          } > test/verification/comparator_results.crown.txt
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comparator-results
+          path: test/verification/comparator_results.crown.txt
