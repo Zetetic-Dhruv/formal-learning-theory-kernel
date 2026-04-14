@@ -1,0 +1,51 @@
+name: landlock-probe
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Host probe
+        run: |
+          echo "=== Host environment ==="
+          echo "Kernel: $(uname -r)"
+          cat /sys/kernel/security/lsm 2>/dev/null || echo "LSM not readable"
+          echo "Docker version: $(docker --version)"
+
+      - name: Install landrun on host
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq golang-go
+          go install github.com/zouuup/landrun/cmd/landrun@latest
+          echo "$HOME/go/bin" >> "$GITHUB_PATH"
+
+      - name: Host landrun test
+        run: |
+          echo "=== Host landrun ==="
+          landrun --best-effort -- /usr/bin/true 2>&1 && echo "HOST: OK" || echo "HOST: DENIED"
+
+      - name: Docker landrun test
+        run: |
+          docker run --rm \
+            -v "$HOME/go/bin/landrun:/usr/local/bin/landrun" \
+            ubuntu:24.04 \
+            bash -c '
+              echo "=== Inside Docker ==="
+              echo "Kernel: $(uname -r)"
+              cat /sys/kernel/security/lsm 2>/dev/null || echo "LSM not readable"
+              landrun --best-effort -- /usr/bin/true 2>&1 && echo "DOCKER: OK" || echo "DOCKER: DENIED"
+            '
+
+      - name: Docker landrun with filesystem restriction
+        run: |
+          docker run --rm \
+            -v "$HOME/go/bin/landrun:/usr/local/bin/landrun" \
+            ubuntu:24.04 \
+            bash -c '
+              echo "=== Sandboxed file access test ==="
+              echo "secret" > /tmp/testfile
+              landrun --ro /usr --ro /lib --ro /lib64 --ro /bin --ro /usr/bin \
+                -- cat /tmp/testfile 2>&1 && echo "SANDBOX LEAK: file readable" || echo "SANDBOX OK: file denied"
+            '
