@@ -69,9 +69,16 @@ jobs:
           lake build
           echo "/tmp/comparator/.lake/build/bin" >> "$GITHUB_PATH"
 
+      - name: Diagnose Landlock
+        run: |
+          echo "Kernel: $(uname -r)"
+          cat /sys/kernel/security/lsm 2>/dev/null || echo "LSM file not readable"
+          landrun --best-effort -- /usr/bin/true && echo "landrun probe: OK" || echo "landrun probe: FAILED"
+
       - name: Run comparator
         run: |
-          lake env comparator Verification/config.crown.json 2>&1 \
+          lake env /tmp/comparator/.lake/build/bin/comparator \
+            Verification/config.crown.json 2>&1 \
             | tee /tmp/comparator_results.txt
 
       - name: Assemble report

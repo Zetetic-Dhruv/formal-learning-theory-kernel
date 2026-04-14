@@ -5,10 +5,7 @@ on:
     branches: [main]
     paths:
       - 'FLT_Proofs/**'
-      - 'lakefile.lean'
-      - 'lean-toolchain'
-      - 'lake-manifest.json'
-      - 'world_model/**'
+      - 'world_model/WorldModel/**'
   workflow_dispatch:
 
 permissions:
