@@ -285,7 +285,9 @@
     <span class="defn_thmtitle">Realizable setting</span>
   </div>
   <div class="defn_thmcontent">
-  <p>   Learning is <em>realizable</em> if the target concept \(c^*\) lies in the hypothesis class: \(c^* \in \mathcal{H}\). </p>
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: BatchLearner</small></span></p>
+<p> Learning is <em>realizable</em> if the target concept \(c^*\) lies in the hypothesis class: \(c^* \in \mathcal{H}\). </p>
 
   </div>
 </div>
@@ -298,7 +300,9 @@
     <span class="defn_thmtitle">Agnostic setting</span>
   </div>
   <div class="defn_thmcontent">
-  <p>   Learning is <em>agnostic</em> if no assumption is made on the relationship between \(c^*\) and \(\mathcal{H}\). The learner competes with the best hypothesis \(h^* = \arg \min _{h \in \mathcal{H}} R_D(h)\). </p>
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: BatchLearner</small></span></p>
+<p> Learning is <em>agnostic</em> if no assumption is made on the relationship between \(c^*\) and \(\mathcal{H}\). The learner competes with the best hypothesis \(h^* = \arg \min _{h \in \mathcal{H}} R_D(h)\). </p>
 
   </div>
 </div>
@@ -314,7 +318,9 @@
 </span></span>
   </div>
   <div class="defn_thmcontent">
-  <p>   A hypothesis class \(\mathcal{H}\) over domain \(X\) is <em>PAC learnable</em> if there exists an algorithm \(A\) and a function \(m_\mathcal {H} \colon (0,1)^2 \to \mathbb {N}\) such that, for every \(\varepsilon , \delta \in (0,1)\) and every distribution \(D\) on \(X\): </p>
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: PACLearnable</small></span></p>
+<p> A hypothesis class \(\mathcal{H}\) over domain \(X\) is <em>PAC learnable</em> if there exists an algorithm \(A\) and a function \(m_\mathcal {H} \colon (0,1)^2 \to \mathbb {N}\) such that, for every \(\varepsilon , \delta \in (0,1)\) and every distribution \(D\) on \(X\): </p>
 <p>If \(c^* \in \mathcal{H}\) and \(S \sim D^m\) with \(m \geq m_\mathcal {H}(\varepsilon , \delta )\), then </p>
 <div class="displaymath" id="a0000000009">
   \[  \Pr _{S \sim D^m}\! \bigl[R_D(A(S)) {\gt} \varepsilon \bigr] \leq \delta .  \]
@@ -376,7 +382,9 @@
     <span class="defn_thmtitle">Empirical Risk Minimization</span>
   </div>
   <div class="defn_thmcontent">
-  <p>   Given sample \(S = \{ (x_i, c^*(x_i))\} _{i=1}^m\) and hypothesis class \(\mathcal{H}\), the <em>empirical risk minimizer</em> is </p>
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: BatchLearner</small></span></p>
+<p> Given sample \(S = \{ (x_i, c^*(x_i))\} _{i=1}^m\) and hypothesis class \(\mathcal{H}\), the <em>empirical risk minimizer</em> is </p>
 <div class="displaymath" id="a0000000011">
   \[  \operatorname{ERM}_\mathcal {H}(S) = \arg \min _{h \in \mathcal{H}} \hat{R}_S(h), \qquad \hat{R}_S(h) = \frac{1}{m}\sum _{i=1}^m \mathbf{1}[h(x_i) \neq c^*(x_i)].  \]
 </div>

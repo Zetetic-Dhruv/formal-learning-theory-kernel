@@ -319,7 +319,9 @@
     <span class="defn_thmtitle">WellBehavedVCMeasTarget</span>
   </div>
   <div class="defn_thmcontent">
-  <p>   A concept class \(C\) over a measurable space \((X, \Sigma )\) satisfies <em>WellBehavedVCMeasTarget</em> if, for every sample size \(m\), every gap threshold \(\varepsilon \), and every probability distribution \(D\) on \(X\), the two-sided ghost-gap bad event \(\mathrm{Bad}_2(C, m, \varepsilon )\) is a null-measurable subset of \((X^m \times X^m,\,  \Sigma ^{\otimes 2m})\) with respect to the product measure \(D^{\otimes 2m}\). Here null-measurability means that the event differs from a set in \(\Sigma ^{\otimes 2m}\) by a \(D^{\otimes 2m}\)-null set, equivalently, it sits in the completion of \(\Sigma ^{\otimes 2m}\) under \(D^{\otimes 2m}\). </p>
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: WellBehavedVCMeasTarget</small></span></p>
+<p> A concept class \(C\) over a measurable space \((X, \Sigma )\) satisfies <em>WellBehavedVCMeasTarget</em> if, for every sample size \(m\), every gap threshold \(\varepsilon \), and every probability distribution \(D\) on \(X\), the two-sided ghost-gap bad event \(\mathrm{Bad}_2(C, m, \varepsilon )\) is a null-measurable subset of \((X^m \times X^m,\,  \Sigma ^{\otimes 2m})\) with respect to the product measure \(D^{\otimes 2m}\). Here null-measurability means that the event differs from a set in \(\Sigma ^{\otimes 2m}\) by a \(D^{\otimes 2m}\)-null set, equivalently, it sits in the completion of \(\Sigma ^{\otimes 2m}\) under \(D^{\otimes 2m}\). </p>
 
   </div>
 </div>
@@ -332,7 +334,9 @@
     <span class="defn_thmtitle">KrappWirthWellBehaved</span>
   </div>
   <div class="defn_thmcontent">
-  <p>   A concept class \(C\) satisfies the <em>KrappWirthWellBehaved</em> hypothesis of&#160;<span class="cite">
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: KrappWirthWellBehaved</small></span></p>
+<p> A concept class \(C\) satisfies the <em>KrappWirthWellBehaved</em> hypothesis of&#160;<span class="cite">
 	[
 </span> if, for every \(m\) and \(\varepsilon \), the two-sided ghost-gap bad event \(\mathrm{Bad}_2(C, m, \varepsilon )\) is a Borel subset of \(X^m \times X^m\) in the product Borel structure. </p>
 
@@ -347,7 +351,9 @@
     <span class="prop_thmtitle">KrappWirth is stronger than WellBehavedVCMeasTarget</span>
   </div>
   <div class="prop_thmcontent">
-  <p>    Every Borel set is null-measurable with respect to any completion of a Borel probability measure. Consequently any concept class carrying <span class="ttfamily">KrappWirthWellBehaved</span> also carries <span class="ttfamily">WellBehavedVCMeasTarget</span>. </p>
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: KrappWirthWellBehaved.toWellBehavedVC</small></span></p>
+<p>  Every Borel set is null-measurable with respect to any completion of a Borel probability measure. Consequently any concept class carrying <span class="ttfamily">KrappWirthWellBehaved</span> also carries <span class="ttfamily">WellBehavedVCMeasTarget</span>. </p>
 
   </div>
 </div>
@@ -387,7 +393,9 @@
     <span class="defn_thmtitle">Parameterized ghost-gap bad event</span>
   </div>
   <div class="defn_thmcontent">
-  <p>    For a Borel-parameterized class with evaluation map \(\mathrm{eval}\), sample size \(m\), and gap threshold \(\varepsilon \), the <em>parameterized ghost-gap bad event</em> is </p>
+  <p>  </p>
+<p><span class="ttfamily"><small class="small">Lean: paramBadEvent</small></span></p>
+<p>  For a Borel-parameterized class with evaluation map \(\mathrm{eval}\), sample size \(m\), and gap threshold \(\varepsilon \), the <em>parameterized ghost-gap bad event</em> is </p>
 <div class="displaymath" id="a0000000064">
   \[  \mathrm{Bad}_{\mathrm{eval}}(m, \varepsilon ) \; =\;  \bigcup _{\theta \in \Theta } \Bigl\{ \,  (S, S') \in X^m \times X^m \; :\;  \bigl| \hat{R}_{S'}(\mathrm{eval}(\theta ,\cdot )) - \hat{R}_S(\mathrm{eval}(\theta ,\cdot )) \bigr| {\gt} \varepsilon \, \Bigr\} .  \]
 </div>
