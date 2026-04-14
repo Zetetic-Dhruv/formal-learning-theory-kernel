@@ -114,12 +114,12 @@ example : Interface.widens
 /-- Generator robustness: UCToPAC on iHasUC is NOT robust —
     removing MeasurableConceptClass from premises triggers FD3 upstream.
     This is correct: the PAC pipeline depends on measurability. -/
-example : Generator.isRobust fltTheory genUCToPAC iHasUC = false := by native_decide
+example : Generator.isRobust fltTheory genUCToPAC iHasUC = false := by decide
 
 /-- Generator robustness: Adversary on iFiniteLDim is also NOT robust —
     removing "C" from premises causes input mismatch.
     This is correct: every domain generator references C. -/
-example : Generator.isRobust fltTheory genAdversary iFiniteLDim = false := by native_decide
+example : Generator.isRobust fltTheory genAdversary iFiniteLDim = false := by decide
 
 /-- Structural generators ARE robust: Contrapose on iGoal (empty premises). -/
-example : Generator.isRobust fltTheory genContrapose iGoal = true := by native_decide
+example : Generator.isRobust fltTheory genContrapose iGoal = true := by decide

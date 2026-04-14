@@ -143,11 +143,11 @@ def nfOnline : NFPlan := .atom "TreePotential"
 
 /-- PAC pipeline has higher bridge depth than Online. -/
 example : (nfPAC.cost fltTheory).bridgeDepth > (nfOnline.cost fltTheory).bridgeDepth := by
-  native_decide
+  decide
 
 /-- PAC pipeline has higher total cost than Online. -/
 example : (nfPAC.cost fltTheory).total > (nfOnline.cost fltTheory).total := by
-  native_decide
+  decide
 
 -- ============================================================
 -- NT6: Cost model — DST pipeline has highest elaboration penalty
@@ -158,7 +158,7 @@ def nfDST : NFPlan := .seq "AnalyticProjection" (.atom "CompactApproximation")
 /-- DST has higher elaboration penalty than Online (cross-paradigm generators). -/
 example : (nfDST.cost fltTheory).elaborationPenalty ≥
     (nfOnline.cost fltTheory).elaborationPenalty := by
-  native_decide
+  decide
 
 -- ============================================================
 -- NT7: Interface widening is reflexive
@@ -175,7 +175,7 @@ example : Interface.widens iGoal iGoal = true := by rfl
 
 /-- All 5 structural generators have paradigm = [.structural]. -/
 example : [genContrapose, genExtensionalize, genCaseSplit, genCalcChain, genWitnessRefine].all
-    (fun g => g.paradigm == [Paradigm.structural]) = true := by native_decide
+    (fun g => g.paradigm == [Paradigm.structural]) = true := by decide
 
 -- ============================================================
 -- NT9: Domain generators are paradigm-locked
@@ -186,7 +186,7 @@ example : [genGrowthConstruction, genMeasureBridge, genUCToPAC,
            genTreePotential, genAdversary, genLocking,
            genAnalyticProjection, genCompactApproximation,
            genWitnessSeparation, genJensenChain].all
-    (fun g => g.paradigm != [Paradigm.structural]) = true := by native_decide
+    (fun g => g.paradigm != [Paradigm.structural]) = true := by decide
 
 -- ============================================================
 -- NT10: Guard filters by paradigm

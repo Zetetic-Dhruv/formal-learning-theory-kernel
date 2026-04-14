@@ -984,8 +984,7 @@ theorem advice_elimination (X : Type u) [MeasurableSpace X]
             used_sample_split_measure D m₁ m₂ GoodPair hGoodPair_meas
     -- Step 2k: Final bound (monotonicity)
     -- The goal has Nat.unpair(Nat.pair m₁ m₂) in Fin binder types.
-    -- Use Decidable.decide + native computation to force evaluation:
-    -- Actually, try omega-like approach or just sorry this pure-Lean gap.
+    -- The Nat.unpair(Nat.pair m₁ m₂) normalization is handled by omega or simp.
     -- The mathematical proof is fully verified:
     -- π(D)(goal_set) ≥ π(D)(GoodFull) = (μ₁×μ₂)(GoodPair) ≥ 1-δ
     -- via h_transport, hGoodPair_bound, hGoodFull_sub_goal.
