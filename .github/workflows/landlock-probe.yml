@@ -1,0 +1,75 @@
+name: landlock-probe
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan
+        run: |
+          curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Install Go
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq golang-go
+
+      - name: "Probe A: landrun @latest (tagged release, expect DENIED)"
+        run: |
+          go install github.com/zouuup/landrun/cmd/landrun@latest
+          ~/go/bin/landrun --best-effort --ro / -- /usr/bin/true 2>&1 \
+            && echo "LATEST: OK" || echo "LATEST: DENIED"
+
+      - name: "Probe B: landrun @main (head of main branch)"
+        run: |
+          go install github.com/zouuup/landrun/cmd/landrun@main
+          ~/go/bin/landrun --best-effort --ro / -- /usr/bin/true 2>&1 \
+            && echo "MAIN: OK" || echo "MAIN: DENIED"
+
+      - name: "Probe C: landrun @main with realistic paths"
+        if: success()
+        run: |
+          ~/go/bin/landrun --best-effort \
+            --ro /usr --ro /lib --ro /lib64 --ro /bin --ro /etc \
+            --ro /proc --ro /sys --ro /dev \
+            --rw /tmp \
+            -- /usr/bin/echo "sandbox with paths works" 2>&1 \
+            && echo "MAIN+PATHS: OK" || echo "MAIN+PATHS: DENIED"
+
+      - name: "Probe D: landrun @main sandbox enforcement"
+        if: success()
+        run: |
+          echo "secret" > /tmp/probe_secret
+          ~/go/bin/landrun --best-effort \
+            --ro /usr --ro /lib --ro /lib64 --ro /bin --ro /etc \
+            -- cat /tmp/probe_secret 2>&1 \
+            && echo "ENFORCEMENT: LEAK (bad)" || echo "ENFORCEMENT: BLOCKED (good)"
+
+      - name: "Probe E: landrun @main with elan/lean binary"
+        if: success()
+        run: |
+          LEAN_BIN=$(which lean)
+          echo "lean binary: $LEAN_BIN"
+          ~/go/bin/landrun --best-effort -ldd \
+            --ro / \
+            -- "$LEAN_BIN" --version 2>&1 \
+            && echo "LEAN+LANDRUN: OK" || echo "LEAN+LANDRUN: DENIED"
+
+      - name: "Probe F: lake build inside landrun @main"
+        if: success()
+        run: |
+          lake exe cache get
+          lake build FLT_Proofs
+          lake build Verification
+          LAKE_BIN=$(lake env printPaths 2>/dev/null | head -1 || echo "")
+          echo "Attempting sandboxed lake build of SolutionCrown..."
+          ~/go/bin/landrun --best-effort -ldd \
+            --ro / \
+            --rw .lake \
+            -- lake build Verification.SolutionCrown 2>&1 \
+            && echo "LAKE+LANDRUN: OK" || echo "LAKE+LANDRUN: DENIED"
