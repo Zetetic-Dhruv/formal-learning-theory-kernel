@@ -94,6 +94,8 @@ jobs:
           \input{ch05_separations}
           \input{ch06_measurability}
           \input{ch07_closing}
+          \appendix
+          \input{appA_lean_code}
           \bibliographystyle{alpha}
           \bibliography{references}
           \end{document}
@@ -148,5 +150,9 @@ jobs:
           git add -A
           git diff --cached --quiet && echo "No changes to deploy" && exit 0
           git commit -m "Deploy blueprint from ${{ github.sha }}"
-          git pull --rebase origin gh-pages
-          git push
+          # Retry loop: gh-pages can move between pull and push
+          for i in 1 2 3; do
+            git pull --rebase origin gh-pages && git push && break
+            echo "Push attempt $i failed, retrying..."
+            sleep 5
+          done
