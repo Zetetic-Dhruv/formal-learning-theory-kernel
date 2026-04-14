@@ -1,83 +1,44 @@
 # Tier 3 verification: comparator with real Landlock sandbox
-# Runs on GitLab CI shared runners (GCE) where Landlock works.
-# GitHub Actions (Azure) blocks Landlock syscalls at the hypervisor.
-
-stages:
-  - build
-  - verify
+# Single-job pipeline: build kernel + run comparator in one job.
+# Avoids 3GB artifact transfer between stages.
 
 variables:
   LEAN_TOOLCHAIN: "leanprover/lean4:v4.29.0-rc6"
 
-# Cache Mathlib oleans across builds (~3GB)
-.lean_cache: &lean_cache
+comparator:
+  image: ubuntu:24.04
+  timeout: 2 hours
   cache:
     key: "lean-${CI_COMMIT_REF_SLUG}"
     paths:
       - .lake/
-      - ~/.elan/
     policy: pull-push
-
-build-kernel:
-  stage: build
-  image: ubuntu:24.04
-  <<: *lean_cache
-  timeout: 2 hours
-  script:
-    # Install elan
-    - apt-get update -qq && apt-get install -y -qq curl git
-    - curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf
-        | sh -s -- -y --default-toolchain none
-    - export PATH="$HOME/.elan/bin:$PATH"
-
-    # Fetch Mathlib cache and build
-    - lake exe cache get
-    - lake build FLT_Proofs
-    - lake build Verification
-
-  artifacts:
-    paths:
-      - .lake/build/
-      - .lake/packages/
-      - Verification/
-      - lakefile.lean
-      - lake-manifest.json
-      - lean-toolchain
-    expire_in: 1 day
-
-comparator:
-  stage: verify
-  image: ubuntu:24.04
-  dependencies:
-    - build-kernel
-  timeout: 1 hour
   script:
     # Install prerequisites
-    - apt-get update -qq && apt-get install -y -qq curl git golang-go jq
+    - apt-get update -qq && apt-get install -y -qq curl git golang-go jq ca-certificates
     - curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf
         | sh -s -- -y --default-toolchain none
     - export PATH="$HOME/.elan/bin:$HOME/go/bin:$PATH"
 
-    # Install landrun
+    # Install landrun and verify Landlock
     - go install github.com/zouuup/landrun/cmd/landrun@latest
-
-    # Verify Landlock works
     - landrun --best-effort --ro / -- /usr/bin/true
-    - echo "Landlock sandbox confirmed working"
+    - echo "Landlock sandbox confirmed"
+
+    # Build kernel + Verification
+    - lake exe cache get
+    - lake build FLT_Proofs
+    - lake build Verification
 
     # Build lean4export (toolchain-matched)
     - git clone --depth 1 https://github.com/leanprover/lean4export /tmp/lean4export
-    - cd /tmp/lean4export
-    - echo "$LEAN_TOOLCHAIN" > lean-toolchain
-    - lake build
+    - cd /tmp/lean4export && echo "$LEAN_TOOLCHAIN" > lean-toolchain && lake build
     - export PATH="/tmp/lean4export/.lake/build/bin:$PATH"
     - cd "$CI_PROJECT_DIR"
 
     # Build comparator (toolchain-matched)
     - git clone --depth 1 https://github.com/leanprover/comparator /tmp/comparator
-    - cd /tmp/comparator
-    - echo "$LEAN_TOOLCHAIN" > lean-toolchain
-    - lake build
+    - cd /tmp/comparator && echo "$LEAN_TOOLCHAIN" > lean-toolchain && lake build
     - cd "$CI_PROJECT_DIR"
 
     # Run comparator with real Landlock sandbox
@@ -85,20 +46,21 @@ comparator:
         Verification/config.crown.json
         2>&1 | tee comparator_output.txt
 
-    # Generate verification summary
+    # Verification summary
     - |
-      echo "{"                                                    > verification_summary.json
-      echo "  \"tier\": 3,"                                      >> verification_summary.json
-      echo "  \"tool\": \"comparator\","                         >> verification_summary.json
-      echo "  \"sandbox\": \"landrun (Landlock)\","              >> verification_summary.json
-      echo "  \"infrastructure\": \"GitLab CI (GCE)\","          >> verification_summary.json
-      echo "  \"toolchain\": \"$LEAN_TOOLCHAIN\","               >> verification_summary.json
-      echo "  \"commit\": \"$CI_COMMIT_SHA\","                   >> verification_summary.json
-      echo "  \"pipeline\": \"$CI_PIPELINE_URL\","               >> verification_summary.json
-      echo "  \"date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\","    >> verification_summary.json
-      echo "  \"theorems\": $(cat Verification/config.crown.json | jq '.theorem_names')," >> verification_summary.json
-      echo "  \"permitted_axioms\": $(cat Verification/config.crown.json | jq '.permitted_axioms')" >> verification_summary.json
-      echo "}"                                                   >> verification_summary.json
+      cat > verification_summary.json <<ENDJSON
+      {
+        "tier": 3,
+        "tool": "comparator",
+        "sandbox": "landrun (Landlock)",
+        "infrastructure": "GitLab CI (GCE)",
+        "toolchain": "$LEAN_TOOLCHAIN",
+        "commit": "$CI_COMMIT_SHA",
+        "pipeline": "$CI_PIPELINE_URL",
+        "date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+        "result": "see comparator_output.txt"
+      }
+      ENDJSON
       cat verification_summary.json
 
   artifacts:
