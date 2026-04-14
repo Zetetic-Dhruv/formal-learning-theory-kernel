@@ -264,7 +264,35 @@
   <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
  </li>
 <li class="">
-  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+  <a href="app-lean-code.html"><span class="toc_ref">A</span> <span class="toc_entry">Key Lean 4 Declarations</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0006.html"><span class="toc_ref">A.1</span> <span class="toc_entry">Core types</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">A.2</span> <span class="toc_entry">Combinatorial dimensions</span></a>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">A.3</span> <span class="toc_entry">Learnability predicates</span></a>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">A.4</span> <span class="toc_entry">The fundamental theorem (5-way equivalence)</span></a>
+ </li>
+<li class="">
+  <a href="sect0010.html"><span class="toc_ref">A.5</span> <span class="toc_entry">Characterization theorems</span></a>
+ </li>
+<li class="">
+  <a href="sect0011.html"><span class="toc_ref">A.6</span> <span class="toc_entry">Paradigm separations</span></a>
+ </li>
+<li class="">
+  <a href="sect0012.html"><span class="toc_ref">A.7</span> <span class="toc_entry">Measurability layer (kernel’s novel contribution)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0013.html"><span class="toc_ref">B</span> <span class="toc_entry">Bibliography</span></a>
  </li>
 </ul>
 </nav>
@@ -287,7 +315,7 @@
   </div>
   <div class="defn_thmcontent">
   <p>  <small class="footnotesize"><span class="sffamily">[ HasUniformConvergence ]</span></small> A hypothesis class \(\mathcal{H}\) has the <em>uniform convergence property</em> if for every \(\varepsilon , \delta {\gt} 0\), there exists \(m_{\mathrm{UC}}(\varepsilon , \delta )\) such that for all distributions \(D\), whenever \(m \geq m_{\mathrm{UC}}(\varepsilon , \delta )\): </p>
-<div class="displaymath" id="a0000000016">
+<div class="displaymath" id="a0000000023">
   \[  \Pr _{S \sim D^m}\! \left[ \sup _{h \in \mathcal{H}} |R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \right] \leq \delta .  \]
 </div>
 
@@ -303,14 +331,14 @@
   </div>
   <div class="thm_thmcontent">
   <p>  If \(\Pi _\mathcal {H}(m) \leq (em/d)^d\) for all \(m \geq d\), then \(\mathcal{H}\) has the uniform convergence property with </p>
-<div class="displaymath" id="a0000000017">
+<div class="displaymath" id="a0000000024">
   \[  m_{\mathrm{UC}}(\varepsilon , \delta ) = O\! \left(\frac{d \log (1/\varepsilon ) + \log (1/\delta )}{\varepsilon ^2}\right).  \]
 </div>
 <p> In the realizable setting, the \(\varepsilon ^2\) denominator improves to \(\varepsilon \), giving \(m = O\! \left(\frac{d\log (1/\varepsilon ) + \log (1/\delta )}{\varepsilon }\right)\). </p>
 
   </div>
 </div>
-<div class="proof_wrapper" id="a0000000018">
+<div class="proof_wrapper" id="a0000000025">
   <div class="proof_heading">
     <span class="proof_caption">
     Proof
@@ -322,29 +350,29 @@
 	[
 </span>. </p>
 <p><b class="bfseries">Step 1: Symmetrization.</b> Draw two independent samples \(S, S' \sim D^m\). We claim that for \(m \geq 8/\varepsilon ^2\), </p>
-<div class="displaymath" id="a0000000019">
+<div class="displaymath" id="a0000000026">
   \[  \Pr _S\! \left[\sup _{h} |R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \right] \leq 2\, \Pr _{S,S'}\! \left[ \sup _h |\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2 \right].  \]
 </div>
 <p> This follows because if \(|R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \) for some \(h\), then with probability at least \(1/2\) (by a Chebyshev argument on \(S'\)), the ghost sample satisfies \(|\hat{R}_{S'}(h) - R_D(h)| \leq \varepsilon /2\), and hence \(|\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\) by the triangle inequality. </p>
 <p><b class="bfseries">Step 2: Permutation argument.</b> Let \(T = S \cup S'\) be the pooled sample of size \(2m\). Conditioned on \(T\), the partition into \(S\) and \(S'\) is uniformly random among all \(\binom {2m}{m}\) splits. By a union bound over the distinct label patterns that \(\mathcal{H}\) induces on \(T\): </p>
-<div class="displaymath" id="a0000000020">
+<div class="displaymath" id="a0000000027">
   \[  \Pr _{S,S'}\! \left[\sup _h |\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\right] \leq \Pi _\mathcal {H}(2m) \cdot \max _h \Pr _{\text{split}}\! \bigl[|\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\bigr].  \]
 </div>
 <p> The number of distinct behaviors is at most \(\Pi _\mathcal {H}(2m)\), and for each fixed labeling pattern, \(\hat{R}_S(h) - \hat{R}_{S'}(h)\) is a sum of \(2m\) centered random variables (each \(\pm 1/m\) depending on which half the point falls in). </p>
 <p><b class="bfseries">Step 3: Hoeffding bound.</b> For each fixed label pattern, Hoeffding’s inequality gives </p>
-<div class="displaymath" id="a0000000021">
+<div class="displaymath" id="a0000000028">
   \[  \Pr _{\text{split}}\! \bigl[|\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\bigr] \leq 2\exp (-m\varepsilon ^2/8).  \]
 </div>
 <p> Combining with the Sauer–Shelah bound: </p>
-<div class="displaymath" id="a0000000022">
+<div class="displaymath" id="a0000000029">
   \[  \Pr _S\! \left[\sup _h |R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \right] \leq 4 \left(\frac{2em}{d}\right)^d \exp \! \left(-\frac{m\varepsilon ^2}{8}\right).  \]
 </div>
 <p> Setting this \(\leq \delta \) and solving for \(m\) gives </p>
-<div class="displaymath" id="a0000000023">
+<div class="displaymath" id="a0000000030">
   \[  m = O\! \left(\frac{d\log (1/\varepsilon ) + \log (1/\delta )}{\varepsilon ^2}\right).  \]
 </div>
 <p><b class="bfseries">Realizable improvement.</b> In the realizable setting, \(R_D(c^*) = 0\), so only one-sided deviations matter: we need \(\Pr [\exists h \in \mathcal{H} : \hat{R}_S(h) = 0 \text{ but } R_D(h) {\gt} \varepsilon ] \leq \delta \). For any fixed \(h\) with \(R_D(h) {\gt} \varepsilon \), the probability that \(h\) is consistent with all \(m\) samples is at most \((1 - \varepsilon )^m \leq e^{-m\varepsilon }\). A union bound over the \(\Pi _\mathcal {H}(m)\) distinct behaviors gives </p>
-<div class="displaymath" id="a0000000024">
+<div class="displaymath" id="a0000000031">
   \[  \Pr [\text{bad}] \leq \left(\frac{em}{d}\right)^d e^{-m\varepsilon }.  \]
 </div>
 <p> Setting this \(\leq \delta \) yields \(m = O\! \left(\frac{d\log (d/\varepsilon ) + \log (1/\delta )}{\varepsilon }\right)\), confirming the \(1/\varepsilon \) dependence. </p>

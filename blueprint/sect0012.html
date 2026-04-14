@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Measurability layer (kernel’s novel contribution)</title>
+<link rel="next" href="sect0013.html" title="Bibliography" />
+<link rel="prev" href="sect0011.html" title="Paradigm separations" />
+<link rel="up" href="app-lean-code.html" title="Key Lean 4 Declarations" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/pygments.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class=" active">
+  <a href="app-lean-code.html"><span class="toc_ref">A</span> <span class="toc_entry">Key Lean 4 Declarations</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sect0006.html"><span class="toc_ref">A.1</span> <span class="toc_entry">Core types</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">A.2</span> <span class="toc_entry">Combinatorial dimensions</span></a>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">A.3</span> <span class="toc_entry">Learnability predicates</span></a>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">A.4</span> <span class="toc_entry">The fundamental theorem (5-way equivalence)</span></a>
+ </li>
+<li class="">
+  <a href="sect0010.html"><span class="toc_ref">A.5</span> <span class="toc_entry">Characterization theorems</span></a>
+ </li>
+<li class="">
+  <a href="sect0011.html"><span class="toc_ref">A.6</span> <span class="toc_entry">Paradigm separations</span></a>
+ </li>
+<li class=" active current">
+  <a href="sect0012.html"><span class="toc_ref">A.7</span> <span class="toc_entry">Measurability layer (kernel’s novel contribution)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0013.html"><span class="toc_ref">B</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="a0000000013">A.7 Measurability layer (kernel’s novel contribution)</h1>
+<div class="caption" id="">
+  <b>Listing A.13</b>: 
+  WellBehavedVCMeasTarget (Complexity/Measurability.lean:388)
+</div>
+<div class="highlight"><pre><span></span><span class="kn">def</span><span class="w"> </span><span class="n">WellBehavedVCMeasTarget</span>
+<span class="w">    </span><span class="o">(</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">[</span><span class="n">MeasurableSpace</span><span class="w"> </span><span class="n">X</span><span class="o">]</span>
+<span class="w">    </span><span class="o">(</span><span class="n">C</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ConceptClass</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="k">forall</span><span class="w"> </span><span class="o">(</span><span class="n">D</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Measure</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="o">[</span><span class="n">IsProbabilityMeasure</span><span class="w"> </span><span class="n">D</span><span class="o">]</span>
+<span class="w">    </span><span class="o">(</span><span class="n">c</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Concept</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="o">),</span><span class="w"> </span><span class="n">Measurable</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="bp">-&gt;</span>
+<span class="w">    </span><span class="k">forall</span><span class="w"> </span><span class="o">(</span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">N</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">e</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">R</span><span class="o">),</span>
+<span class="w">      </span><span class="n">NullMeasurableSet</span>
+<span class="w">        </span><span class="o">{</span><span class="n">p</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="n">Fin</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="o">(</span><span class="n">Fin</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">X</span><span class="o">)</span><span class="w"> </span><span class="bp">|</span><span class="w"> </span><span class="n">exists</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="k">in</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">C</span><span class="o">,</span>
+<span class="w">          </span><span class="n">EmpiricalError</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="w"> </span><span class="n">h</span>
+<span class="w">            </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="bp">.</span><span class="m">2</span><span class="w"> </span><span class="n">i</span><span class="o">,</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="bp">.</span><span class="m">2</span><span class="w"> </span><span class="n">i</span><span class="o">)))</span><span class="w"> </span><span class="o">(</span><span class="n">zeroOneLoss</span><span class="w"> </span><span class="n">Bool</span><span class="o">)</span><span class="w"> </span><span class="bp">-</span>
+<span class="w">          </span><span class="n">EmpiricalError</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="w"> </span><span class="n">h</span>
+<span class="w">            </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="bp">.</span><span class="m">1</span><span class="w"> </span><span class="n">i</span><span class="o">,</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">(</span><span class="n">p</span><span class="bp">.</span><span class="m">1</span><span class="w"> </span><span class="n">i</span><span class="o">)))</span><span class="w"> </span><span class="o">(</span><span class="n">zeroOneLoss</span><span class="w"> </span><span class="n">Bool</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">geq</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="mi">2</span><span class="o">}</span>
+<span class="w">        </span><span class="o">((</span><span class="n">Measure</span><span class="bp">.</span><span class="n">pi</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Fin</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">D</span><span class="o">))</span><span class="bp">.</span><span class="n">prod</span>
+<span class="w">         </span><span class="o">(</span><span class="n">Measure</span><span class="bp">.</span><span class="n">pi</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Fin</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">D</span><span class="o">)))</span>
+</pre></div>
+
+<div class="caption" id="">
+  <b>Listing A.14</b>: 
+  KrappWirthWellBehaved (Complexity/Measurability.lean:241)
+</div>
+<div class="highlight"><pre><span></span><span class="kn">class</span><span class="w"> </span><span class="n">KrappWirthWellBehaved</span><span class="w"> </span><span class="o">(</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">[</span><span class="n">MeasurableSpace</span><span class="w"> </span><span class="n">X</span><span class="o">]</span>
+<span class="w">    </span><span class="o">(</span><span class="n">C</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ConceptClass</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Prop</span><span class="w"> </span><span class="kn">extends</span><span class="w"> </span><span class="n">MeasurableHypotheses</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="kn">where</span>
+<span class="w">  </span><span class="n">V_measurable</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">KrappWirthV</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span>
+<span class="w">  </span><span class="n">U_measurable</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">KrappWirthU</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span>
+</pre></div>
+
+<div class="caption" id="">
+  <b>Listing A.15</b>: 
+  Borel-analytic separation witness (Theorem/BorelAnalyticSeparation.lean:207)
+</div>
+<div class="highlight"><pre><span></span><span class="kn">theorem</span><span class="w"> </span><span class="n">singleton_badEvent_not_measurable</span>
+<span class="w">    </span><span class="o">(</span><span class="n">A</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="n">R</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">hA_non</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">neg</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">MeasurableSet</span><span class="w"> </span><span class="n">A</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">    </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">neg</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">MeasurableSet</span><span class="w"> </span><span class="o">(</span><span class="n">singletonBadEvent</span><span class="w"> </span><span class="n">A</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">intro</span><span class="w"> </span><span class="n">hbad</span>
+<span class="w">  </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">singleton_badEvent_eq_preimage_planar</span><span class="w"> </span><span class="n">A</span><span class="o">]</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="n">hbad</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">hmeas</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Measurable</span><span class="w"> </span><span class="n">samplePair1ToPlane</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">    </span><span class="n">Measurable</span><span class="bp">.</span><span class="n">prod</span>
+<span class="w">      </span><span class="o">((</span><span class="n">measurable_pi_apply</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span><span class="bp">.</span><span class="n">comp</span><span class="w"> </span><span class="n">measurable_fst</span><span class="o">)</span>
+<span class="w">      </span><span class="o">((</span><span class="n">measurable_pi_apply</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span><span class="bp">.</span><span class="n">comp</span><span class="w"> </span><span class="n">measurable_snd</span><span class="o">)</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">hsurj</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Function</span><span class="bp">.</span><span class="n">Surjective</span><span class="w"> </span><span class="n">samplePair1ToPlane</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">    </span><span class="n">intro</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">langle</span><span class="bp">$@*</span><span class="o">)</span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="n">y</span><span class="o">(</span><span class="bp">*@$\</span><span class="n">rangle</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">    </span><span class="n">exact</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">langle</span><span class="bp">$@*</span><span class="o">)(</span><span class="k">fun</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">x</span><span class="o">,</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="bp">_</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">y</span><span class="o">),</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span><span class="w"> </span><span class="o">[</span><span class="n">samplePair1ToPlane</span><span class="o">](</span><span class="bp">*@$\</span><span class="n">rangle</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">hplanar</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">    </span><span class="o">(</span><span class="n">hmeas</span><span class="bp">.</span><span class="n">measurableSet_preimage_iff_of_surjective</span><span class="w"> </span><span class="n">hsurj</span><span class="o">)</span><span class="bp">.</span><span class="n">mp</span><span class="w"> </span><span class="n">hbad</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">planarWitnessEvent_not_measurable</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">hA_non</span><span class="w"> </span><span class="n">hplanar</span>
+</pre></div>
+
+<div class="caption" id="">
+  <b>Listing A.16</b>: 
+  Analytic sets are null-measurable (PureMath/AnalyticMeasurability.lean:91)
+</div>
+<div class="highlight"><pre><span></span><span class="kn">theorem</span><span class="w"> </span><span class="n">analyticSet_nullMeasurableSet</span>
+<span class="w">    </span><span class="o">{(</span><span class="bp">*@$\</span><span class="n">alpha</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="bp">*</span><span class="o">}</span>
+<span class="w">    </span><span class="o">[</span><span class="n">TopologicalSpace</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">alpha</span><span class="bp">$@*</span><span class="o">)]</span><span class="w"> </span><span class="o">[</span><span class="n">MeasurableSpace</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">alpha</span><span class="bp">$@*</span><span class="o">)]</span>
+<span class="w">    </span><span class="o">[</span><span class="n">BorelSpace</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">alpha</span><span class="bp">$@*</span><span class="o">)]</span><span class="w"> </span><span class="o">[</span><span class="n">PolishSpace</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">alpha</span><span class="bp">$@*</span><span class="o">)]</span>
+<span class="w">    </span><span class="o">{(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Measure</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">alpha</span><span class="bp">$@*</span><span class="o">)}</span><span class="w"> </span><span class="o">[</span><span class="n">IsFiniteMeasure</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)]</span>
+<span class="w">    </span><span class="o">{</span><span class="n">s</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">alpha</span><span class="bp">$@*</span><span class="o">)}</span><span class="w"> </span><span class="o">(</span><span class="n">hs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AnalyticSet</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"> </span><span class="o">:</span>
+<span class="w">    </span><span class="n">NullMeasurableSet</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">  </span><span class="n">classical</span>
+<span class="w">  </span><span class="k">obtain</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">langle</span><span class="bp">$@*</span><span class="o">)</span><span class="n">t</span><span class="o">,</span><span class="w"> </span><span class="n">hst</span><span class="o">,</span><span class="w"> </span><span class="n">ht_meas</span><span class="o">,</span><span class="w"> </span><span class="n">ht_eq</span><span class="o">(</span><span class="bp">*@$\</span><span class="n">rangle</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">    </span><span class="n">exists_measurable_superset</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">s</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">hzero</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">    </span><span class="n">by_contra</span><span class="w"> </span><span class="n">hne</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">hfin_diff</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">neq</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">top</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">measure_ne_top</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="bp">_</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">hpos</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="o">(</span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">      </span><span class="n">ENNReal</span><span class="bp">.</span><span class="n">toReal_pos</span><span class="w"> </span><span class="n">hne</span><span class="w"> </span><span class="n">hfin_diff</span>
+<span class="w">    </span><span class="k">obtain</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">langle</span><span class="bp">$@*</span><span class="o">)</span><span class="n">K</span><span class="o">,</span><span class="w"> </span><span class="n">hKc</span><span class="o">,</span><span class="w"> </span><span class="n">hKs</span><span class="o">,</span><span class="w"> </span><span class="n">hKapprox</span><span class="o">(</span><span class="bp">*@$\</span><span class="n">rangle</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">      </span><span class="n">hs</span><span class="bp">.</span><span class="n">exists_isCompact_measureReal_gt</span>
+<span class="w">        </span><span class="o">((</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">))</span><span class="w"> </span><span class="o">((</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="o">(</span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"> </span><span class="bp">/</span><span class="w"> </span><span class="mi">2</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="k">by</span><span class="w"> </span><span class="n">positivity</span><span class="o">)</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">hKt</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">subseteq</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="n">hx</span><span class="w"> </span><span class="bp">=&gt;</span><span class="w"> </span><span class="n">hst</span><span class="w"> </span><span class="o">(</span><span class="n">hKs</span><span class="w"> </span><span class="n">hx</span><span class="o">)</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">hKmeas</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">MeasurableSet</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">hKc</span><span class="bp">.</span><span class="n">isClosed</span><span class="bp">.</span><span class="n">measurableSet</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">hdiff_eq</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="o">(</span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">K</span><span class="o">)</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="bp">-</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">      </span><span class="n">measureReal_diff</span><span class="w"> </span><span class="n">hKt</span><span class="w"> </span><span class="n">hKmeas</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">ht_real</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">      </span><span class="n">simp</span><span class="w"> </span><span class="n">only</span><span class="w"> </span><span class="o">[</span><span class="n">Measure</span><span class="bp">.</span><span class="n">real</span><span class="o">]</span><span class="bp">;</span><span class="w"> </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">ht_eq</span><span class="o">]</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">hsub</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">subseteq</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">      </span><span class="n">Set</span><span class="bp">.</span><span class="n">diff_subset_diff_right</span><span class="w"> </span><span class="n">hKs</span>
+<span class="w">    </span><span class="k">have</span><span class="w"> </span><span class="n">hle</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="o">(</span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">s</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">leq</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)</span><span class="bp">.</span><span class="n">real</span><span class="w"> </span><span class="o">(</span><span class="n">t</span><span class="w"> </span><span class="bp">\</span><span class="w"> </span><span class="n">K</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">      </span><span class="n">measureReal_mono</span><span class="w"> </span><span class="n">hsub</span>
+<span class="w">    </span><span class="n">linarith</span>
+<span class="w">  </span><span class="k">have</span><span class="w"> </span><span class="n">h_ae</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="bp">=</span><span class="o">(</span><span class="bp">*@$</span><span class="o">{}</span><span class="bp">^</span><span class="o">{</span><span class="bp">\</span><span class="n">text</span><span class="o">{</span><span class="n">ae</span><span class="o">}}</span><span class="bp">$@*</span><span class="o">)[(</span><span class="bp">*@$\</span><span class="n">mu</span><span class="bp">$@*</span><span class="o">)]</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="k">by</span>
+<span class="w">    </span><span class="n">rw</span><span class="w"> </span><span class="o">[</span><span class="n">Filter</span><span class="bp">.</span><span class="n">eventuallyEq_comm</span><span class="o">,</span><span class="w"> </span><span class="n">ae_eq_set</span><span class="o">]</span>
+<span class="w">    </span><span class="n">exact</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">langle</span><span class="bp">$@*</span><span class="o">)</span><span class="n">hzero</span><span class="o">,</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">simp</span><span class="w"> </span><span class="o">[</span><span class="n">Set</span><span class="bp">.</span><span class="n">diff_eq_empty</span><span class="bp">.</span><span class="n">mpr</span><span class="w"> </span><span class="n">hst</span><span class="o">](</span><span class="bp">*@$\</span><span class="n">rangle</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">  </span><span class="n">exact</span><span class="w"> </span><span class="n">ht_meas</span><span class="bp">.</span><span class="n">nullMeasurableSet</span><span class="bp">.</span><span class="n">congr</span><span class="w"> </span><span class="n">h_ae</span><span class="bp">.</span><span class="n">symm</span>
+</pre></div>
+
+<p>   </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sect0011.html" title="Paradigm separations"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="app-lean-code.html" title="Key Lean 4 Declarations"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sect0013.html" title="Bibliography"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

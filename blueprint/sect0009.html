@@ -12,9 +12,9 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Formal Learning Theory Kernel: Blueprint v1: Core types</title>
-<link rel="next" href="sect0007.html" title="Combinatorial dimensions" />
-<link rel="prev" href="app-lean-code.html" title="Key Lean 4 Declarations" />
+<title>Formal Learning Theory Kernel: Blueprint v1: The fundamental theorem (5-way equivalence)</title>
+<link rel="next" href="sect0010.html" title="Characterization theorems" />
+<link rel="prev" href="sect0008.html" title="Learnability predicates" />
 <link rel="up" href="app-lean-code.html" title="Key Lean 4 Declarations" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
@@ -267,7 +267,7 @@
   <a href="app-lean-code.html"><span class="toc_ref">A</span> <span class="toc_entry">Key Lean 4 Declarations</span></a>
   <span class="expand-toc">▼</span>
   <ul class="sub-toc-1 active">
-     <li class=" active current">
+     <li class="">
   <a href="sect0006.html"><span class="toc_ref">A.1</span> <span class="toc_entry">Core types</span></a>
  </li>
 <li class="">
@@ -276,7 +276,7 @@
 <li class="">
   <a href="sect0008.html"><span class="toc_ref">A.3</span> <span class="toc_entry">Learnability predicates</span></a>
  </li>
-<li class="">
+<li class=" active current">
   <a href="sect0009.html"><span class="toc_ref">A.4</span> <span class="toc_entry">The fundamental theorem (5-way equivalence)</span></a>
  </li>
 <li class="">
@@ -302,24 +302,37 @@
 
 
 <div class="main-text">
-<h1 id="a0000000007">A.1 Core types</h1>
+<h1 id="a0000000010">A.4 The fundamental theorem (5-way equivalence)</h1>
 <div class="caption" id="">
-  <b>Listing A.1</b>: 
-  Concept and ConceptClass (Basic.lean)
+  <b>Listing A.8</b>: 
+  Fundamental theorem of statistical learning (Theorem/PAC.lean:293)
 </div>
-<div class="highlight"><pre><span></span><span class="kn">def</span><span class="w"> </span><span class="n">Concept</span><span class="w"> </span><span class="o">(</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">Y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">v</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">Y</span>
-
-<span class="kn">abbrev</span><span class="w"> </span><span class="n">ConceptClass</span><span class="w"> </span><span class="o">(</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">Y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">v</span><span class="o">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">Set</span><span class="w"> </span><span class="o">(</span><span class="n">Concept</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Y</span><span class="o">)</span>
-</pre></div>
-
-<div class="caption" id="">
-  <b>Listing A.2</b>: 
-  BatchLearner (Learner/Core.lean)
-</div>
-<div class="highlight"><pre><span></span><span class="kn">structure</span><span class="w"> </span><span class="n">BatchLearner</span><span class="w"> </span><span class="o">(</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">Y</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">v</span><span class="o">)</span><span class="w"> </span><span class="kn">where</span>
-<span class="w">  </span><span class="n">hypotheses</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">HypothesisSpace</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Y</span>
-<span class="w">  </span><span class="n">learn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="o">{</span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">N</span><span class="o">}</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="o">(</span><span class="n">Fin</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">Y</span><span class="o">)</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">Concept</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Y</span>
-<span class="w">  </span><span class="n">output_in_H</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">forall</span><span class="w"> </span><span class="o">{</span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">N</span><span class="o">}</span><span class="w"> </span><span class="o">(</span><span class="n">S</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Fin</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="bp">*</span><span class="w"> </span><span class="n">Y</span><span class="o">),</span><span class="w"> </span><span class="n">learn</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="k">in</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">hypotheses</span>
+<div class="highlight"><pre><span></span><span class="kn">theorem</span><span class="w"> </span><span class="n">fundamental_theorem</span><span class="w"> </span><span class="o">(</span><span class="n">X</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">Type</span><span class="w"> </span><span class="n">u</span><span class="o">)</span><span class="w"> </span><span class="o">[</span><span class="n">MeasurableSpace</span><span class="w"> </span><span class="n">X</span><span class="o">]</span>
+<span class="w">    </span><span class="o">[</span><span class="n">MeasurableSingletonClass</span><span class="w"> </span><span class="n">X</span><span class="o">]</span>
+<span class="w">    </span><span class="o">(</span><span class="n">C</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">ConceptClass</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="o">)</span>
+<span class="w">    </span><span class="o">[</span><span class="n">MeasurableConceptClass</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">]</span><span class="w"> </span><span class="o">:</span>
+<span class="w">    </span><span class="o">(</span><span class="n">PACLearnable</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">leftrightarrow</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">VCDim</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">top</span><span class="bp">$@*</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">wedge</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">    </span><span class="o">((</span><span class="n">VCDim</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">top</span><span class="bp">$@*</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">leftrightarrow</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">      </span><span class="n">exists</span><span class="w"> </span><span class="o">(</span><span class="n">k</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">N</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">cs</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">CompressionSchemeWithInfo0</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="w"> </span><span class="n">C</span><span class="o">),</span><span class="w"> </span><span class="n">cs</span><span class="bp">.</span><span class="n">size</span><span class="w"> </span><span class="bp">=</span><span class="w"> </span><span class="n">k</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">wedge</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">    </span><span class="o">((</span><span class="n">VCDim</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">top</span><span class="bp">$@*</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">leftrightarrow</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">      </span><span class="k">forall</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="bp">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">,</span><span class="w"> </span><span class="n">exists</span><span class="w"> </span><span class="n">m0</span><span class="o">,</span><span class="w"> </span><span class="k">forall</span><span class="w"> </span><span class="o">(</span><span class="n">D</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Measure</span><span class="w"> </span><span class="n">X</span><span class="o">),</span>
+<span class="w">        </span><span class="n">IsProbabilityMeasure</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="bp">-&gt;</span>
+<span class="w">        </span><span class="k">forall</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">geq</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">m0</span><span class="o">,</span><span class="w"> </span><span class="n">RademacherComplexity</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="n">D</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="n">e</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">wedge</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="n">PACLearnable</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">-&gt;</span>
+<span class="w">      </span><span class="n">exists</span><span class="w"> </span><span class="o">(</span><span class="n">L</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">BatchLearner</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">Bool</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">mf</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="bp">-&gt;</span><span class="w"> </span><span class="n">N</span><span class="o">),</span>
+<span class="w">        </span><span class="c1">-- sample complexity sandwich + lower bound</span>
+<span class="w">        </span><span class="bp">...</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">wedge</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">    </span><span class="o">((</span><span class="n">VCDim</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="bp">&lt;</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">top</span><span class="bp">$@*</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">leftrightarrow</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">      </span><span class="n">exists</span><span class="w"> </span><span class="o">(</span><span class="n">d</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">N</span><span class="o">),</span><span class="w"> </span><span class="k">forall</span><span class="w"> </span><span class="o">(</span><span class="n">m</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">N</span><span class="o">),</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">leq</span><span class="bp">$@*</span><span class="o">)</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="bp">-&gt;</span>
+<span class="w">        </span><span class="n">GrowthFunction</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">leq</span><span class="bp">$@*</span><span class="o">)</span>
+<span class="w">          </span><span class="n">Finset</span><span class="bp">.</span><span class="n">sum</span><span class="w"> </span><span class="o">(</span><span class="n">Finset</span><span class="bp">.</span><span class="n">range</span><span class="w"> </span><span class="o">(</span><span class="n">d</span><span class="w"> </span><span class="bp">+</span><span class="w"> </span><span class="mi">1</span><span class="o">))</span><span class="w"> </span><span class="o">(</span><span class="n">Nat</span><span class="bp">.</span><span class="n">choose</span><span class="w"> </span><span class="n">m</span><span class="o">))</span><span class="w"> </span><span class="o">:=</span>
+<span class="w">  </span><span class="c1">-- Proof: assembles from component theorems</span>
+<span class="w">  </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">langle</span><span class="bp">$@*</span><span class="o">)</span><span class="n">vc_characterization</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">,</span>
+<span class="w">   </span><span class="n">fundamental_vc_compression</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">,</span>
+<span class="w">   </span><span class="o">(</span><span class="n">vc_characterization</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">)</span><span class="bp">.</span><span class="n">symm</span><span class="bp">.</span><span class="n">trans</span><span class="w"> </span><span class="o">(</span><span class="n">fundamental_rademacher</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">),</span>
+<span class="w">   </span><span class="n">pac_sample_complexity_sandwich</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">,</span>
+<span class="w">   </span><span class="o">(</span><span class="bp">*@$\</span><span class="n">langle</span><span class="bp">$@*</span><span class="o">)</span><span class="n">vcdim_finite_imp_growth_bounded</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">,</span>
+<span class="w">    </span><span class="n">growth_bounded_imp_vcdim_finite</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="n">C</span><span class="o">(</span><span class="bp">*@$\</span><span class="n">rangle</span><span class="bp">\</span><span class="n">rangle</span><span class="bp">$@*</span><span class="o">)</span>
 </pre></div>
 
 
@@ -329,11 +342,11 @@
 </div> <!-- wrapper -->
 
 <nav class="prev_up_next">
-  <a href="app-lean-code.html" title="Key Lean 4 Declarations"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+  <a href="sect0008.html" title="Learnability predicates"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
 </a>
   <a href="app-lean-code.html" title="Key Lean 4 Declarations"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
 </a>
-  <a href="sect0007.html" title="Combinatorial dimensions"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="sect0010.html" title="Characterization theorems"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 

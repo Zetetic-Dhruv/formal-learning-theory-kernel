@@ -12,10 +12,10 @@
 <meta name="generator" content="plasTeX" />
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Formal Learning Theory Kernel: Blueprint v1: The analytic measurability bridge</title>
-<link rel="next" href="sec-borel-analytic-sep.html" title="The Borel-analytic separation theorem" />
-<link rel="prev" href="sec-borel-param.html" title="Borel parameterization and the symmetrization route" />
-<link rel="up" href="chap-measurability.html" title="The Measurability Layer" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Key Lean 4 Declarations</title>
+<link rel="next" href="sect0006.html" title="Core types" />
+<link rel="prev" href="chap-closing.html" title="Closing Notes and Forward Pointers" />
+<link rel="up" href="index.html" title="Formal Learning Theory Kernel: Blueprint v1" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
 <link rel="stylesheet" href="styles/pygments.css" />
@@ -244,14 +244,14 @@
 
   </ul>
  </li>
-<li class=" active">
+<li class="">
   <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
-  <span class="expand-toc">▼</span>
-  <ul class="sub-toc-1 active">
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
      <li class="">
   <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
  </li>
-<li class=" active current">
+<li class="">
   <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
  </li>
 <li class="">
@@ -263,10 +263,10 @@
 <li class="">
   <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
  </li>
-<li class="">
+<li class=" active current">
   <a href="app-lean-code.html"><span class="toc_ref">A</span> <span class="toc_entry">Key Lean 4 Declarations</span></a>
-  <span class="expand-toc">▶</span>
-  <ul class="sub-toc-1">
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
      <li class="">
   <a href="sect0006.html"><span class="toc_ref">A.1</span> <span class="toc_entry">Core types</span></a>
  </li>
@@ -302,121 +302,9 @@
 
 
 <div class="main-text">
-<h1 id="sec:choquet-bridge">7.2 The analytic measurability bridge</h1>
-<p>  </p>
-<p>Analytic sets are the sets obtainable as continuous images of Polish spaces, equivalently, the projections of Borel sets in a product of Polish spaces, equivalently, the result of the Souslin operation applied to a Borel scheme. Every Borel set is analytic, the converse fails in the strongest possible way (there exist analytic sets of every cardinality up to the continuum that are not Borel), and the class of analytic sets is strictly larger than the Borel class while staying manageable under projection. This is classical, and Kechris&#160;<span class="cite">
-	[
-</span> is the standard modern reference. </p>
-<div class="lemma_thmwrapper theorem-style-plain" id="lem:borel-proj-analytic">
-  <div class="lemma_thmheading">
-    <span class="lemma_thmcaption">
-    Lemma
-    </span>
-    <span class="lemma_thmlabel">7.7</span>
-    <span class="lemma_thmtitle">Projections of Borel sets are analytic</span>
-  </div>
-  <div class="lemma_thmcontent">
-  <p>  Let \(Y\) and \(Z\) be standard Borel spaces and let \(B \subseteq Y \times Z\) be Borel. The projection \(\pi _Z(B) = \{ \, z : \exists y,\  (y,z) \in B\, \} \) is an analytic subset of \(Z\). This is the defining property of analytic sets in the Kechris formulation. </p>
-
-  </div>
-</div>
-<div class="cor_thmwrapper theorem-style-plain" id="cor:param-bad-analytic">
-  <div class="cor_thmheading">
-    <span class="cor_thmcaption">
-    Corollary
-    </span>
-    <span class="cor_thmlabel">7.8</span>
-    <span class="cor_thmtitle">The parameterized bad event is analytic</span>
-  </div>
-  <div class="cor_thmcontent">
-  <p>   For every Borel-parameterized concept class \(C\) with parameter space \(\Theta \), every \(m\), and every \(\varepsilon {\gt} 0\), the parameterized ghost-gap bad event \(\mathrm{Bad}_{\mathrm{eval}}(m, \varepsilon )\) is an analytic subset of \(X^m \times X^m\) whenever \(X\) is standard Borel. </p>
-
-  </div>
-</div>
-<div class="proof_wrapper" id="a0000000072">
-  <div class="proof_heading">
-    <span class="proof_caption">
-    Proof
-    </span>
-    <span class="expand-proof">▼</span>
-  </div>
-  <div class="proof_content">
-  <p>The condition \(|\hat{R}_{S'}(\mathrm{eval}(\theta ,\cdot )) - \hat{R}_S(\mathrm{eval}(\theta ,\cdot ))| {\gt} \varepsilon \) is jointly Borel in \((\theta , S, S') \in \Theta \times X^m \times X^m\) because \(\mathrm{eval}\) is jointly measurable and the empirical risks are finite sums of indicator evaluations. The bad event \(\mathrm{Bad}_{\mathrm{eval}}(m, \varepsilon )\) is the projection of this Borel set onto the last two factors, hence analytic by <a href="sec-choquet-bridge.html#lem:borel-proj-analytic">Lemma 7.7</a>. </p>
-
-  </div>
-</div>
-<p><a href="sec-choquet-bridge.html#cor:param-bad-analytic">Corollary 7.8</a> reduces the measurability question for the bad event to a single question: <em>are analytic sets null-measurable with respect to every Borel probability measure?</em> That question was answered in 1955 by Gustave Choquet. The answer is yes, and the proof route is the capacitability theorem. </p>
-<div class="thm_thmwrapper theorem-style-plain" id="thm:choquet-capacity">
-  <div class="thm_thmheading">
-    <span class="thm_thmcaption">
-    Theorem
-    </span>
-    <span class="thm_thmlabel">7.9</span>
-    <span class="thm_thmtitle">Choquet capacitability, <span class="cite">
-	[
-</span></span>
-  </div>
-  <div class="thm_thmcontent">
-  <p>  <small class="footnotesize"><span class="sffamily">[ MeasureTheory.AnalyticSet.compactCap_eq ]</span></small> Let \(X\) be a Polish space and let \(\mu \) be a Borel probability measure on \(X\). For every analytic set \(A \subseteq X\), </p>
-<div class="displaymath" id="a0000000073">
-  \[  \mu ^*(A) \; =\;  \sup \, \bigl\{ \,  \mu (K)\, :\, K \subseteq A,\  K\text{ compact}\, \bigr\} ,  \]
-</div>
-<p> where \(\mu ^*\) denotes the outer measure induced by \(\mu \). In particular, \(A\) is \(\mu \)-capacitable: its outer measure equals its inner measure, and \(A\) lies in the completion of the Borel \(\sigma \)-algebra with respect to \(\mu \). </p>
-
-  </div>
-</div>
-<div class="proof_wrapper" id="a0000000074">
-  <div class="proof_heading">
-    <span class="proof_caption">
-    Sketch
-    </span>
-    <span class="expand-proof">▼</span>
-  </div>
-  <div class="proof_content">
-  <p> The argument proceeds by showing that \(\mu ^*\) extended to analytic sets is a Choquet capacity: it is countably subadditive, monotone, and continuous from below on increasing unions, and continuous from above on decreasing intersections of compact sets. Any Choquet capacity is capacitable on analytic sets by an alternating game between approximating unions and intersections of compact sets. The compact approximations then converge in outer measure to \(\mu ^*(A)\) from below, and the Borel completion absorbs the gap. The full formalization runs 416 lines in <span class="ttfamily">FLT_Proofs.PureMath.ChoquetCapacity</span> and is independent of learning theory; it is written in a form suitable for contribution to Mathlib as a standalone result. The blueprint treats it as a black box from here on. </p>
-
-  </div>
-</div>
-<div class="cor_thmwrapper theorem-style-plain" id="cor:analytic-null-measurable">
-  <div class="cor_thmheading">
-    <span class="cor_thmcaption">
-    Corollary
-    </span>
-    <span class="cor_thmlabel">7.10</span>
-    <span class="cor_thmtitle">Analytic sets are null-measurable</span>
-  </div>
-  <div class="cor_thmcontent">
-  <p>  <small class="footnotesize"><span class="sffamily">[ analyticSet_nullMeasurableSet ]</span></small>  Every analytic set in a Polish space is null-measurable with respect to every Borel probability measure. </p>
-
-  </div>
-</div>
-<div class="proof_wrapper" id="a0000000075">
-  <div class="proof_heading">
-    <span class="proof_caption">
-    Proof
-    </span>
-    <span class="expand-proof">▼</span>
-  </div>
-  <div class="proof_content">
-  <p>By <a href="sec-choquet-bridge.html#thm:choquet-capacity">Theorem 7.9</a>, the outer and inner measures of an analytic set agree, which is equivalent to the set lying in the \(\mu \)-completion of the Borel \(\sigma \)-algebra. </p>
-
-  </div>
-</div>
-<p>The bridge closes with a one-line composition: <a href="sec-choquet-bridge.html#cor:param-bad-analytic">Corollary 7.8</a> says the bad event is analytic, <a href="sec-choquet-bridge.html#cor:analytic-null-measurable">Corollary 7.10</a> says analytic sets are null-measurable, and null-measurability of the bad event is exactly <span class="ttfamily">WellBehavedVCMeasTarget</span>. </p>
-<div class="prop_thmwrapper theorem-style-plain" id="prop:borel-param-implies-wbvc">
-  <div class="prop_thmheading">
-    <span class="prop_thmcaption">
-    Proposition
-    </span>
-    <span class="prop_thmlabel">7.11</span>
-    <span class="prop_thmtitle">Borel-parameterized implies WellBehavedVCMeasTarget</span>
-  </div>
-  <div class="prop_thmcontent">
-  <p>  <small class="footnotesize"><span class="sffamily">[ analyticSet_nullMeasurableSet_ghostPairs ]</span></small>  Every Borel-parameterized concept class over a standard Borel space \(X\) satisfies <span class="ttfamily">WellBehavedVCMeasTarget</span>. </p>
-
-  </div>
-</div>
-<p>The fundamental theorem of statistical learning (<a href="sec-vc-char.html#thm:vc-char">Theorem 3.7</a>) therefore applies, in the kernel’s formulation, to every Borel-parameterized concept class, including the classes for which Krapp and Wirth originally stated it under the stronger Borel hypothesis. The refinement is automatic for practical examples. The question that remains is whether it is <em>strictly</em> weaker, and it is to that question we now turn. </p>
+<h1 id="app:lean-code">A Key Lean 4 Declarations</h1>
+<p> </p>
+<p>This appendix displays the formal Lean 4 code for the definitions and theorems claimed in the preceding chapters. Every declaration compiles against mathlib4 <span class="ttfamily">fde0cc5</span> with zero <span class="ttfamily">sorry</span>. </p>
 
 </div> <!--main-text -->
 </div> <!-- content-wrapper -->
@@ -424,11 +312,11 @@
 </div> <!-- wrapper -->
 
 <nav class="prev_up_next">
-  <a href="sec-borel-param.html" title="Borel parameterization and the symmetrization route"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+  <a href="chap-closing.html" title="Closing Notes and Forward Pointers"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
 </a>
-  <a href="chap-measurability.html" title="The Measurability Layer"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+  <a href="index.html" title="Formal Learning Theory Kernel: Blueprint v1"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
 </a>
-  <a href="sec-borel-analytic-sep.html" title="The Borel-analytic separation theorem"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+  <a href="sect0006.html" title="Core types"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
 </a>
 </nav>
 

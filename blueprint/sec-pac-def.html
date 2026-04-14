@@ -264,7 +264,35 @@
   <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
  </li>
 <li class="">
-  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+  <a href="app-lean-code.html"><span class="toc_ref">A</span> <span class="toc_entry">Key Lean 4 Declarations</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0006.html"><span class="toc_ref">A.1</span> <span class="toc_entry">Core types</span></a>
+ </li>
+<li class="">
+  <a href="sect0007.html"><span class="toc_ref">A.2</span> <span class="toc_entry">Combinatorial dimensions</span></a>
+ </li>
+<li class="">
+  <a href="sect0008.html"><span class="toc_ref">A.3</span> <span class="toc_entry">Learnability predicates</span></a>
+ </li>
+<li class="">
+  <a href="sect0009.html"><span class="toc_ref">A.4</span> <span class="toc_entry">The fundamental theorem (5-way equivalence)</span></a>
+ </li>
+<li class="">
+  <a href="sect0010.html"><span class="toc_ref">A.5</span> <span class="toc_entry">Characterization theorems</span></a>
+ </li>
+<li class="">
+  <a href="sect0011.html"><span class="toc_ref">A.6</span> <span class="toc_entry">Paradigm separations</span></a>
+ </li>
+<li class="">
+  <a href="sect0012.html"><span class="toc_ref">A.7</span> <span class="toc_entry">Measurability layer (kernel’s novel contribution)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sect0013.html"><span class="toc_ref">B</span> <span class="toc_entry">Bibliography</span></a>
  </li>
 </ul>
 </nav>
@@ -317,7 +345,7 @@
   <div class="defn_thmcontent">
   <p>  <small class="footnotesize"><span class="sffamily">[ PACLearnable ]</span></small> A hypothesis class \(\mathcal{H}\) over domain \(X\) is <em>PAC learnable</em> if there exists an algorithm \(A\) and a function \(m_\mathcal {H} \colon (0,1)^2 \to \mathbb {N}\) such that, for every \(\varepsilon , \delta \in (0,1)\) and every distribution \(D\) on \(X\): </p>
 <p>If \(c^* \in \mathcal{H}\) and \(S \sim D^m\) with \(m \geq m_\mathcal {H}(\varepsilon , \delta )\), then </p>
-<div class="displaymath" id="a0000000009">
+<div class="displaymath" id="a0000000016">
   \[  \Pr _{S \sim D^m}\! \bigl[R_D(A(S)) {\gt} \varepsilon \bigr] \leq \delta .  \]
 </div>
 <p> The function \(m_\mathcal {H}(\varepsilon , \delta )\) is the <em>sample complexity</em> of \(\mathcal{H}\). When \(m_\mathcal {H}\) is polynomial in \(1/\varepsilon \) and \(1/\delta \), the class is <em>efficiently PAC learnable</em> (information-theoretically); computational efficiency is a separate requirement. </p>
@@ -338,7 +366,7 @@
 <p><b class="bfseries">VC dimension.</b> \(\mathrm{VCdim}(\mathcal{H}) = 4\). Four points, one near each side of a rectangle, can be shattered: for each subset \(T\) of the four points, the rectangle that tightly encloses exactly \(T\) labels precisely \(T\) as positive. No five points can be shattered: given any five points in \(\mathbb {R}^2\), at least one is “interior” (not extremal in any coordinate), and the labeling that excludes only that point cannot be realized by a rectangle. </p>
 <p><b class="bfseries">ERM and the error region.</b> Given sample \(S\) consistent with target rectangle \(R^*\), the ERM learner returns the tightest enclosing rectangle \(R_S\) of the positive examples. Since all positive examples lie in \(R^*\), we have \(R_S \subseteq R^*\): zero false positives. The error region \(R^* \setminus R_S\) consists of four <em>strips</em>, one per side of \(R^*\), each containing no positive sample. </p>
 <p><b class="bfseries">Sample complexity.</b> For each side&#160;\(j\) (\(j = 1, \ldots , 4\)), let \(T_j\) be the strip of \(R^*\) closest to side&#160;\(j\) with probability mass exactly \(\varepsilon /4\) under&#160;\(D\). If a positive example falls in \(T_j\), then \(R_S\) extends into \(T_j\) and that strip’s contribution to the error drops below \(\varepsilon /4\). The probability that strip \(T_j\) is missed entirely by \(m\) i.i.d. samples is at most \((1 - \varepsilon /4)^m \leq e^{-m\varepsilon /4}\). A union bound over four strips gives </p>
-<div class="displaymath" id="a0000000010">
+<div class="displaymath" id="a0000000017">
   \[  \Pr [R_D(R_S) {\gt} \varepsilon ] \; \leq \;  4\,  e^{-m\varepsilon /4}.  \]
 </div>
 <p> Setting the right-hand side \(\leq \delta \) yields \(m = \frac{4}{\varepsilon }\ln \frac{4}{\delta } = O\! \bigl(\frac{d + \log (1/\delta )}{\varepsilon }\bigr)\) with \(d = 4\), matching the Fundamental Theorem’s prediction with the tight \(1/\varepsilon \) dependence. </p>
@@ -378,7 +406,7 @@
   </div>
   <div class="defn_thmcontent">
   <p>  <small class="footnotesize"><span class="sffamily">[ BatchLearner ]</span></small> Given sample \(S = \{ (x_i, c^*(x_i))\} _{i=1}^m\) and hypothesis class \(\mathcal{H}\), the <em>empirical risk minimizer</em> is </p>
-<div class="displaymath" id="a0000000011">
+<div class="displaymath" id="a0000000018">
   \[  \operatorname{ERM}_\mathcal {H}(S) = \arg \min _{h \in \mathcal{H}} \hat{R}_S(h), \qquad \hat{R}_S(h) = \frac{1}{m}\sum _{i=1}^m \mathbf{1}[h(x_i) \neq c^*(x_i)].  \]
 </div>
 <p> In the realizable setting, \(\operatorname{ERM}\) returns any \(h \in \mathcal{H}\) consistent with \(S\) (since \(\hat{R}_S(c^*) = 0\)). </p>
