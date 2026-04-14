@@ -18,6 +18,7 @@
 <link rel="up" href="chap-measurability.html" title="The Measurability Layer" />
 <link rel="stylesheet" href="styles/theme-white.css" />
 <link rel="stylesheet" href="styles/amsthm.css" />
+<link rel="stylesheet" href="styles/pygments.css" />
 </head>
 
 <body>
@@ -287,9 +288,7 @@
     <span class="defn_thmtitle">Singleton class over a set</span>
   </div>
   <div class="defn_thmcontent">
-  <p>  </p>
-<p><span class="ttfamily"><small class="small">Lean: singletonClassOn</small></span></p>
-<p> For \(A \subseteq \mathbb {R}\), define the <em>singleton class over \(A\)</em> as </p>
+  <p>  <small class="footnotesize"><span class="sffamily">[ singletonClassOn ]</span></small> For \(A \subseteq \mathbb {R}\), define the <em>singleton class over \(A\)</em> as </p>
 <div class="displaymath" id="a0000000069">
   \[  C_A \; =\;  \{ \, \mathbf{0}\, \} \, \cup \,  \bigl\{ \, \mathbf{1}_{\{ a\} }\, :\, a \in A\, \bigr\} ,  \]
 </div>
@@ -307,9 +306,7 @@
     <span class="lemma_thmtitle">Every hypothesis in \(C_A\) is measurable</span>
   </div>
   <div class="lemma_thmcontent">
-  <p>  </p>
-<p><span class="ttfamily"><small class="small">Lean: singletonClassOn_measurable</small></span></p>
-<p>  For every \(A \subseteq \mathbb {R}\), every hypothesis \(h \in C_A\) is Borel measurable. </p>
+  <p>  <small class="footnotesize"><span class="sffamily">[ singletonClassOn_measurable ]</span></small>  For every \(A \subseteq \mathbb {R}\), every hypothesis \(h \in C_A\) is Borel measurable. </p>
 
   </div>
 </div>
@@ -323,9 +320,7 @@
     <span class="defn_thmtitle">Planar witness event</span>
   </div>
   <div class="defn_thmcontent">
-  <p>  </p>
-<p><span class="ttfamily"><small class="small">Lean: planarWitnessEvent</small></span></p>
-<p> For \(A \subseteq \mathbb {R}\), the <em>planar witness event</em> is the subset of \(\mathbb {R}^2\) given by </p>
+  <p>  <small class="footnotesize"><span class="sffamily">[ planarWitnessEvent ]</span></small> For \(A \subseteq \mathbb {R}\), the <em>planar witness event</em> is the subset of \(\mathbb {R}^2\) given by </p>
 <div class="displaymath" id="a0000000070">
   \[  W_A \; =\;  \bigl\{ \, (x, y) \in \mathbb {R}^2 \; :\;  y \in A\  \text{and}\  x \neq y\, \bigr\} .  \]
 </div>
@@ -383,9 +378,7 @@
     <span class="lemma_thmtitle">Bad event reduces to planar-witness preimage</span>
   </div>
   <div class="lemma_thmcontent">
-  <p>  </p>
-<p><span class="ttfamily"><small class="small">Lean: singleton_badEvent_eq_preimage_planar</small></span></p>
-<p>  For every \(A \subseteq \mathbb {R}\), the one-step ghost-gap bad event \(\mathrm{Bad}(C_A, 1, 1/2)\) on \((\mathrm{Fin}\, 1 \to \mathbb {R}) \times (\mathrm{Fin}\, 1 \to \mathbb {R})\) equals the preimage of the planar witness \(W_A\) under the sample-pair projection \((s, s') \mapsto (s(0), s'(0))\). </p>
+  <p>  <small class="footnotesize"><span class="sffamily">[ singleton_badEvent_eq_preimage_planar ]</span></small>  For every \(A \subseteq \mathbb {R}\), the one-step ghost-gap bad event \(\mathrm{Bad}(C_A, 1, 1/2)\) on \((\mathrm{Fin}\, 1 \to \mathbb {R}) \times (\mathrm{Fin}\, 1 \to \mathbb {R})\) equals the preimage of the planar witness \(W_A\) under the sample-pair projection \((s, s') \mapsto (s(0), s'(0))\). </p>
 
   </div>
 </div>
@@ -399,9 +392,7 @@
     <span class="thm_thmtitle">\(W_A\) is analytic for analytic \(A\)</span>
   </div>
   <div class="thm_thmcontent">
-  <p>  </p>
-<p><span class="ttfamily"><small class="small">Lean: planarWitnessEvent_analytic</small></span></p>
-<p>  If \(A \subseteq \mathbb {R}\) is analytic then \(W_A \subseteq \mathbb {R}^2\) is analytic. </p>
+  <p>  <small class="footnotesize"><span class="sffamily">[ planarWitnessEvent_analytic ]</span></small>  If \(A \subseteq \mathbb {R}\) is analytic then \(W_A \subseteq \mathbb {R}^2\) is analytic. </p>
 
   </div>
 </div>
@@ -426,9 +417,7 @@
     <span class="thm_thmtitle">\(W_A\) is not Borel for some analytic non-Borel \(A\)</span>
   </div>
   <div class="thm_thmcontent">
-  <p>  </p>
-<p><span class="ttfamily"><small class="small">Lean: planarWitnessEvent_not_measurable</small></span></p>
-<p>  There exists an analytic set \(A \subseteq \mathbb {R}\) such that \(W_A\) is analytic but <em>not</em> Borel. The classical construction takes any complete analytic subset of \(\mathbb {R}\), for example the set of codes of ill-founded trees on \(\mathbb {N}\) under a standard encoding; this set is analytic and not Borel. The projection \(A \mapsto W_A\) preserves the non-Borel property in the following sense: if \(W_A\) were Borel, then the fiber of \(W_A\) over any \(x_0 \notin A\) would be Borel, but that fiber is exactly \(A\), a contradiction. </p>
+  <p>  <small class="footnotesize"><span class="sffamily">[ planarWitnessEvent_not_measurable ]</span></small>  There exists an analytic set \(A \subseteq \mathbb {R}\) such that \(W_A\) is analytic but <em>not</em> Borel. The classical construction takes any complete analytic subset of \(\mathbb {R}\), for example the set of codes of ill-founded trees on \(\mathbb {N}\) under a standard encoding; this set is analytic and not Borel. The projection \(A \mapsto W_A\) preserves the non-Borel property in the following sense: if \(W_A\) were Borel, then the fiber of \(W_A\) over any \(x_0 \notin A\) would be Borel, but that fiber is exactly \(A\), a contradiction. </p>
 
   </div>
 </div>
@@ -452,9 +441,7 @@
     <span class="cor_thmtitle">Borel-analytic separation</span>
   </div>
   <div class="cor_thmcontent">
-  <p>  </p>
-<p><span class="ttfamily"><small class="small">Lean: singleton_badEvent_not_measurable</small></span></p>
-<p>  There exists a concept class \(C_A \subseteq \{ 0,1\} ^\mathbb {R}\) such that \(C_A\) satisfies <span class="ttfamily">WellBehavedVCMeasTarget</span> but fails <span class="ttfamily">KrappWirthWellBehaved</span>. Consequently the fundamental theorem of statistical learning (<a href="sec-vc-char.html#thm:vc-char">Theorem 3.7</a>) holds for \(C_A\) under the kernel’s NullMeasurableSet refinement and does not hold for \(C_A\) under the Krapp-Wirth Borel hypothesis. </p>
+  <p>  <small class="footnotesize"><span class="sffamily">[ singleton_badEvent_not_measurable ]</span></small>  There exists a concept class \(C_A \subseteq \{ 0,1\} ^\mathbb {R}\) such that \(C_A\) satisfies <span class="ttfamily">WellBehavedVCMeasTarget</span> but fails <span class="ttfamily">KrappWirthWellBehaved</span>. Consequently the fundamental theorem of statistical learning (<a href="sec-vc-char.html#thm:vc-char">Theorem 3.7</a>) holds for \(C_A\) under the kernel’s NullMeasurableSet refinement and does not hold for \(C_A\) under the Krapp-Wirth Borel hypothesis. </p>
 
   </div>
 </div>
