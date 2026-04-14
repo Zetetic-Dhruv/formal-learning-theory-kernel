@@ -18,6 +18,9 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v4
 
+      # ---------------------------------------------------------------
+      # PDF build (xelatex, uses nested \input via print.tex -> content.tex)
+      # ---------------------------------------------------------------
       - name: Build blueprint PDF
         uses: xu-cheng/texlive-action@v2
         with:
@@ -32,17 +35,110 @@ jobs:
             xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
             test -f ../print/print.pdf || (echo "PDF build failed" && exit 1)
 
+      # ---------------------------------------------------------------
+      # HTML build (plastex via leanblueprint)
+      # plastex cannot resolve \input{chapters/ch00_intro} or
+      # \input{preamble/common} from subdirectories. Fix: symlink
+      # all chapter and preamble files into blueprint/src/ root, then
+      # generate a flat web driver that inputs them without paths.
+      # ---------------------------------------------------------------
+      - name: Install leanblueprint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz libgraphviz-dev pkg-config
+          python3 -m venv $HOME/blueprint-venv
+          $HOME/blueprint-venv/bin/pip install --upgrade pip wheel
+          $HOME/blueprint-venv/bin/pip install invoke leanblueprint pygraphviz
+          echo "$HOME/blueprint-venv/bin" >> "$GITHUB_PATH"
+
+      - name: Flatten chapter files for plastex
+        run: |
+          cd blueprint/src
+          # Symlink chapter and preamble files into src/ root
+          for f in chapters/*.tex; do
+            ln -sf "$f" "$(basename $f)"
+          done
+          for f in preamble/*.tex; do
+            ln -sf "$f" "$(basename $f)"
+          done
+          # Generate a flat web driver that plastex can resolve
+          cat > web_flat.tex << 'FLATEOF'
+          \documentclass{report}
+          \usepackage{amsmath, amsfonts, amsthm, amssymb, mathtools}
+          \usepackage{stmaryrd}
+          \usepackage{bm}
+          \usepackage{thmtools}
+          \usepackage{hyperref}
+          \usepackage{graphicx}
+          \usepackage{enumitem}
+          \usepackage{booktabs}
+          \usepackage{longtable}
+          \usepackage{multirow}
+          \usepackage{array}
+          \usepackage[capitalize]{cleveref}
+          \usepackage[showmore, dep_graph, project=../../]{blueprint}
+          \input{common}
+          \input{web}
+          \home{https://zetetic-dhruv.github.io/formal-learning-theory-kernel/}
+          \github{https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel}
+          \dochome{https://zetetic-dhruv.github.io/formal-learning-theory-kernel/docs}
+          \title{Formal Learning Theory Kernel: Blueprint v1}
+          \author{Dhruv Gupta, Indian Institute of Science}
+          \begin{document}
+          \maketitle
+          \input{ch00_intro}
+          \input{ch01_primitives}
+          \input{ch02_pac}
+          \input{ch03_online}
+          \input{ch04_gold}
+          \input{ch05_separations}
+          \input{ch06_measurability}
+          \input{ch07_closing}
+          \bibliographystyle{alpha}
+          \bibliography{references}
+          \end{document}
+          FLATEOF
+          echo "=== symlinks created ==="
+          ls -la *.tex | head -20
+
+      - name: Build blueprint web HTML
+        run: |
+          cd blueprint/src
+          plastex --renderer=HTML5 web_flat.tex || true
+          echo "=== output ==="
+          ls -la ../web/ 2>/dev/null || ls -la web_flat/ 2>/dev/null || echo "checking where output landed"
+          find . -name "*.html" -not -path "./.git/*" | head -20
+
+      # ---------------------------------------------------------------
+      # Deploy to gh-pages
+      # ---------------------------------------------------------------
       - name: Checkout gh-pages
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages-deploy
 
-      - name: Deploy PDF and landing page
+      - name: Deploy outputs
         run: |
+          # Landing page
           cp docs/index.html gh-pages-deploy/index.html
+
+          # Blueprint PDF
           cp blueprint/print/print.pdf gh-pages-deploy/blueprint.pdf
+
+          # Blueprint HTML (find wherever plastex wrote it)
           rm -rf gh-pages-deploy/blueprint 2>/dev/null || true
+          mkdir -p gh-pages-deploy/blueprint
+          if [ -d blueprint/web ]; then
+            cp -r blueprint/web/. gh-pages-deploy/blueprint/
+          elif [ -d blueprint/src/web_flat ]; then
+            cp -r blueprint/src/web_flat/. gh-pages-deploy/blueprint/
+          else
+            echo "Warning: no HTML output found"
+          fi
+
+          ls -la gh-pages-deploy/
+          ls -la gh-pages-deploy/blueprint/ 2>/dev/null | head -10 || true
 
       - name: Push to gh-pages
         working-directory: gh-pages-deploy
@@ -51,6 +147,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           git diff --cached --quiet && echo "No changes to deploy" && exit 0
-          git commit -m "Deploy blueprint PDF from ${{ github.sha }}"
+          git commit -m "Deploy blueprint from ${{ github.sha }}"
           git pull --rebase origin gh-pages
           git push

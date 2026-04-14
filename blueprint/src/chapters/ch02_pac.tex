@@ -695,17 +695,20 @@ all the information the learner needs, and there are at most $\binom{m}{k}$
 possible compressed sets.
 
 The converse direction $\ref{F:finvc} \Rightarrow \ref{F:compression}$ is the
-deep one.  It was an open conjecture for 30 years before being resolved by
-Moran and Yehudayoff~\cite{MoranYehudayoff2016}.
+deep one.  A weaker exponential bound was proved by Moran and
+Yehudayoff~\cite{MoranYehudayoff2016}; the conjectured linear bound
+remains open.
 
 \begin{historical}
-\textbf{The compression conjecture.}
+\textbf{The sample compression conjecture.}
 Littlestone and Warmuth conjectured in 1986 that every class of VC dimension
-$d$ has a compression scheme of size $O(d)$.  The conjecture was resolved
-positively by Moran and Yehudayoff (2016), who proved that every class of
-VC dimension $d$ has a compression scheme of size at most $2^{O(d)}$.
-The $O(d)$ bound remains open; the exponential gap between $d$ and $2^{O(d)}$
-is one of the field's remaining structural questions.
+$d$ has a compression scheme of size at most $d$ (the linear bound).
+Moran and Yehudayoff (2016) proved the weaker result that every class of
+VC dimension $d$ has a compression scheme of size at most $2^{O(d)}$
+(an exponential bound). The original conjecture of a linear bound $O(d)$
+remains one of the field's central open problems. This kernel formalizes
+the Moran-Yehudayoff exponential bound via an approximate minimax (MWU)
+construction, not the conjectured linear bound.
 \end{historical}
 
 \begin{proof}[Proof sketch (Moran--Yehudayoff)]
