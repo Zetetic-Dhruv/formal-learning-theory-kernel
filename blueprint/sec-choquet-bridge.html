@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: The analytic measurability bridge</title>
+<link rel="next" href="sec-borel-analytic-sep.html" title="The Borel-analytic separation theorem" />
+<link rel="prev" href="sec-borel-param.html" title="Borel parameterization and the symmetrization route" />
+<link rel="up" href="chap-measurability.html" title="The Measurability Layer" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:choquet-bridge">7.2 The analytic measurability bridge</h1>
+<p>  </p>
+<p>Analytic sets are the sets obtainable as continuous images of Polish spaces, equivalently, the projections of Borel sets in a product of Polish spaces, equivalently, the result of the Souslin operation applied to a Borel scheme. Every Borel set is analytic, the converse fails in the strongest possible way (there exist analytic sets of every cardinality up to the continuum that are not Borel), and the class of analytic sets is strictly larger than the Borel class while staying manageable under projection. This is classical, and Kechris&#160;<span class="cite">
+	[
+</span> is the standard modern reference. </p>
+<div class="lemma_thmwrapper theorem-style-plain" id="lem:borel-proj-analytic">
+  <div class="lemma_thmheading">
+    <span class="lemma_thmcaption">
+    Lemma
+    </span>
+    <span class="lemma_thmlabel">7.7</span>
+    <span class="lemma_thmtitle">Projections of Borel sets are analytic</span>
+  </div>
+  <div class="lemma_thmcontent">
+  <p>  Let \(Y\) and \(Z\) be standard Borel spaces and let \(B \subseteq Y \times Z\) be Borel. The projection \(\pi _Z(B) = \{ \, z : \exists y,\  (y,z) \in B\, \} \) is an analytic subset of \(Z\). This is the defining property of analytic sets in the Kechris formulation. </p>
+
+  </div>
+</div>
+<div class="cor_thmwrapper theorem-style-plain" id="cor:param-bad-analytic">
+  <div class="cor_thmheading">
+    <span class="cor_thmcaption">
+    Corollary
+    </span>
+    <span class="cor_thmlabel">7.8</span>
+    <span class="cor_thmtitle">The parameterized bad event is analytic</span>
+  </div>
+  <div class="cor_thmcontent">
+  <p>   For every Borel-parameterized concept class \(C\) with parameter space \(\Theta \), every \(m\), and every \(\varepsilon {\gt} 0\), the parameterized ghost-gap bad event \(\mathrm{Bad}_{\mathrm{eval}}(m, \varepsilon )\) is an analytic subset of \(X^m \times X^m\) whenever \(X\) is standard Borel. </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000065">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>The condition \(|\hat{R}_{S'}(\mathrm{eval}(\theta ,\cdot )) - \hat{R}_S(\mathrm{eval}(\theta ,\cdot ))| {\gt} \varepsilon \) is jointly Borel in \((\theta , S, S') \in \Theta \times X^m \times X^m\) because \(\mathrm{eval}\) is jointly measurable and the empirical risks are finite sums of indicator evaluations. The bad event \(\mathrm{Bad}_{\mathrm{eval}}(m, \varepsilon )\) is the projection of this Borel set onto the last two factors, hence analytic by <a href="sec-choquet-bridge.html#lem:borel-proj-analytic">Lemma 7.7</a>. </p>
+
+  </div>
+</div>
+<p><a href="sec-choquet-bridge.html#cor:param-bad-analytic">Corollary 7.8</a> reduces the measurability question for the bad event to a single question: <em>are analytic sets null-measurable with respect to every Borel probability measure?</em> That question was answered in 1955 by Gustave Choquet. The answer is yes, and the proof route is the capacitability theorem. </p>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:choquet-capacity">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">7.9</span>
+    <span class="thm_thmtitle">Choquet capacitability, <span class="cite">
+	[
+</span></span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>   Let \(X\) be a Polish space and let \(\mu \) be a Borel probability measure on \(X\). For every analytic set \(A \subseteq X\), </p>
+<div class="displaymath" id="a0000000066">
+  \[  \mu ^*(A) \; =\;  \sup \, \bigl\{ \,  \mu (K)\, :\, K \subseteq A,\  K\text{ compact}\, \bigr\} ,  \]
+</div>
+<p> where \(\mu ^*\) denotes the outer measure induced by \(\mu \). In particular, \(A\) is \(\mu \)-capacitable: its outer measure equals its inner measure, and \(A\) lies in the completion of the Borel \(\sigma \)-algebra with respect to \(\mu \). </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000067">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Sketch
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p> The argument proceeds by showing that \(\mu ^*\) extended to analytic sets is a Choquet capacity: it is countably subadditive, monotone, and continuous from below on increasing unions, and continuous from above on decreasing intersections of compact sets. Any Choquet capacity is capacitable on analytic sets by an alternating game between approximating unions and intersections of compact sets. The compact approximations then converge in outer measure to \(\mu ^*(A)\) from below, and the Borel completion absorbs the gap. The full formalization runs 416 lines in <span class="ttfamily">FLT_Proofs.PureMath.ChoquetCapacity</span> and is independent of learning theory; it is written in a form suitable for contribution to Mathlib as a standalone result. The blueprint treats it as a black box from here on. </p>
+
+  </div>
+</div>
+<div class="cor_thmwrapper theorem-style-plain" id="cor:analytic-null-measurable">
+  <div class="cor_thmheading">
+    <span class="cor_thmcaption">
+    Corollary
+    </span>
+    <span class="cor_thmlabel">7.10</span>
+    <span class="cor_thmtitle">Analytic sets are null-measurable</span>
+  </div>
+  <div class="cor_thmcontent">
+  <p>    Every analytic set in a Polish space is null-measurable with respect to every Borel probability measure. </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000068">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>By <a href="sec-choquet-bridge.html#thm:choquet-capacity">Theorem 7.9</a>, the outer and inner measures of an analytic set agree, which is equivalent to the set lying in the \(\mu \)-completion of the Borel \(\sigma \)-algebra. </p>
+
+  </div>
+</div>
+<p>The bridge closes with a one-line composition: <a href="sec-choquet-bridge.html#cor:param-bad-analytic">Corollary 7.8</a> says the bad event is analytic, <a href="sec-choquet-bridge.html#cor:analytic-null-measurable">Corollary 7.10</a> says analytic sets are null-measurable, and null-measurability of the bad event is exactly <span class="ttfamily">WellBehavedVCMeasTarget</span>. </p>
+<div class="prop_thmwrapper theorem-style-plain" id="prop:borel-param-implies-wbvc">
+  <div class="prop_thmheading">
+    <span class="prop_thmcaption">
+    Proposition
+    </span>
+    <span class="prop_thmlabel">7.11</span>
+    <span class="prop_thmtitle">Borel-parameterized implies WellBehavedVCMeasTarget</span>
+  </div>
+  <div class="prop_thmcontent">
+  <p>    Every Borel-parameterized concept class over a standard Borel space \(X\) satisfies <span class="ttfamily">WellBehavedVCMeasTarget</span>. </p>
+
+  </div>
+</div>
+<p>The fundamental theorem of statistical learning (<a href="sec-vc-char.html#thm:vc-char">Theorem 3.7</a>) therefore applies, in the kernel’s formulation, to every Borel-parameterized concept class, including the classes for which Krapp and Wirth originally stated it under the stronger Borel hypothesis. The refinement is automatic for practical examples. The question that remains is whether it is <em>strictly</em> weaker, and it is to that question we now turn. </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-borel-param.html" title="Borel parameterization and the symmetrization route"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="chap-measurability.html" title="The Measurability Layer"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-borel-analytic-sep.html" title="The Borel-analytic separation theorem"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Stage 2: Uniform Convergence</title>
+<link rel="next" href="sec-erm-succeeds.html" title="Stage 3: Uniform Convergence Implies ERM Succeeds" />
+<link rel="prev" href="sec-sauer-shelah.html" title="Stage 1: Sauer–Shelah (Statement)" />
+<link rel="up" href="sec-vc-char.html" title="The VC Characterization" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class=" active">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-2 active">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h2 id="sec:uniform-convergence">3.2.2 Stage 2: Uniform Convergence</h2>
+<p>  </p>
+<p>The uniform convergence property says that empirical risk converges to true risk <em>simultaneously</em> for all hypotheses in \(\mathcal{H}\), not just for a single fixed \(h\). </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:unif-conv">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">3.11</span>
+    <span class="defn_thmtitle">Uniform Convergence</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   A hypothesis class \(\mathcal{H}\) has the <em>uniform convergence property</em> if for every \(\varepsilon , \delta {\gt} 0\), there exists \(m_{\mathrm{UC}}(\varepsilon , \delta )\) such that for all distributions \(D\), whenever \(m \geq m_{\mathrm{UC}}(\varepsilon , \delta )\): </p>
+<div class="displaymath" id="a0000000016">
+  \[  \Pr _{S \sim D^m}\! \left[ \sup _{h \in \mathcal{H}} |R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \right] \leq \delta .  \]
+</div>
+
+  </div>
+</div>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:unif-conv">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">3.12</span>
+    <span class="thm_thmtitle">Uniform Convergence from Finite Growth</span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>  If \(\Pi _\mathcal {H}(m) \leq (em/d)^d\) for all \(m \geq d\), then \(\mathcal{H}\) has the uniform convergence property with </p>
+<div class="displaymath" id="a0000000017">
+  \[  m_{\mathrm{UC}}(\varepsilon , \delta ) = O\! \left(\frac{d \log (1/\varepsilon ) + \log (1/\delta )}{\varepsilon ^2}\right).  \]
+</div>
+<p> In the realizable setting, the \(\varepsilon ^2\) denominator improves to \(\varepsilon \), giving \(m = O\! \left(\frac{d\log (1/\varepsilon ) + \log (1/\delta )}{\varepsilon }\right)\). </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000018">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>The proof uses the <em>symmetrization</em> (or “ghost sample”) technique of Vapnik and Chervonenkis&#160;<span class="cite">
+	[
+</span>. </p>
+<p><b class="bfseries">Step 1: Symmetrization.</b> Draw two independent samples \(S, S' \sim D^m\). We claim that for \(m \geq 8/\varepsilon ^2\), </p>
+<div class="displaymath" id="a0000000019">
+  \[  \Pr _S\! \left[\sup _{h} |R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \right] \leq 2\, \Pr _{S,S'}\! \left[ \sup _h |\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2 \right].  \]
+</div>
+<p> This follows because if \(|R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \) for some \(h\), then with probability at least \(1/2\) (by a Chebyshev argument on \(S'\)), the ghost sample satisfies \(|\hat{R}_{S'}(h) - R_D(h)| \leq \varepsilon /2\), and hence \(|\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\) by the triangle inequality. </p>
+<p><b class="bfseries">Step 2: Permutation argument.</b> Let \(T = S \cup S'\) be the pooled sample of size \(2m\). Conditioned on \(T\), the partition into \(S\) and \(S'\) is uniformly random among all \(\binom {2m}{m}\) splits. By a union bound over the distinct label patterns that \(\mathcal{H}\) induces on \(T\): </p>
+<div class="displaymath" id="a0000000020">
+  \[  \Pr _{S,S'}\! \left[\sup _h |\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\right] \leq \Pi _\mathcal {H}(2m) \cdot \max _h \Pr _{\text{split}}\! \bigl[|\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\bigr].  \]
+</div>
+<p> The number of distinct behaviors is at most \(\Pi _\mathcal {H}(2m)\), and for each fixed labeling pattern, \(\hat{R}_S(h) - \hat{R}_{S'}(h)\) is a sum of \(2m\) centered random variables (each \(\pm 1/m\) depending on which half the point falls in). </p>
+<p><b class="bfseries">Step 3: Hoeffding bound.</b> For each fixed label pattern, Hoeffding’s inequality gives </p>
+<div class="displaymath" id="a0000000021">
+  \[  \Pr _{\text{split}}\! \bigl[|\hat{R}_S(h) - \hat{R}_{S'}(h)| {\gt} \varepsilon /2\bigr] \leq 2\exp (-m\varepsilon ^2/8).  \]
+</div>
+<p> Combining with the Sauer–Shelah bound: </p>
+<div class="displaymath" id="a0000000022">
+  \[  \Pr _S\! \left[\sup _h |R_D(h) - \hat{R}_S(h)| {\gt} \varepsilon \right] \leq 4 \left(\frac{2em}{d}\right)^d \exp \! \left(-\frac{m\varepsilon ^2}{8}\right).  \]
+</div>
+<p> Setting this \(\leq \delta \) and solving for \(m\) gives </p>
+<div class="displaymath" id="a0000000023">
+  \[  m = O\! \left(\frac{d\log (1/\varepsilon ) + \log (1/\delta )}{\varepsilon ^2}\right).  \]
+</div>
+<p><b class="bfseries">Realizable improvement.</b> In the realizable setting, \(R_D(c^*) = 0\), so only one-sided deviations matter: we need \(\Pr [\exists h \in \mathcal{H} : \hat{R}_S(h) = 0 \text{ but } R_D(h) {\gt} \varepsilon ] \leq \delta \). For any fixed \(h\) with \(R_D(h) {\gt} \varepsilon \), the probability that \(h\) is consistent with all \(m\) samples is at most \((1 - \varepsilon )^m \leq e^{-m\varepsilon }\). A union bound over the \(\Pi _\mathcal {H}(m)\) distinct behaviors gives </p>
+<div class="displaymath" id="a0000000024">
+  \[  \Pr [\text{bad}] \leq \left(\frac{em}{d}\right)^d e^{-m\varepsilon }.  \]
+</div>
+<p> Setting this \(\leq \delta \) yields \(m = O\! \left(\frac{d\log (d/\varepsilon ) + \log (1/\delta )}{\varepsilon }\right)\), confirming the \(1/\varepsilon \) dependence. </p>
+
+  </div>
+</div>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:hanneke">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">3.13</span>
+    <span class="remark_thmtitle">The Hanneke refinement</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  The optimal sample complexity in the realizable case is \(\Theta \! \left(\frac{d + \log (1/\delta )}{\varepsilon }\right)\), achieved by a careful one-inclusion graph analysis. The \(\log (d/\varepsilon )\) factor in the union bound above is a mild overhead; Hanneke&#160;<span class="cite">
+	[
+</span> showed it can be removed entirely, establishing the tight bound. </p>
+
+  </div>
+</div>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-sauer-shelah.html" title="Stage 1: Sauer–Shelah (Statement)"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="sec-vc-char.html" title="The VC Characterization"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-erm-succeeds.html" title="Stage 3: Uniform Convergence Implies ERM Succeeds"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

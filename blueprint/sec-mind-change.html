@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Mind-Change Complexity</title>
+<link rel="next" href="sec-three-paradigm.html" title="Three Paradigms, Incomparable" />
+<link rel="prev" href="sec-trial-error.html" title="Trial and Error" />
+<link rel="up" href="ch-gold.html" title="Identification in the Limit" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active current">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:mind-change">5.5 Mind-Change Complexity</h1>
+<p>  </p>
+<p>Gold’s impossibility theorem tells us that certain classes cannot be identified at all. For classes that <em>can</em> be identified, a natural quantitative question arises: how many times must the learner change its mind before converging? </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:mind-change">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">5.13</span>
+    <span class="defn_thmtitle">Mind Change</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   A <em>mind change</em> occurs at time \(n\) if the learner’s output satisfies \(M(t_0, \ldots , t_n) \neq M(t_0, \ldots , t_{n-1})\). The <em>mind-change count</em> of \(M\) on text \(t\) is the number of times \(M\) changes its hypothesis. </p>
+
+  </div>
+</div>
+<p>For finite mind-change bounds, the theory is straightforward: we say that \(M\) identifies \(\mathcal{L}\) with at most \(k\) mind changes if, on every text for every \(L \in \mathcal{L}\), the mind-change count is at most \(k\). The class of all finite languages is identifiable with 0 mind changes after the first hypothesis (the learner in <a href="sec-ex-gold.html#ex:finite-languages">Example 5.3</a> changes its mind every time a new element appears, but a more careful learner can be designed with bounded mind changes for restricted subclasses). </p>
+<p>The surprise, genuinely unexpected for readers coming from PAC theory, is that integer-valued bounds are <em>not sufficient</em> to characterize the full landscape. </p>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:mind-change-ordinal">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">5.14</span>
+    <span class="thm_thmtitle">Freivalds–Smith <span class="cite">
+	[
+</span></span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>    The mind-change complexity of \(\mathbf{Ex}\)-identification is naturally measured by <em>countable ordinals</em>. Specifically: </p>
+<ol class="enumerate">
+  <li><p>For every countable ordinal \(\alpha \), one can define what it means for a learner to identify a class with mind-change bound \(\alpha \). </p>
+</li>
+  <li><p>There exist classes identifiable with mind-change bound \(\omega \) (the first infinite ordinal) that cannot be identified with any finite mind-change bound. </p>
+</li>
+  <li><p>More generally, for every ordinal \(\alpha {\lt} \omega _1\), there exist classes identifiable with mind-change bound \(\alpha \) but not with any bound \(\beta {\lt} \alpha \). </p>
+</li>
+</ol>
+
+  </div>
+</div>
+<p>The idea behind ordinal mind-change bounds is as follows. A learner with mind-change bound \(\omega \) begins with an ordinal counter set to \(\omega \). At each mind change, the counter must decrease, but it may decrease to any smaller ordinal. Since there is no infinite descending sequence of ordinals (ordinals are well-ordered), the learner must eventually stop changing its mind. The counter \(\omega \) allows finitely many mind changes, but the <em>number</em> of mind changes need not be bounded in advance by any fixed integer, it may depend on the input. </p>
+<p>This is fundamentally different from an integer bound. With a bound of \(k \in \mathbb {N}\), the learner may change its mind at most \(k\) times on <em>every</em> input. With a bound of \(\omega \), the learner may change its mind \(k\) times for input-dependent \(k\), with no uniform finite upper bound. The ordinal hierarchy continues: \(\omega \cdot 2\) allows the learner to “reset” its finite counter once; \(\omega ^2\) allows nested levels of resetting; and so on up through the constructive ordinals. </p>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:ordinals-surprise">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">5.15</span>
+    <span class="remark_thmtitle">Ordinals in learning theory</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  The appearance of transfinite ordinals in learning theory is a genuine structural surprise. PAC learning theory uses real-valued parameters (\(\varepsilon , \delta , m(\varepsilon , \delta )\)). Online learning uses integer-valued dimensions (\(\mathrm{Ldim}\)). Gold-style learning requires ordinal-valued complexity measures. Each proof technique brings its own number system. The full development of ordinal mind-change complexity is deferred to the companion textbook’s Chapter&#160;13 (Mind-Change Ordinals),<a class="footnote" href="#a0000000056">
+  <sup class="footnotemark">1</sup>
+</a> where it interacts with the constructive ordinal notation systems of Kleene. </p>
+
+  </div>
+</div>
+<p> <b class="bfseries">Path:</b> \(\textsf{\small mind\_ change\_ characterization} \xrightarrow {\texttt{\small measures}} \textsf{\small ex\_ learning}\).<br /> The mind-change ordinal is a complexity measure on \(\mathbf{Ex}\)-identifiable classes, analogous to the VC dimension for PAC-learnable classes. But where VC dimension is a single integer, mind-change complexity is an ordinal, potentially transfinite. This is a <span class="ttfamily"><small class="small">measures</small></span> edge of a qualitatively different kind than \(\textsf{\small vc\_ dimension} \xrightarrow {\texttt{\small measures}} \textsf{\small concept\_ class}\).  </p>
+
+</div> <!--main-text -->
+<footer id="footnotes">
+<ol>
+  <li id="a0000000056"><a href="https://github.com/Zetetic-Dhruv/formal-learning-theory-book">https://github.com/Zetetic-Dhruv/formal-learning-theory-book</a>, Chapter&#160;13.</li>
+</ol>
+</footer>
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-trial-error.html" title="Trial and Error"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-gold.html" title="Identification in the Limit"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-three-paradigm.html" title="Three Paradigms, Incomparable"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

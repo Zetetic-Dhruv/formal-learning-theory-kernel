@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Mistake Trees and the Littlestone Dimension</title>
+<link rel="next" href="sec-soa.html" title="The Standard Optimal Algorithm" />
+<link rel="prev" href="sec-online-game.html" title="The Online Learning Game" />
+<link rel="up" href="ch-online.html" title="Online Learning and the Littlestone Dimension" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:mistake-trees">4.2 Mistake Trees and the Littlestone Dimension</h1>
+<p>  </p>
+<p>The VC dimension counts the size of the largest <em>set</em> that \(\mathcal{H}\) can shatter. The Littlestone dimension counts the depth of the largest <em>tree</em> that \(\mathcal{H}\) can shatter. This shift, from sets to trees, is what captures the adversary’s adaptive power. </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:mistake-tree">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">4.3</span>
+    <span class="defn_thmtitle">Mistake Tree</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   A <em>mistake tree</em> for \(\mathcal{H}\) over \(X\) is a complete binary tree \(T\) in which: </p>
+<ul class="itemize">
+  <li>[leftmargin=*, itemsep=2pt] </li>
+  <li><p>Each internal node \(v\) is labeled with an instance \(x_v \in X\). </p>
+</li>
+  <li><p>The left child of \(v\) corresponds to the label \(y = 0\) and the right child to \(y = 1\). </p>
+</li>
+  <li><p>For every root-to-leaf path \((v_1, y_1), (v_2, y_2), \ldots , (v_d, y_d)\), there exists a hypothesis \(h \in \mathcal{H}\) consistent with all labels along the path: \(h(x_{v_i}) = y_i\) for all \(i\). </p>
+</li>
+</ul>
+<p> The <em>depth</em> of the tree is the number of internal nodes on any root-to-leaf path (all paths have the same length since the tree is complete). </p>
+
+  </div>
+</div>
+<p>The key idea is that a mistake tree encodes an adversary strategy. Starting at the root, the adversary presents \(x_{v_1}\). Whatever the learner predicts, the adversary can label \(x_{v_1}\) to make the prediction wrong and descend to the corresponding child. Realizability is maintained because every root-to-leaf path is consistent with some \(h \in \mathcal{H}\). Thus a mistake tree of depth \(d\) represents an adversary strategy that forces <em>any</em> learner to make at least \(d\) mistakes. </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:ldim">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">4.4</span>
+    <span class="defn_thmtitle">Littlestone Dimension <span class="cite">
+	[
+</span></span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   The <em>Littlestone dimension</em> of a hypothesis class \(\mathcal{H}\), denoted \(\mathrm{Ldim}(\mathcal{H})\), is the maximum depth of a complete mistake tree for \(\mathcal{H}\). If arbitrarily deep mistake trees exist, \(\mathrm{Ldim}(\mathcal{H}) = \infty \). </p>
+
+  </div>
+</div>
+<figure id="fig:mistake-tree">
+  <div class="centered"><div class="tikzpicture" id="a0000000044">
+    <img src="images/img-0003.png" alt="\begin{tikzpicture} [
+    level distance=1.6cm,
+    sibling distance=1.2cm,
+    every node/.style={font=\small},
+    treenode/.style={draw, circle, thick, minimum size=0.7cm, fill=onlineblue!10, font=\small\bfseries},
+    leafnode/.style={draw, rectangle, rounded corners, thick, minimum width=0.6cm, minimum height=0.45cm, fill=sepgreen!15, font=\scriptsize},
+    edgelabel/.style={font=\scriptsize, midway},
+    level 1/.style={sibling distance=5.6cm},
+    level 2/.style={sibling distance=2.8cm},
+    level 3/.style={sibling distance=1.4cm},
+]
+\node[treenode] (root) {$4$}
+    child { node[treenode] {$2$}
+        child { node[treenode] {$1$}
+            child { node[leafnode] {$h_{\leq 0}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 1}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, left] {$0$}
+        }
+        child { node[treenode] {$3$}
+            child { node[leafnode] {$h_{\leq 2}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 3}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, right] {$1$}
+        }
+        edge from parent node[edgelabel, left] {$0$}
+    }
+    child { node[treenode] {$6$}
+        child { node[treenode] {$5$}
+            child { node[leafnode] {$h_{\leq 4}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 5}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, left] {$0$}
+        }
+        child { node[treenode] {$7$}
+            child { node[leafnode] {$h_{\leq 6}$} edge from parent node[edgelabel, left] {$0$} }
+            child { node[leafnode] {$h_{\leq 7}$} edge from parent node[edgelabel, right] {$1$} }
+            edge from parent node[edgelabel, right] {$1$}
+        }
+        edge from parent node[edgelabel, right] {$1$}
+    };
+
+% Annotation
+\node[right=0.3cm of root, font=\scriptsize\itshape, text=notegray, align=left, anchor=west, xshift=3.5cm] {
+    Domain: $X = \{1,2,\ldots,8\}$\\[2pt]
+    Class: thresholds $h_{\leq \theta}(x) = \ind[x \leq \theta]$\\[2pt]
+    Each internal node presents an instance.\\[2pt]
+    Each leaf witnesses a consistent $h \in \mathcal{H}$.\\[2pt]
+    Depth $= 3 = \lceil \log_2 8 \rceil$.
+};
+\end{tikzpicture}" />
+</div> <figcaption>
+  <span class="caption_title">Figure</span> 
+  <span class="caption_ref">4.2</span> 
+  <span class="caption_text">A complete mistake tree of depth \(3\) for the threshold class on \(\{ 1,\ldots ,8\} \). Each internal node is labeled with an instance; the left and right children correspond to labels \(0\) and \(1\). Every root-to-leaf path is consistent with the threshold hypothesis shown at the leaf. The adversary can traverse this tree from root to any leaf, forcing \(3\) mistakes.</span> 
+</figcaption>  </div>
+
+</figure>
+<div class="example_thmwrapper theorem-style-definition" id="ex:ldim-examples">
+  <div class="example_thmheading">
+    <span class="example_thmcaption">
+    Example
+    </span>
+    <span class="example_thmlabel">4.5</span>
+    <span class="example_thmtitle">Littlestone dimension of fundamental classes</span>
+  </div>
+  <div class="example_thmcontent">
+  <p>  </p>
+<ol class="enumerate">
+  <li><p><b class="bfseries">Finite classes.</b> If \(|\mathcal{H}| {\lt} \infty \), then \(\mathrm{Ldim}(\mathcal{H}) \leq \lfloor \log _2 |\mathcal{H}| \rfloor \), since a complete binary tree of depth \(d\) has \(2^d\) leaves and each leaf requires a distinct consistent hypothesis. This bound is tight for classes that are “richly structured enough” (e.g., all functions on a domain of size \(\log _2 |\mathcal{H}|\)). </p>
+</li>
+  <li><p><b class="bfseries">Thresholds on \(\{ 1, \ldots , n\} \).</b> The class \(\{ h_{\leq \theta } : \theta \in \{ 0, 1, \ldots , n\} \} \) has \(\mathrm{Ldim}= \lceil \log _2(n+1) \rceil \). The mistake tree in <a href="sec-mistake-trees.html#fig:mistake-tree">Figure 4.2</a> illustrates the case \(n = 8\). The adversary performs binary search on the threshold. </p>
+</li>
+  <li><p><b class="bfseries">Thresholds on \(\mathbb {R}\).</b> Now \(\mathrm{Ldim}= \infty \). The key point: the domain is dense, so the adversary can always find a point between any two previous thresholds. At each round, the adversary presents a point that bisects the current interval of uncertainty, forcing a mistake no matter what the learner predicts. This produces mistake trees of unbounded depth. </p>
+</li>
+  <li><p><b class="bfseries">Intervals on \(\mathbb {R}\).</b> The class \(\{ x \mapsto \mathbf{1}[a \leq x \leq b] : a, b \in \mathbb {R}\} \) also has \(\mathrm{Ldim}= \infty \). The adversary can adaptively narrow down both endpoints. </p>
+</li>
+  <li><p><b class="bfseries">Linear classifiers in \(\mathbb {R}^d\).</b> The class of halfspaces has \(\mathrm{Ldim}= d\), matching the VC dimension. This is one of the rare cases where the two dimensions coincide. </p>
+</li>
+</ol>
+
+  </div>
+</div>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:sets-vs-trees">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">4.6</span>
+    <span class="remark_thmtitle">Sets vs. trees</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  Shattering a <em>set</em> \(\{ x_1, \ldots , x_d\} \) means \(\mathcal{H}\) can produce all \(2^d\) labelings of these <em>fixed</em> points. Shattering a <em>tree</em> of depth \(d\) means \(\mathcal{H}\) can produce a consistent labeling along every root-to-leaf path, but the points themselves may <em>depend on previous labels</em>. The tree structure captures adaptivity: the adversary’s choice at depth \(k\) depends on the learner’s responses at depths \(1, \ldots , k-1\). A shattered set is a special case of a mistake tree (one in which every node at the same depth is labeled with the same instance), so \(\mathrm{VCdim}(\mathcal{H}) \leq \mathrm{Ldim}(\mathcal{H})\) always holds. The converse fails spectacularly: thresholds on \(\mathbb {R}\) have \(\mathrm{VCdim}= 1\) but \(\mathrm{Ldim}= \infty \). </p>
+
+  </div>
+</div>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-online-game.html" title="The Online Learning Game"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-online.html" title="Online Learning and the Littlestone Dimension"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-soa.html" title="The Standard Optimal Algorithm"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

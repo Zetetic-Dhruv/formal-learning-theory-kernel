@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: The Standard Optimal Algorithm</title>
+<link rel="next" href="sec-lower-bound.html" title="The Lower Bound: The Adversary Strategy" />
+<link rel="prev" href="sec-mistake-trees.html" title="Mistake Trees and the Littlestone Dimension" />
+<link rel="up" href="ch-online.html" title="Online Learning and the Littlestone Dimension" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:soa">4.3 The Standard Optimal Algorithm</h1>
+<p>  </p>
+<p>The Halving algorithm is the simplest reasonable strategy for online learning: maintain the version space (the set of hypotheses consistent with all observations so far), and predict the majority vote of the version space. Each mistake eliminates at least half of the surviving hypotheses, so Halving makes at most \(\lfloor \log _2 |\mathcal{H}| \rfloor \) mistakes when \(\mathcal{H}\) is finite. </p>
+<p>But Halving is not optimal for infinite hypothesis classes. The Standard Optimal Algorithm (SOA), due to Littlestone&#160;<span class="cite">
+	[
+</span>, refines the Halving idea by replacing “majority vote” with a more subtle criterion: predict the label whose version space has the larger <em>Littlestone dimension</em>. </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:soa">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">4.7</span>
+    <span class="defn_thmtitle">Standard Optimal Algorithm (\operatorname{SOA})</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   Given a hypothesis class \(\mathcal{H}\), the \(\operatorname{SOA}\) maintains a version space \(V_t \subseteq \mathcal{H}\), initially \(V_1 = \mathcal{H}\). At round \(t\), upon receiving instance \(x_t\): </p>
+<ol class="enumerate">
+  <li><p>Partition \(V_t\) into \(V_t^0 = \{ h \in V_t : h(x_t) = 0\} \) and \(V_t^1 = \{ h \in V_t : h(x_t) = 1\} \). </p>
+</li>
+  <li><p>Predict \(\hat{y}_t = \arg \max _{b \in \{ 0,1\} } \mathrm{Ldim}(V_t^b)\). </p>
+</li>
+  <li><p>After observing the true label \(y_t\), update \(V_{t+1} = V_t^{y_t}\). </p>
+</li>
+</ol>
+<p> Ties in step 2 are broken arbitrarily. </p>
+
+  </div>
+</div>
+<p>The intuition behind the \(\operatorname{SOA}\) is a tree-based version of binary search. At each round, the algorithm asks: “If I predict \(0\) and am wrong, what is the worst the adversary can do to \(V_t^1\)? And if I predict \(1\) and am wrong, what can the adversary do to \(V_t^0\)?” By choosing the side with the larger Littlestone dimension, the \(\operatorname{SOA}\) ensures that every mistake reduces the Littlestone dimension of the version space by at least one. </p>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:soa-upper">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">4.8</span>
+    <span class="thm_thmtitle">Upper Bound: \(\operatorname{SOA}\) achieves \(\mathrm{Ldim}(\mathcal{H})\) mistakes <span class="cite">
+	[
+</span></span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>    For any hypothesis class \(\mathcal{H}\) with \(\mathrm{Ldim}(\mathcal{H}) = d {\lt} \infty \), the \(\operatorname{SOA}\) makes at most \(d\) mistakes against any adversary. </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000045">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>We show that the Littlestone dimension of the version space drops by at least one at each mistake. Define \(d_t = \mathrm{Ldim}(V_t)\). We claim: </p>
+<div class="equation" id="eq:ldim-drop">
+<p>
+  <div class="equation_content">
+    \begin{equation}  \label{eq:ldim-drop} \text{If the $\operatorname{SOA}$ makes a mistake at round } t, \text{ then } d_{t+1} \leq d_t - 1. \end{equation}
+  </div>
+  <span class="equation_label">1</span>
+</p>
+</div>
+<p><em>Proof of the claim.</em> Suppose the \(\operatorname{SOA}\) makes a mistake at round \(t\). This means \(\hat{y}_t \neq y_t\). By the algorithm’s rule, \(\hat{y}_t\) was chosen so that \(\mathrm{Ldim}(V_t^{\hat{y}_t}) \geq \mathrm{Ldim}(V_t^{y_t})\), i.e., the \(\operatorname{SOA}\) predicted the side with the <em>larger</em> (or equal) Littlestone dimension. After the mistake, the version space updates to \(V_{t+1} = V_t^{y_t}\), the side with the <em>smaller</em> (or equal) Littlestone dimension. </p>
+<p>Now we must show that \(\mathrm{Ldim}(V_t^{y_t}) \leq d_t - 1\). Suppose for contradiction that \(\mathrm{Ldim}(V_t^0) \geq d_t\) and \(\mathrm{Ldim}(V_t^1) \geq d_t\). Then there exists a complete mistake tree \(T_0\) of depth \(d_t\) for \(V_t^0\) and a complete mistake tree \(T_1\) of depth \(d_t\) for \(V_t^1\). We can construct a complete mistake tree of depth \(d_t + 1\) for \(V_t\): the root is labeled \(x_t\), its left subtree (corresponding to label \(0\)) is \(T_0\), and its right subtree (corresponding to label \(1\)) is \(T_1\). Every root-to-leaf path through the left subtree is consistent with some \(h \in V_t^0 \subseteq V_t\) (and \(h(x_t) = 0\)), and similarly for the right subtree. This yields \(\mathrm{Ldim}(V_t) \geq d_t + 1\), contradicting \(\mathrm{Ldim}(V_t) = d_t\). </p>
+<p>Therefore \(\min \{ \mathrm{Ldim}(V_t^0), \mathrm{Ldim}(V_t^1)\}  \leq d_t - 1\). Since \(\hat{y}_t\) selects the side with the larger dimension, \(V_{t+1} = V_t^{y_t}\) is the side with the smaller dimension, so \(d_{t+1} = \mathrm{Ldim}(V_{t+1}) \leq d_t - 1\). </p>
+<p><em>Completing the proof.</em> We have \(d_1 = \mathrm{Ldim}(\mathcal{H}) = d\). Each mistake decreases \(d_t\) by at least \(1\). Since the Littlestone dimension is a non-negative integer (the version space always contains the target \(h^*\), so \(V_t \neq \emptyset \) and \(\mathrm{Ldim}(V_t) \geq 0\)), the total number of mistakes is at most \(d\). </p>
+
+  </div>
+</div>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:soa-halving">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">4.9</span>
+    <span class="remark_thmtitle">SOA vs. Halving</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  For finite \(\mathcal{H}\), the Halving algorithm predicts by majority vote: \(\hat{y}_t = \arg \max _b |V_t^b|\). Each mistake halves the version space, giving at most \(\lfloor \log _2 |\mathcal{H}| \rfloor \) mistakes. The \(\operatorname{SOA}\) replaces cardinality \(|V_t^b|\) with \(\mathrm{Ldim}(V_t^b)\). For finite classes, this distinction is often unimportant (both give \(O(\log |\mathcal{H}|)\) mistakes), but for infinite classes, cardinality is meaningless while the Littlestone dimension is finite and well-behaved. </p>
+
+  </div>
+</div>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:soa-computability">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">4.10</span>
+    <span class="remark_thmtitle">Computability of the \(\operatorname{SOA}\)</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  The \(\operatorname{SOA}\) is an <em>information-theoretically</em> optimal algorithm, but it is not necessarily <em>computationally</em> efficient. Computing \(\mathrm{Ldim}(V_t^b)\) at each round may be undecidable for some hypothesis classes. The \(\operatorname{SOA}\) is thus an existence proof: it shows that \(d\) mistakes suffice, even if finding the optimal prediction at each step is computationally hard. Efficient online algorithms for specific classes (Perceptron for halfspaces, Winnow for disjunctions) achieve near-optimal mistake bounds through class-specific structure. </p>
+
+  </div>
+</div>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-mistake-trees.html" title="Mistake Trees and the Littlestone Dimension"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-online.html" title="Online Learning and the Littlestone Dimension"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-lower-bound.html" title="The Lower Bound: The Adversary Strategy"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

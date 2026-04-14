@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: The Borel-analytic separation theorem</title>
+<link rel="next" href="chap-closing.html" title="Closing Notes and Forward Pointers" />
+<link rel="prev" href="sec-choquet-bridge.html" title="The analytic measurability bridge" />
+<link rel="up" href="chap-measurability.html" title="The Measurability Layer" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:borel-analytic-sep">7.3 The Borel-analytic separation theorem</h1>
+<p>  </p>
+<p><a href="sec-choquet-bridge.html#prop:borel-param-implies-wbvc">Proposition 7.11</a> says that every reasonable concept class satisfies the kernel’s measurability hypothesis via a classical descriptive-set-theory route. What the bridge does not rule out is that the underlying refinement might be cosmetic: perhaps every class that admits any kind of measurability certificate also happens to admit a Borel one, and the <span class="ttfamily">WellBehavedVCMeasTarget</span> \(\subsetneq \) <span class="ttfamily">KrappWirthWellBehaved</span> inclusion is vacuous in content. This section rules that out with a witness. </p>
+<p> <b class="bfseries">Krapp and Wirth 2024.</b> Shortly before this formalization effort began, Lothar Sebastian Krapp and Laura Wirth posted <em>Measurability in the Fundamental Theorem of Statistical Learning</em> (arXiv:2410.10243, October 2024). The paper performs exactly the audit this chapter is built around: it scrutinizes the standard proofs of the fundamental theorem of statistical learning in the agnostic setting, identifies the measurability assumptions that are tacitly imposed, and extracts a self-contained proof that makes those assumptions precise. The paper’s measurability hypothesis on the ghost-gap bad event is that it be <em>Borel</em> in the product Borel structure. The refinement in this chapter observes that the Borel hypothesis is strictly stronger than the proof needs, and this section constructs a concept class that realizes the strict gap. The Krapp-Wirth paper is correct: everything stated in it under the Borel hypothesis also holds under the weaker null-measurability hypothesis used here. What the present chapter adds is that the Borel hypothesis is a genuine commitment, not a free choice, and the commitment can be relaxed.  </p>
+<p>The witness is a family of very thin concept classes on the real line. For each set \(A \subseteq \mathbb {R}\), let \(\mathbf{1}_{\{ a\} }\) denote the indicator function of the singleton \(\{ a\} \), regarded as an element of \(\{ 0,1\} ^\mathbb {R}\). </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:singleton-class">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">7.12</span>
+    <span class="defn_thmtitle">Singleton class over a set</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   For \(A \subseteq \mathbb {R}\), define the <em>singleton class over \(A\)</em> as </p>
+<div class="displaymath" id="a0000000069">
+  \[  C_A \; =\;  \{ \, \mathbf{0}\, \} \, \cup \,  \bigl\{ \, \mathbf{1}_{\{ a\} }\, :\, a \in A\, \bigr\} ,  \]
+</div>
+<p> where \(\mathbf{0}\) is the everywhere-false concept (\(\mathbf{0}(x) = 0\) for every \(x \in \mathbb {R}\)). </p>
+
+  </div>
+</div>
+<p>A singleton class looks unremarkable from the outside. It has VC dimension at most \(1\), which makes it PAC learnable under any reasonable measurability hypothesis (one can learn the identity of the non-trivial hypothesis from a single labeled example). Its individual hypotheses are all individually measurable in the strongest possible sense: the zero concept is constant, and each \(\mathbf{1}_{\{ a\} }\) is the characteristic function of a Borel singleton. </p>
+<div class="lemma_thmwrapper theorem-style-plain" id="lem:singleton-class-measurable">
+  <div class="lemma_thmheading">
+    <span class="lemma_thmcaption">
+    Lemma
+    </span>
+    <span class="lemma_thmlabel">7.13</span>
+    <span class="lemma_thmtitle">Every hypothesis in \(C_A\) is measurable</span>
+  </div>
+  <div class="lemma_thmcontent">
+  <p>    For every \(A \subseteq \mathbb {R}\), every hypothesis \(h \in C_A\) is Borel measurable. </p>
+
+  </div>
+</div>
+<p>The surprise is that individual measurability of every hypothesis does <em>not</em> lift to measurability of the ghost-gap bad event for the class as a whole. The bad event is an indexed union over \(C_A\), and the index set \(A\) can be arbitrarily irregular. The kernel formalizes the reduction from the bad event to a planar witness. </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:planar-witness">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">7.14</span>
+    <span class="defn_thmtitle">Planar witness event</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   For \(A \subseteq \mathbb {R}\), the <em>planar witness event</em> is the subset of \(\mathbb {R}^2\) given by </p>
+<div class="displaymath" id="a0000000070">
+  \[  W_A \; =\;  \bigl\{ \, (x, y) \in \mathbb {R}^2 \; :\;  y \in A\  \text{and}\  x \neq y\, \bigr\} .  \]
+</div>
+
+  </div>
+</div>
+<figure id="fig:planar-witness">
+  <div class="centered"><div class="tikzpicture" id="a0000000071">
+    <img src="images/img-0008.png" alt="\begin{tikzpicture} [scale=1.0,
+  axis/.style={-{Stealth[length=2.5mm]}, thick, black},
+  diag/.style={dashed, thick, notegray},
+  fiber/.style={thick, thmred},
+  setA/.style={thick, defblue, fill=defblue!10},
+  lbl/.style={font=\small}
+]
+  % Axes
+  \draw[axis] (-0.3, 0) -- (5.2, 0) node[lbl, right] {$x$};
+  \draw[axis] (0, -0.3) -- (0, 4.5) node[lbl, above] {$y$};
+
+  % Diagonal y = x
+  \draw[diag] (-0.2, -0.2) -- (4.6, 4.6) node[lbl, right, pos=0.9] {$y = x$};
+
+  % A as a shaded horizontal strip at y = a1, a2, a3
+  \foreach \ay in {1.2, 2.3, 3.6} {
+    \draw[fiber] (-0.05, \ay) -- (5.05, \ay);
+  }
+  \node[lbl, text=thmred, anchor=west] at (5.1, 1.2) {$y = a_1$};
+  \node[lbl, text=thmred, anchor=west] at (5.1, 2.3) {$y = a_2$};
+  \node[lbl, text=thmred, anchor=west] at (5.1, 3.6) {$y = a_3$};
+
+  % Mark the points removed from each fiber: x = y = a_i
+  \foreach \ay in {1.2, 2.3, 3.6} {
+    \fill[white, draw=thmred, thick] (\ay, \ay) circle (2.5pt);
+  }
+
+  % Planar witness label
+  \node[lbl, defblue, anchor=south west] at (0.2, 3.9)
+    {$W_A = \{(x,y)\,:\,y \in A,\ x \neq y\}$};
+  \node[lbl, notegray, anchor=south west] at (0.2, 3.5)
+    {(three sample fibers shown)};
+\end{tikzpicture}" />
+</div> <figcaption>
+  <span class="caption_title">Figure</span> 
+  <span class="caption_ref">7.1</span> 
+  <span class="caption_text">The planar witness \(W_A\) depicted for three values \(a_1, a_2, a_3 \in A\). Each fiber \(\{ y = a_i\} \) contributes the horizontal line at height \(a_i\), punctured at the diagonal point \((a_i, a_i)\). The full set \(W_A\) is the union of these punctured horizontal lines over all \(y \in A\). When \(A\) is analytic, \(W_A\) is analytic. When \(A\) is not Borel, \(W_A\) is not Borel either.</span> 
+</figcaption>  </div>
+
+</figure>
+<div class="lemma_thmwrapper theorem-style-plain" id="lem:bad-eq-preimage">
+  <div class="lemma_thmheading">
+    <span class="lemma_thmcaption">
+    Lemma
+    </span>
+    <span class="lemma_thmlabel">7.15</span>
+    <span class="lemma_thmtitle">Bad event reduces to planar-witness preimage</span>
+  </div>
+  <div class="lemma_thmcontent">
+  <p>    For every \(A \subseteq \mathbb {R}\), the one-step ghost-gap bad event \(\mathrm{Bad}(C_A, 1, 1/2)\) on \((\mathrm{Fin}\, 1 \to \mathbb {R}) \times (\mathrm{Fin}\, 1 \to \mathbb {R})\) equals the preimage of the planar witness \(W_A\) under the sample-pair projection \((s, s') \mapsto (s(0), s'(0))\). </p>
+
+  </div>
+</div>
+<p>The reduction replaces a class-indexed existential quantifier with a fixed planar set, trading one measurability problem for another. The remaining problem is to understand the measurability of the planar set. </p>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:planar-analytic">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">7.16</span>
+    <span class="thm_thmtitle">\(W_A\) is analytic for analytic \(A\)</span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>    If \(A \subseteq \mathbb {R}\) is analytic then \(W_A \subseteq \mathbb {R}^2\) is analytic. </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000072">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>The set \(W_A\) is the intersection of the Borel set \(\{ (x, y) : x \neq y\} \) with the cylinder \(\mathbb {R}\times A\). Analytic sets are closed under intersection with Borel sets, so \(W_A\) is analytic. </p>
+
+  </div>
+</div>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:planar-not-borel">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">7.17</span>
+    <span class="thm_thmtitle">\(W_A\) is not Borel for some analytic non-Borel \(A\)</span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>    There exists an analytic set \(A \subseteq \mathbb {R}\) such that \(W_A\) is analytic but <em>not</em> Borel. The classical construction takes any complete analytic subset of \(\mathbb {R}\), for example the set of codes of ill-founded trees on \(\mathbb {N}\) under a standard encoding; this set is analytic and not Borel. The projection \(A \mapsto W_A\) preserves the non-Borel property in the following sense: if \(W_A\) were Borel, then the fiber of \(W_A\) over any \(x_0 \notin A\) would be Borel, but that fiber is exactly \(A\), a contradiction. </p>
+
+  </div>
+</div>
+<p>With \(C_A\) defined, the planar reduction established, and the planar witness classified by descriptive set theory, the main separation theorem assembles in a single line of logic. </p>
+<p> <b class="bfseries">Borel-analytic separation (<a href="sec-borel-analytic-sep.html#cor:borel-analytic-separation">Corollary 7.18</a>).</b> </p>
+<p><em>Statement.</em> There exists a concept class \(C \subseteq \{ 0,1\} ^\mathbb {R}\) such that \(C\) carries <span class="ttfamily">WellBehavedVCMeasTarget</span> but \(C\) does <em>not</em> carry <span class="ttfamily">KrappWirthWellBehaved</span>. </p>
+<p><em>Witness.</em> Let \(A \subseteq \mathbb {R}\) be any analytic non-Borel set, for example the set of codes of ill-founded trees as in <a href="sec-borel-analytic-sep.html#thm:planar-not-borel">Theorem 7.17</a>. Take \(C = C_A\), the singleton class over \(A\). </p>
+<p><em>Why the witness works.</em> Every hypothesis in \(C_A\) is individually Borel measurable (<a href="sec-borel-analytic-sep.html#lem:singleton-class-measurable">Lemma 7.13</a>), so the class has the individual regularity one might expect. The ghost-gap bad event coincides, by <a href="sec-borel-analytic-sep.html#lem:bad-eq-preimage">Lemma 7.15</a>, with the preimage of \(W_A\) under the sample-pair projection. The planar witness \(W_A\) is analytic by <a href="sec-borel-analytic-sep.html#thm:planar-analytic">Theorem 7.16</a> and is not Borel by <a href="sec-borel-analytic-sep.html#thm:planar-not-borel">Theorem 7.17</a>. The sample-pair projection is a homeomorphism onto its image, so the bad event is itself analytic and not Borel. Analytic sets are null-measurable by <a href="sec-choquet-bridge.html#cor:analytic-null-measurable">Corollary 7.10</a>, giving <span class="ttfamily">WellBehavedVCMeasTarget</span>. Borel sets are not: the bad event fails <span class="ttfamily">KrappWirthWellBehaved</span> by the non-Borel witness. </p>
+<p><em>What the witness exploits.</em> Individual measurability of the hypotheses in a class does not lift to measurability of the class-indexed bad event, because the bad event is an uncountable union whose indexing set can be as wild as the analytic hierarchy permits. The Borel \(\sigma \)-algebra is stable under countable unions but not under analytic-indexed unions; the completion under any Borel measure is exactly the extra layer needed to accommodate such unions. The singleton class is the minimal construction that exposes this gap: it has VC dimension&#160;\(1\), a single non-trivial hypothesis per index, and a planar bad event whose irregularity is inherited entirely from \(A\). </p>
+<p><span class="cite">
+	[
+</span>, <span class="cite">
+	[
+</span>  </p>
+<div class="cor_thmwrapper theorem-style-plain" id="cor:borel-analytic-separation">
+  <div class="cor_thmheading">
+    <span class="cor_thmcaption">
+    Corollary
+    </span>
+    <span class="cor_thmlabel">7.18</span>
+    <span class="cor_thmtitle">Borel-analytic separation</span>
+  </div>
+  <div class="cor_thmcontent">
+  <p>    There exists a concept class \(C_A \subseteq \{ 0,1\} ^\mathbb {R}\) such that \(C_A\) satisfies <span class="ttfamily">WellBehavedVCMeasTarget</span> but fails <span class="ttfamily">KrappWirthWellBehaved</span>. Consequently the fundamental theorem of statistical learning (<a href="sec-vc-char.html#thm:vc-char">Theorem 3.7</a>) holds for \(C_A\) under the kernel’s NullMeasurableSet refinement and does not hold for \(C_A\) under the Krapp-Wirth Borel hypothesis. </p>
+
+  </div>
+</div>
+<div class="remark_thmwrapper theorem-style-remark" id="a0000000073">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">7.19</span>
+    <span class="remark_thmtitle">What the refinement changes and what it does not</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p> The refinement changes the shape of the measurability hypothesis used in the fundamental theorem from a set-theoretic constraint on the class (Borel bad event) to a measure-theoretic constraint (null-measurable bad event). For every class that admits a Borel parameterization, both hypotheses hold and the two versions of the theorem are interchangeable. For classes outside Borel parameterization, only the null-measurability version applies. The Krapp-Wirth paper and this kernel therefore prove the same theorem on the same universe of practically interesting classes; the difference is at the edge of the universe, where concept classes over analytic non-Borel sets live. That edge is sparse in practice but non-empty, and <a href="sec-borel-analytic-sep.html#cor:borel-analytic-separation">Corollary 7.18</a> exhibits it in full. </p>
+
+  </div>
+</div>
+<p>The chain of five theorems formalized in <span class="ttfamily">FLT_Proofs.Theorem.BorelAnalyticSeparation</span> thus completes the chapter. Every step is sorry-free, cross-linked with <span class="ttfamily">FLT_Proofs.Complexity.BorelAnalyticBridge</span> on the analytic measurability side, and cited from <span class="ttfamily">FLT_Proofs.Complexity.Measurability</span> where the <span class="ttfamily">WellBehavedVCMeasTarget</span> typeclass lives.  </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-choquet-bridge.html" title="The analytic measurability bridge"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="chap-measurability.html" title="The Measurability Layer"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="chap-closing.html" title="Closing Notes and Forward Pointers"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

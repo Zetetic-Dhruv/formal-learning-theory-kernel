@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: The PAC–Online Gap</title>
+<link rel="next" href="sec-ch6-summary.html" title="What This Chapter Established" />
+<link rel="prev" href="sec-regret.html" title="Regret Bounds and the Multiplicative Weights Framework" />
+<link rel="up" href="ch-online.html" title="Online Learning and the Littlestone Dimension" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:pac-online-gap">4.6 The PAC–Online Gap</h1>
+<p>  </p>
+<p>The VC dimension and the Littlestone dimension both measure the complexity of a hypothesis class, but they measure different things. How do they relate? </p>
+<div class="prop_thmwrapper theorem-style-plain" id="prop:vc-leq-ldim">
+  <div class="prop_thmheading">
+    <span class="prop_thmcaption">
+    Proposition
+    </span>
+    <span class="prop_thmlabel">4.17</span>
+    <span class="prop_thmtitle">\(\mathrm{VCdim}\leq \mathrm{Ldim}\)</span>
+  </div>
+  <div class="prop_thmcontent">
+  <p>   For any hypothesis class \(\mathcal{H}\), \(\mathrm{VCdim}(\mathcal{H}) \leq \mathrm{Ldim}(\mathcal{H})\). </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000050">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>Let \(S = \{ x_1, \ldots , x_d\} \) be a set shattered by \(\mathcal{H}\), so \(\mathrm{VCdim}(\mathcal{H}) \geq d\). We construct a complete mistake tree of depth \(d\). The root is labeled \(x_1\). Every node at depth \(k\) is labeled \(x_{k+1}\) (the same instance at every node of a given depth). For any root-to-leaf path with labels \((y_1, \ldots , y_d)\), shattering guarantees that some \(h \in \mathcal{H}\) satisfies \(h(x_i) = y_i\) for all \(i\). Thus this is a valid mistake tree of depth \(d\), so \(\mathrm{Ldim}(\mathcal{H}) \geq d\). </p>
+
+  </div>
+</div>
+<figure id="fig:vc-leq-ldim">
+  <div class="centered"><div class="tikzpicture" id="a0000000051">
+    <img src="images/img-0004.png" alt="\begin{tikzpicture} [
+    level distance=1.4cm,
+    every node/.style={font=\small},
+    treenode/.style={draw, circle, thick, minimum size=0.65cm, fill=defblue!10, font=\small},
+    leafnode/.style={draw, rectangle, rounded corners, thick, minimum width=0.5cm, minimum height=0.4cm, fill=sepgreen!15, font=\scriptsize},
+    edgelabel/.style={font=\scriptsize, midway},
+    level 1/.style={sibling distance=3.6cm},
+    level 2/.style={sibling distance=1.8cm},
+]
+\node[treenode] {$x_1$}
+    child { node[treenode] {$x_2$}
+        child { node[leafnode] {$(0,0)$} edge from parent node[edgelabel, left] {$0$} }
+        child { node[leafnode] {$(0,1)$} edge from parent node[edgelabel, right] {$1$} }
+        edge from parent node[edgelabel, left] {$0$}
+    }
+    child { node[treenode] {$x_2$}
+        child { node[leafnode] {$(1,0)$} edge from parent node[edgelabel, left] {$0$} }
+        child { node[leafnode] {$(1,1)$} edge from parent node[edgelabel, right] {$1$} }
+        edge from parent node[edgelabel, right] {$1$}
+    };
+
+% Annotation
+\node[font=\scriptsize\itshape, text=notegray, align=left, anchor=west] at (3.5, -1.4) {
+    Shattered set $\{x_1, x_2\}$ gives a\\
+    non-adaptive mistake tree:\\
+    same instance at each depth.\\[3pt]
+    Shattering $\Rightarrow$ valid mistake tree.\\
+    Adaptive tree $\not\Rightarrow$ shattered set.
+};
+\end{tikzpicture}" />
+</div> <figcaption>
+  <span class="caption_title">Figure</span> 
+  <span class="caption_ref">4.3</span> 
+  <span class="caption_text">A shattered set of size \(2\) yields a (non-adaptive) mistake tree of depth \(2\). The instances at each depth are identical, so the tree does not exploit adaptivity. This construction proves \(\mathrm{VCdim}(\mathcal{H}) \leq \mathrm{Ldim}(\mathcal{H})\).</span> 
+</figcaption>  </div>
+
+</figure>
+<p>The inequality \(\mathrm{VCdim}\leq \mathrm{Ldim}\) is often tight (e.g., for halfspaces, where both equal the ambient dimension). But the gap can be infinite. </p>
+<div class="prop_thmwrapper theorem-style-plain" id="prop:pac-online-sep">
+  <div class="prop_thmheading">
+    <span class="prop_thmcaption">
+    Proposition
+    </span>
+    <span class="prop_thmlabel">4.18</span>
+    <span class="prop_thmtitle">The PAC–Online separation: thresholds on \(\mathbb {R}\)</span>
+  </div>
+  <div class="prop_thmcontent">
+  <p>   Let \(\mathcal{H}_{\mathrm{thr}} = \{ x \mapsto \mathbf{1}[x \geq \theta ] : \theta \in \mathbb {R}\} \). Then \(\mathrm{VCdim}(\mathcal{H}_{\mathrm{thr}}) = 1\) and \(\mathrm{Ldim}(\mathcal{H}_{\mathrm{thr}}) = \infty \). </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000052">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>\(\mathrm{VCdim}= 1\): Any single point \(x\) is shattered (take thresholds \(\theta {\lt} x\) and \(\theta {\gt} x\)). No two points \(x_1 {\lt} x_2\) are shattered, because \(h(x_1) = 1, h(x_2) = 0\) requires \(x_1 \geq \theta {\gt} x_2\), which contradicts \(x_1 {\lt} x_2\). </p>
+<p>\(\mathrm{Ldim}= \infty \): We construct mistake trees of arbitrary depth. For any \(d\), consider the domain restricted to \(\{ 1, 2, \ldots , 2^d\} \). The adversary can perform binary search: at depth \(k\), present the midpoint of the current interval. Whatever the learner predicts, the adversary labels to force a mistake (and narrows the interval by half). After \(d\) rounds, the adversary has traced a path from root to leaf, consistent with the threshold at the boundary of the final interval. Since \(d\) was arbitrary, \(\mathrm{Ldim}= \infty \). </p>
+
+  </div>
+</div>
+<p>This separation is the most important non-implication in the concept graph. It witnesses the edge \(\textsf{\small pac\_ learning} \xrightarrow {\texttt{\small does\_ not\_ imply}} \textsf{\small online\_ learning}\): a class can be PAC learnable (finite VC dimension) yet not online learnable (infinite Littlestone dimension). The converse implication does hold: \(\mathrm{Ldim}{\lt} \infty \) implies \(\mathrm{VCdim}{\lt} \infty \) (by \(\mathrm{VCdim}\leq \mathrm{Ldim}\)), so online learnability implies PAC learnability. </p>
+<p> <b class="bfseries">PAC \(\not\Rightarrow \) Online.</b> Witness: \(\mathcal{H}_{\mathrm{thr}}\) on \(\mathbb {R}\). The adversary in the online game can exploit the <em>order structure</em> of \(\mathbb {R}\) by performing binary search on the threshold. A random sample from a fixed distribution cannot exploit this ordering, with high probability, the sample reveals the threshold’s location to within \(\varepsilon \). The gap between PAC and online learnability is not a technicality: it reflects a fundamental difference between random and adversarial data.  </p>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:gap-intuition">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">4.19</span>
+    <span class="remark_thmtitle">Why the gap arises</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  In PAC learning, the distribution \(D\) is fixed before the game begins; the learner faces a <em>static</em> environment. In online learning, the adversary <em>adapts</em> to the learner’s behavior. Adaptivity is the source of the gap. A threshold on \(\mathbb {R}\) is easy to learn from random data (one sample suffices, approximately) but impossible to learn from adversarial data (the adversary can always present a point that bisects the remaining uncertainty). The Littlestone dimension measures the depth of the adversary’s adaptive search, which can exceed the VC dimension’s non-adaptive combinatorics by an arbitrary amount. A full treatment of this and related separations appears in <a href="ch-separations.html">Chapter 6</a>. </p>
+
+  </div>
+</div>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-regret.html" title="Regret Bounds and the Multiplicative Weights Framework"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-online.html" title="Online Learning and the Littlestone Dimension"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-ch6-summary.html" title="What This Chapter Established"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

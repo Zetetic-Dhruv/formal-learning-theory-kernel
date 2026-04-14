@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: The PAC Framework</title>
+<link rel="next" href="sec-vc-char.html" title="The VC Characterization" />
+<link rel="prev" href="ch-pac.html" title="PAC Learning and the Fundamental Theorem" />
+<link rel="up" href="ch-pac.html" title="PAC Learning and the Fundamental Theorem" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class=" active current">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:pac-def">3.1 The PAC Framework</h1>
+<p>  </p>
+<p>Two assumptions frame the discussion. </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:realizable">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">3.1</span>
+    <span class="defn_thmtitle">Realizable setting</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   Learning is <em>realizable</em> if the target concept \(c^*\) lies in the hypothesis class: \(c^* \in \mathcal{H}\). </p>
+
+  </div>
+</div>
+<div class="defn_thmwrapper theorem-style-definition" id="def:agnostic">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">3.2</span>
+    <span class="defn_thmtitle">Agnostic setting</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   Learning is <em>agnostic</em> if no assumption is made on the relationship between \(c^*\) and \(\mathcal{H}\). The learner competes with the best hypothesis \(h^* = \arg \min _{h \in \mathcal{H}} R_D(h)\). </p>
+
+  </div>
+</div>
+<p>The realizable setting is a special case of the agnostic one (take \(h^* = c^*\), achieving zero risk). The agnostic setting is the one that matters in practice, but the realizable setting is where the cleanest characterization lives. We begin there. </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:pac">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">3.3</span>
+    <span class="defn_thmtitle">PAC Learning <span class="cite">
+	[
+</span></span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   A hypothesis class \(\mathcal{H}\) over domain \(X\) is <em>PAC learnable</em> if there exists an algorithm \(A\) and a function \(m_\mathcal {H} \colon (0,1)^2 \to \mathbb {N}\) such that, for every \(\varepsilon , \delta \in (0,1)\) and every distribution \(D\) on \(X\): </p>
+<p>If \(c^* \in \mathcal{H}\) and \(S \sim D^m\) with \(m \geq m_\mathcal {H}(\varepsilon , \delta )\), then </p>
+<div class="displaymath" id="a0000000009">
+  \[  \Pr _{S \sim D^m}\! \bigl[R_D(A(S)) {\gt} \varepsilon \bigr] \leq \delta .  \]
+</div>
+<p> The function \(m_\mathcal {H}(\varepsilon , \delta )\) is the <em>sample complexity</em> of \(\mathcal{H}\). When \(m_\mathcal {H}\) is polynomial in \(1/\varepsilon \) and \(1/\delta \), the class is <em>efficiently PAC learnable</em> (information-theoretically); computational efficiency is a separate requirement. </p>
+
+  </div>
+</div>
+<p>Before unpacking the definition, we illustrate the full PAC cycle on a concrete class where every step is visible. </p>
+<div class="example_thmwrapper theorem-style-definition" id="ex:pac-rectangles">
+  <div class="example_thmheading">
+    <span class="example_thmcaption">
+    Example
+    </span>
+    <span class="example_thmlabel">3.4</span>
+    <span class="example_thmtitle">PAC learning of rectangles: the full cycle</span>
+  </div>
+  <div class="example_thmcontent">
+  <p>  Let \(\mathcal{H}\) be the class of axis-aligned rectangles in \(\mathbb {R}^2\): \(h_{(a_1,a_2,b_1,b_2)}(x) = \mathbf{1}[a_1 \leq x_1 \leq b_1 \text{ and } a_2 \leq x_2 \leq b_2]\). </p>
+<p><b class="bfseries">VC dimension.</b> \(\mathrm{VCdim}(\mathcal{H}) = 4\). Four points, one near each side of a rectangle, can be shattered: for each subset \(T\) of the four points, the rectangle that tightly encloses exactly \(T\) labels precisely \(T\) as positive. No five points can be shattered: given any five points in \(\mathbb {R}^2\), at least one is “interior” (not extremal in any coordinate), and the labeling that excludes only that point cannot be realized by a rectangle. </p>
+<p><b class="bfseries">ERM and the error region.</b> Given sample \(S\) consistent with target rectangle \(R^*\), the ERM learner returns the tightest enclosing rectangle \(R_S\) of the positive examples. Since all positive examples lie in \(R^*\), we have \(R_S \subseteq R^*\): zero false positives. The error region \(R^* \setminus R_S\) consists of four <em>strips</em>, one per side of \(R^*\), each containing no positive sample. </p>
+<p><b class="bfseries">Sample complexity.</b> For each side&#160;\(j\) (\(j = 1, \ldots , 4\)), let \(T_j\) be the strip of \(R^*\) closest to side&#160;\(j\) with probability mass exactly \(\varepsilon /4\) under&#160;\(D\). If a positive example falls in \(T_j\), then \(R_S\) extends into \(T_j\) and that strip’s contribution to the error drops below \(\varepsilon /4\). The probability that strip \(T_j\) is missed entirely by \(m\) i.i.d. samples is at most \((1 - \varepsilon /4)^m \leq e^{-m\varepsilon /4}\). A union bound over four strips gives </p>
+<div class="displaymath" id="a0000000010">
+  \[  \Pr [R_D(R_S) {\gt} \varepsilon ] \; \leq \;  4\,  e^{-m\varepsilon /4}.  \]
+</div>
+<p> Setting the right-hand side \(\leq \delta \) yields \(m = \frac{4}{\varepsilon }\ln \frac{4}{\delta } = O\! \bigl(\frac{d + \log (1/\delta )}{\varepsilon }\bigr)\) with \(d = 4\), matching the Fundamental Theorem’s prediction with the tight \(1/\varepsilon \) dependence. </p>
+<p>The analysis makes visible what the general proof obscures: the error region has <em>geometric structure</em> (four strips), the union bound exploits the <em>number of strips</em> (controlled by VC dimension), and the exponential decay in \(m\) comes from the i.i.d. assumption applied to each strip independently. Replacing \(\mathbb {R}^2\) with \(\mathbb {R}^k\) gives rectangles with \(\mathrm{VCdim}= 2k\) and \(2k\) strips, and the same argument yields \(m = O(k/\varepsilon \cdot \log (k/\delta ))\). </p>
+
+  </div>
+</div>
+<p>Three features of this definition deserve emphasis: </p>
+<ol class="enumerate">
+  <li><p><b class="bfseries">Distribution-free.</b> The guarantee holds for <em>every</em> distribution \(D\). The learner does not know \(D\) and cannot assume anything about it. </p>
+</li>
+  <li><p><b class="bfseries">Approximate.</b> The learner need not find \(c^*\) exactly; error \(\leq \varepsilon \) suffices. </p>
+</li>
+  <li><p><b class="bfseries">Probably.</b> The guarantee is probabilistic: it may fail with probability \(\delta \), but \(\delta \) can be driven arbitrarily small by drawing more samples. </p>
+</li>
+</ol>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:delta">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">3.5</span>
+    <span class="remark_thmtitle">The role of \(\delta \)</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  The \(\delta \) parameter is structurally unimportant for characterization purposes: a bound with confidence \(1 - \delta \) can always be converted to one with confidence \(1 - \delta '\) by replacing \(m\) with \(m \cdot \lceil \log (1/\delta ')/\log (1/\delta )\rceil \) and taking a majority vote. Consequently, the sample complexity depends on \(\log (1/\delta )\), not on \(1/\delta \), and the VC characterization is insensitive to how \(\delta \) enters. </p>
+
+  </div>
+</div>
+<div class="defn_thmwrapper theorem-style-definition" id="def:erm">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">3.6</span>
+    <span class="defn_thmtitle">Empirical Risk Minimization</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   Given sample \(S = \{ (x_i, c^*(x_i))\} _{i=1}^m\) and hypothesis class \(\mathcal{H}\), the <em>empirical risk minimizer</em> is </p>
+<div class="displaymath" id="a0000000011">
+  \[  \operatorname{ERM}_\mathcal {H}(S) = \arg \min _{h \in \mathcal{H}} \hat{R}_S(h), \qquad \hat{R}_S(h) = \frac{1}{m}\sum _{i=1}^m \mathbf{1}[h(x_i) \neq c^*(x_i)].  \]
+</div>
+<p> In the realizable setting, \(\operatorname{ERM}\) returns any \(h \in \mathcal{H}\) consistent with \(S\) (since \(\hat{R}_S(c^*) = 0\)). </p>
+
+  </div>
+</div>
+<p>The question this chapter answers: <em>for which \(\mathcal{H}\) does ERM succeed, and when is PAC learning possible at all?</em> </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="ch-pac.html" title="PAC Learning and the Fundamental Theorem"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-pac.html" title="PAC Learning and the Fundamental Theorem"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-vc-char.html" title="The VC Characterization"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

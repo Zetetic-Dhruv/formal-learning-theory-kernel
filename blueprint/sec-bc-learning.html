@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Behaviorally Correct Learning</title>
+<link rel="next" href="sec-relaxations.html" title="Relaxations of Identification" />
+<link rel="prev" href="sec-fin-learning.html" title="Finite Identification" />
+<link rel="up" href="sec-hierarchy.html" title="The Identification Hierarchy" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class=" active">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-2 active">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h2 id="sec:bc-learning">5.3.2 Behaviorally Correct Learning</h2>
+<p>  </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:bc-learning">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">5.7</span>
+    <span class="defn_thmtitle">Behaviorally Correct Learning (\(\mathbf{BC}\))</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>  A learner \(M\) <em>\(\mathbf{BC}\)-identifies</em> a language \(L\) from text if, for every text \(t\) for \(L\), there exists a time \(n_0\) such that \(W_{M(t_0, \ldots , t_n)} = L\) for all \(n \geq n_0\). That is, from time \(n_0\) onward, every hypothesis the learner outputs is <em>extensionally correct</em> (computes the right language), but the indices may keep changing. </p>
+
+  </div>
+</div>
+<p>The distinction between \(\mathbf{Ex}\) and \(\mathbf{BC}\) is subtle but consequential. \(\mathbf{Ex}\) requires <em>syntactic</em> convergence: the index stabilizes. \(\mathbf{BC}\) requires only <em>semantic</em> convergence: the computed language stabilizes, even if the learner keeps switching between different programs that all compute the same language. At first glance, this seems like a minor relaxation. It is not. </p>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:bc-strictly-stronger">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">5.8</span>
+    <span class="thm_thmtitle">Case–Smith <span class="cite">
+	[
+</span></span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>  \(\mathbf{BC}\) is strictly more powerful than \(\mathbf{Ex}\): there exists a class of languages that is \(\mathbf{BC}\)-identifiable but not \(\mathbf{Ex}\)-identifiable from text. </p>
+
+  </div>
+</div>
+<div class="proof_wrapper" id="a0000000054">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>We construct a class \(\mathcal{L}\) that separates \(\mathbf{BC}\) from \(\mathbf{Ex}\). </p>
+<p>For each total recursive function \(f : \mathbb {N}\to \mathbb {N}\), define the language \(L_f = \{ \langle n, f(n)\rangle : n \in \mathbb {N}\} \), where \(\langle \cdot , \cdot \rangle \) is a computable pairing function. Let \(\mathcal{L} = \{ L_f : f \text{ is total recursive}\} \). </p>
+<p><b class="bfseries">\(\mathcal{L}\) is \(\mathbf{BC}\)-identifiable.</b> Given a text \(t\) for some \(L_f\), at time \(n\) the learner has seen finitely many pairs \(\langle n_i, m_i\rangle \). Define the partial function \(g_n\) by \(g_n(n_i) = m_i\) for all pairs seen so far, and \(g_n(k) = 0\) for all other \(k\). Output an index for the language \(L_{g_n} = \{ \langle k, g_n(k)\rangle : k \in \mathbb {N}\} \). Once all pairs \(\langle k, f(k)\rangle \) for \(k \leq K\) have appeared (for any \(K\)), the hypothesis computes \(L_f\) correctly on \(\{ 0, \ldots , K\} \). As \(n \to \infty \), \(g_n\) converges pointwise to \(f\). Since \(f\) is total, for every \(k\) there exists a time after which \(g_n(k) = f(k)\). The language computed by the hypothesis is eventually \(L_f\), though the <em>index</em> keeps changing as new pairs are absorbed. This is \(\mathbf{BC}\)-identification. </p>
+<p><b class="bfseries">\(\mathcal{L}\) is not \(\mathbf{Ex}\)-identifiable.</b> Suppose for contradiction that a learner \(M\) \(\mathbf{Ex}\)-identifies \(\mathcal{L}\). We diagonalize against \(M\). Define a total recursive function \(f\) as follows. </p>
+<p>Begin presenting pairs \(\langle 0, 0\rangle , \langle 1, 0\rangle , \langle 2, 0\rangle , \ldots \) (corresponding to the zero function). Wait until \(M\) converges to some index \(e\). Since \(M\) \(\mathbf{Ex}\)-identifies \(\mathcal{L}\) and the zero function is total recursive, \(M\) must converge. Now \(W_e = L_{\mathbf{0}}\) (the language of the zero function). </p>
+<p>Modify \(f\): set \(f(k) = 1\) for some large \(k\) not yet presented. This changes the target to a different total recursive function, but the text presented so far is consistent with both targets. The learner \(M\) has already committed to index \(e\), which computes \(L_{\mathbf{0}} \neq L_f\). By a careful effectivization of this argument (choosing \(k\) computably based on \(M\)’s behavior), we construct \(f \in \mathcal{L}\) on which \(M\) fails. This contradicts \(M\) \(\mathbf{Ex}\)-identifying all of \(\mathcal{L}\). </p>
+<p>The essential point is that \(\mathbf{BC}\)-identification does not require the <em>index</em> to stabilize, only the <em>extension</em>. The class \(\mathcal{L}\) exploits this: the learner must continually update its program as new pairs arrive, and the programs keep changing, but they all eventually compute the same language. \(\mathbf{Ex}\)-identification cannot tolerate this perpetual updating of indices. </p>
+
+  </div>
+</div>
+<figure id="fig:identification-hierarchy">
+  <div class="centered"><div class="tikzpicture" id="a0000000055">
+    <img src="images/img-0005.png" alt="\begin{tikzpicture} [
+    criterion/.style={draw, thick, rounded corners, minimum width=2.4cm, minimum height=0.9cm, font=\small\bfseries, align=center},
+    branch/.style={draw, rounded corners, minimum width=2cm, minimum height=0.7cm, font=\small, align=center},
+    strict/.style={-{Stealth[length=2mm]}, thick, sepgreen!70!black},
+    weak/.style={-{Stealth[length=2mm]}, thin, dashed, notegray},
+    witlabel/.style={font=\tiny, text=edgeorange, fill=white, inner sep=1.5pt, align=center},
+    node distance=1.2cm
+]
+
+% Main chain
+\node[criterion, fill=defblue!15] (bc) {$\BC$};
+\node[criterion, fill=defblue!15, below=2cm of bc] (ex) {$\Ex$};
+\node[criterion, fill=defblue!15, below=2cm of ex] (fin) {$\FIN$};
+
+% Strict inclusions
+\draw[strict] (fin) -- node[witlabel, right, xshift=3pt] {all finite langs\\are $\Ex$ not $\FIN$} (ex);
+\draw[strict] (ex) -- node[witlabel, right, xshift=3pt] {Case--Smith 1983\\(Thm~\ref{thm:bc-strictly-stronger})} (bc);
+
+% Branches off Ex
+\node[branch, fill=edgeorange!8, right=2.5cm of ex] (anom) {Anomalous\\$\Ex^*$};
+\node[branch, fill=edgeorange!8, left=2.5cm of ex] (mono) {Monotonic\\$\mathrm{Mon}\Ex$};
+\node[branch, fill=goldcolor!10, below right=1cm and 2.5cm of ex] (vac) {Vacillatory\\$\mathrm{Vex}$};
+\node[branch, fill=goldcolor!10, above right=0.5cm and 2.5cm of bc] (trial) {Trial \&amp;\\Error};
+
+% Relations
+\draw[strict] (ex) -- node[witlabel, above] {\rel{restricts}} (anom);
+\draw[weak] (mono) -- node[witlabel, above] {\rel{restricts}} (ex);
+\draw[strict] (ex) -- node[witlabel, below right, xshift=-8pt] {\rel{restricts}} (vac);
+\draw[weak] (bc) -- node[witlabel, above right, xshift=-5pt] {$\Delta^0_2$} (trial);
+
+\end{tikzpicture}" />
+</div> <figcaption>
+  <span class="caption_title">Figure</span> 
+  <span class="caption_ref">5.1</span> 
+  <span class="caption_text">The identification hierarchy. Solid arrows indicate strict inclusion of identifiable classes (more hypotheses identified at the target). \(\mathbf{FIN}\subsetneq \mathbf{Ex}\subsetneq \mathbf{BC}\), with witnesses on each edge. Anomalous learning (\(\mathbf{Ex}^*\)) extends \(\mathbf{Ex}\) by removing the zero-error constraint. Monotonic learning restricts \(\mathbf{Ex}\) by forbidding hypothesis retraction. Vacillatory learning sits between \(\mathbf{Ex}\) and \(\mathbf{BC}\).</span> 
+</figcaption>  </div>
+
+</figure>
+<p> <b class="bfseries">Path:</b> \(\textsf{\small fin\_ learning} \xrightarrow {\texttt{\small strictly\_ stronger}} \textsf{\small ex\_ learning} \xrightarrow {\texttt{\small strictly\_ stronger}} \textsf{\small bc\_ learning}\).<br /> Each arrow is witnessed by an explicit separation. The graph encodes these as <span class="ttfamily"><small class="small">strictly_stronger</small></span> edges with the separation witness as metadata. The hierarchy is not a sequence of increasingly liberal definitions, it is a chain of <em>theorems</em>, each proved by constructing a class that one criterion can learn and the other cannot.  </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-fin-learning.html" title="Finite Identification"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="sec-hierarchy.html" title="The Identification Hierarchy"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-relaxations.html" title="Relaxations of Identification"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

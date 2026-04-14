@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Ex-Learning and Gold’s Impossibility Theorem</title>
+<link rel="next" href="sec-hierarchy.html" title="The Identification Hierarchy" />
+<link rel="prev" href="sec-gold-question.html" title="Gold’s Question" />
+<link rel="up" href="ch-gold.html" title="Identification in the Limit" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class="">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:ex-gold">5.2 Ex-Learning and Gold’s Impossibility Theorem</h1>
+<p>  </p>
+<div class="defn_thmwrapper theorem-style-definition" id="def:ex-learning">
+  <div class="defn_thmheading">
+    <span class="defn_thmcaption">
+    Definition
+    </span>
+    <span class="defn_thmlabel">5.2</span>
+    <span class="defn_thmtitle">Explanatory Learning (\(\mathbf{Ex}\))</span>
+  </div>
+  <div class="defn_thmcontent">
+  <p>   A learner \(M\) <em>\(\mathbf{Ex}\)-identifies</em> a language \(L\) from text if, for every text \(t\) for \(L\), there exists an index \(e\) and a time \(n_0\) such that \(M(t_0, \ldots , t_n) = e\) for all \(n \geq n_0\), and \(W_e = L\) (where \(W_e\) is the language computed by program \(e\)). </p>
+<p>A class \(\mathcal{L}\) of languages is <em>\(\mathbf{Ex}\)-identifiable</em> if there exists a single learner \(M\) that \(\mathbf{Ex}\)-identifies every \(L \in \mathcal{L}\) from text. </p>
+
+  </div>
+</div>
+<p>The definition requires <em>syntactic convergence</em>: the learner must eventually output the same index forever. It is not enough to output a sequence of indices that all happen to compute the correct language, the index itself must stabilize. (Relaxing this requirement gives BC-learning; see <a href="sec-bc-learning.html">Section 5.3.2</a>.) </p>
+<div class="example_thmwrapper theorem-style-definition" id="ex:finite-languages">
+  <div class="example_thmheading">
+    <span class="example_thmcaption">
+    Example
+    </span>
+    <span class="example_thmlabel">5.3</span>
+    <span class="example_thmtitle">\(\mathbf{Ex}\)-identification of finite languages</span>
+  </div>
+  <div class="example_thmcontent">
+  <p>  Let \(\mathcal{L}_{\mathrm{fin}}\) be the class of all finite subsets of \(\mathbb {N}\). Here is an \(\mathbf{Ex}\)-learner for \(\mathcal{L}_{\mathrm{fin}}\): at time \(n\), output an index for \(\{ t_0, \ldots , t_n\} \). After all elements of \(L\) have appeared (which happens at some finite time \(n_0\), since \(L\) is finite), the set \(\{ t_0, \ldots , t_n\} \) equals \(L\) for all \(n \geq n_0\). The hypothesis stabilizes. </p>
+
+  </div>
+</div>
+<p>This simple algorithm illustrates a crucial asymmetry: the learner does not know <em>when</em> it has converged. It has no way to announce “I am done.” It merely stabilizes, silently. This lack of a convergence signal is what makes Gold’s impossibility theorem possible. </p>
+<div class="thm_thmwrapper theorem-style-plain" id="thm:gold">
+  <div class="thm_thmheading">
+    <span class="thm_thmcaption">
+    Theorem
+    </span>
+    <span class="thm_thmlabel">5.4</span>
+    <span class="thm_thmtitle">Gold’s Impossibility Theorem <span class="cite">
+	[
+</span></span>
+  </div>
+  <div class="thm_thmcontent">
+  <p>    Let \(\mathcal{L}\) be any class of languages that contains all finite languages and at least one infinite language. Then \(\mathcal{L}\) is not \(\mathbf{Ex}\)-identifiable from text. </p>
+
+  </div>
+</div>
+<p>This is the centerpiece of the chapter. The proof is a diagonalization argument: we defeat <em>every</em> candidate learner by constructing a text that forces it to fail. The construction is adversarial, not probabilistic, there is no distribution, no \(\varepsilon \)-net, no covering number. The adversary simply watches the learner and manipulates the future of the stream to prevent convergence. </p>
+<div class="proof_wrapper" id="a0000000053">
+  <div class="proof_heading">
+    <span class="proof_caption">
+    Proof
+    </span>
+    <span class="expand-proof">▼</span>
+  </div>
+  <div class="proof_content">
+  <p>Let \(M\) be any learner. We construct a text \(t\) for some language \(L \in \mathcal{L}\) such that \(M\) fails to \(\mathbf{Ex}\)-identify \(L\) on \(t\). </p>
+<p>We build \(t\) in stages. Let \(L_\infty \in \mathcal{L}\) be the infinite language that \(\mathcal{L}\) contains by assumption. Enumerate \(L_\infty = \{ w_0, w_1, w_2, \ldots \} \). </p>
+<p><b class="bfseries">Stage 0.</b> Present \(w_0\) to \(M\). The learner outputs some hypothesis \(h_0 = M(w_0)\). </p>
+<p><b class="bfseries">Stage \(k \geq 1\).</b> At this point we have presented the finite sequence \((w_0, \ldots , w_{n_{k-1}})\) for some \(n_{k-1}\), and \(M\) has output hypothesis \(h_{n_{k-1}}\). Let \(F_k = \{ w_0, \ldots , w_{n_{k-1}}\} \) be the set of strings presented so far. </p>
+<p>Consider two cases: </p>
+<ul class="itemize">
+  <li>[leftmargin=*] </li>
+  <li><p><b class="bfseries">Case A:</b> \(W_{h_{n_{k-1}}} = F_k\) (the current hypothesis computes exactly the finite set seen so far). Then present \(w_{n_{k-1}+1}\) (the next element of \(L_\infty \)), enlarging \(F_k\). Let \(n_k = n_{k-1} + 1\). Proceed to stage \(k+1\). </p>
+</li>
+  <li><p><b class="bfseries">Case B:</b> \(W_{h_{n_{k-1}}} \neq F_k\). Then the current hypothesis is already wrong for the finite language \(F_k\). We may define \(L = F_k\): since \(F_k\) is finite and \(\mathcal{L}\) contains all finite languages, \(F_k \in \mathcal{L}\). We extend the text by repeating elements of \(F_k\) forever. The learner \(M\) has output a hypothesis \(h_{n_{k-1}}\) with \(W_{h_{n_{k-1}}} \neq F_k = L\), and the text for \(L\) can be arranged so that \(M\) never converges to a correct index (we continue to the next stage rather than stopping, as shown below). </p>
+</li>
+</ul>
+<p>The key observation is the <em>diagonalization</em>: we never let the learner rest. </p>
+<p>If Case&#160;A occurs at every stage, then every element of \(L_\infty \) is eventually presented, so \(t\) is a text for \(L_\infty \). At each stage, \(M\)’s current hypothesis \(h_{n_k}\) is checked: does \(W_{h_{n_k}} = F_k\)? If yes, we expand. But \(F_k \subsetneq L_\infty \) for all \(k\) (since \(L_\infty \) is infinite), so \(W_{h_{n_k}} = F_k \neq L_\infty \). Therefore \(M\) outputs a hypothesis that is wrong at every stage, it cannot converge to a correct index for \(L_\infty \). </p>
+<p>If Case&#160;B occurs at some stage \(k\), then \(M\) has already failed for \(F_k\). We commit to \(L = F_k\) and repeat elements of \(F_k\) forever. But we can do more: before committing, we wait to see if \(M\) changes its mind. If \(M\) later outputs a hypothesis \(h'\) with \(W_{h'} = F_k\), we switch to Case&#160;A and add the next element of \(L_\infty \). This forces \(M\) to fail for \(L_\infty \) instead. </p>
+<p>In either case, \(M\) fails. Since \(M\) was an arbitrary learner, no learner \(\mathbf{Ex}\)-identifies \(\mathcal{L}\). </p>
+
+  </div>
+</div>
+<p>The proof has a recursive structure that repays careful study. The adversary maintains a “threat” at every stage: either the current language is the finite set seen so far, or it is the infinite language \(L_\infty \). Whenever the learner commits to one possibility, the adversary switches to the other. The learner is forced to change its mind infinitely often, and \(\mathbf{Ex}\)-identification requires that it eventually stop changing its mind. </p>
+<div class="remark_thmwrapper theorem-style-remark" id="rmk:diag-vs-conc">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">5.5</span>
+    <span class="remark_thmtitle">Diagonalization vs. concentration</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>  Compare this proof to the lower bound for PAC learning (<a href="ch-pac.html">Chapter 3</a>). The PAC lower bound constructs a <em>distribution</em> that fools the learner with positive probability; it is probabilistic. Gold’s proof constructs a <em>text</em> that fools the learner with certainty; it is adversarial. The PAC proof uses counting (how many hypotheses can be distinguished by \(m\) samples); Gold’s proof uses the halting problem implicitly (the adversary must check whether \(W_e = F\) for arbitrary \(e\)). These are entirely different mathematical worlds. </p>
+
+  </div>
+</div>
+<p> The proof technique of Theorem&#160;<a href="sec-ex-gold.html#thm:gold">5.4</a> is a <em>priority argument</em> in the sense of recursion theory, though a simple one. More sophisticated priority arguments appear in the study of learning with resource bounds (Case and Smith&#160;<span class="cite">
+	[
+</span>). The connection between Gold-style learning and recursion theory runs deep: Barzdinš&#160;<span class="cite">
+	[
+</span> showed that the class of languages \(\mathbf{Ex}\)-identifiable from informant is exactly the class of \(\Sigma ^0_2\)-definable families, establishing a precise link to the arithmetical hierarchy.  </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-gold-question.html" title="Gold’s Question"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-gold.html" title="Identification in the Limit"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-hierarchy.html" title="The Identification Hierarchy"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>

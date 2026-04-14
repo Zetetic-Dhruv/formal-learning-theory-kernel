@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+  MathJax = { 
+    tex: {
+		    inlineMath: [['\\(','\\)']]
+	} }
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+<meta name="generator" content="plasTeX" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formal Learning Theory Kernel: Blueprint v1: Separations Between Paradigms</title>
+<link rel="next" href="sec-strict-hierarchy.html" title="Strict Strength Hierarchy" />
+<link rel="prev" href="sec-sep-lattice.html" title="The Separation Lattice" />
+<link rel="up" href="ch-separations.html" title="What Does Not Imply What" />
+<link rel="stylesheet" href="styles/theme-white.css" />
+<link rel="stylesheet" href="styles/amsthm.css" />
+</head>
+
+<body>
+<header>
+<svg  id="toc-toggle" class="icon icon-list-numbered "><use xlink:href="symbol-defs.svg#icon-list-numbered"></use></svg>
+<h1 id="doc_title"><a href="index.html">Formal Learning Theory Kernel: Blueprint v1</a></h1>
+</header>
+
+<div class="wrapper">
+<nav class="toc">
+<ul class="sub-toc-0">
+<li class="">
+  <a href="chap-intro.html"><span class="toc_ref">1</span> <span class="toc_entry">Introduction</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sect0001.html"><span class="toc_ref"></span> <span class="toc_entry">Scope</span></a>
+ </li>
+<li class="">
+  <a href="sect0002.html"><span class="toc_ref"></span> <span class="toc_entry">Relationship to the companion textbook</span></a>
+ </li>
+<li class="">
+  <a href="sect0003.html"><span class="toc_ref"></span> <span class="toc_entry">How to read this document</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-primitives.html"><span class="toc_ref">2</span> <span class="toc_entry">Primitives</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-atoms.html"><span class="toc_ref">2.1</span> <span class="toc_entry">Atomic vocabulary</span></a>
+ </li>
+<li class="">
+  <a href="sec-concept-class.html"><span class="toc_ref">2.2</span> <span class="toc_entry">The concept class</span></a>
+ </li>
+<li class="">
+  <a href="sec-batch-learner.html"><span class="toc_ref">2.3</span> <span class="toc_entry">Batch learner</span></a>
+ </li>
+<li class="">
+  <a href="sec-sample-loss.html"><span class="toc_ref">2.4</span> <span class="toc_entry">Sample, loss, and error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-pac.html"><span class="toc_ref">3</span> <span class="toc_entry">PAC Learning and the Fundamental Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-pac-def.html"><span class="toc_ref">3.1</span> <span class="toc_entry">The PAC Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-vc-char.html"><span class="toc_ref">3.2</span> <span class="toc_entry">The VC Characterization</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-sauer-shelah.html"><span class="toc_ref">3.2.1</span> <span class="toc_entry">Stage 1: Sauer–Shelah (Statement)</span></a>
+ </li>
+<li class="">
+  <a href="sec-uniform-convergence.html"><span class="toc_ref">3.2.2</span> <span class="toc_entry">Stage 2: Uniform Convergence</span></a>
+ </li>
+<li class="">
+  <a href="sec-erm-succeeds.html"><span class="toc_ref">3.2.3</span> <span class="toc_entry">Stage 3: Uniform Convergence Implies ERM Succeeds</span></a>
+ </li>
+<li class="">
+  <a href="sec-converse.html"><span class="toc_ref">3.2.4</span> <span class="toc_entry">Stage 4: Infinite VC Dimension Implies Failure</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-fundamental.html"><span class="toc_ref">3.3</span> <span class="toc_entry">The Fundamental Theorem of Statistical Learning</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-proof-architecture.html"><span class="toc_ref">3.3.1</span> <span class="toc_entry">The Proof Architecture</span></a>
+ </li>
+<li class="">
+  <a href="sec-compression-direction.html"><span class="toc_ref">3.3.2</span> <span class="toc_entry">The Compression Direction (Sketch)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-agnostic.html"><span class="toc_ref">3.4</span> <span class="toc_entry">The Agnostic Setting and the \(\varepsilon ^2\) Price</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bounds.html"><span class="toc_ref">3.5</span> <span class="toc_entry">Lower Bounds and the No-Free-Lunch Theorem</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-pac-lower.html"><span class="toc_ref">3.5.1</span> <span class="toc_entry">The PAC Lower Bound</span></a>
+ </li>
+<li class="">
+  <a href="sec-nfl-full.html"><span class="toc_ref">3.5.2</span> <span class="toc_entry">The No-Free-Lunch Theorem (Full Proof)</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-computational.html"><span class="toc_ref">3.6</span> <span class="toc_entry">Computational Interlude</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch5-summary.html"><span class="toc_ref">3.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0004.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-online.html"><span class="toc_ref">4</span> <span class="toc_entry">Online Learning and the Littlestone Dimension</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-online-game.html"><span class="toc_ref">4.1</span> <span class="toc_entry">The Online Learning Game</span></a>
+ </li>
+<li class="">
+  <a href="sec-mistake-trees.html"><span class="toc_ref">4.2</span> <span class="toc_entry">Mistake Trees and the Littlestone Dimension</span></a>
+ </li>
+<li class="">
+  <a href="sec-soa.html"><span class="toc_ref">4.3</span> <span class="toc_entry">The Standard Optimal Algorithm</span></a>
+ </li>
+<li class="">
+  <a href="sec-lower-bound.html"><span class="toc_ref">4.4</span> <span class="toc_entry">The Lower Bound: The Adversary Strategy</span></a>
+ </li>
+<li class="">
+  <a href="sec-regret.html"><span class="toc_ref">4.5</span> <span class="toc_entry">Regret Bounds and the Multiplicative Weights Framework</span></a>
+ </li>
+<li class="">
+  <a href="sec-pac-online-gap.html"><span class="toc_ref">4.6</span> <span class="toc_entry">The PAC–Online Gap</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch6-summary.html"><span class="toc_ref">4.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="ch-gold.html"><span class="toc_ref">5</span> <span class="toc_entry">Identification in the Limit</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-gold-question.html"><span class="toc_ref">5.1</span> <span class="toc_entry">Gold’s Question</span></a>
+ </li>
+<li class="">
+  <a href="sec-ex-gold.html"><span class="toc_ref">5.2</span> <span class="toc_entry">Ex-Learning and Gold’s Impossibility Theorem</span></a>
+ </li>
+<li class="">
+  <a href="sec-hierarchy.html"><span class="toc_ref">5.3</span> <span class="toc_entry">The Identification Hierarchy</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-fin-learning.html"><span class="toc_ref">5.3.1</span> <span class="toc_entry">Finite Identification</span></a>
+ </li>
+<li class="">
+  <a href="sec-bc-learning.html"><span class="toc_ref">5.3.2</span> <span class="toc_entry">Behaviorally Correct Learning</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-relaxations.html"><span class="toc_ref">5.4</span> <span class="toc_entry">Relaxations of Identification</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sec-anomalous.html"><span class="toc_ref">5.4.1</span> <span class="toc_entry">Anomalous Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-monotonic.html"><span class="toc_ref">5.4.2</span> <span class="toc_entry">Monotonic Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-vacillatory.html"><span class="toc_ref">5.4.3</span> <span class="toc_entry">Vacillatory Learning</span></a>
+ </li>
+<li class="">
+  <a href="sec-trial-error.html"><span class="toc_ref">5.4.4</span> <span class="toc_entry">Trial and Error</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="sec-mind-change.html"><span class="toc_ref">5.5</span> <span class="toc_entry">Mind-Change Complexity</span></a>
+ </li>
+<li class="">
+  <a href="sec-three-paradigm.html"><span class="toc_ref">5.6</span> <span class="toc_entry">Three Paradigms, Incomparable</span></a>
+ </li>
+<li class="">
+  <a href="sec-ch7-summary.html"><span class="toc_ref">5.7</span> <span class="toc_entry">What This Chapter Established</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-2">
+     <li class="">
+  <a href="sect0005.html"><span class="toc_ref"></span> <span class="toc_entry">Exercises</span></a>
+ </li>
+
+  </ul>
+ </li>
+
+  </ul>
+ </li>
+<li class=" active">
+  <a href="ch-separations.html"><span class="toc_ref">6</span> <span class="toc_entry">What Does Not Imply What</span></a>
+  <span class="expand-toc">▼</span>
+  <ul class="sub-toc-1 active">
+     <li class="">
+  <a href="sec-sep-lattice.html"><span class="toc_ref">6.1</span> <span class="toc_entry">The Separation Lattice</span></a>
+ </li>
+<li class=" active current">
+  <a href="sec-separations.html"><span class="toc_ref">6.2</span> <span class="toc_entry">Separations Between Paradigms</span></a>
+ </li>
+<li class="">
+  <a href="sec-strict-hierarchy.html"><span class="toc_ref">6.3</span> <span class="toc_entry">Strict Strength Hierarchy</span></a>
+ </li>
+<li class="">
+  <a href="sec-neg-layer-summary.html"><span class="toc_ref">6.4</span> <span class="toc_entry">What the Negative Layer Reveals</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-measurability.html"><span class="toc_ref">7</span> <span class="toc_entry">The Measurability Layer</span></a>
+  <span class="expand-toc">▶</span>
+  <ul class="sub-toc-1">
+     <li class="">
+  <a href="sec-borel-param.html"><span class="toc_ref">7.1</span> <span class="toc_entry">Borel parameterization and the symmetrization route</span></a>
+ </li>
+<li class="">
+  <a href="sec-choquet-bridge.html"><span class="toc_ref">7.2</span> <span class="toc_entry">The analytic measurability bridge</span></a>
+ </li>
+<li class="">
+  <a href="sec-borel-analytic-sep.html"><span class="toc_ref">7.3</span> <span class="toc_entry">The Borel-analytic separation theorem</span></a>
+ </li>
+
+  </ul>
+ </li>
+<li class="">
+  <a href="chap-closing.html"><span class="toc_ref">8</span> <span class="toc_entry">Closing Notes and Forward Pointers</span></a>
+ </li>
+<li class="">
+  <a href="sect0006.html"><span class="toc_ref">9</span> <span class="toc_entry">Bibliography</span></a>
+ </li>
+</ul>
+</nav>
+
+<div class="content">
+<div class="content-wrapper">
+
+
+<div class="main-text">
+<h1 id="sec:separations">6.2 Separations Between Paradigms</h1>
+<p>  </p>
+<p>We now present the 9 <span class="ttfamily"><small class="small">does_not_imply</small></span> edges in the graph, each with its witness construction. The order moves from the most elementary witness (a one-parameter family on \(\mathbb {R}\)) to the most conceptually involved (the breakdown of the fundamental theorem beyond binary classification). </p>
+<p> <b class="bfseries">PAC learning \(\not\Rightarrow \) mistake-bounded learning.</b> </p>
+<p><em>Witness.</em> Let \(\mathcal{H} = \{ h_\theta : \theta \in \mathbb {R}\} \) be the class of thresholds on \(\mathbb {R}\), where \(h_\theta (x) = \mathbf{1}[x \geq \theta ]\). </p>
+<p>This class has \(\mathrm{VCdim}(\mathcal{H}) = 1\): a single point \(x\) is shattered (choose \(\theta {\lt} x\) or \(\theta {\gt} x\)), but no two points can be simultaneously shattered. By the fundamental theorem of statistical learning, \(\mathcal{H}\) is PAC learnable with sample complexity \(O(1/\varepsilon )\). </p>
+<p>However, \(\mathrm{Ldim}(\mathcal{H}) = \infty \). An adaptive adversary can force arbitrarily many mistakes by binary search: maintain an interval \((a, b)\) of uncertainty, present the midpoint, and whichever label the learner predicts, place the true threshold on the opposite side. Each round forces a mistake and halves the interval, but the reals admit no finite termination. </p>
+<p><em>What the witness exploits.</em> The gap between VC and Littlestone dimension: batch learnability (distribution-free, i.i.d. samples) does not imply sequential learnability (adversarial, adaptive instances). The reals are “too dense” for any online strategy to pin down the threshold, but a random sample reveals it with high probability. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<div class="remark_thmwrapper theorem-style-remark" id="sep:pac-not-online">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">6.1</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>   Formalized in the kernel; see the source link. </p>
+
+  </div>
+</div>
+<p> <b class="bfseries">Ex-learning \(\not\Rightarrow \) PAC learning.</b> </p>
+<p><em>Witness.</em> Let \(\mathcal{C} = \{  S \subseteq \mathbb {N}: S \text{ is finite} \} \), the class of all finite subsets of \(\mathbb {N}\). A Gold-style learner can identify any finite \(S\) in the limit from positive data: enumerate elements as they appear, and at each stage conjecture the set of elements seen so far. After the last new element arrives, the conjecture stabilizes on \(S\). </p>
+<p>However, \(\mathrm{VCdim}(\mathcal{C}) = \infty \): for any \(n\) points \(\{ x_1, \ldots , x_n\}  \subset \mathbb {N}\), every subset is itself a finite set in \(\mathcal{C}\), so the class shatters every finite set. The fundamental theorem then implies \(\mathcal{C}\) is not PAC learnable. </p>
+<p><em>What the witness exploits.</em> The data models are incompatible. Gold-style identification receives an infinite enumeration of the target’s elements and succeeds in the limit; PAC learning receives a finite i.i.d. sample and must generalize immediately. A class can be identifiable from exhaustive enumeration yet have no finite VC dimension. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<div class="remark_thmwrapper theorem-style-remark" id="sep:gold-not-pac">
+  <div class="remark_thmheading">
+    <span class="remark_thmcaption">
+    Remark
+    </span>
+    <span class="remark_thmlabel">6.2</span>
+  </div>
+  <div class="remark_thmcontent">
+  <p>   Formalized in the kernel; see the source link. </p>
+
+  </div>
+</div>
+<p> <b class="bfseries">PAC learning \(\not\Rightarrow \) exact learning.</b> </p>
+<p><em>Witness.</em> PAC learning requires only \(\varepsilon \)-approximate identification under an unknown distribution; exact learning requires zero-error identification via query access. These are different success criteria on different data models, and neither subsumes the other. </p>
+<p>More concretely, consider any concept class \(\mathcal{C}\) that is PAC learnable (finite VC dimension) but for which proper hypothesis selection is NP-hard, for instance, intersections of halfspaces in \(\mathbb {R}^d\) for sufficiently large \(d\). An improper PAC learner can achieve low error using a surrogate hypothesis class, but the exact learning model requires the learner to output a hypothesis <em>exactly equal</em> to the target. When the class is rich enough that finding the exact target is computationally intractable, PAC learnability does not deliver exact learnability. </p>
+<p><em>What the witness exploits.</em> The gap between approximate and exact success criteria. PAC tolerates \(\varepsilon \) error; exact learning tolerates none. This is a criterion mismatch, not a data mismatch. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<p> <b class="bfseries">Finite VC dimension \(\not\Rightarrow \) computational tractability.</b> </p>
+<p><em>Witness.</em> Kearns and Valiant&#160;<span class="cite">
+	[
+</span> constructed concept classes based on polynomial-size Boolean circuits whose VC dimension is polynomial in the circuit size, yet for which PAC learning is computationally intractable under the assumption that the <em>decisional Diffie–Hellman</em> (or related cryptographic) assumption holds. </p>
+<p>The construction proceeds as follows. Fix a one-way function family. Define \(\mathcal{C}\) to be the class of functions computed by circuits of size \(s\). This class has \(\mathrm{VCdim}(\mathcal{C}) \leq O(s \log s)\), so it is information-theoretically PAC learnable with \(\mathrm{poly}(s)\) samples. But any polynomial-time PAC learner for \(\mathcal{C}\) could be used to invert the one-way function, contradicting the cryptographic assumption. </p>
+<p><em>What the witness exploits.</em> The fundamental theorem is <em>information-theoretic</em>: it characterizes learnability in terms of sample complexity, not computational complexity. Cryptographic hardness lives in a different layer entirely. Finite VC dimension guarantees that enough data suffices; it says nothing about whether a polynomial-time algorithm can find a good hypothesis from that data. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<p> <b class="bfseries">Finite VC dimension \(\not\Rightarrow \) low SQ dimension.</b> </p>
+<p><em>Witness.</em> The class of parities over \(\{ 0,1\} ^n\). Each parity function \(\chi _S\), for \(S \subseteq [n]\), maps \(x \mapsto \bigoplus _{i \in S} x_i\). The parity class has \(\mathrm{VCdim}= n\) (it shatters the standard basis). But any statistical query algorithm requires queries of tolerance \(\tau = O(2^{-n/2})\) or uses \(2^{\Omega (n)}\) queries of polynomial tolerance, because distinct parities are pairwise uncorrelated under the uniform distribution. </p>
+<p>Formally, \(\SQdim (\text{Parities}_n) = 2^n\), which is exponential in \(\mathrm{VCdim}= n\). </p>
+<p><em>What the witness exploits.</em> VC dimension measures combinatorial shattering capacity (distribution-free). SQ dimension measures pairwise correlation structure under a specific distribution. Parities are maximally uncorrelated under the uniform distribution, forcing any SQ learner to make exponentially many queries, even though the class is small in the VC sense. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<p> <b class="bfseries">Natarajan dimension \(\not\Rightarrow \) multiclass PAC learnability.</b> </p>
+<p><em>Witness.</em> Brukhim et al.&#160;<span class="cite">
+	[
+</span> constructed a concept class \(\mathcal{C}\) with label space \(Y\) of infinite cardinality, Natarajan dimension \(d_{\mathrm{N}}(\mathcal{C})=1\), yet \(\mathcal{C}\) is not PAC learnable. </p>
+<p>The Natarajan dimension, which generalizes VC dimension to multiclass settings by requiring two distinct labelings of shattered points, is too coarse when \(|Y|\) is infinite. The construction builds a class in which every pair of points can be 2-colored in only one way (so \(d_{\mathrm{N}}= 1\)), but the global combinatorial structure is rich enough to prevent uniform convergence. </p>
+<p><em>What the witness exploits.</em> The Natarajan dimension captures pairwise shattering. When the label space is infinite, pairwise structure does not determine global learnability. The DS dimension, which accounts for higher-order combinatorial structure via oriented hypergraphs, is the correct characterization. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<p> <b class="bfseries">Proper learnability \(\not\Rightarrow \) efficient proper PAC learning.</b> </p>
+<p><em>Witness.</em> The class of 3-term DNF formulas over \(\{ 0,1\} ^n\). Pitt and Valiant&#160;<span class="cite">
+	[
+</span> showed that <em>proper</em> PAC learning, where the hypothesis must itself be a 3-term DNF, is NP-hard, assuming \(\mathrm{RP} \neq \mathrm{NP}\). Yet the same class is efficiently PAC learnable <em>improperly</em>: every 3-term DNF can be represented as a 3-CNF, and 3-CNFs are efficiently PAC learnable. </p>
+<p><em>What the witness exploits.</em> The gap between proper and improper learning is purely computational: the information-theoretic sample complexity is identical, but the representation constraint of proper learning introduces NP-hardness. The concept class is simple enough to learn with the right representation, but finding a hypothesis in the <em>same</em> representation class is intractable. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<p> <b class="bfseries">Labeled compression \(\not\Rightarrow \) unlabeled compression.</b> </p>
+<p><em>Witness.</em> Pálvölgyi and Tardos&#160;<span class="cite">
+	[
+</span> exhibited a concept class with \(\mathrm{VCdim}= 2\) that admits a labeled sample compression scheme of size&#160;2 but does <em>not</em> admit an unlabeled compression scheme of size&#160;2. </p>
+<p>In an unlabeled compression scheme, the compression function stores only the <em>points</em> (not their labels) from the training sample; the reconstruction function must infer both the hypothesis and the labels from the point set alone. The witness class is constructed so that the label information is essential for reconstruction: two subsets of the same size can correspond to different concepts, and only the labels disambiguate them. </p>
+<p><em>What the witness exploits.</em> The label information carries entropy that cannot always be recovered from the geometry of the point set alone. Unlabeled compression demands that the point configuration determines the concept, which is a strictly stronger requirement than labeled compression. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+<p> <b class="bfseries">The fundamental theorem \(\not\Rightarrow \) stability characterization.</b> </p>
+<p><em>Witness.</em> The Fundamental Theorem of Statistical Learning (<a href="ch-pac.html">Chapter 3</a>) ties together VC dimension, uniform convergence, and PAC learnability into a single equivalence. Nine conditions, all the same condition. That theorem is the crown jewel of binary classification. </p>
+<p>It does not survive contact with real-valued loss. </p>
+<p>Shalev-Shwartz et al.&#160;<span class="cite">
+	[
+</span> construct a learning problem, arbitrary loss, multi-valued output, that is learnable, yet for which uniform convergence fails outright. The nine-way equivalence collapses. In its place, a different quantity takes over: algorithmic stability, measuring how much a learner’s output changes when a single training point is perturbed. </p>
+<p><em>What the witness exploits.</em> The symmetrization argument at the heart of the Fundamental Theorem’s proof requires the loss to take finitely many values. Specifically: two. That assumption is invisible in the binary setting, it looks like a harmless feature of the problem. Make the loss real-valued and symmetrization breaks. Uniform convergence stops characterizing learnability. Stability, indifferent to loss cardinality, remains. </p>
+<p>The Fundamental Theorem is not wrong. It is <em>local</em>, an artifact of the 0-1 loss that does not announce itself as such. </p>
+<p><span class="cite">
+	[
+</span>  </p>
+
+</div> <!--main-text -->
+</div> <!-- content-wrapper -->
+</div> <!-- content -->
+</div> <!-- wrapper -->
+
+<nav class="prev_up_next">
+  <a href="sec-sep-lattice.html" title="The Separation Lattice"><svg  class="icon icon-arrow-left "><use xlink:href="symbol-defs.svg#icon-arrow-left"></use></svg>
+</a>
+  <a href="ch-separations.html" title="What Does Not Imply What"><svg  class="icon icon-arrow-up "><use xlink:href="symbol-defs.svg#icon-arrow-up"></use></svg>
+</a>
+  <a href="sec-strict-hierarchy.html" title="Strict Strength Hierarchy"><svg  class="icon icon-arrow-right "><use xlink:href="symbol-defs.svg#icon-arrow-right"></use></svg>
+</a>
+</nav>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/plastex.js"></script>
+<script type="text/javascript" src="js/svgxuse.js"></script>
+</body>
+</html>
