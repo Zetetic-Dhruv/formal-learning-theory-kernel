@@ -28,11 +28,17 @@ jobs:
           run: |
             cd blueprint/src
             mkdir -p ../print
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            # Copy bib BEFORE any pass so bibtex can find it
             cp references.bib ../print/
-            (cd ../print && bibtex print) || true
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
-            xelatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            # Pass 1: generate .aux (undefined refs expected)
+            pdflatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            # bibtex: generate .bbl from .aux + .bib
+            cd ../print
+            bibtex print || echo "bibtex failed, citations will show as [?]"
+            cd ../src
+            # Pass 2 + 3: resolve refs and citations
+            pdflatex -output-directory=../print -interaction=nonstopmode print.tex || true
+            pdflatex -output-directory=../print -interaction=nonstopmode print.tex || true
             test -f ../print/print.pdf || (echo "PDF build failed" && exit 1)
 
       # ---------------------------------------------------------------

@@ -6,8 +6,9 @@
 % Blueprint package fallbacks
 % ---------------------------------------------------------------
 % In the web build, these are overridden by the `blueprint` package.
-% In the print build, \lean renders as a subtle inline identifier.
-\providecommand{\lean}[1]{{\footnotesize\textsf{[\,#1\,]}}}
+% In the print build, \lean renders as a small identifier on its own line,
+% separated from the theorem text that follows.
+\providecommand{\lean}[1]{\par{\footnotesize\textsf{Lean:~\texttt{#1}}}\par\medskip\noindent\ignorespaces}
 \providecommand{\leanok}{}
 \providecommand{\uses}[1]{}
 \providecommand{\proves}[1]{}
@@ -58,6 +59,16 @@
   title=Historical Note, fonttitle=\bfseries\small,
   breakable
 }
+\newtcolorbox{traversal}{
+  colback=defblue!5, colframe=defblue!50!black,
+  title=Graph Traversal, fonttitle=\bfseries\small,
+  breakable
+}
+\newtcolorbox{computational}{
+  colback=layergray, colframe=notegray!50!black,
+  title=Computational Illustration, fonttitle=\bfseries\small,
+  breakable
+}
 \newtcolorbox{obstbox}{
   colback=edgeorange!5, colframe=edgeorange!50!black,
   title=Obstruction, fonttitle=\bfseries\small,
@@ -105,6 +116,7 @@
 \newcommand{\DSdim}{\ensuremath{\mathrm{DSdim}}}
 \newcommand{\Ndim}{\ensuremath{d_{\mathrm{N}}}}
 \newcommand{\Pdim}{\ensuremath{\mathrm{Pdim}}}
+\newcommand{\SQdim}{\ensuremath{\mathrm{SQdim}}}
 
 % Complexities and algorithms
 \newcommand{\Rad}{\ensuremath{\widehat{\mathcal{R}}}}
