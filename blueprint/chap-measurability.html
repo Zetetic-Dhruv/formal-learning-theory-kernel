@@ -304,7 +304,7 @@
 <div class="main-text">
 <h1 id="chap:measurability">7 The Measurability Layer</h1>
 <p> </p>
-<p>Up to ?? the fundamental theorem of statistical learning has been stated as if measurability were a side condition. It is not. The symmetrization argument in the forward direction picks up a set on \(X^m \times X^m\) whose regularity determines whether Hoeffding’s inequality can be applied pointwise and lifted to a supremum over the growth-function-many effective labelings. The literature, following Krapp and Wirth&#160;<span class="cite">
+<p>Up to <a href="ch-pac.html">Chapter 3</a> the fundamental theorem of statistical learning has been stated as if measurability were a side condition. It is not. The symmetrization argument in the forward direction picks up a set on \(X^m \times X^m\) whose regularity determines whether Hoeffding’s inequality can be applied pointwise and lifted to a supremum over the growth-function-many effective labelings. The literature, following Krapp and Wirth&#160;<span class="cite">
 	[
 </span>, states this regularity as a Borel hypothesis on the ghost-gap bad event. Every bad event in practice is then checked against the Borel \(\sigma \)-algebra on the product space, and everything goes through. </p>
 <p>This chapter establishes that the Borel hypothesis is stronger than the proof needs. The actual sufficient condition is weaker: the bad event must be <em>null-measurable</em> with respect to the completion of the product measure. <a href="sec-borel-param.html">Section 7.1</a> identifies the point in the symmetrization chain where the weakening applies and names the kernel’s refined hypothesis <span class="ttfamily">WellBehavedVCMeasTarget</span>. <a href="sec-choquet-bridge.html">Section 7.2</a> shows that every Borel-parameterized concept class automatically satisfies the refinement via a classical theorem of descriptive set theory (Choquet capacitability, Kechris GTM&#160;156&#160;<span class="cite">
@@ -312,7 +312,27 @@
 </span>). Finally, <a href="sec-borel-analytic-sep.html">Section 7.3</a> exhibits a concrete concept class whose ghost-gap bad event is analytic and null-measurable but <em>not</em> Borel, and which therefore witnesses that the refinement is strict. </p>
 <p>None of this material appears in the companion textbook: the discoveries are tied to the formalization work, and their home is this chapter. The formalized chain is </p>
 <div class="displaymath" id="a0000000067">
-  \[  {\footnotesize \textsf{[\, singletonClassOn\, ]}}\; \longrightarrow \;  {\footnotesize \textsf{[\, singleton_badEvent_eq_preimage_planar\, ]}}\; \longrightarrow \;  {\footnotesize \textsf{[\, planarWitnessEvent_analytic\, ]}}\; \longrightarrow \;  {\footnotesize \textsf{[\, planarWitnessEvent_not_measurable\, ]}}\; \longrightarrow \;  {\footnotesize \textsf{[\, singleton_badEvent_not_measurable\, ]}},  \]
+  \[ {\footnotesize \textsf{Lean:~ \texttt{singletonClassOn}}}
+
+\medskip \noindent \ignorespaces \; \longrightarrow \;  
+
+{\footnotesize \textsf{Lean:~ \texttt{singleton_badEvent_eq_preimage_planar}}}
+
+\medskip \noindent \ignorespaces \; \longrightarrow \;  
+
+{\footnotesize \textsf{Lean:~ \texttt{planarWitnessEvent_analytic}}}
+
+\medskip \noindent \ignorespaces \; \longrightarrow \;  
+
+{\footnotesize \textsf{Lean:~ \texttt{planarWitnessEvent_not_measurable}}}
+
+\medskip \noindent \ignorespaces \; \longrightarrow \;  
+
+{\footnotesize \textsf{Lean:~ \texttt{singleton_badEvent_not_measurable}}}
+
+\medskip \noindent \ignorespaces , 
+
+ \]
 </div>
 <p> five theorems in <span class="ttfamily">FLT_Proofs.Theorem.BorelAnalyticSeparation</span>, proved sorry-free against mathlib4 <span class="ttfamily">fde0cc5</span>. </p>
 

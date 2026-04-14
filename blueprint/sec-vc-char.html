@@ -316,7 +316,9 @@
 </span></span>
   </div>
   <div class="thm_thmcontent">
-  <p>  <small class="footnotesize"><span class="sffamily">[ fundamental_theorem ]</span></small>  Let \(\mathcal{H}\) be a hypothesis class over domain \(X\). The following are equivalent: </p>
+  <p>  </p>
+<p><small class="footnotesize"><span class="sffamily">Lean:&#160;<span class="ttfamily">fundamental_theorem</span></span></small></p>
+<p>  Let \(\mathcal{H}\) be a hypothesis class over domain \(X\). The following are equivalent: </p>
 <ol class="enumerate">
   <li><p>\(\mathcal{H}\) is PAC learnable. </p>
 </li>
@@ -343,7 +345,13 @@
   <div class="remark_thmcontent">
   <p>   The statement of <a href="sec-vc-char.html#thm:vc-char">Theorem 3.7</a> as written here is silent on the measurability of the hypothesis class. The symmetrization argument in Stage&#160;2 below picks up a two-sided ghost-gap bad event on \(X^m \times X^m\) whose measurability is a separate requirement on \(\mathcal{H}\). The literature proof of Krapp and Wirth&#160;<span class="cite">
 	[
-</span> states this requirement as a <em>Borel</em> hypothesis on the bad event. This kernel formalizes the fundamental theorem under a strictly weaker hypothesis: the bad event need only be <em>null-measurable</em> with respect to the completion of the product measure. The weakening is not cosmetic. <a href="chap-measurability.html">Chapter 7</a> constructs a concept class whose ghost-gap bad event is analytic but not Borel, and thereby witnesses the strict gap between the two hypotheses. The Lean identifier <small class="footnotesize"><span class="sffamily">[ WellBehavedVCMeasTarget ]</span></small> names the refined hypothesis used in the kernel statement, and <small class="footnotesize"><span class="sffamily">[ KrappWirthWellBehaved ]</span></small> names the Krapp and Wirth version; the implication <small class="footnotesize"><span class="sffamily">[ KrappWirthWellBehaved.toWellBehavedVC ]</span></small> sits on one side of the strict gap, and <a href="sec-borel-analytic-sep.html#cor:borel-analytic-separation">Corollary 7.18</a> witnesses the other. </p>
+</span> states this requirement as a <em>Borel</em> hypothesis on the bad event. This kernel formalizes the fundamental theorem under a strictly weaker hypothesis: the bad event need only be <em>null-measurable</em> with respect to the completion of the product measure. The weakening is not cosmetic. <a href="chap-measurability.html">Chapter 7</a> constructs a concept class whose ghost-gap bad event is analytic but not Borel, and thereby witnesses the strict gap between the two hypotheses. The Lean identifier </p>
+<p><small class="footnotesize"><span class="sffamily">Lean:&#160;<span class="ttfamily">WellBehavedVCMeasTarget</span></span></small></p>
+<p> names the refined hypothesis used in the kernel statement, and </p>
+<p><small class="footnotesize"><span class="sffamily">Lean:&#160;<span class="ttfamily">KrappWirthWellBehaved</span></span></small></p>
+<p> names the Krapp and Wirth version; the implication </p>
+<p><small class="footnotesize"><span class="sffamily">Lean:&#160;<span class="ttfamily">KrappWirthWellBehaved.toWellBehavedVC</span></span></small></p>
+<p> sits on one side of the strict gap, and <a href="sec-borel-analytic-sep.html#cor:borel-analytic-separation">Corollary 7.18</a> witnesses the other. </p>
 
   </div>
 </div>

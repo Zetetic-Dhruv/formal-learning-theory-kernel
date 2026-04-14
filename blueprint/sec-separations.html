@@ -321,7 +321,9 @@
     <span class="remark_thmlabel">6.1</span>
   </div>
   <div class="remark_thmcontent">
-  <p> <small class="footnotesize"><span class="sffamily">[ pac_not_implies_online ]</span></small>  Formalized in the kernel; see the source link. </p>
+  <p> </p>
+<p><small class="footnotesize"><span class="sffamily">Lean:&#160;<span class="ttfamily">pac_not_implies_online</span></span></small></p>
+<p>  Formalized in the kernel; see the source link. </p>
 
   </div>
 </div>
@@ -340,7 +342,9 @@
     <span class="remark_thmlabel">6.2</span>
   </div>
   <div class="remark_thmcontent">
-  <p> <small class="footnotesize"><span class="sffamily">[ ex_not_implies_pac ]</span></small>  Formalized in the kernel; see the source link. </p>
+  <p> </p>
+<p><small class="footnotesize"><span class="sffamily">Lean:&#160;<span class="ttfamily">ex_not_implies_pac</span></span></small></p>
+<p>  Formalized in the kernel; see the source link. </p>
 
   </div>
 </div>
@@ -362,7 +366,7 @@
 </span>  </p>
 <p> <b class="bfseries">Finite VC dimension \(\not\Rightarrow \) low SQ dimension.</b> </p>
 <p><em>Witness.</em> The class of parities over \(\{ 0,1\} ^n\). Each parity function \(\chi _S\), for \(S \subseteq [n]\), maps \(x \mapsto \bigoplus _{i \in S} x_i\). The parity class has \(\mathrm{VCdim}= n\) (it shatters the standard basis). But any statistical query algorithm requires queries of tolerance \(\tau = O(2^{-n/2})\) or uses \(2^{\Omega (n)}\) queries of polynomial tolerance, because distinct parities are pairwise uncorrelated under the uniform distribution. </p>
-<p>Formally, \(\SQdim (\text{Parities}_n) = 2^n\), which is exponential in \(\mathrm{VCdim}= n\). </p>
+<p>Formally, \(\mathrm{SQdim}(\text{Parities}_n) = 2^n\), which is exponential in \(\mathrm{VCdim}= n\). </p>
 <p><em>What the witness exploits.</em> VC dimension measures combinatorial shattering capacity (distribution-free). SQ dimension measures pairwise correlation structure under a specific distribution. Parities are maximally uncorrelated under the uniform distribution, forcing any SQ learner to make exponentially many queries, even though the class is small in the VC sense. </p>
 <p><span class="cite">
 	[

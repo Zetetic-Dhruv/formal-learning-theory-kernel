@@ -313,11 +313,13 @@
     <span class="defn_thmtitle">Batch Learner</span>
   </div>
   <div class="defn_thmcontent">
-  <p>  <small class="footnotesize"><span class="sffamily">[ BatchLearner ]</span></small> A <em>batch learner</em> over \((X, Y)\) is a bundled structure carrying a hypothesis set \(\mathcal{H} \subseteq Y^X\), a learning function \(\mathcal{A}\) that takes a finite training sample \(S : \mathrm{Fin}\, m \to X \times Y\) and returns a hypothesis in \(\mathcal{H}\), and a proof that the output lies in \(\mathcal{H}\). </p>
+  <p>  </p>
+<p><small class="footnotesize"><span class="sffamily">Lean:&#160;<span class="ttfamily">BatchLearner</span></span></small></p>
+<p> A <em>batch learner</em> over \((X, Y)\) is a bundled structure carrying a hypothesis set \(\mathcal{H} \subseteq Y^X\), a learning function \(\mathcal{A}\) that takes a finite training sample \(S : \mathrm{Fin}\, m \to X \times Y\) and returns a hypothesis in \(\mathcal{H}\), and a proof that the output lies in \(\mathcal{H}\). </p>
 
   </div>
 </div>
-<p>The kernel formalizes the batch learner as a structure rather than as a bare function so that the constraint “output lies in the hypothesis set” travels with the algorithm. Chapter&#160;?? will introduce a sequential learner with its own bundled type; the contrast between batch and sequential learning is the subject of Chapters&#160;?? and&#160;??. </p>
+<p>The kernel formalizes the batch learner as a structure rather than as a bare function so that the constraint “output lies in the hypothesis set” travels with the algorithm. Chapter&#160;<a href="ch-online.html">4</a> will introduce a sequential learner with its own bundled type; the contrast between batch and sequential learning is the subject of Chapters&#160;<a href="ch-pac.html">3</a> and&#160;<a href="ch-online.html">4</a>. </p>
 
 </div> <!--main-text -->
 </div> <!-- content-wrapper -->
