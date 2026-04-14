@@ -6,8 +6,9 @@
 % Blueprint package fallbacks
 % ---------------------------------------------------------------
 % In the web build, these are overridden by the `blueprint` package.
-% In the print build, they are no-ops so \lean, \uses, \leanok render nothing.
-\providecommand{\lean}[1]{}
+% In the print build, \lean renders the identifier as visible monospace text
+% so the reader can locate the corresponding Lean declaration.
+\providecommand{\lean}[1]{\par\noindent\texttt{\small Lean: #1}\par}
 \providecommand{\leanok}{}
 \providecommand{\uses}[1]{}
 \providecommand{\proves}[1]{}

@@ -8,10 +8,10 @@ This is the mathematical blueprint for a Lean 4 formalization of the
 fundamental theorem of statistical learning. It sits between two other
 artifacts: the kernel source code at
 \url{https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel},
-which contains 354 machine-checked theorems in 21{,}522 lines with zero
+which contains 354 machine-checked theorems in 21{,}728 lines with zero
 \texttt{sorry}, and a companion textbook on formal learning theory from
-which most of the exposition in Chapters~\ref{chap:pac}
-through~\ref{chap:separations} is imported directly. The blueprint's
+which most of the exposition in Chapters~\ref{ch:pac}
+through~\ref{ch:separations} is imported directly. The blueprint's
 role is to annotate informal mathematical statements with hyperlinks
 into the formal declarations that prove them, so that a reader can
 click from a theorem in prose to the corresponding
@@ -28,18 +28,18 @@ pinned at commit \texttt{fde0cc5}. The per-module API reference is at
 Blueprint v1 covers the core story of the kernel:
 
 \begin{itemize}[leftmargin=*,itemsep=3pt]
-  \item \textbf{PAC characterization} (Chapter~\ref{chap:pac}): the
+  \item \textbf{PAC characterization} (Chapter~\ref{ch:pac}): the
     five-way equivalence for PAC learning, with the
     \texttt{NullMeasurableSet} refinement of the standard Borel
     hypothesis used in the literature.
-  \item \textbf{Online characterization} (Chapter~\ref{chap:online}):
+  \item \textbf{Online characterization} (Chapter~\ref{ch:online}):
     the Littlestone characterization theorem with the Standard Optimal
     Algorithm as the constructive witness.
-  \item \textbf{Gold-style learning} (Chapter~\ref{chap:gold}): Gold's
+  \item \textbf{Gold-style learning} (Chapter~\ref{ch:gold}): Gold's
     theorem with the diagonalization proof and the mind-change
     characterization with ordinal bounds.
   \item \textbf{Three-paradigm separation}
-    (Chapter~\ref{chap:separations}): the 13-edge separation lattice
+    (Chapter~\ref{ch:separations}): the 13-edge separation lattice
     between PAC, online, and Gold-style learning.
   \item \textbf{Measurability layer} (Chapter~\ref{chap:measurability}):
     the Borel-parameterized setting, the analytic measurability bridge
@@ -58,7 +58,7 @@ treatment will ship once that stabilizes.
 
 \section*{Relationship to the companion textbook}
 
-Chapters~\ref{chap:primitives} through \ref{chap:separations} of this
+Chapters~\ref{chap:primitives} through \ref{ch:separations} of this
 blueprint are imported verbatim from the companion textbook with
 \texttt{\textbackslash lean\{\}} annotations added at each theorem or
 definition whose informal statement corresponds to a formal
