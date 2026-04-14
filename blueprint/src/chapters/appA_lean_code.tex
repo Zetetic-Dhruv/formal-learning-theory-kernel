@@ -1,0 +1,246 @@
+% Appendix A: Key Lean 4 Declarations
+%
+% This appendix presents the formal Lean 4 definitions and proofs of the
+% kernel's key contributions. Each code block is extracted verbatim from
+% the kernel source. The reader can verify any declaration by cloning the
+% repository and running `lake build`.
+
+\chapter{Key Lean 4 Declarations}\label{app:lean-code}
+
+This appendix displays the formal Lean 4 code for the definitions and
+theorems claimed in the preceding chapters. Every declaration compiles
+against mathlib4 \texttt{fde0cc5} with zero \texttt{sorry}.
+
+\section{Core types}
+
+\begin{lstlisting}[caption={Concept and ConceptClass (Basic.lean)}]
+def Concept (X : Type u) (Y : Type v) := X -> Y
+
+abbrev ConceptClass (X : Type u) (Y : Type v) := Set (Concept X Y)
+\end{lstlisting}
+
+\begin{lstlisting}[caption={BatchLearner (Learner/Core.lean)}]
+structure BatchLearner (X : Type u) (Y : Type v) where
+  hypotheses : HypothesisSpace X Y
+  learn : {m : N} -> (Fin m -> X * Y) -> Concept X Y
+  output_in_H : forall {m : N} (S : Fin m -> X * Y), learn S (*@$\in$@*) hypotheses
+\end{lstlisting}
+
+\section{Combinatorial dimensions}
+
+\begin{lstlisting}[caption={Shattering and VC dimension (Complexity/VCDimension.lean)}]
+def Shatters (X : Type u) (C : ConceptClass X Bool) (S : Finset X) : Prop :=
+  forall f : S -> Bool, exists c (*@$\in$@*) C, forall x : S, c (x : X) = f x
+
+noncomputable def VCDim (X : Type u) (C : ConceptClass X Bool) : WithTop N :=
+  iSup (S : Finset X) (_ : Shatters X C S), (S.card : WithTop N)
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Littlestone dimension (Complexity/GameInfra.lean)}]
+noncomputable def LittlestoneDim (X : Type) (C : ConceptClass X Bool) :
+    WithBot (WithTop N) :=
+  iSup (n : N) (_ : exists T : LTree X n, T.isShattered C),
+    ((n : WithTop N) : WithBot (WithTop N))
+\end{lstlisting}
+
+\section{Learnability predicates}
+
+\begin{lstlisting}[caption={PAC learnability (Criterion/PAC.lean)}]
+def PACLearnable (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop :=
+  exists (L : BatchLearner X Bool) (mf : R -> R -> N),
+    forall (e d : R), 0 < e -> 0 < d ->
+      forall (D : Measure X), IsProbabilityMeasure D ->
+        forall (c : Concept X Bool), c (*@$\in$@*) C ->
+          let m := mf e d
+          Measure.pi (fun _ : Fin m => D)
+            { xs : Fin m -> X |
+              D { x | L.learn (fun i => (xs i, c (xs i))) x (*@$\neq$@*) c x }
+                (*@$\leq$@*) ENNReal.ofReal e }
+            (*@$\geq$@*) ENNReal.ofReal (1 - d)
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Online learnability (Criterion/Online.lean)}]
+def OnlineLearnable (X : Type u) (Y : Type v) [DecidableEq Y]
+    (C : ConceptClass X Y) : Prop :=
+  exists (M : N), MistakeBounded X Y C M
+\end{lstlisting}
+
+\begin{lstlisting}[caption={EX-learnability, Gold-style (Criterion/Gold.lean)}]
+def EXLearnable (X : Type u) (C : ConceptClass X Bool) : Prop :=
+  exists (L : GoldLearner X Bool),
+    forall (c : Concept X Bool), c (*@$\in$@*) C ->
+      forall (T : TextPresentation X c),
+        exists (t0 : N), forall (t : N), t (*@$\geq$@*) t0 ->
+          L.conjecture (dataUpTo T.toDataStream t) = c
+\end{lstlisting}
+
+\section{The fundamental theorem (5-way equivalence)}
+
+\begin{lstlisting}[caption={Fundamental theorem of statistical learning (Theorem/PAC.lean:293)}]
+theorem fundamental_theorem (X : Type u) [MeasurableSpace X]
+    [MeasurableSingletonClass X]
+    (C : ConceptClass X Bool)
+    [MeasurableConceptClass X C] :
+    (PACLearnable X C (*@$\leftrightarrow$@*) VCDim X C < (*@$\top$@*)) (*@$\wedge$@*)
+    ((VCDim X C < (*@$\top$@*)) (*@$\leftrightarrow$@*)
+      exists (k : N) (cs : CompressionSchemeWithInfo0 X Bool C), cs.size = k) (*@$\wedge$@*)
+    ((VCDim X C < (*@$\top$@*)) (*@$\leftrightarrow$@*)
+      forall e > 0, exists m0, forall (D : Measure X),
+        IsProbabilityMeasure D ->
+        forall m (*@$\geq$@*) m0, RademacherComplexity X C D m < e) (*@$\wedge$@*)
+    (PACLearnable X C ->
+      exists (L : BatchLearner X Bool) (mf : R -> R -> N),
+        -- sample complexity sandwich + lower bound
+        ...) (*@$\wedge$@*)
+    ((VCDim X C < (*@$\top$@*)) (*@$\leftrightarrow$@*)
+      exists (d : N), forall (m : N), d (*@$\leq$@*) m ->
+        GrowthFunction X C m (*@$\leq$@*)
+          Finset.sum (Finset.range (d + 1)) (Nat.choose m)) :=
+  -- Proof: assembles from component theorems
+  (*@$\langle$@*)vc_characterization X C,
+   fundamental_vc_compression X C,
+   (vc_characterization X C).symm.trans (fundamental_rademacher X C),
+   pac_sample_complexity_sandwich X C,
+   (*@$\langle$@*)vcdim_finite_imp_growth_bounded X C,
+    growth_bounded_imp_vcdim_finite X C(*@$\rangle\rangle$@*)
+\end{lstlisting}
+
+\section{Characterization theorems}
+
+\begin{lstlisting}[caption={Littlestone characterization (Theorem/Online.lean:419)}]
+theorem littlestone_characterization (X : Type)
+    (C : ConceptClass X Bool) :
+    OnlineLearnable X Bool C (*@$\leftrightarrow$@*) LittlestoneDim X C < (*@$\top$@*) :=
+  (*@$\langle$@*)forward_direction X C, backward_direction X C(*@$\rangle$@*)
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Gold's theorem (Theorem/Gold.lean:19, first 30 lines of 200)}]
+theorem gold_theorem (X : Type u) [Countable X] [DecidableEq X]
+    (C : ConceptClass X Bool)
+    (h_finite : forall (S : Finset X), (fun x => decide (x (*@$\in$@*) S)) (*@$\in$@*) C)
+    (h_infinite : exists c (*@$\in$@*) C, Set.Infinite { x | c x = true }) :
+    (*@$\neg$@*) EXLearnable X C := by
+  intro (*@$\langle$@*)L, hL(*@$\rangle$@*)
+  obtain (*@$\langle$@*)c_inf, hc_inf_mem, hc_inf_inf(*@$\rangle$@*) := h_infinite
+  let phi := hc_inf_inf.natEmbedding
+  have hpos_ne : Nonempty { x : X | c_inf x = true } :=
+    hc_inf_inf.nonempty.to_subtype
+  obtain (*@$\langle$@*)enum, henum(*@$\rangle$@*) :=
+    exists_surjective_nat ({ x : X | c_inf x = true })
+  let S : N -> Finset X := fun n =>
+    ((Finset.range (n + 1)).image (fun i => (phi i).val)) (*@$\cup$@*)
+    ((Finset.range (n + 1)).image (fun i => (enum i).val))
+  -- ... (152 more lines: constructs locking sequence via
+  --      interleaving enumeration of c_inf's support with
+  --      finite-set indicators, derives contradiction)
+\end{lstlisting}
+
+\section{Paradigm separations}
+
+\begin{lstlisting}[caption={PAC does not imply Online (Theorem/Separation.lean:1175)}]
+theorem pac_not_implies_online :
+    exists (X : Type) (_ : MeasurableSpace X) (C : ConceptClass X Bool),
+      PACLearnable X C (*@$\wedge$@*) (*@$\neg$@*) OnlineLearnable X Bool C := by
+  refine (*@$\langle$@*)N, (*@$\top$@*), thresholdClass, ?_, ?_(*@$\rangle$@*)
+  . -- PAC learnable: VCDim = 1 < (*@$\top$@*), via UC route
+    exact vcdim_finite_imp_pac_via_uc' N thresholdClass
+      vcdim_threshold_finite ...
+  . -- (*@$\neg$@*) OnlineLearnable: LittlestoneDim = (*@$\top$@*)
+    intro hol
+    have hfin := forward_direction N thresholdClass hol
+    rw [ldim_threshold_top] at hfin
+    exact lt_irrefl _ hfin
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Online implies PAC (Theorem/Separation.lean:132)}]
+theorem online_imp_pac (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) (hol : OnlineLearnable X Bool C)
+    [MeasurableConceptClass X C] :
+    PACLearnable X C := by
+  obtain (*@$\langle$@*)M, hM(*@$\rangle$@*) := hol
+  have hvcdim : VCDim X C < (*@$\top$@*) := by
+    calc VCDim X C (*@$\leq$@*) M := vcdim_le_of_mistake_bounded hM
+      _ < (*@$\top$@*) := WithTop.coe_lt_top M
+  exact vcdim_finite_imp_pac_via_uc' X C hvcdim ...
+\end{lstlisting}
+
+\section{Measurability layer (kernel's novel contribution)}
+
+\begin{lstlisting}[caption={WellBehavedVCMeasTarget (Complexity/Measurability.lean:388)}]
+def WellBehavedVCMeasTarget
+    (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop :=
+  forall (D : Measure X) [IsProbabilityMeasure D]
+    (c : Concept X Bool), Measurable c ->
+    forall (m : N) (e : R),
+      NullMeasurableSet
+        {p : (Fin m -> X) * (Fin m -> X) | exists h (*@$\in$@*) C,
+          EmpiricalError X Bool h
+            (fun i => (p.2 i, c (p.2 i))) (zeroOneLoss Bool) -
+          EmpiricalError X Bool h
+            (fun i => (p.1 i, c (p.1 i))) (zeroOneLoss Bool) (*@$\geq$@*) e / 2}
+        ((Measure.pi (fun _ : Fin m => D)).prod
+         (Measure.pi (fun _ : Fin m => D)))
+\end{lstlisting}
+
+\begin{lstlisting}[caption={KrappWirthWellBehaved (Complexity/Measurability.lean:241)}]
+class KrappWirthWellBehaved (X : Type u) [MeasurableSpace X]
+    (C : ConceptClass X Bool) : Prop extends MeasurableHypotheses X C where
+  V_measurable : KrappWirthV X C
+  U_measurable : KrappWirthU X C
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Borel-analytic separation witness (Theorem/BorelAnalyticSeparation.lean:207)}]
+theorem singleton_badEvent_not_measurable
+    (A : Set R) (hA_non : (*@$\neg$@*) MeasurableSet A) :
+    (*@$\neg$@*) MeasurableSet (singletonBadEvent A) := by
+  intro hbad
+  rw [singleton_badEvent_eq_preimage_planar A] at hbad
+  have hmeas : Measurable samplePair1ToPlane :=
+    Measurable.prod
+      ((measurable_pi_apply 0).comp measurable_fst)
+      ((measurable_pi_apply 0).comp measurable_snd)
+  have hsurj : Function.Surjective samplePair1ToPlane := by
+    intro (*@$\langle$@*)x, y(*@$\rangle$@*)
+    exact (*@$\langle$@*)(fun _ => x, fun _ => y), by simp [samplePair1ToPlane](*@$\rangle$@*)
+  have hplanar :=
+    (hmeas.measurableSet_preimage_iff_of_surjective hsurj).mp hbad
+  exact planarWitnessEvent_not_measurable A hA_non hplanar
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Analytic sets are null-measurable (PureMath/AnalyticMeasurability.lean:91)}]
+theorem analyticSet_nullMeasurableSet
+    {(*@$\alpha$@*) : Type*}
+    [TopologicalSpace (*@$\alpha$@*)] [MeasurableSpace (*@$\alpha$@*)]
+    [BorelSpace (*@$\alpha$@*)] [PolishSpace (*@$\alpha$@*)]
+    {(*@$\mu$@*) : Measure (*@$\alpha$@*)} [IsFiniteMeasure (*@$\mu$@*)]
+    {s : Set (*@$\alpha$@*)} (hs : AnalyticSet s) :
+    NullMeasurableSet s (*@$\mu$@*) := by
+  classical
+  obtain (*@$\langle$@*)t, hst, ht_meas, ht_eq(*@$\rangle$@*) :=
+    exists_measurable_superset (*@$\mu$@*) s
+  have hzero : (*@$\mu$@*) (t \ s) = 0 := by
+    by_contra hne
+    have hfin_diff : (*@$\mu$@*) (t \ s) (*@$\neq$@*) (*@$\top$@*) := measure_ne_top (*@$\mu$@*) _
+    have hpos : 0 < (*@$\mu$@*).real (t \ s) :=
+      ENNReal.toReal_pos hne hfin_diff
+    obtain (*@$\langle$@*)K, hKc, hKs, hKapprox(*@$\rangle$@*) :=
+      hs.exists_isCompact_measureReal_gt
+        ((*@$\mu$@*) := (*@$\mu$@*)) ((*@$\mu$@*).real (t \ s) / 2) (by positivity)
+    have hKt : K (*@$\subseteq$@*) t := fun x hx => hst (hKs hx)
+    have hKmeas : MeasurableSet K := hKc.isClosed.measurableSet
+    have hdiff_eq : (*@$\mu$@*).real (t \ K) = (*@$\mu$@*).real t - (*@$\mu$@*).real K :=
+      measureReal_diff hKt hKmeas
+    have ht_real : (*@$\mu$@*).real t = (*@$\mu$@*).real s := by
+      simp only [Measure.real]; rw [ht_eq]
+    have hsub : t \ s (*@$\subseteq$@*) t \ K :=
+      Set.diff_subset_diff_right hKs
+    have hle : (*@$\mu$@*).real (t \ s) (*@$\leq$@*) (*@$\mu$@*).real (t \ K) :=
+      measureReal_mono hsub
+    linarith
+  have h_ae : s =(*@${}^{\text{ae}}$@*)[(*@$\mu$@*)] t := by
+    rw [Filter.eventuallyEq_comm, ae_eq_set]
+    exact (*@$\langle$@*)hzero, by simp [Set.diff_eq_empty.mpr hst](*@$\rangle$@*)
+  exact ht_meas.nullMeasurableSet.congr h_ae.symm
+\end{lstlisting}

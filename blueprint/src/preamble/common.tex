@@ -6,9 +6,8 @@
 % Blueprint package fallbacks
 % ---------------------------------------------------------------
 % In the web build, these are overridden by the `blueprint` package.
-% In the print build, \lean renders the identifier as visible monospace text
-% so the reader can locate the corresponding Lean declaration.
-\providecommand{\lean}[1]{\par\noindent\texttt{\small Lean: #1}\par}
+% In the print build, \lean renders as a subtle inline identifier.
+\providecommand{\lean}[1]{{\footnotesize\textsf{[\,#1\,]}}}
 \providecommand{\leanok}{}
 \providecommand{\uses}[1]{}
 \providecommand{\proves}[1]{}
@@ -140,3 +139,39 @@
 
 % Growth function
 \newcommand{\growth}{\ensuremath{\Pi}}
+
+% ---------------------------------------------------------------
+% Lean 4 code listings
+% ---------------------------------------------------------------
+\usepackage{listings}
+\lstdefinelanguage{Lean4}{
+  morekeywords={def,theorem,lemma,structure,class,instance,abbrev,
+    noncomputable,private,where,let,have,show,by,exact,apply,intro,
+    cases,rcases,simp,omega,linarith,constructor,refine,obtain,
+    induction,unfold,rw,ext,push_neg,exfalso,absurd,calc,fun,if,
+    then,else,match,with,do,return,sorry,import,open,variable,
+    section,namespace,end,set_option,universe,Type,Prop,Sort,
+    Finset,Set,Nat,Bool,true,false,Fin,List,WithTop,WithBot,
+    Measure,MeasurableSpace,MeasurableSet,NullMeasurableSet},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[n]{/-}{-/},
+  morestring=[b]",
+}
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\bfseries\color{defblue},
+  commentstyle=\itshape\color{notegray},
+  breaklines=true,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{layergray},
+  backgroundcolor=\color{layergray},
+  xleftmargin=1em,
+  xrightmargin=1em,
+  aboveskip=0.8em,
+  belowskip=0.8em,
+  numbers=none,
+  escapeinside={(*@}{@*)},
+}
