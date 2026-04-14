@@ -1,0 +1,21 @@
+# lean4checker --fresh results
+# Date: 2026-04-14
+# Toolchain: leanprover/lean4:v4.29.0-rc6
+# lean4checker built from: github.com/leanprover/lean4checker (toolchain overridden to v4.29.0-rc6)
+# LEAN_PATH: auto-discovered from .lake/packages/*/build/lib/lean
+
+FLT_Proofs.Complexity.Compression:  [exit 0]
+FLT_Proofs.Complexity.FiniteSupportUC:  [exit 0]
+FLT_Proofs.Complexity.Generalization:  [exit 0]
+FLT_Proofs.Complexity.Symmetrization:  [exit 0]
+FLT_Proofs.Complexity.Rademacher:  [exit 0]
+FLT_Proofs.Theorem.PAC:  [exit 0]
+FLT_Proofs.Theorem.Extended:  [exit 0]
+FLT_Proofs.Theorem.Separation:  [exit 0]
+FLT_Proofs.Theorem.Online:  [exit 0]
+FLT_Proofs.Theorem.PACBayes:  [exit 0]
+FLT_Proofs.Bridge:  [exit 0]
+FLT_Proofs.PureMath.ApproxMinimax:  [exit 0]
+FLT_Proofs.PureMath.FiniteVCApprox:  [exit 0]
+
+SUMMARY: 13/13 modules pass. All exit 0.

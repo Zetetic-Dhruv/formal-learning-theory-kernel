@@ -1,0 +1,11 @@
+# Build summary
+# Date: 2026-04-14
+# Command: lake build
+
+Build completed successfully (3027 jobs).
+Errors: 0
+Sorrys: 0
+Warnings: 0
+
+Toolchain: leanprover/lean4:v4.29.0-rc6
+Mathlib: master (pinned in lake-manifest.json)

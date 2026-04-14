@@ -1,0 +1,25 @@
+# Red-team surface scan
+# Date: 2026-04-14
+# Scope: all .lean files in FLT_Proofs/ (kernel only, not .lake/)
+
+KU1  sorry (active tactic):     0 hits
+KU2  axiom declarations:        0 hits
+KU3  native_decide:             0 hits (comment removed in 66d2a28)
+KU4  implemented_by / extern:   0 hits
+KU5  ofReduceBool / trustCompiler: 0 hits
+KU6  set_option:                7 hits — ALL maxHeartbeats (safe, computation budget only)
+KU7  unsafe:                    0 hits
+KU8  opaque:                    0 hits
+KU9  universe manipulation:     0 hits
+KU10 #eval:                     0 hits
+
+set_option locations (all maxHeartbeats):
+  Compression.lean:799         set_option maxHeartbeats 4000000
+  Generalization.lean:1350     set_option maxHeartbeats 400000
+  Generalization.lean:1642     set_option maxHeartbeats 800000
+  Generalization.lean:2261     set_option maxHeartbeats 800000
+  Generalization.lean:2770     set_option maxHeartbeats 400000
+  Symmetrization.lean:2320     set_option maxHeartbeats 800000
+  FiniteSupportUC.lean:90      set_option maxHeartbeats 400000
+
+SUMMARY: No attack surface detected. Kernel is clean.

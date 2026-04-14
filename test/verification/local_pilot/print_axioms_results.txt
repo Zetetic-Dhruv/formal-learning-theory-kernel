@@ -1,0 +1,25 @@
+# #print axioms results
+# Date: 2026-04-14
+# Method: lake env lean RedTeam_PrintAxioms.lean
+# Standard axioms: propext, Classical.choice, Quot.sound
+
+'compression_with_info_imp_vcdim_finite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'decodeWitnessLabel_eq_on_encoded' depends on axioms: [propext, Quot.sound]
+'decodeWitnessXCoords_encode_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'finite_support_vc_approx' depends on axioms: [propext, Classical.choice, Quot.sound]
+'fundamental_rademacher' depends on axioms: [propext, Classical.choice, Quot.sound]
+'fundamental_theorem' depends on axioms: [propext, Classical.choice, Quot.sound]
+'fundamental_vc_compression' depends on axioms: [propext, Classical.choice, Quot.sound]
+'fundamental_vc_compression_with_info' depends on axioms: [propext, Classical.choice, Quot.sound]
+'growth_function_le_sauer_shelah' depends on axioms: [propext, Classical.choice, Quot.sound]
+'mwu_approx_minimax' depends on axioms: [propext, Classical.choice, Quot.sound]
+'online_imp_pac' depends on axioms: [propext, Classical.choice, Quot.sound]
+'pac_imp_vcdim_finite' depends on axioms: [propext, Classical.choice, Quot.sound]
+'roundtrip_blockHyp_eq_rep' depends on axioms: [propext, Classical.choice, Quot.sound]
+'sauer_shelah' depends on axioms: [propext, Classical.choice, Quot.sound]
+'vc_characterization' depends on axioms: [propext, Classical.choice, Quot.sound]
+'vcdim_finite_imp_compression_with_info' depends on axioms: [propext, Classical.choice, Quot.sound]
+'vcdim_finite_imp_pac_via_uc'' depends on axioms: [propext, Classical.choice, Quot.sound]
+
+SUMMARY: 17 theorems checked. All depend on ONLY the 3 standard axioms.
+         Zero sorryAx. Zero Lean.trustCompiler. Zero custom axioms.
