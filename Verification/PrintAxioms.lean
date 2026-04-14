@@ -1,0 +1,8 @@
+import Verification.SolutionCrown
+
+#print axioms challenge_fundamental_theorem
+#print axioms challenge_fundamental_vc_compression_with_info
+#print axioms challenge_vc_characterization
+#print axioms challenge_sauer_shelah
+#print axioms challenge_mwu_approx_minimax
+#print axioms challenge_finite_support_vc_approx

@@ -1,0 +1,19 @@
+lean4checker verification report
+Date: 2026-04-14T19:53:07Z
+Toolchain: leanprover/lean4:v4.29.0-rc6
+Commit: b1b9d16a552e3e09bfbb8151fe6aa14c805d7979
+
+=== SolutionCrown ===
+
+=== Key modules ===
+=== FLT_Proofs.Theorem.PAC ===
+=== FLT_Proofs.Complexity.Compression ===
+=== FLT_Proofs.PureMath.ApproxMinimax ===
+=== FLT_Proofs.Complexity.FiniteSupportUC ===
+=== FLT_Proofs.Theorem.Separation ===
+=== FLT_Proofs.Theorem.Online ===
+=== FLT_Proofs.Theorem.Gold ===
+
+=== Axioms ===
+no such file or directory (error code: 4294967294)
+  file: -

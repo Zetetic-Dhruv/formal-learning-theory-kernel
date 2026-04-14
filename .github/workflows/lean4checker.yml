@@ -3,10 +3,13 @@ name: lean4checker
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   lean4checker:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
 
@@ -35,60 +38,106 @@ jobs:
       - name: Build Verification
         run: lake build Verification
 
-      - name: Run lean4checker on SolutionCrown
+      - name: Run lean4checker on entire kernel
         run: |
-          lake env leanchecker --fresh Verification.SolutionCrown 2>&1 \
-            | tee /tmp/lean4checker_solution.txt
-
-      - name: Run lean4checker on key theorem modules
-        run: |
-          for mod in \
-            FLT_Proofs.Theorem.PAC \
-            FLT_Proofs.Complexity.Compression \
-            FLT_Proofs.PureMath.ApproxMinimax \
-            FLT_Proofs.Complexity.FiniteSupportUC \
-            FLT_Proofs.Theorem.Separation \
-            FLT_Proofs.Theorem.Online \
-            FLT_Proofs.Theorem.Gold; do
-            echo "=== $mod ==="
-            lake env leanchecker --fresh "$mod"
-          done 2>&1 | tee /tmp/lean4checker_modules.txt
-
-      - name: Print axioms for crown jewels
-        run: |
-          lake env lean --run - <<'LEAN_SCRIPT' 2>&1 | tee /tmp/print_axioms.txt
-          import Verification.SolutionCrown
-          #print axioms challenge_fundamental_theorem
-          #print axioms challenge_fundamental_vc_compression_with_info
-          #print axioms challenge_vc_characterization
-          #print axioms challenge_sauer_shelah
-          #print axioms challenge_mwu_approx_minimax
-          #print axioms challenge_finite_support_vc_approx
-          LEAN_SCRIPT
-
-      - name: Assemble report
-        if: always()
-        run: |
-          mkdir -p test/verification
+          mkdir -p test/verification/CI
+          PASS=0
+          FAIL=0
           {
-            echo "lean4checker verification report"
+            echo "lean4checker --fresh: full kernel replay"
             echo "Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             echo "Toolchain: $(cat lean-toolchain)"
             echo "Commit: ${{ github.sha }}"
             echo ""
-            echo "=== SolutionCrown ==="
-            cat /tmp/lean4checker_solution.txt 2>/dev/null || echo "(not generated)"
+            for mod in \
+              FLT_Proofs.Basic \
+              FLT_Proofs.Bridge \
+              FLT_Proofs.Complexity \
+              FLT_Proofs.Complexity.Amalgamation \
+              FLT_Proofs.Complexity.BorelAnalyticBridge \
+              FLT_Proofs.Complexity.Compression \
+              FLT_Proofs.Complexity.DualVC \
+              FLT_Proofs.Complexity.FiniteSupportUC \
+              FLT_Proofs.Complexity.GameInfra \
+              FLT_Proofs.Complexity.Generalization \
+              FLT_Proofs.Complexity.GeneralizationResults \
+              FLT_Proofs.Complexity.Interpolation \
+              FLT_Proofs.Complexity.Littlestone \
+              FLT_Proofs.Complexity.Measurability \
+              FLT_Proofs.Complexity.MindChange \
+              FLT_Proofs.Complexity.Ordinal \
+              FLT_Proofs.Complexity.Rademacher \
+              FLT_Proofs.Complexity.Structures \
+              FLT_Proofs.Complexity.Symmetrization \
+              FLT_Proofs.Complexity.VCDimension \
+              FLT_Proofs.Computation \
+              FLT_Proofs.Criterion \
+              FLT_Proofs.Criterion.Extended \
+              FLT_Proofs.Criterion.Gold \
+              FLT_Proofs.Criterion.Online \
+              FLT_Proofs.Criterion.PAC \
+              FLT_Proofs.Data \
+              FLT_Proofs.Learner \
+              FLT_Proofs.Learner.Active \
+              FLT_Proofs.Learner.Bayesian \
+              FLT_Proofs.Learner.Closure \
+              FLT_Proofs.Learner.Core \
+              FLT_Proofs.Learner.Monad \
+              FLT_Proofs.Learner.Properties \
+              FLT_Proofs.Learner.VersionSpace \
+              FLT_Proofs.Process \
+              FLT_Proofs.PureMath.AnalyticMeasurability \
+              FLT_Proofs.PureMath.ApproxMinimax \
+              FLT_Proofs.PureMath.BinaryMatrix \
+              FLT_Proofs.PureMath.ChoquetCapacity \
+              FLT_Proofs.PureMath.Concentration \
+              FLT_Proofs.PureMath.Exchangeability \
+              FLT_Proofs.PureMath.FiniteVCApprox \
+              FLT_Proofs.PureMath.KLDivergence \
+              FLT_Proofs.PureMath.ReaderMonad \
+              FLT_Proofs.Theorem \
+              FLT_Proofs.Theorem.BorelAnalyticSeparation \
+              FLT_Proofs.Theorem.Extended \
+              FLT_Proofs.Theorem.Gold \
+              FLT_Proofs.Theorem.Online \
+              FLT_Proofs.Theorem.PAC \
+              FLT_Proofs.Theorem.PACBayes \
+              FLT_Proofs.Theorem.Separation \
+              Verification.SolutionCrown; do
+              echo -n "$mod ... "
+              if lake env leanchecker --fresh "$mod" 2>&1; then
+                echo "OK"
+                PASS=$((PASS + 1))
+              else
+                echo "FAILED"
+                FAIL=$((FAIL + 1))
+              fi
+            done
             echo ""
-            echo "=== Key modules ==="
-            cat /tmp/lean4checker_modules.txt 2>/dev/null || echo "(not generated)"
-            echo ""
-            echo "=== Axioms ==="
-            cat /tmp/print_axioms.txt 2>/dev/null || echo "(not generated)"
-          } > test/verification/lean4checker_results.txt
+            echo "=== Summary ==="
+            echo "Passed: $PASS"
+            echo "Failed: $FAIL"
+            echo "Total:  $((PASS + FAIL))"
+          } 2>&1 | tee test/verification/CI/lean4checker_results.txt
+
+      - name: Print axioms for crown jewels
+        run: |
+          lake env lean Verification/PrintAxioms.lean 2>&1 \
+            | tee test/verification/CI/print_axioms_results.txt
+
+      - name: Commit results to repo
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add test/verification/CI/
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "Update lean4checker verification results [CI skip]"
+          git push
 
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lean4checker-results
-          path: test/verification/lean4checker_results.txt
+          path: test/verification/CI/

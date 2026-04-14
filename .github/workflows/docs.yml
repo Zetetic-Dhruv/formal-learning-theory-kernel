@@ -1,11 +1,6 @@
 name: Docs
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'FLT_Proofs/**'
-      - 'world_model/WorldModel/**'
   workflow_dispatch:
 
 permissions:
