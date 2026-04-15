@@ -1,21 +1,19 @@
-lean4checker verification report (Tier 2)
-==========================================
-Date:      2026-04-14T19:53:07Z
+lean4checker verification report
+Date: 2026-04-14T19:53:07Z
 Toolchain: leanprover/lean4:v4.29.0-rc6
-Commit:    b1b9d16a552e3e09bfbb8151fe6aa14c805d7979
-Runner:    GitHub Actions (ubuntu-latest)
-Command:   lake env leanchecker --fresh <module>
+Commit: b1b9d16a552e3e09bfbb8151fe6aa14c805d7979
 
-Modules verified (leanchecker --fresh, exit 0):
-  Verification.SolutionCrown         OK
-  FLT_Proofs.Theorem.PAC             OK
-  FLT_Proofs.Complexity.Compression  OK
-  FLT_Proofs.PureMath.ApproxMinimax  OK
-  FLT_Proofs.Complexity.FiniteSupportUC OK
-  FLT_Proofs.Theorem.Separation      OK
-  FLT_Proofs.Theorem.Online          OK
-  FLT_Proofs.Theorem.Gold            OK
+=== SolutionCrown ===
 
-Note: leanchecker --fresh replays all proof terms through an independent
-type checker. It produces no output on success (exit 0 = all constants verified).
-A full-kernel run (all 53 modules) was triggered separately.
+=== Key modules ===
+=== FLT_Proofs.Theorem.PAC ===
+=== FLT_Proofs.Complexity.Compression ===
+=== FLT_Proofs.PureMath.ApproxMinimax ===
+=== FLT_Proofs.Complexity.FiniteSupportUC ===
+=== FLT_Proofs.Theorem.Separation ===
+=== FLT_Proofs.Theorem.Online ===
+=== FLT_Proofs.Theorem.Gold ===
+
+=== Axioms ===
+no such file or directory (error code: 4294967294)
+  file: -
