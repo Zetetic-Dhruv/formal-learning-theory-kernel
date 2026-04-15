@@ -1,0 +1,34 @@
+comparator verification report (Tier 3)
+========================================
+Date:      2026-04-14T23:46:27Z
+Toolchain: leanprover/lean4:v4.29.0-rc6
+Commit:    bc5e975 (Merge comparator pipeline into single job)
+Runner:    GitLab CI shared runner (GCE, ubuntu:24.04)
+Sandbox:   landrun (Landlock LSM, real kernel sandbox)
+Pipeline:  https://gitlab.com/Zetetic-Dhruv/flt-kernel-verification/-/pipelines/2453507882
+Duration:  901 seconds (15 minutes)
+
+Landlock probe: OK (landrun --best-effort --ro / -- /usr/bin/true)
+
+Comparator steps:
+  1. Sandboxed build of Verification.ChallengeCrown    OK
+  2. Sandboxed build of Verification.SolutionCrown     OK
+  3. Export ChallengeCrown environment                  OK
+  4. Export SolutionCrown environment                   OK
+  5. Statement matching (Challenge vs Solution)         OK
+  6. Axiom check                                       OK
+
+Theorems verified:
+  challenge_fundamental_theorem                        MATCH
+  challenge_fundamental_vc_compression_with_info       MATCH
+  challenge_vc_characterization                        MATCH
+  challenge_sauer_shelah                               MATCH
+  challenge_mwu_approx_minimax                         MATCH
+  challenge_finite_support_vc_approx                   MATCH
+
+Permitted axioms: propext, Quot.sound, Classical.choice
+Exported constants: 24 (6 theorems + 3 axioms + 15 primitives)
+
+Note: This is the first known Lean project running comparator with a real
+Landlock sandbox on CI. GitHub Actions (Azure) blocks Landlock syscalls
+at the hypervisor level. GitLab CI (GCE) allows them.

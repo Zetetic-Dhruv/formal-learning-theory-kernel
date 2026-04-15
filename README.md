@@ -9,6 +9,15 @@
 |------|---------|-----|----------|-------|-------|
 | `v4.29.0-rc6` | [`fde0cc5`](https://github.com/leanprover-community/mathlib4/commit/fde0cc508f5375f278f515cb2f50a34a545a4c5c) | 21,728 | 354 | 53 | **0** |
 
+| Verification | Status | Infrastructure | Details |
+|-------------|--------|---------------|---------|
+| `lake build` (Tier 0) | **PASS** | GitHub Actions | 0 errors, 0 sorrys, 0 warnings |
+| `#print axioms` (Tier 1) | **PASS** | GitHub Actions | `[propext, Classical.choice, Quot.sound]` only |
+| `leanchecker --fresh` (Tier 2) | **PASS** | [GitHub Actions](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/lean4checker.yml) | Independent kernel replay on 8 modules |
+| `comparator` + Landlock (Tier 3) | **PASS** | [GitLab CI](https://gitlab.com/Zetetic-Dhruv/flt-kernel-verification/-/pipelines/2453507882) | Sandboxed build + export + statement matching |
+
+This project satisfies all four levels of Lean's official proof validation hierarchy, including Comparator (gold standard) run in a Landlock sandbox on CI. Challenge statements are derived from `premise/final.json`. Only standard axioms (`propext`, `Quot.sound`, `Classical.choice`) are used. Full results in [`test/verification/CI/`](test/verification/CI/).
+
 <p align="center">
   <img src="premise/hero.svg" alt="The Fundamental Theorem of Statistical Learning" width="820" />
 </p>

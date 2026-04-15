@@ -1,0 +1,58 @@
+{
+  "date": "2026-04-15",
+  "toolchain": "leanprover/lean4:v4.29.0-rc6",
+  "kernel_status": "sorry-free",
+  "tiers": {
+    "tier_0": {
+      "name": "Build hygiene",
+      "tool": "lake build",
+      "status": "PASS",
+      "runner": "GitHub Actions",
+      "details": "0 errors, 0 sorrys, 0 warnings, 3027 jobs"
+    },
+    "tier_1": {
+      "name": "Axiom hygiene",
+      "tool": "#print axioms",
+      "status": "PASS",
+      "runner": "GitHub Actions",
+      "details": "All theorems use only [propext, Classical.choice, Quot.sound]. No sorryAx, no trustCompiler, no custom axioms."
+    },
+    "tier_2": {
+      "name": "Fresh kernel replay",
+      "tool": "leanchecker --fresh",
+      "status": "PASS",
+      "runner": "GitHub Actions",
+      "run_url": "https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/runs/24416686021",
+      "modules_verified": [
+        "Verification.SolutionCrown",
+        "FLT_Proofs.Theorem.PAC",
+        "FLT_Proofs.Complexity.Compression",
+        "FLT_Proofs.PureMath.ApproxMinimax",
+        "FLT_Proofs.Complexity.FiniteSupportUC",
+        "FLT_Proofs.Theorem.Separation",
+        "FLT_Proofs.Theorem.Online",
+        "FLT_Proofs.Theorem.Gold"
+      ]
+    },
+    "tier_3": {
+      "name": "Comparator (gold standard)",
+      "tool": "comparator + landrun (Landlock sandbox)",
+      "status": "PASS",
+      "runner": "GitLab CI (GCE shared runner)",
+      "pipeline_url": "https://gitlab.com/Zetetic-Dhruv/flt-kernel-verification/-/pipelines/2453507882",
+      "sandbox": "Landlock LSM (real kernel sandbox, not stub)",
+      "theorems_verified": [
+        "challenge_fundamental_theorem",
+        "challenge_fundamental_vc_compression_with_info",
+        "challenge_vc_characterization",
+        "challenge_sauer_shelah",
+        "challenge_mwu_approx_minimax",
+        "challenge_finite_support_vc_approx"
+      ],
+      "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+      "duration_seconds": 901
+    }
+  },
+  "challenge_source": "premise/final.json theorem index + kernel source signatures",
+  "note": "This project satisfies all four levels of Lean's official proof validation hierarchy, including Comparator (gold standard) run in a Landlock sandbox on CI. Challenge statements are derived from premise/final.json. Only standard axioms (propext, Quot.sound, Classical.choice) are used."
+}
