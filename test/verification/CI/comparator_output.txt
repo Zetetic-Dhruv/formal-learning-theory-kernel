@@ -1,0 +1,16 @@
+Building Verification.ChallengeCrown
+⚠ [3011/3011] Replayed Verification.ChallengeCrown
+warning: Verification/ChallengeCrown.lean:10:8: declaration uses `sorry`
+warning: Verification/ChallengeCrown.lean:44:8: declaration uses `sorry`
+warning: Verification/ChallengeCrown.lean:52:8: declaration uses `sorry`
+warning: Verification/ChallengeCrown.lean:61:8: declaration uses `sorry`
+warning: Verification/ChallengeCrown.lean:69:8: declaration uses `sorry`
+warning: Verification/ChallengeCrown.lean:80:8: declaration uses `sorry`
+Build completed successfully (3011 jobs).
+Exporting #[challenge_fundamental_theorem, challenge_fundamental_vc_compression_with_info, challenge_vc_characterization, challenge_sauer_shelah, challenge_mwu_approx_minimax, challenge_finite_support_vc_approx, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList] from Verification.ChallengeCrown
+Building Verification.SolutionCrown
+Build completed successfully (3012 jobs).
+Exporting #[challenge_fundamental_theorem, challenge_fundamental_vc_compression_with_info, challenge_vc_characterization, challenge_sauer_shelah, challenge_mwu_approx_minimax, challenge_finite_support_vc_approx, propext, Quot.sound, Classical.choice, Nat.add, Nat.sub, Nat.mul, Nat.pow, Nat.gcd, Nat.div, Nat.mod, Nat.beq, Nat.ble, Nat.land, Nat.lor, Nat.xor, Nat.shiftLeft, Nat.shiftRight, String.ofList] from Verification.SolutionCrown
+Running Lean default kernel on solution.
+Lean default kernel accepts the solution
+Your solution is okay!
