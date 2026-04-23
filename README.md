@@ -3,7 +3,8 @@
 [![CI](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/Zetetic-Dhruv/formal-learning-theory-kernel/actions/workflows/ci.yml) 
 
 **Live docs:** <https://zetetic-dhruv.github.io/formal-learning-theory-kernel/> <br/>
-**Read the mathematics:** <https://zetetic-dhruv.github.io/formal-learning-theory-kernel/blueprint.pdf>
+**Read the mathematics:** <https://zetetic-dhruv.github.io/formal-learning-theory-kernel/blueprint.pdf> <br/>
+**Maintainer:** [Dhruv Gupta](https://zetesislabs.com/dhruv.html), Principal Investigator, [Zetesis Labs](https://zetesislabs.com) @ ARTPARK, IISc
 
 | Lean | Mathlib | LOC | Theorems | Files | Sorry |
 |------|---------|-----|----------|-------|-------|
