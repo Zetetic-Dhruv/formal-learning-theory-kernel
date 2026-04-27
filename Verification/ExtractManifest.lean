@@ -14,21 +14,25 @@ import FLT_Proofs.Process
 
 open Lean Meta
 
-/-- Check if a name belongs to the FLT_Proofs namespace. -/
-def isFLTProofs (n : Name) : Bool :=
+/-- Check if a name belongs to the FLT_Proofs namespace by module. -/
+def isFLTModule (n : Name) : Bool :=
   match n with
-  | .str p _ => p == `FLT_Proofs || isFLTProofs p
-  | .num p _ => isFLTProofs p
+  | .str p _ => p == `FLT_Proofs || isFLTModule p
+  | .num p _ => isFLTModule p
   | .anonymous => false
 
-/-- Check if a constant is a public theorem (not private, not from Mathlib). -/
+/-- Check if a constant is a public theorem from FLT_Proofs. -/
 def isPublicTheorem (env : Environment) (n : Name) : Bool :=
-  if !isFLTProofs n then false
-  else if n.isInternal then false
+  if n.isInternal then false
   else
-    match env.find? n with
-    | some (.thmInfo _) => true
-    | _ => false
+    match env.getModuleFor? n with
+    | some modName =>
+      if !isFLTModule modName then false
+      else
+        match env.find? n with
+        | some (.thmInfo _) => true
+        | _ => false
+    | none => false
 
 /-- Escape a string for JSON output. -/
 def jsonEscape (s : String) : String :=
@@ -81,19 +85,28 @@ unsafe def main : IO Unit := do
   let (totalCount, fltCount, thmCount, internalCount) :=
     env.constants.fold (init := (0, 0, 0, 0)) fun (t, f, th, i) name info =>
       let t' := t + 1
-      let f' := if isFLTProofs name then f + 1 else f
+      let isFLT := match env.getModuleFor? name with
+        | some m => isFLTModule m
+        | none => false
+      let f' := if isFLT then f + 1 else f
       let i' := if name.isInternal then i + 1 else i
-      let th' := match info with | .thmInfo _ => if isFLTProofs name then th + 1 else th | _ => th
+      let th' := match info with | .thmInfo _ => if isFLT then th + 1 else th | _ => th
       (t', f', th', i')
   IO.eprintln s!"DEBUG: total constants = {totalCount}"
   IO.eprintln s!"DEBUG: FLT_Proofs constants = {fltCount}"
   IO.eprintln s!"DEBUG: FLT_Proofs theorems = {thmCount}"
   IO.eprintln s!"DEBUG: internal names = {internalCount}"
-  -- Debug: sample some names that start with "FLT_Proofs"
+  -- Debug: sample names containing "FLT" substring
   let fltSamples := env.constants.fold (init := (#[] : Array String)) fun acc name _ =>
-    if acc.size < 10 && "FLT_Proofs".isPrefixOf name.toString then acc.push name.toString
+    if acc.size < 20 && (name.toString.splitOn "FLT").length > 1 then acc.push name.toString
     else acc
-  IO.eprintln s!"DEBUG: sample FLT names = {fltSamples}"
+  IO.eprintln s!"DEBUG: sample names containing FLT = {fltSamples}"
+  -- Debug: check getModuleFor on a known theorem
+  let knownName := `FLT_Proofs.Theorem.PAC.fundamental_theorem
+  IO.eprintln s!"DEBUG: env.find? fundamental_theorem = {(env.find? `fundamental_theorem).isSome}"
+  IO.eprintln s!"DEBUG: env.find? {knownName} = {(env.find? knownName).isSome}"
+  IO.eprintln s!"DEBUG: getModuleFor fundamental_theorem = {env.getModuleFor? `fundamental_theorem}"
+  IO.eprintln s!"DEBUG: getModuleFor {knownName} = {env.getModuleFor? knownName}"
   -- Debug: test isFLTProofs on a known name
   let testName := `FLT_Proofs.Theorem.PAC.fundamental_theorem
   IO.eprintln s!"DEBUG: isFLTProofs {testName} = {isFLTProofs testName}"

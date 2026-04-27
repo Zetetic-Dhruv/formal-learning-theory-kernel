@@ -116,10 +116,28 @@ which quantify over ALL concept classes, not a specific one. -/
     This is a domain-level property: it says the σ-algebra on X is rich enough
     that learning-theoretic measurability is automatic.
 
-    Examples:
-    - Any MeasurableSingletonClass space (discrete σ-algebra)
-    - Any countable space
-    - Standard Borel spaces (ℝⁿ with Borel σ-algebra)
+    Examples (where `all_concepts_measurable` holds):
+    - Any countable X with the discrete σ-algebra (every subset is measurable,
+      so every Bool-valued function is measurable)
+    - Any X equipped with the discrete σ-algebra `⊤` (equivalently, any
+      `[DiscreteMeasurableSpace X]` instance)
+
+    Non-examples:
+    - ℝⁿ with the Borel σ-algebra is NOT a `UniversallyMeasurableSpace`.
+      The indicator function of a non-Borel set (e.g., a Vitali set) is
+      Bool-valued but not Borel-measurable. `MeasurableSingletonClass` holds
+      on ℝⁿ/Borel (singletons are Borel) but is strictly weaker than
+      `all_concepts_measurable`.
+    - Standard Borel spaces in general do not satisfy this typeclass for
+      the same reason.
+
+    Relationship to `MeasurableConceptClass`: on a Polish or standard-Borel
+    domain, `[MeasurableConceptClass X C]` cannot be derived from
+    `[UniversallyMeasurableSpace X]` because this typeclass fails there.
+    The substantive measurability assumption for those domains lives in
+    `MeasurableConceptClass.all_measurable` directly, and should be supplied
+    externally (e.g., by restricting to a concept universe whose indicators
+    are all Borel-measurable).
 
     The key consequence: for any C over X, the UC bad event
     {∃ h ∈ C, |TrueErr - EmpErr| ≥ ε} is NullMeasurableSet automatically. -/
