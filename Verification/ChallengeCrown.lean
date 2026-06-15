@@ -1,9 +1,14 @@
 import Verification.Definitions
 import FLT_Proofs.Complexity.Compression
+import FLT_Proofs.Complexity.IndependentVC.Dudley
+import FLT_Proofs.Complexity.IndependentVC.StructureClosures
+import FLT_Proofs.Complexity.IndependentVC.ExpressivityClosures
 
 noncomputable section
 
 universe u
+
+open ExpressivityClosures
 
 -- Crown Jewel 1: Fundamental theorem of statistical learning (5-way equivalence)
 -- Source: FLT_Proofs/Theorem/PAC.lean:293
@@ -87,6 +92,33 @@ theorem challenge_finite_support_vc_approx
           ∀ a ∈ A,
             |boolTestExpectation μ a -
               boolTestExpectation (empiricalPMF hT hs) a| ≤ ε := by
+  sorry
+
+-- Crown Jewel 7: Dudley's bound — the VC dimension of the linear sign class of a
+-- finite-dimensional subspace `V ≤ (X → ℝ)` is at most `dim V`.
+-- Source: FLT_Proofs/Complexity/IndependentVC/Dudley.lean:61 (vcDim_signClass_le)
+theorem challenge_dudley_vcdim_signclass {X : Type u}
+    (V : Submodule ℝ (X → ℝ)) [FiniteDimensional ℝ V] :
+    VCDim X (signClass V) ≤ (Module.finrank ℝ V : WithTop ℕ) := by
+  sorry
+
+-- Crown Jewel 8: VC dimension is NOT the universal relabel-invariant capacity. There is a
+-- relabel-invariant capacity functional (the Assouad dual VC dimension) that does not factor
+-- through VCDim — so VCDim is canonical but not terminal among relabel-invariant capacities.
+-- Source: FLT_Proofs/.../StructureClosures.lean (vcDim_not_universal_relabel_invariant_dual)
+theorem challenge_vcdim_not_universal_capacity :
+    ∃ J : (X : Type) → ConceptClass X Bool → WithTop ℕ,
+      (∀ (X : Type) (e : X ≃ X) (C : ConceptClass X Bool), J X (pullback e C) = J X C)
+      ∧ ¬ ∃ φ : WithTop ℕ → WithTop ℕ,
+            ∀ (X : Type) (C : ConceptClass X Bool), J X C = φ (VCDim X C) := by
+  sorry
+
+-- Crown Jewel 9: shattering ⟺ the online adversary can force a mistake at every point of `S`
+-- against every learner (the game-semantic characterization of VC shattering).
+-- Source: FLT_Proofs/.../ExpressivityClosures.lean (shatters_iff_adversary_forces)
+theorem challenge_shatter_adversary_equiv {X : Type u}
+    (C : ConceptClass X Bool) (S : Finset X) :
+    Shatters X C S ↔ AdversaryForcesShattering C S := by
   sorry
 
 end -- noncomputable section

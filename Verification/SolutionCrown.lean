@@ -3,10 +3,15 @@ import FLT_Proofs.Theorem.PAC
 import FLT_Proofs.Complexity.Compression
 import FLT_Proofs.PureMath.ApproxMinimax
 import FLT_Proofs.Complexity.FiniteSupportUC
+import FLT_Proofs.Complexity.IndependentVC.Dudley
+import FLT_Proofs.Complexity.IndependentVC.StructureClosures
+import FLT_Proofs.Complexity.IndependentVC.ExpressivityClosures
 
 noncomputable section
 
 universe u
+
+open StructureClosures ExpressivityClosures
 
 -- Crown Jewel 1: delegates to fundamental_theorem
 theorem challenge_fundamental_theorem (X : Type u) [MeasurableSpace X]
@@ -85,5 +90,25 @@ theorem challenge_finite_support_vc_approx
             |boolTestExpectation μ a -
               boolTestExpectation (empiricalPMF hT hs) a| ≤ ε :=
   finite_support_vc_approx d ε hε
+
+-- Crown Jewel 7: delegates to vcDim_signClass_le (Dudley's bound)
+theorem challenge_dudley_vcdim_signclass {X : Type u}
+    (V : Submodule ℝ (X → ℝ)) [FiniteDimensional ℝ V] :
+    VCDim X (signClass V) ≤ (Module.finrank ℝ V : WithTop ℕ) :=
+  vcDim_signClass_le V
+
+-- Crown Jewel 8: delegates to vcDim_not_universal_relabel_invariant_dual
+theorem challenge_vcdim_not_universal_capacity :
+    ∃ J : (X : Type) → ConceptClass X Bool → WithTop ℕ,
+      (∀ (X : Type) (e : X ≃ X) (C : ConceptClass X Bool), J X (pullback e C) = J X C)
+      ∧ ¬ ∃ φ : WithTop ℕ → WithTop ℕ,
+            ∀ (X : Type) (C : ConceptClass X Bool), J X C = φ (VCDim X C) :=
+  vcDim_not_universal_relabel_invariant_dual
+
+-- Crown Jewel 9: delegates to shatters_iff_adversary_forces
+theorem challenge_shatter_adversary_equiv {X : Type u}
+    (C : ConceptClass X Bool) (S : Finset X) :
+    Shatters X C S ↔ AdversaryForcesShattering C S :=
+  shatters_iff_adversary_forces C S
 
 end -- noncomputable section
