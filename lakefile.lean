@@ -44,6 +44,7 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Complexity.FiniteSupportUC,
     `FLT_Proofs.Complexity.Compression,
     `FLT_Proofs.Complexity.IndependentVC,
+    `FLT_Proofs.Complexity.WellBehavedVCAutomatic,
     `FLT_Proofs.PureMath.ChoquetCapacity,
     `FLT_Proofs.PureMath.AnalyticMeasurability,
     `FLT_Proofs.PureMath.KLDivergence,
@@ -62,7 +63,8 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.BorelAnalyticSeparation,
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
-    `FLT_Proofs.Bridge
+    `FLT_Proofs.Bridge,
+    `FLT_Proofs.Foundations.EMX
   ]
 
 lean_lib Verification where
