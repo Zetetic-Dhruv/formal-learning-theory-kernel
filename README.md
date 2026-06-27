@@ -616,6 +616,21 @@ Neural network layers are compositions. Attention is a router (the `BorelRouterC
 
 ---
 
+## Foundations module: EMX undecidability and Kuratowski's free set theorem
+
+The `Foundations` library is separate from the sorry-free `FLT_Proofs` kernel above. It holds exploratory formalizations that may carry documented open obligations; the kernel's 0-sorry guarantee covers `FLT_Proofs`, not `Foundations`.
+
+`Foundations/EMX.lean` formalizes the combinatorial core of Ben-David, Hrubeš, Moran, Shpilka and Yehudayoff, *Learnability can be undecidable* (Nature Machine Intelligence 1, 2019), where EMX-learnability of the family of finite subsets of [0,1] is shown independent of ZFC. Their device is a compression scheme, and their Theorem 1 states that the family over a set X admits a `(k+2) → (k+1)` scheme if and only if `#X ≤ ℵ_k`. This is a repackaging of Kuratowski's free set theorem (1951), which is not in Mathlib; the file builds the relevant case directly over Mathlib's cardinal and aleph API.
+
+| Direction | Statement | Status |
+|-----------|-----------|--------|
+| Reverse (A) | a `(k+2) → (k+1)` scheme forces `#X ≤ ℵ_k` | **proved**, sorry-free, axioms `[propext, Classical.choice, Quot.sound]` |
+| Forward (B) | `#X ≤ ℵ_k` yields a scheme | documented `sorry` (the choice-using well-ordering construction) |
+
+The reverse direction is a downward induction, the Lemma 2 collapse: a `(j+2) → (j+1)` scheme on `X` restricts to a `(j+1) → j` scheme on a subset one aleph smaller (`monoComp_reduction`), terminating in the impossibility of a `1 → 0` scheme on an infinite set (`monoComp_one_zero_finite`). The forward direction is Kuratowski's hard direction, a well-ordering of `X` of order type at most `ω_k`, and it is left open with the choice seam pinned in the docstring. The reverse direction is not itself choice-free at the Lean-axiom level: it draws `Classical.choice` from Mathlib's cardinal infrastructure. The forward-reverse asymmetry lives in the mathematical content, the well-ordering, not in the axiom list.
+
+---
+
 ## Part II: The Premise
 
 ## VI. The Typed Premise

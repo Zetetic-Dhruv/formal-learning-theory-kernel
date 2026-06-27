@@ -63,7 +63,15 @@ lean_lib FLT_Proofs where
     `FLT_Proofs.Theorem.BorelAnalyticSeparation,
     `FLT_Proofs.Theorem.PACBayes,
     `FLT_Proofs.Process,
-    `FLT_Proofs.Bridge,
+    `FLT_Proofs.Bridge
+  ]
+
+/-- Foundations: separate from the sorry-free `FLT_Proofs` kernel. Houses exploratory
+formalizations that may carry documented open obligations. Currently `EMX` (the EMX/CH
+undecidability core ≡ Kuratowski's free set theorem): the reverse direction is proved
+sorry-free; the forward (choice-using) direction is a documented `sorry`. -/
+lean_lib Foundations where
+  roots := #[
     `FLT_Proofs.Foundations.EMX
   ]
 
